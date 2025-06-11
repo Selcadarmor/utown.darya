@@ -14,8 +14,10 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
+
+    @Column(name = "user_name", unique = true)
+    private String userName;
 
     @Column(name = "full_name")
     private String fullName;
@@ -29,7 +31,6 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
 
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_roles",
@@ -39,69 +40,25 @@ public class User implements UserDetails {
     @JsonIgnoreProperties("users")
     private List<Role> roles;
 
+    // Конструкторы, геттеры и сеттеры...
 
-
-    public User() {
+    public String getUserName() {
+        return userName;
     }
 
-    public User(String fullName, Long phoneNumber, String address, String password, List<Role> roles) {
-        this.fullName = fullName;
-        this.phoneNumber = phoneNumber;
-        this.address = address;
-        this.password = password;
-        this.roles = roles;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public Long getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(Long phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAdress(String address) {
-        this.address = address;
-    }
-
+    // обязательно для Spring Security:
+    @Override
     public String getUsername() {
-        return phoneNumber.toString();
+        return userName;
     }
 
+    @Override
     public String getPassword() {
         return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public List<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
     }
 
     @Override
@@ -129,3 +86,4 @@ public class User implements UserDetails {
         return true;
     }
 }
+
