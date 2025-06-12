@@ -2,13 +2,12 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -32,7 +31,4 @@ public class Role implements GrantedAuthority {
     public String getAuthority() {
         return name;
     }
-
-
-
 }

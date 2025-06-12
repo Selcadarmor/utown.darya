@@ -5,48 +5,40 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
-    private final SuccessUserHandler successUserHandler;
+    private final JWTUtils jwtUtils;
     private final CustomUserDetailService customUserDetailService;
+    private final JWTAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/home_page", "/login", "/registry").permitAll()
-                        .requestMatchers("/main-page/admin").hasAnyRole( "ADMIN")
-                        .requestMatchers("/main-page/user").hasAnyRole( "USER")
-                        .requestMatchers("/main-page/restaurant").hasAnyRole( "RESTAURANT")
+                        .requestMatchers("/login", "/registry", "/home_page").permitAll()
+                        .requestMatchers("/main-page/admin").hasRole("ADMIN")
+                        .requestMatchers("/main-page/user").hasRole("USER")
+                        .requestMatchers("/main-page/restaurant").hasRole("RESTAURANT")
                         .anyRequest().authenticated()
-                )
-                .formLogin(form -> form
-                        .loginProcessingUrl("/login")
-                        .permitAll()
-                        .successHandler(successUserHandler)
-                )
-                .logout(logout -> logout.permitAll());
+                );
+
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
-
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(customUserDetailService);
-        provider.setPasswordEncoder(passwordEncoder());
-        return provider;
     }
 
     @Bean
@@ -59,3 +51,4 @@ public class WebSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
+
