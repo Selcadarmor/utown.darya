@@ -1,6 +1,7 @@
 package com.example.demo.config;
 
 import com.example.demo.service.CustomUserDetailService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,15 +15,11 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class WebSecurityConfig {
 
     private final SuccessUserHandler successUserHandler;
     private final CustomUserDetailService customUserDetailService;
-
-    public WebSecurityConfig(SuccessUserHandler successUserHandler, CustomUserDetailService customUserDetailService) {
-        this.successUserHandler = successUserHandler;
-        this.customUserDetailService = customUserDetailService;
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
