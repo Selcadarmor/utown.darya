@@ -19,9 +19,6 @@ public class User implements UserDetails {
     @Column(name = "user_name", unique = true)
     private String userName;
 
-    @Column(name = "full_name")
-    private String fullName;
-
     @Column(name = "phone_number")
     private Long phoneNumber;
 
@@ -40,7 +37,15 @@ public class User implements UserDetails {
     @JsonIgnoreProperties("users")
     private List<Role> roles;
 
-    // Конструкторы, геттеры и сеттеры...
+    // Getters and setters
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getUserName() {
         return userName;
@@ -50,7 +55,36 @@ public class User implements UserDetails {
         this.userName = userName;
     }
 
-    // обязательно для Spring Security:
+    public Long getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(Long phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
+
+    // UserDetails implementation
+
     @Override
     public String getUsername() {
         return userName;
@@ -86,4 +120,5 @@ public class User implements UserDetails {
         return true;
     }
 }
+
 
