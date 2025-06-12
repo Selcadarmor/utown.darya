@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void saveUser(RegisterRequest request) {
         User user = new User();
-        user.setUserName(request.getUsername());
+        user.setPhoneNumber(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         Role userRole = roleRepository.findByName("ROLE_USER")
