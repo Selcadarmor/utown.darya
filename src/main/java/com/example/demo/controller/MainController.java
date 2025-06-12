@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
-
+import com.example.demo.config.JWTTokenProvider;
+import com.example.demo.dto.JWTResponse;
 import com.example.demo.dto.LoginRequest;
 import com.example.demo.dto.RegisterRequest;
 import com.example.demo.service.UserService;
@@ -9,21 +10,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/home")
 public class MainController {
 
     private final AuthenticationManager authenticationManager;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JWTTokenProvider jwtTokenProvider;
     private final UserService userService;
 
     public MainController(AuthenticationManager authenticationManager,
-                          JwtTokenProvider jwtTokenProvider,
+                          JWTTokenProvider jwtTokenProvider,
                           UserService userService) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -34,16 +32,17 @@ public class MainController {
     public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUserName(), loginRequest.getPassword())
+                        loginRequest.getUsername(), loginRequest.getPassword()
+                )
         );
 
-        String token = jwtTokenProvider.createToken(authentication);
-        return ResponseEntity.ok(new JwtResponse(token));
+        JWTResponse tokens = jwtTokenProvider.createTokens(authentication);
+        return ResponseEntity.ok(tokens);
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest registerRequest) {
-        if (userService.existsByUsername(registerRequest.getUserName())) {
+        if (userService.existsByUsername(registerRequest.getUsername())) {
             return ResponseEntity.badRequest().body("Username already exists");
         }
 
@@ -51,4 +50,5 @@ public class MainController {
         return ResponseEntity.ok("User registered successfully");
     }
 }
+
 
