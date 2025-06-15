@@ -1,9 +1,7 @@
 package com.example.Utown.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,7 +9,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,30 +23,56 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
-    @NotBlank(message = "Name is required")
-    @Column(name = "full_name")
-    private String fullName;
+    @Column(name = "dtype", length = 31)
+    private String dtype;
 
-    @Column(name = "phoneNumber", unique = true, nullable = false)
-    @NotBlank(message = "PhoneNumber is required")
+    @Column(name = "fcm_token", length = 600)
+    private String fcmToken;
+
+    @Column(name = "is_active")
+    private boolean isActive;
+
+    @Column(name = "password", length = 255, nullable = false)
+    @NotBlank
+    private String password;
+
+    @Column(name = "phoneNumber", length = 20, unique = true, nullable = false)
+    @NotBlank
     private String username;
 
-    @NotBlank(message = "Address is required")
-    @Column(name = "address")
-    private String address;
+    @Column(name = "full_name", length = 170)
+    @NotBlank
+    private String fullName;
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Password must be at least 6 characters")
-    @Column(name = "password")
-    private String password;
-    private boolean enabled;
+    @Column(name = "transport", length = 50)
+    private String transport;
+
+    @Column(name = "default_address")
+    private Long defaultAddress;
+
+    @Column(name = "address_id")
+    private Long addressId;
+
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @Column(name = "platform")
+    private boolean platform;
+
     @PrePersist
-    public void onCreate() {
-        this.createdAt = LocalDateTime.now();
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
@@ -58,12 +81,10 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    @JsonIgnoreProperties("users")
     private Set<Role> roles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (roles == null || roles.isEmpty()) return List.of();
         return roles.stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toList());
@@ -86,7 +107,8 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return isActive;
     }
 }
+
 
