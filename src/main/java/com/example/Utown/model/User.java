@@ -61,12 +61,6 @@ public class User implements UserDetails {
     @JsonIgnoreProperties("users")
     private Set<Role> roles;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
-    private List<Order> orders;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
-    private List<Notification> notifications;
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (roles == null || roles.isEmpty()) return List.of();
