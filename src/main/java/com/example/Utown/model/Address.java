@@ -1,12 +1,6 @@
 package com.example.Utown.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "addresses")
@@ -45,4 +40,6 @@ public class Address {
     public void onCreate() {
         this.createAt = LocalDateTime.now();
     }
+    @ManyToMany(mappedBy = "addresses")
+    private Set<User> users;
 }
