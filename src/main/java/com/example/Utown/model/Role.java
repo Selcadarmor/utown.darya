@@ -2,13 +2,11 @@ package com.example.Utown.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
-
-import java.util.Set;
+import lombok.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "roles")
@@ -16,19 +14,30 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Role implements GrantedAuthority {
+@Builder
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
-    private String name;
 
-    @ManyToMany(mappedBy = "roles")
-    private Set<User> users;
+    @Column(nullable = false, unique = true)
+    private String name; // Например: ROLE_USER, ROLE_ADMIN
 
-    @Override
-    public String getAuthority() {
-        return name;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    public void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }
