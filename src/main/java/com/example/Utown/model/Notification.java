@@ -40,7 +40,6 @@ public class Notification {
     public void onCreate() {
         this.createAt= LocalDateTime.now();
     }
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
