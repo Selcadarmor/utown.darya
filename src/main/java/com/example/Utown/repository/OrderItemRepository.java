@@ -1,6 +1,6 @@
-package com.example.demo.repository;
+package com.example.Utown.repository;
 
-import com.example.demo.model.OrderItem;
+import com.example.Utown.model.OrderItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
