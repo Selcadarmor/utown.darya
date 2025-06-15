@@ -19,8 +19,8 @@ public class MainController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> registration(@RequestBody JWTRequest authRequest) {
-        return authService.createNewUser(authRequest);
+    public ResponseEntity<String> registration(@RequestBody JWTRequest authRequest, String roleName) {
+        return authService.createNewUser(authRequest, roleName);
     }
 }
 

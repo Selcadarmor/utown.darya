@@ -31,18 +31,19 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByUsername(username);
     }
 
-
     @Override
-    public void saveUser(JWTRequest request) {
+    public void saveUser(JWTRequest request, String roleName) {
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        Role userRole = roleRepository.findByName("ROLE_USER")
-                .orElseThrow(() -> new RuntimeException("Default role not found"));
+        Role role = roleRepository.findByName(roleName)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
 
-        user.setRoles(Set.of(userRole));
+        user.setRoles(Set.of(role));
         userRepository.save(user);
     }
+
+
 }
 

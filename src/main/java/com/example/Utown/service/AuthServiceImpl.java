@@ -42,14 +42,16 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ResponseEntity<String> createNewUser(JWTRequest registrationRequest) {
+    public ResponseEntity<String> createNewUser(JWTRequest registrationRequest, String roleName) {
         if (userService.findByUsername(registrationRequest.getUsername()).isPresent()) {
             return ResponseEntity
                     .badRequest()
                     .body("User already exists");
         }
 
-        userService.saveUser(registrationRequest);
+        //String roleName...
+
+        userService.saveUser(registrationRequest, roleName);
         return ResponseEntity.ok("User registered successfully");
     }
 }
