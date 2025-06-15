@@ -29,7 +29,7 @@ public class Address {
     private String area;
     private String city;
     private String details;
-    @Column(name = "fuul_address")
+    @Column(name = "full_address")
     private String fullAddress;
     private Float latitude;
     private Float longitude;
