@@ -1,55 +1,51 @@
-package com.example.demo.model;
+package com.example.Utown.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.tomcat.jni.FileInfo;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
-@Setter
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Restaurant {
+@Table
+public class FileInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private Long id;
+    @Column
+    private String fileName;
+    @Column
+    private String fileUrl;
+    @Column
+    private String fileType;
+    @Column
+    private LocalDateTime uploadedTime;
 
-    @Column
-    private String name;
-    @Column
-    private String address;
-    @Column
-    private String phone;
-    @Column
-    private String description;
-    @Column
-    private boolean isActive;
-    @Column
-    private LocalDateTime createTime;
     @PrePersist
     public void onCreate() {
-        this.createTime = LocalDateTime.now();
+        this.uploadedTime = LocalDateTime.now();
     }
 
-    @OneToMany(mappedBy = "restaurant")
-    private List<Dish> dishes;
+    @ManyToOne
+    private Dish dish;
 
-    @OneToMany(mappedBy = "restaurant")
-    private List<FileInfo> images;
+    @ManyToOne
+    private Restaurant restaurant;
 
 }

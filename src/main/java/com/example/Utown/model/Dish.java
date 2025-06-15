@@ -1,4 +1,4 @@
-package com.example.demo.model;
+package com.example.Utown.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -6,14 +6,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -21,16 +24,18 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table
-public class Notification {
+public class Dish {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
     private Long id;
     @Column
-    private String message;
+    private String name;
     @Column
-    private boolean read = false;
+    private String description;
+    @Column
+    private BigDecimal price;
+    @Column
+    private boolean available;
     @Column
     private LocalDateTime createTime;
     @PrePersist
@@ -39,6 +44,12 @@ public class Notification {
     }
 
     @ManyToOne
-    private User user;
+    private Restaurant restaurant;
+
+    @OneToMany(mappedBy = "dish")
+    private List<OrderItem> orderItem;
+
+    @OneToMany(mappedBy = "dish")
+    private List<FileInfo> images;
 
 }
