@@ -22,7 +22,7 @@ public class DishCategory {
     private Boolean isActive;
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
-    private Restaurants restaurant;
+    private Restaurant restaurant;
     @ManyToOne
     @JoinColumn(name = "file_id")
     private FileInfo file;

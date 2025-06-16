@@ -36,5 +36,5 @@ public class Delivery {
     }
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
-    private Restaurants restaurant;
+    private Restaurant restaurant;
 }

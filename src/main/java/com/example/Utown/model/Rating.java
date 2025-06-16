@@ -31,7 +31,7 @@ public class Rating {
     private double grade;
     @ManyToOne
     @JoinColumn(name = "restauran_id")
-    private Restaurants restaurant;
+    private Restaurant restaurant;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
