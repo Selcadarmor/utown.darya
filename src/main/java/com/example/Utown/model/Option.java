@@ -1,16 +1,6 @@
 package com.example.Utown.model;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -49,8 +39,12 @@ public class Option {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     @PrePersist
-    public void onCreate() {
+    public void prePersist() {
         createdAt = LocalDateTime.now();
+    }
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 
 
@@ -58,6 +52,6 @@ public class Option {
     @JoinColumn(name = "dish_id")
     private Dish dish;
 
-    @OneToMany(mappedBy = "option", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "option", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Element> elements;
 }

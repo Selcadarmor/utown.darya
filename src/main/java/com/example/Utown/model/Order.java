@@ -1,9 +1,11 @@
 package com.example.Utown.model;
 
+import com.example.Utown.enumFiles.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -58,7 +60,8 @@ public class Order {
     private String restaurantPhone;
 
     private String state;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
     private String street;
     private String time;
 
@@ -102,8 +105,14 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DishToOrder> dishesToOrder;
     @PrePersist
-    public void onCreate() {
+    public void prePersist() {
         this.createdAt = LocalDateTime.now();
+    }
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }

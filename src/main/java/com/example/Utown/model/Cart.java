@@ -30,7 +30,14 @@ public class Cart {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     @PrePersist
-    public void onCreate() {
+    public void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

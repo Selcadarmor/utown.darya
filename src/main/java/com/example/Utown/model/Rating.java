@@ -1,14 +1,7 @@
 package com.example.Utown.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
+import com.example.Utown.enumFiles.RatingStatus;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,9 +21,10 @@ public class Rating {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private double grade;
+    @Enumerated(EnumType.STRING)
+    private RatingStatus status;
     @ManyToOne
-    @JoinColumn(name = "restauran_id")
+    @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -40,7 +34,11 @@ public class Rating {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     @PrePersist
-    public void onCreate() {
+    public void prePersist() {
         createdAt = LocalDateTime.now();
+    }
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }
