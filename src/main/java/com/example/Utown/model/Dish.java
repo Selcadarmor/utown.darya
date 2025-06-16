@@ -38,7 +38,7 @@ public class Dish {
 
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
-    private Restaurants restaurant;
+    private Restaurant restaurant;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
