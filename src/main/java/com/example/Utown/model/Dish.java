@@ -33,7 +33,7 @@ public class Dish {
     private FileInfo file;
 
     @ManyToOne
-    @JoinColumn(name = "dish_categories_id")
+    @JoinColumn(name = "dish_category_id")
     private DishCategory dishCategory;
 
     @ManyToOne
@@ -46,8 +46,12 @@ public class Dish {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     @PrePersist
-    public void onCreate() {
+    public void prePersist() {
         this.createdAt = LocalDateTime.now();
+    }
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 
 }

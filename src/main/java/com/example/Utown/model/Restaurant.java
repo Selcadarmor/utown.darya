@@ -1,15 +1,6 @@
 package com.example.Utown.model;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,8 +23,6 @@ public class Restaurant {
     @Column
     private Long id;
 
-    @Column(length = 30)
-    private String category;
     @Column(length = 10)
     private String deliveryTime;
     @Column(columnDefinition = "LONGTEXT")
@@ -51,28 +40,32 @@ public class Restaurant {
     @Column(length = 170)
     private  String title;
     private Integer totalRatings;
-    private boolean statusForcedChanged;
-    private boolean isActive;
+    private Boolean statusForcedChanged;
+    private Boolean isActive;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
     @PrePersist
-    public void onCreate() {
+    public void prePersist() {
         this.createTime = LocalDateTime.now();
     }
+    @PreUpdate
+    public void preUpdate() {
+        this.updateTime = LocalDateTime.now();
+    }
 
-    @ManyToOne
-    @JoinColumn(name = "adress_id")
+    @OneToOne
+    @JoinColumn(name = "address_id")
     private Address address;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
 
 
-    @ManyToOne
-    @JoinColumn(name = "fail_id")
-    private FileInfo failInfo;
+    @OneToOne
+    @JoinColumn(name = "file_id")
+    private FileInfo fileInfo;
 
-    @OneToMany(mappedBy = "restaurant",cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "restaurant",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OperatingMode> operatingModes;
 }
