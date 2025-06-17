@@ -1,5 +1,6 @@
 package com.example.Utown.config;
 
+import com.example.Utown.enumFiles.Roles;
 import com.example.Utown.service.CustomUserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -31,9 +32,9 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/registry", "/home_page").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/user/**").hasRole("USER")
-                        .requestMatchers("/restaurant/**").hasRole("RESTAURANT")
+                        .requestMatchers("/admin/**").hasRole(Roles.ADMIN.toString())
+                        .requestMatchers("/user/**").hasRole(Roles.USER.toString())
+                        .requestMatchers("/restaurant/**").hasRole(Roles.RESTAURANT_ADMIN.toString())
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

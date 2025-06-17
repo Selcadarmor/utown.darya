@@ -22,11 +22,6 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public boolean existsByUsername(String username) {
-        return userRepository.existsByUsername(username);
-    }
-
-    @Override
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }

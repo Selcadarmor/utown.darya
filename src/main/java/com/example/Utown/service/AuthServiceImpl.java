@@ -19,6 +19,8 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JWTUtils jwtUtils;
     private final UserService userService;
+    private final RefreshTokenService refreshTokenService;
+
 
     @Override
     public ResponseEntity<JWTResponse> createAuthToken(JWTRequest authRequest) {
@@ -36,9 +38,11 @@ public class AuthServiceImpl implements AuthService {
 
         User user = (User) authentication.getPrincipal();
         String accessToken = jwtUtils.generateAccessToken(user);
-        String refreshToken = jwtUtils.generateRefreshToken(user);
+        String refreshTokenStr = jwtUtils.generateRefreshToken(user);
 
-        return ResponseEntity.ok(new JWTResponse(accessToken, refreshToken));
+        refreshTokenService.createRefreshToken(user.getUsername(), refreshTokenStr); //save in base
+
+        return ResponseEntity.ok(new JWTResponse(accessToken, refreshTokenStr));
     }
 
     @Override
