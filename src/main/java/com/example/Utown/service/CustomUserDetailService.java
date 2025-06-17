@@ -40,6 +40,4 @@ public class CustomUserDetailService implements UserDetailsService {
                         .collect(Collectors.toList())
         );
     }
-
-
 }
