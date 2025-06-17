@@ -2,6 +2,9 @@ package com.example.Utown.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,6 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @Table(name = "carts")
+@EntityListeners(AuditingEntityListener.class)
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,18 +29,11 @@ public class Cart {
     private Integer totalDish;
     @Column(name = "total_sum", precision = 15, scale = 2)
     private BigDecimal totalSum;
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-    }
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
+    @CreatedDate
+    private LocalDateTime createAt;
+    @LastModifiedDate
+    private LocalDateTime updateAt;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -17,6 +20,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,16 +38,11 @@ public class Address {
 
     @Column(name = "type_address")
     private Integer typeAddress;
+    @CreatedDate
     private LocalDateTime createAt;
+    @LastModifiedDate
     private LocalDateTime updateAt;
-    @PrePersist
-    public void prePersist () {
-        this.createAt = LocalDateTime.now();
-    }
-    @PreUpdate
-    public void preUpdate () {
-        this.updateAt = LocalDateTime.now();
-    }
+
     @OneToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
