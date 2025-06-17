@@ -49,8 +49,6 @@ public class AuthServiceImpl implements AuthService {
                     .body("User already exists");
         }
 
-        //String roleName...
-
         userService.saveUser(registrationRequest, roleName);
         return ResponseEntity.ok("User registered successfully");
     }

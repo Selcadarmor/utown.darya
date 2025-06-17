@@ -18,10 +18,22 @@ public class MainController {
         return authService.createAuthToken(authRequest);
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> registration(@RequestBody JWTRequest authRequest, String roleName) {
-        return authService.createNewUser(authRequest, roleName);
+    // Пример в AuthController
+    @PostMapping("/register/user")
+    public ResponseEntity<String> registerUser(@RequestBody JWTRequest request) {
+        return authService.createNewUser(request, "ROLE_USER");
     }
+
+    @PostMapping("/register/restaurant")
+    public ResponseEntity<String> registerRestaurant(@RequestBody JWTRequest request) {
+        return authService.createNewUser(request, "ROLE_RESTAURANT");
+    }
+
+    @PostMapping("/register/admin")
+    public ResponseEntity<String> registerAdmin(@RequestBody JWTRequest request) {
+        return authService.createNewUser(request, "ROLE_ADMIN");
+    }
+
 }
 
 
