@@ -1,0 +1,94 @@
+package com.example.Utown.service;
+
+import com.example.Utown.config.JWTProperties;
+import com.example.Utown.config.JWTUtils;
+import com.example.Utown.dto.JWTResponse;
+import com.example.Utown.dto.RefreshToken;
+import com.example.Utown.model.User;
+import com.example.Utown.repository.RefreshTokenRepository;
+import com.example.Utown.repository.UserRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+public class RefreshTokenServiceImpl implements RefreshTokenService {
+
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final UserRepository userRepository;
+    private final JWTProperties jwtProperties;
+    private final JWTUtils jwtUtils;
+
+    @Override
+    public RefreshToken createRefreshToken(String username, String jwtTokenString) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+
+        RefreshToken token = RefreshToken.builder()
+                .token(jwtTokenString)
+                .user(user)
+                .createdAt(LocalDateTime.now())
+                .expirationTime(LocalDateTime.now().plus(Duration.ofMillis(jwtProperties.getRefreshExpirationMs())))
+                .build();
+
+        return refreshTokenRepository.save(token);
+    }
+
+    @Override
+    public Optional<RefreshToken> findByToken(String token) {
+        return refreshTokenRepository.findByToken(token);
+    }
+
+    @Override
+    public boolean isRefreshTokenExpired(RefreshToken token) {
+        return token.getExpirationTime().isBefore(LocalDateTime.now());
+    }
+
+    @Transactional
+    @Override
+    public void deleteByUser(User user) {
+        refreshTokenRepository.deleteByUser(user);
+    }
+
+    @Override
+    public void deleteByToken(String token) {
+        refreshTokenRepository.findByToken(token)
+                .ifPresent(refreshTokenRepository::delete);
+    }
+
+    @Override
+    public JWTResponse refreshToken(String requestRefreshToken) {
+        RefreshToken refreshToken = findByToken(requestRefreshToken)
+                .orElseThrow(() -> new RuntimeException("RefreshToken not found"));
+
+        if (isRefreshTokenExpired(refreshToken)) {
+            deleteByToken(requestRefreshToken);
+            throw new RuntimeException("RefreshToken expired");
+        }
+
+        User user = refreshToken.getUser();
+        String newAccessToken = jwtUtils.generateAccessToken(user);
+        String newRefreshToken = jwtUtils.generateRefreshToken(user);
+
+        deleteByToken(requestRefreshToken);
+        createRefreshToken(user.getUsername(), newRefreshToken);
+
+        return new JWTResponse(newAccessToken, newRefreshToken);
+    }
+
+    public void logoutUserByRefreshToken(String refreshTokenStr) {
+        Optional<RefreshToken> refreshTokenOpt = findByToken(refreshTokenStr);
+        if (refreshTokenOpt.isPresent()) {
+            User user = refreshTokenOpt.get().getUser();
+            deleteByUser(user);
+        } else {
+            throw new RuntimeException("RefreshToken not found");
+        }
+    }
+}
+

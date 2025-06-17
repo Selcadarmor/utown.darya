@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface UserService {
     Optional<User> findByUsername(String username);
-    boolean existsByUsername(String username);
-    public void saveUser(JWTRequest request, String roleName);
+
+    void saveUser(JWTRequest request, String roleName);
 }
 
