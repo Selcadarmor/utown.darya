@@ -37,9 +37,17 @@ public class Address {
     private LocalDateTime createAt;
     private LocalDateTime updateAt;
     @PrePersist
-    public void onCreate() {
+    public void prePersist () {
         this.createAt = LocalDateTime.now();
     }
-    @ManyToMany(mappedBy = "addresses")
+    @PreUpdate
+    public void preUpdate () {
+        this.updateAt = LocalDateTime.now();
+    }
+    @OneToOne
+    @JoinColumn(name = "restaurant_id")
+    private Restaurant restaurant;
+
+    @ManyToMany(mappedBy = "address")
     private Set<User> users;
 }
