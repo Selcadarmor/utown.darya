@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -27,12 +28,16 @@ public class Delivery {
     @Column(name = "is_deleted")
     private Boolean isDeleted;
     @Column(name = "created_at")
-    private java.time.LocalDateTime createdAt;
+    private LocalDateTime createdAt;
     @Column(name = "updated_at")
-    private java.time.LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;
     @PrePersist
-    public void onCreate() {
+    public void prePersist() {
         this.createdAt = java.time.LocalDateTime.now();
+    }
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = java.time.LocalDateTime.now();
     }
     @ManyToOne
     @JoinColumn(name = "restaurant_id")

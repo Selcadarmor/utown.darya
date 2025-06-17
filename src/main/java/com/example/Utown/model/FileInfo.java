@@ -28,7 +28,11 @@ public class FileInfo {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     @PrePersist
-    public void onCreate() {
+    public void prePersist() {
         this.createdAt = LocalDateTime.now();
+    }
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }
