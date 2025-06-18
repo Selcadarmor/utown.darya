@@ -14,6 +14,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "dtype")
 @Table(name = "users")
 @Getter
 @Setter
