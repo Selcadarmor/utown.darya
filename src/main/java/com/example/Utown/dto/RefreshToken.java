@@ -1,5 +1,6 @@
-package com.example.Utown.model;
+package com.example.Utown.dto;
 
+import com.example.Utown.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -22,7 +22,7 @@ public class Role {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String name; // Например: ROLE_USER, ROLE_ADMIN
+    private String name;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
