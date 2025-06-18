@@ -14,12 +14,14 @@ import java.util.stream.Collectors;
 @Component
 public class JWTUtils {
 
-    private final String jwtSecret = "super-secret-key-which-should-be-at-least-256-bits";
-    private final long accessExpirationMs = 15 * 60 * 1000; // 15 минут
-    private final long refreshExpirationMs = 7 * 24 * 60 * 60 * 1000; // 7 дней
+    private final JWTProperties jwtProperties;
+
+    public JWTUtils(JWTProperties jwtProperties) {
+        this.jwtProperties = jwtProperties;
+    }
 
     private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(jwtSecret.getBytes());
+        return Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes());
     }
 
     public String generateAccessToken(UserDetails userDetails) {
@@ -31,7 +33,7 @@ public class JWTUtils {
                 .setSubject(userDetails.getUsername())
                 .claim("roles", roles)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + accessExpirationMs))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getAccessExpirationMs()))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -40,7 +42,7 @@ public class JWTUtils {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + refreshExpirationMs))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getRefreshExpirationMs()))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -67,6 +69,8 @@ public class JWTUtils {
         return false;
     }
 }
+
+
 
 
 
