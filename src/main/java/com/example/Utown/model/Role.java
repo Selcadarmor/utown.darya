@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,20 +27,9 @@ public class Role {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    @CreatedDate
+    private LocalDateTime createAt;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    @PrePersist
-    public void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    public void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
+    @LastModifiedDate
+    private LocalDateTime updateAt;
 }
