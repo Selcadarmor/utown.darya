@@ -3,6 +3,8 @@ package com.example.Utown.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -45,9 +47,9 @@ public class User implements UserDetails {
     @NotBlank
     private String username;
 
-    @Column(name = "full_name", length = 170)
-    @NotBlank
-    private String fullName;
+//    @Column(name = "full_name", length = 170)
+//    @NotBlank
+//    private String fullName;
 
     @Column(name = "transport", length = 50)
     private String transport;
@@ -58,11 +60,11 @@ public class User implements UserDetails {
     @Column(name = "address_id")
     private Long addressId;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    @CreatedDate
+    private LocalDateTime createAt;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @LastModifiedDate
+    private LocalDateTime updateAt;
 
     @Column(name = "platform")
     private boolean platform;
