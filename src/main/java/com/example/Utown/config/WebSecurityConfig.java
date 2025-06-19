@@ -31,7 +31,7 @@ public class WebSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/registry", "/home_page").permitAll()
+                        .requestMatchers("/main/**").permitAll()
                         .requestMatchers("/admin/**").hasRole(Roles.ADMIN.toString())
                         .requestMatchers("/user/**").hasRole(Roles.USER.toString())
                         .requestMatchers("/restaurant/**").hasRole(Roles.RESTAURANT_ADMIN.toString())

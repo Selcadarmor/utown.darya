@@ -12,11 +12,10 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/auth")
+@RequestMapping("/main")
 public class MainController {
-    AuthService authService;
-    RefreshTokenService refreshTokenService;
-
+    private final AuthService authService;
+    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/auth")
     public ResponseEntity<JWTResponse> login(@RequestBody JWTRequest authRequest) {

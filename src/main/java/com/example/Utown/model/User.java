@@ -28,7 +28,7 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "dtype", length = 31)
+    @Column(name = "dtype", length = 31, insertable = false, updatable = false)
     private String dtype;
 
     @Column(name = "fcm_token", length = 600)
@@ -118,5 +118,6 @@ public class User implements UserDetails {
         return isActive;
     }
 }
+
 
 

@@ -48,6 +48,6 @@ public class Address {
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
-    @ManyToMany(mappedBy = "address")
+    @ManyToMany(mappedBy = "addresses")
     private Set<User> users;
 }
