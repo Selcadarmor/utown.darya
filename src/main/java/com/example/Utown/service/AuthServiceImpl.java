@@ -1,6 +1,6 @@
 package com.example.Utown.service;
 
-import com.example.Utown.config.JWTUtils;
+import com.example.Utown.config.Utills.JWTUtils;
 import com.example.Utown.dto.JWTRequest;
 import com.example.Utown.dto.JWTResponse;
 import lombok.RequiredArgsConstructor;

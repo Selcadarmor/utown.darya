@@ -1,4 +1,4 @@
-package com.example.Utown.enumFiles;
+package com.example.Utown.model.enumFiles;
 
 public enum OrderStatus {
     NEW,
