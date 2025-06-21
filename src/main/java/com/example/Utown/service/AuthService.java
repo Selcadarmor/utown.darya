@@ -6,6 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
 public interface AuthService {
-    ResponseEntity<JWTResponse> createAuthToken(@RequestBody JWTRequest authRequest);
-    ResponseEntity<String> createNewUser(@RequestBody JWTRequest registrationUserDto, String roleName);
+    JWTResponse createAuthToken(JWTRequest authRequest);
+    void createNewUser(JWTRequest registrationRequest, String roleName);
 }

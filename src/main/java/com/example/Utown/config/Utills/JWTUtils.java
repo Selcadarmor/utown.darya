@@ -1,5 +1,7 @@
 package com.example.Utown.config.Utills;
 
+import com.example.Utown.exception.ExpireJwtTokenException;
+import com.example.Utown.exception.InvalidJwtTokenException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.GrantedAuthority;
@@ -63,38 +65,50 @@ public class JWTUtils {
     }
 
     public String getUsernameFromToken(String token, TokenType type) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey(type))
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey(type))
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();
+        } catch (ExpiredJwtException e) {
+            throw new ExpireJwtTokenException();
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new InvalidJwtTokenException();
+        }
     }
 
     @SuppressWarnings("unchecked")
-        public Set<String> getRolesFromToken(String token, TokenType type) {
-        return new HashSet<>((List<String>) Jwts.parserBuilder()
-                .setSigningKey(getSigningKey(type))
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .get("roles"));
+    public Set<String> getRolesFromToken(String token, TokenType type) {
+        try {
+            return new HashSet<>((List<String>) Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey(type))
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .get("roles"));
+        } catch (ExpiredJwtException e) {
+            throw new ExpireJwtTokenException();
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new InvalidJwtTokenException();
+        }
     }
 
-
-    public boolean validateToken(String token, TokenType type) {
+    public void validateToken(String token, TokenType type) {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(getSigningKey(type))
                     .build()
                     .parseClaimsJws(token);
-            return true;
+        } catch (ExpiredJwtException e) {
+            throw new ExpireJwtTokenException();
         } catch (JwtException | IllegalArgumentException e) {
-            System.out.println("Invalid JWT (" + type + "): " + e.getMessage());
-            return false;
+            throw new InvalidJwtTokenException();
         }
     }
 }
+
 
 
 

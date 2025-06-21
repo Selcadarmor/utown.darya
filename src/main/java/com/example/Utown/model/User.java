@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,9 +43,8 @@ public class User implements UserDetails {
     @NotBlank
     private String username;
 
-//    @Column(name = "full_name", length = 170)
-//    @NotBlank
-//    private String fullName;
+    @Column(name = "full_name", length = 170)
+    private String fullName;
 
     @Column(name = "transport", length = 50)
     private String transport;
