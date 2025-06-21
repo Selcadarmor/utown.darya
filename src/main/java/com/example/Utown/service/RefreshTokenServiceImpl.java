@@ -4,6 +4,9 @@ import com.example.Utown.config.Utills.JWTProperties;
 import com.example.Utown.config.Utills.JWTUtils;
 import com.example.Utown.dto.JWTResponse;
 import com.example.Utown.dto.RefreshToken;
+import com.example.Utown.exception.RefreshTokenExpiredException;
+import com.example.Utown.exception.RefreshTokenNotFoundException;
+import com.example.Utown.exception.UserNotFoundException;
 import com.example.Utown.model.User;
 import com.example.Utown.repository.RefreshTokenRepository;
 import com.example.Utown.repository.UserRepository;
@@ -27,7 +30,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     public RefreshToken createRefreshToken(String username, String jwtTokenString) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+                .orElseThrow(() -> new UserNotFoundException(username));
 
         RefreshToken token = RefreshToken.builder()
                 .token(jwtTokenString)
@@ -64,11 +67,11 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     public JWTResponse refreshToken(String requestRefreshToken) {
         RefreshToken refreshToken = findByToken(requestRefreshToken)
-                .orElseThrow(() -> new RuntimeException("RefreshToken not found"));
+                .orElseThrow(RefreshTokenNotFoundException::new);
 
         if (isRefreshTokenExpired(refreshToken)) {
             deleteByToken(requestRefreshToken);
-            throw new RuntimeException("RefreshToken expired");
+            throw new RefreshTokenExpiredException();
         }
 
         User user = refreshToken.getUser();
@@ -81,14 +84,12 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         return new JWTResponse(newAccessToken, newRefreshToken);
     }
 
+    @Override
     public void logoutUserByRefreshToken(String refreshTokenStr) {
-        Optional<RefreshToken> refreshTokenOpt = findByToken(refreshTokenStr);
-        if (refreshTokenOpt.isPresent()) {
-            User user = refreshTokenOpt.get().getUser();
-            deleteByUser(user);
-        } else {
-            throw new RuntimeException("RefreshToken not found");
-        }
+        RefreshToken refreshToken = findByToken(refreshTokenStr)
+                .orElseThrow(RefreshTokenNotFoundException::new);
+
+        deleteByUser(refreshToken.getUser());
     }
 }
 

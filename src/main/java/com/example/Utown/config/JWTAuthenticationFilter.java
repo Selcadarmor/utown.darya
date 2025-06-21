@@ -37,20 +37,16 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7);
-
-            if (jwtUtils.validateToken(jwt, TokenType.ACCESS)) {
-                username = jwtUtils.getUsernameFromToken(jwt, TokenType.ACCESS);
-
-                Set<String> roles = jwtUtils.getRolesFromToken(jwt, TokenType.ACCESS);
-                List<GrantedAuthority> authorities = roles.stream()
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
-
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(username, null, authorities);
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
+            jwtUtils.validateToken(jwt, TokenType.ACCESS);
+            username = jwtUtils.getUsernameFromToken(jwt, TokenType.ACCESS);
+            Set<String> roles = jwtUtils.getRolesFromToken(jwt, TokenType.ACCESS);
+            List<GrantedAuthority> authorities = roles.stream()
+                    .map(SimpleGrantedAuthority::new)
+                    .collect(Collectors.toList());
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(username, null, authorities);
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
         filterChain.doFilter(request, response);

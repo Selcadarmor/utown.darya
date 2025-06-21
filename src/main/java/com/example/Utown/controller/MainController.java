@@ -23,15 +23,17 @@ public class MainController {
     private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/login")
-    @Operation(summary = "Login", description = "Login")
     public ResponseEntity<JWTResponse> login(@RequestBody JWTRequest authRequest) {
-        return authService.createAuthToken(authRequest);
+        JWTResponse response = authService.createAuthToken(authRequest);
+        return ResponseEntity.ok(response);
     }
+
 
     @PostMapping("/register/user")
     @Operation(summary = "Register User", description = "Registration_user")
     public ResponseEntity<String> registerUser(@RequestBody JWTRequest request) {
-        return authService.createNewUser(request, Roles.ROLE_USER.name());
+        authService.createNewUser(request, Roles.ROLE_USER.name());
+        return ResponseEntity.ok("User registered successfully");
     }
 
 //    @PreAuthorize("hasRole('ADMIN')")
@@ -45,7 +47,8 @@ public class MainController {
     @PostMapping("/register/admin")
     @Operation(summary = "Register Admin", description = "Registration_admin")
     public ResponseEntity<String> registerAdmin(@RequestBody JWTRequest request) {
-        return authService.createNewUser(request, Roles.ROLE_ADMIN.name());
+        authService.createNewUser(request, Roles.ROLE_ADMIN.name());
+        return ResponseEntity.ok("Admin registered successfully");
     }
 
     @PostMapping("/refresh-token")
