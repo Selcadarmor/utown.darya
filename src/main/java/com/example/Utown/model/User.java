@@ -91,7 +91,7 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "restaurant_id")
     )
-    private Set<Restaurant>  favoriteRestaurants = new HashSet<>();
+    private Set<Restaurant>  favoriteRestaurants;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
