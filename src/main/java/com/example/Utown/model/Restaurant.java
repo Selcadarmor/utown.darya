@@ -40,7 +40,8 @@ public class Restaurant {
     private String phone;
     @Column(precision = 15, scale = 2)
     private BigDecimal rating;
-    private Integer status;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
     @Column(length = 170)
     private  String title;
     private Integer totalRatings;
@@ -64,6 +65,6 @@ public class Restaurant {
     @JoinColumn(name = "file_id")
     private FileInfo fileInfo;
 
-    @OneToMany(mappedBy = "restaurant",cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OperatingMode> operatingModes;
 }

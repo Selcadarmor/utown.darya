@@ -30,16 +30,21 @@ public class Option {
 
     @Column(name = "is_required")
     private boolean isRequired;
-
+    @Column(name = "min_value")
     private Integer min;
+    @Column(name = "is_multiple")
+    private boolean isMultiple;
+    @Column(name = "max_value")
     private Integer max;
 
     @Column(name = "is_active")
     private Boolean isActive;
 
     @CreatedDate
+    @Column(name = "create_at", updatable = false)
     private LocalDateTime createAt;
     @LastModifiedDate
+    @Column(name = "update_at")
     private LocalDateTime updateAt;
 
     @ManyToOne

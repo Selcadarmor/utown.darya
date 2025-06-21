@@ -34,6 +34,7 @@ public class Dish {
     @Column(precision = 10, scale = 2)
     private BigDecimal price;
 
+    @Column(name = "sort")
     private Integer sort;
 
     @Column(length = 170, nullable = false)
@@ -50,9 +51,11 @@ public class Dish {
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
+
     @Column(name = "created_at")
     @CreatedDate
     private LocalDateTime createAt;
+
     @Column(name = "updated_at")
     @LastModifiedDate
     private LocalDateTime updateAt;

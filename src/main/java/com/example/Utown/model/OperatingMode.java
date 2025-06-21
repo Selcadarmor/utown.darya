@@ -24,17 +24,25 @@ public class OperatingMode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "start")
     private LocalDateTime start;
+
     @Column(name = "end")
     private LocalDateTime end;
+
     @Column(name = "day_off")
     private Boolean dayOff;
+
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
+
+    @Column(name = "create_at")
     @CreatedDate
     private LocalDateTime createAt;
+
     @LastModifiedDate
+    @Column(name = "update_at")
     private LocalDateTime updateAt;
 }

@@ -2,7 +2,7 @@ package com.example.Utown.controller;
 
 import com.example.Utown.dto.JWTRequest;
 import com.example.Utown.dto.JWTResponse;
-import com.example.Utown.enumFiles.Roles;
+import com.example.Utown.model.Roles;
 import com.example.Utown.service.AuthService;
 import com.example.Utown.service.RefreshTokenService;
 import lombok.AllArgsConstructor;

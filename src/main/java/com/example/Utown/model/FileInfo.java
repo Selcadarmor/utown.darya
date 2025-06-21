@@ -23,12 +23,17 @@ public class FileInfo {
 
     @Column(name = "original_title")
     private String originalTitle;
-
+    @Column(name = "path")
     private String path;
+
+    @Column(name = "type")
     private String type;
 
     @CreatedDate
+    @Column(name = "create_at")
     private LocalDateTime createAt;
+
     @LastModifiedDate
+    @Column(name = "update_at")
     private LocalDateTime updateAt;
 }
