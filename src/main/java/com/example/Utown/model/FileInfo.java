@@ -1,6 +1,10 @@
 package com.example.Utown.model;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import java.time.LocalDateTime;
 
 @Getter
@@ -10,6 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "files")
+@EntityListeners({AuditingEntityListener.class})
 public class FileInfo {
 
     @Id
@@ -18,21 +23,17 @@ public class FileInfo {
 
     @Column(name = "original_title")
     private String originalTitle;
-
+    @Column(name = "path")
     private String path;
+
+    @Column(name = "type")
     private String type;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    @CreatedDate
+    @Column(name = "create_at")
+    private LocalDateTime createAt;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-    }
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
+    @LastModifiedDate
+    @Column(name = "update_at")
+    private LocalDateTime updateAt;
 }

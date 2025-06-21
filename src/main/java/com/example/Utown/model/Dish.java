@@ -1,10 +1,21 @@
 package com.example.Utown.model;
 import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "dishes")
+@EntityListeners(AuditingEntityListener.class)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Dish {
 
     @Id
@@ -23,6 +34,7 @@ public class Dish {
     @Column(precision = 10, scale = 2)
     private BigDecimal price;
 
+    @Column(name = "sort")
     private Integer sort;
 
     @Column(length = 170, nullable = false)
@@ -41,17 +53,11 @@ public class Dish {
     private Restaurant restaurant;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    @CreatedDate
+    private LocalDateTime createAt;
 
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-    }
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
+    @LastModifiedDate
+    private LocalDateTime updateAt;
 
 }

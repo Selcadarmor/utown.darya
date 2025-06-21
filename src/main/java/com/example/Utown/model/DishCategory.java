@@ -2,6 +2,9 @@ package com.example.Utown.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Table(name = "dish_category")
+@EntityListeners(AuditingEntityListener.class)
 public class DishCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,25 +23,26 @@ public class DishCategory {
 
     @Column(length = 100, nullable = false)
     private String name;
+
+    @Column(name = "sort")
     private Integer sort;
+
     @Column(name = "is_active")
     private Boolean isActive;
+
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
+
     @ManyToOne
     @JoinColumn(name = "file_id")
     private FileInfo file;
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = java.time.LocalDateTime.now();
-    }
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = java.time.LocalDateTime.now();
-    }
+
+    @CreatedDate
+    @Column(name = "create_at", updatable = false)
+    private LocalDateTime createAt;
+
+    @LastModifiedDate
+    @Column(name = "update_at")
+    private LocalDateTime updateAt;
 }
