@@ -25,22 +25,36 @@ public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+   @Column(length = 100, nullable = false)
     private String area;
+   @Column(length = 100, nullable = false)
     private String city;
+   @Column(length = 100, nullable = false)
     private String details;
     @Column(name = "full_address")
     private String fullAddress;
+    @Column(name = "latitube")
     private Float latitude;
+    @Column(name = "longitube")
     private Float longitude;
+    @Column(name = "post_code")
     private String postCode;
+    @Column(name = "state")
     private String state;
+    @Column(length = 100, nullable = false)
     private String street;
+
+    @Column(name = "intercome_code", length = 100, nullable = false)
+    private String intercomCode;
 
     @Column(name = "type_address")
     private Integer typeAddress;
+    @Column(name = "create_at")
     @CreatedDate
     private LocalDateTime createAt;
     @LastModifiedDate
+    @Column(name = "update_at")
     private LocalDateTime updateAt;
 
     @OneToOne

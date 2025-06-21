@@ -23,17 +23,26 @@ public class DishCategory {
 
     @Column(length = 100, nullable = false)
     private String name;
+
+    @Column(name = "sort")
     private Integer sort;
+
     @Column(name = "is_active")
     private Boolean isActive;
+
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
+
     @ManyToOne
     @JoinColumn(name = "file_id")
     private FileInfo file;
+
     @CreatedDate
+    @Column(name = "create_at", updatable = false)
     private LocalDateTime createAt;
+
     @LastModifiedDate
+    @Column(name = "update_at")
     private LocalDateTime updateAt;
 }

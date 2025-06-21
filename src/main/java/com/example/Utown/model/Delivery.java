@@ -21,18 +21,27 @@ public class Delivery {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(length = 50)
     private String area;
+
     @Column(precision = 10, scale = 2)
     private BigDecimal price;
+
     @Column(name = "district", length = 50)
     private String district;
+
     @Column(name = "is_active")
     private Boolean isActive;
+
     @Column(name = "is_deleted")
     private Boolean isDeleted;
+
     @CreatedDate
+    @Column(name = "create_at", updatable = false)
     private LocalDateTime createAt;
+
+    @Column(name = "update_at")
     @LastModifiedDate
     private LocalDateTime updateAt;
 

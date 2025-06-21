@@ -1,6 +1,6 @@
 package com.example.Utown.config;
 
-import com.example.Utown.enumFiles.Roles;
+import com.example.Utown.model.Roles;
 import com.example.Utown.service.CustomUserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

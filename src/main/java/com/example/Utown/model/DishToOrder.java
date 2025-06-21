@@ -49,8 +49,10 @@ public class DishToOrder {
     private Restaurant restaurant;
 
     @CreatedDate
+    @Column(name = "create_at")
     private LocalDateTime createAt;
     @LastModifiedDate
+    @Column(name = "update_at")
     private LocalDateTime updateAt;
 
 }

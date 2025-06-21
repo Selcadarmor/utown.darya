@@ -1,6 +1,5 @@
 package com.example.Utown.model;
 
-import com.example.Utown.enumFiles.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
