@@ -1,6 +1,6 @@
 package com.example.Utown.model;
 
-import com.example.Utown.enumFiles.RatingStatus;
+import com.example.Utown.model.enumFiles.RatingStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,7 +1,7 @@
 package com.example.Utown.service;
 
-import com.example.Utown.config.JWTProperties;
-import com.example.Utown.config.JWTUtils;
+import com.example.Utown.config.Utills.JWTProperties;
+import com.example.Utown.config.Utills.JWTUtils;
 import com.example.Utown.dto.JWTResponse;
 import com.example.Utown.dto.RefreshToken;
 import com.example.Utown.model.User;
