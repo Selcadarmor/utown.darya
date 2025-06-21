@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
@@ -16,29 +19,30 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @Table(name = "operating_mode")
+@EntityListeners(AuditingEntityListener.class)
 public class OperatingMode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "start")
     private LocalDateTime start;
+
     @Column(name = "end")
     private LocalDateTime end;
+
     @Column(name = "day_off")
     private Boolean dayOff;
+
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-    @PrePersist
-    public void prePersist() {
-        createdAt = LocalDateTime.now();
-    }
-    @PreUpdate
-    public void preUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
+
+    @Column(name = "create_at")
+    @CreatedDate
+    private LocalDateTime createAt;
+
+    @LastModifiedDate
+    @Column(name = "update_at")
+    private LocalDateTime updateAt;
 }

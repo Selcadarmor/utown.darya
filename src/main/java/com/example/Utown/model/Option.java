@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.List;
 @Setter
 @Builder
 @Table(name = "options")
+@EntityListeners({com.example.Utown.security.AuditorAwareImpl.class})
 public class Option {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,26 +30,22 @@ public class Option {
 
     @Column(name = "is_required")
     private boolean isRequired;
-
+    @Column(name = "min_value")
     private Integer min;
+    @Column(name = "is_multiple")
+    private boolean isMultiple;
+    @Column(name = "max_value")
     private Integer max;
 
     @Column(name = "is_active")
     private Boolean isActive;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-    @PrePersist
-    public void prePersist() {
-        createdAt = LocalDateTime.now();
-    }
-    @PreUpdate
-    public void preUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
-
+    @CreatedDate
+    @Column(name = "create_at", updatable = false)
+    private LocalDateTime createAt;
+    @LastModifiedDate
+    @Column(name = "update_at")
+    private LocalDateTime updateAt;
 
     @ManyToOne
     @JoinColumn(name = "dish_id")

@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -17,6 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 public class Restaurant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,22 +40,17 @@ public class Restaurant {
     private String phone;
     @Column(precision = 15, scale = 2)
     private BigDecimal rating;
-    private Integer status;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
     @Column(length = 170)
     private  String title;
     private Integer totalRatings;
     private Boolean statusForcedChanged;
     private Boolean isActive;
-    private LocalDateTime createTime;
-    private LocalDateTime updateTime;
-    @PrePersist
-    public void prePersist() {
-        this.createTime = LocalDateTime.now();
-    }
-    @PreUpdate
-    public void preUpdate() {
-        this.updateTime = LocalDateTime.now();
-    }
+    @CreatedDate
+    private LocalDateTime createAt;
+    @LastModifiedDate
+    private LocalDateTime updateAt;
 
     @OneToOne
     @JoinColumn(name = "address_id")
@@ -66,6 +65,6 @@ public class Restaurant {
     @JoinColumn(name = "file_id")
     private FileInfo fileInfo;
 
-    @OneToMany(mappedBy = "restaurant",cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OperatingMode> operatingModes;
 }

@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -17,6 +20,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @Table(name = "dishes_to_order")
+@EntityListeners(AuditingEntityListener.class)
 public class DishToOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,16 +48,11 @@ public class DishToOrder {
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-    @PrePersist
-    public void prePersist() {
-        createdAt = LocalDateTime.now();
-    }
-    @PreUpdate
-    public void preUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
+    @CreatedDate
+    @Column(name = "create_at")
+    private LocalDateTime createAt;
+    @LastModifiedDate
+    @Column(name = "update_at")
+    private LocalDateTime updateAt;
+
 }
