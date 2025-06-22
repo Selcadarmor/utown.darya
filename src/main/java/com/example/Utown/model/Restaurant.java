@@ -1,5 +1,6 @@
 package com.example.Utown.model;
 
+import com.example.Utown.model.UserType.RestaurantAdmin;
 import com.example.Utown.model.enumFiles.OrderStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -58,8 +59,8 @@ public class Restaurant {
     private Address address;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "restaurant_admin_id")
+    private RestaurantAdmin restaurantAdmin;
 
 
     @OneToOne

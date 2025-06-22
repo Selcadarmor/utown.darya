@@ -30,4 +30,6 @@ public class RestaurantDto {
     private User user;
     private FileInfo fileInfo;
     private List<OperatingMode> operatingModes;
+    private Long addressId;
+    private Long RestaurantAdminId;
 }

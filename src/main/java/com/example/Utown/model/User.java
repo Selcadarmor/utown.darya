@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@MappedSuperclass
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @DiscriminatorColumn(name = "dtype")

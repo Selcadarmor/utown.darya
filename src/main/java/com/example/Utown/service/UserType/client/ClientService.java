@@ -1,4 +1,4 @@
-package com.example.Utown.service.UserType;
+package com.example.Utown.service.UserType.client;
 
 import com.example.Utown.dto.СlientDto.ClientChangePasswordDto;
 import com.example.Utown.dto.СlientDto.ClientProfileUpdateDto;
