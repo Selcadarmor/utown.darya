@@ -1,4 +1,4 @@
-package com.example.Utown.config;
+package com.example.Utown.config.Utills;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,8 +11,10 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "jwt")
 public class JWTProperties {
 
-    private String secret;
+    private String accessSecret;
+    private String refreshSecret;
     private long accessExpirationMs;
     private long refreshExpirationMs;
 }
+
 
