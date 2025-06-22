@@ -1,8 +1,8 @@
 package com.example.Utown.service.UserType;
 
-import com.example.Utown.dto.СlientDto.ClientChangePasswordDto;
-import com.example.Utown.dto.СlientDto.ClientProfileUpdateDto;
-import com.example.Utown.dto.СlientDto.ClientRegistrationDto;
+import com.example.Utown.dto.clientDto.ClientChangePasswordDto;
+import com.example.Utown.dto.clientDto.ClientProfileUpdateDto;
+import com.example.Utown.dto.clientDto.ClientRegistrationDto;
 import com.example.Utown.exception.PasswordsDoNotMatchException;
 import com.example.Utown.exception.RoleNotFoundException;
 import com.example.Utown.exception.UserAlreadyExistsException;
@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.Set;
+
+import static com.example.Utown.dto.mappers.ClientMapper.updateEntity;
 
 @Service
 @RequiredArgsConstructor
@@ -62,10 +64,7 @@ public class ClientServiceImpl implements ClientService {
             throw new UserAlreadyExistsException(dto.getUsername());
         }
 
-        client.setFullName(dto.getFullName());
-        client.setUsername(dto.getUsername());
-        client.setDefaultAddress(dto.getDefaultAddress());
-
+        updateEntity(client, dto);
         clientRepository.save(client);
     }
 

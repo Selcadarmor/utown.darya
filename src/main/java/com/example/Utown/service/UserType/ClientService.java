@@ -1,8 +1,8 @@
 package com.example.Utown.service.UserType;
 
-import com.example.Utown.dto.СlientDto.ClientChangePasswordDto;
-import com.example.Utown.dto.СlientDto.ClientProfileUpdateDto;
-import com.example.Utown.dto.СlientDto.ClientRegistrationDto;
+import com.example.Utown.dto.clientDto.ClientChangePasswordDto;
+import com.example.Utown.dto.clientDto.ClientProfileUpdateDto;
+import com.example.Utown.dto.clientDto.ClientRegistrationDto;
 import com.example.Utown.model.UserType.Client;
 import java.util.Optional;
 
