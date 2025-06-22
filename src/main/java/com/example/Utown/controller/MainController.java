@@ -2,7 +2,6 @@ package com.example.Utown.controller;
 
 import com.example.Utown.dto.JWTRequest;
 import com.example.Utown.dto.JWTResponse;
-import com.example.Utown.model.enumFiles.Roles;
 import com.example.Utown.service.AuthService;
 import com.example.Utown.service.RefreshTokenService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,27 +28,20 @@ public class MainController {
     }
 
 
-    @PostMapping("/register/user")
-    @Operation(summary = "Register User", description = "Registration_user")
-    public ResponseEntity<String> registerUser(@RequestBody JWTRequest request) {
-        authService.createNewUser(request, Roles.ROLE_USER.name());
-        return ResponseEntity.ok("User registered successfully");
+    @PostMapping("/register/client")
+    @Operation(summary = "Register Client", description = "Registration for client users")
+    public ResponseEntity<String> registerClient(@RequestBody JWTRequest request) {
+        authService.registerClient(request);
+        return ResponseEntity.ok("Client registered successfully");
     }
 
 //    @PreAuthorize("hasRole('ADMIN')")
-//    @PostMapping("/register/restaurant")
-//    @Operation(summary = "Register Restaurant", description = "Registration_restaurant")
-//    public ResponseEntity<String> registerRestaurant(@RequestBody JWTRequest request) {
-//        return authService.createNewUser(request, Roles.ROLE_RESTAURANT_ADMIN.toString());
+//    @PostMapping("/register/admin")
+//    @Operation(summary = "Register Admin", description = "Registration_admin")
+//    public ResponseEntity<String> registerAdmin(@RequestBody JWTRequest request) {
+//        authService.createNewUser(request, Roles.ROLE_ADMIN.name());
+//        return ResponseEntity.ok("Admin registered successfully");
 //    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/register/admin")
-    @Operation(summary = "Register Admin", description = "Registration_admin")
-    public ResponseEntity<String> registerAdmin(@RequestBody JWTRequest request) {
-        authService.createNewUser(request, Roles.ROLE_ADMIN.name());
-        return ResponseEntity.ok("Admin registered successfully");
-    }
 
     @PostMapping("/refresh-token")
     @Operation(summary = "Refresh Token", description = "refreshToken_update")

@@ -4,7 +4,7 @@ import com.example.Utown.config.Utills.JWTProperties;
 import com.example.Utown.config.Utills.JWTUtils;
 import com.example.Utown.dto.JWTResponse;
 import com.example.Utown.dto.RefreshToken;
-import com.example.Utown.exception.RefreshTokenExpiredException;
+import com.example.Utown.exception.ExpireJwtTokenException;
 import com.example.Utown.exception.RefreshTokenNotFoundException;
 import com.example.Utown.exception.UserNotFoundException;
 import com.example.Utown.model.User;
@@ -71,7 +71,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
         if (isRefreshTokenExpired(refreshToken)) {
             deleteByToken(requestRefreshToken);
-            throw new RefreshTokenExpiredException();
+            throw new ExpireJwtTokenException();
         }
 
         User user = refreshToken.getUser();
