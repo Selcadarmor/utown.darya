@@ -33,7 +33,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority(Roles.ROLE_ADMIN.name())
-                        .requestMatchers("/user/**").hasAuthority(Roles.ROLE_USER.name())
+                        .requestMatchers("/user/**").hasAuthority(Roles.ROLE_CLIENT.name())
                         .requestMatchers("/restaurant/**").hasAuthority(Roles.ROLE_RESTAURANT_ADMIN.name())
                         .anyRequest().authenticated()
                 )

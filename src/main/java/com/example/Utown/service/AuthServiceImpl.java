@@ -4,6 +4,8 @@ import com.example.Utown.config.Utills.JWTUtils;
 import com.example.Utown.dto.JWTRequest;
 import com.example.Utown.dto.JWTResponse;
 import com.example.Utown.exception.UserAlreadyExistsException;
+import com.example.Utown.model.UserType.Client;
+import com.example.Utown.service.UserType.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,7 +19,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final JWTUtils jwtUtils;
-    private final UserService userService;
+    private final ClientService clientService;
     private final RefreshTokenService refreshTokenService;
 
     @Override
@@ -39,14 +41,14 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void createNewUser(JWTRequest registrationRequest, String roleName) {
-        if (userService.findByUsername(registrationRequest.getUsername()).isPresent()) {
-            throw new UserAlreadyExistsException(registrationRequest.getUsername());
+    public void registerClient(JWTRequest request) {
+        if (clientService.findByUsername(request.getUsername()).isPresent()) {
+            throw new UserAlreadyExistsException(request.getUsername());
         }
-
-        userService.saveUser(registrationRequest, roleName);
+        clientService.saveClient(request, "ROLE_CLIENT");
     }
 }
+
 
 
 
