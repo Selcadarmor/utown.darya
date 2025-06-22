@@ -22,7 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
-    private final JWTAuthenticationFilter jwtAuthenticationFilter;
+    private final   JWTAuthenticationFilter jwtAuthenticationFilter;
     private final CustomUserDetailService customUserDetailService;
 
     @Bean
@@ -31,10 +31,10 @@ public class WebSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/main/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole(Roles.ADMIN.toString())
-                        .requestMatchers("/user/**").hasRole(Roles.USER.toString())
-                        .requestMatchers("/restaurant/**").hasRole(Roles.RESTAURANT_ADMIN.toString())
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/admin/**").hasAuthority(Roles.ROLE_ADMIN.name())
+                        .requestMatchers("/user/**").hasAuthority(Roles.ROLE_CLIENT.name())
+                        .requestMatchers("/restaurant/**").hasAuthority(Roles.ROLE_RESTAURANT_ADMIN.name())
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

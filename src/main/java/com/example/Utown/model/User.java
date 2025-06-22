@@ -15,22 +15,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @DiscriminatorColumn(name = "dtype")
-@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User implements UserDetails {
+public abstract class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "dtype", length = 31, insertable = false, updatable = false)
-    private String dtype;
 
     @Column(name = "fcm_token", length = 600)
     private String fcmToken;
@@ -46,9 +42,8 @@ public class User implements UserDetails {
     @NotBlank
     private String username;
 
-//    @Column(name = "full_name", length = 170)
-//    @NotBlank
-//    private String fullName;
+    @Column(name = "full_name", length = 170)
+    private String fullName;
 
     @Column(name = "transport", length = 50)
     private String transport;
@@ -95,7 +90,7 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
                 .collect(Collectors.toList());
     }
 

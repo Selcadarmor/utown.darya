@@ -1,7 +1,8 @@
 package com.example.Utown.service;
 
-
 import com.example.Utown.dto.JWTRequest;
+import com.example.Utown.exception.RoleNotFoundException;
+import com.example.Utown.exception.UserAlreadyExistsException;
 import com.example.Utown.model.Role;
 import com.example.Utown.model.User;
 import com.example.Utown.repository.RoleRepository;
@@ -28,17 +29,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void saveUser(JWTRequest request, String roleName) {
+        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+            throw new UserAlreadyExistsException(request.getUsername());
+        }
+
+        Role role = roleRepository.findByName(roleName)
+                .orElseThrow(() -> new RoleNotFoundException(roleName));
+
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-
-        Role role = roleRepository.findByName(roleName)
-                .orElseThrow(() -> new RuntimeException("Role not found"));
-
         user.setRoles(Set.of(role));
+
         userRepository.save(user);
     }
-
-
 }
-
