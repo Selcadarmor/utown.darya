@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@MappedSuperclass
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @DiscriminatorColumn(name = "dtype")
@@ -79,7 +80,7 @@ public abstract class User implements UserDetails {
     )
     private Set<Address> addresses;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "favorites",
             joinColumns = @JoinColumn(name = "user_id"),
