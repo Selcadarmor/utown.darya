@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@MappedSuperclass
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @DiscriminatorColumn(name = "dtype")
@@ -49,9 +48,6 @@ public abstract class User implements UserDetails {
     @Column(name = "transport", length = 50)
     private String transport;
 
-    @Column(name = "default_address")
-    private Long defaultAddress;
-
     @Column(name = "address_id")
     private Long addressId;
 
@@ -72,13 +68,6 @@ public abstract class User implements UserDetails {
     )
     private Set<Role> roles;
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_addresses",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "address_id")
-    )
-    private Set<Address> addresses;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(
@@ -87,6 +76,11 @@ public abstract class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "restaurant_id")
     )
     private Set<Restaurant>  favoriteRestaurants;
+
+
+    @ManyToOne
+    @JoinColumn(name = "default_address_")
+    private Address defaultAddress;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

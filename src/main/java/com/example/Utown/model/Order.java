@@ -1,5 +1,6 @@
 package com.example.Utown.model;
 
+import com.example.Utown.model.UserType.Client;
 import com.example.Utown.model.enumFiles.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -107,8 +108,8 @@ public class Order {
     private Restaurant restaurant;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "client_id")
+    private Client client;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DishToOrder> dishesToOrder;
 

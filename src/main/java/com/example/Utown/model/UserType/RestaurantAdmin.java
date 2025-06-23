@@ -1,11 +1,9 @@
 package com.example.Utown.model.UserType;
 
+import com.example.Utown.model.Address;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.User;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,4 +19,8 @@ public class RestaurantAdmin extends User {
     @OneToOne
     @JoinColumn(name = "restaurant_admin_id")
     private Restaurant restaurant;
+
+    @ManyToOne
+    @JoinColumn(name = "address_id")
+    private Address address;
 }
