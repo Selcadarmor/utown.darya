@@ -1,5 +1,5 @@
 package com.example.Utown.controller;
-import com.example.Utown.dto.otherDto.ApiError;
+import com.example.Utown.dto.ApiError;
 import com.example.Utown.exception.*;
 import com.example.Utown.exception.IllegalArgumentException;
 import io.swagger.v3.oas.annotations.Operation;
