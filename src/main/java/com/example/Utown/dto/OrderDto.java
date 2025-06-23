@@ -50,7 +50,7 @@ public class OrderDto {
     private String deliveryStatus;
     private String endTimeOfCooking;
     private String intercomCode;
-    private User user;
-    private Restaurant restaurant;
+    private UserDto userDto;
+    private RestaurantDto restaurantDto;
     private List<DishToOrder> dishToOrder;
 }

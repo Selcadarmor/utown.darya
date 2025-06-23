@@ -13,14 +13,12 @@ import java.util.Set;
 public class ClientDto {
     private Long id;
     private String username;
-    private Long defaultAddress;
-    private String transport;
+    private String city;
+    private String fullAddress;
     private Long addressId;
-    private boolean platform;
-    private Boolean isActive;
+    private Integer totalOrders;
     private Set<RoleDto> roles;
-    private Set<AddressDto> addresses;
-    private Set<RestaurantDto> favoriteRestaurants;
+    private Set<OrderShortDto> orderHistory;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

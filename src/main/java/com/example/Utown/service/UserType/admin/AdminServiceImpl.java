@@ -1,6 +1,8 @@
 package com.example.Utown.service.UserType.admin;
 
+import com.example.Utown.dto.ClientCreateDto;
 import com.example.Utown.dto.ClientDto;
+import com.example.Utown.dto.ClientUpdateDto;
 import com.example.Utown.dto.RoleDto;
 import com.example.Utown.dto.adminDto.AdminCreateRequestDto;
 import com.example.Utown.dto.adminDto.AdminDto;
@@ -47,6 +49,43 @@ public class AdminServiceImpl implements AdminService {
         Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Client", id));
         return clientMapper.toDto(client);
+    }
+
+    @Transactional
+    @Override
+    public ClientDto createClient(ClientCreateDto clientCreateDto) {
+        if (clientCreateDto.getRoles() == null || clientCreateDto.getRoles().isEmpty()) {
+            throw new InvalidArgumentException("roles", clientCreateDto.getRoles());
+        }
+        Client client = clientMapper.toEntity(clientCreateDto);
+
+        Set<Long> roleIds = clientCreateDto.getRoles().stream()
+                .map(RoleDto::getId)
+                .collect(Collectors.toSet());
+        Set<Role> roles = new HashSet<>(roleRepository.findAllById(roleIds));
+        if (roles.size() != roleIds.size()) {
+            throw new ResourceNotFoundException("Role", clientCreateDto.getRoles());
+        }
+        client.setRoles(roles);
+
+        return clientMapper.toDto(clientRepository.save(client));
+    }
+
+    @Transactional
+    @Override
+    public ClientDto updateClient(Long id, ClientUpdateDto clientDto) {
+        Client client = clientRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Client", id));
+            clientMapper.updateClientFromDto(clientDto, client);
+        return clientMapper.toDto(clientRepository.save(client));
+    }
+
+    @Transactional
+    @Override
+    public void deleteClient(Long id) {
+        Client client = clientRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Client", id));
+        clientRepository.delete(client);
     }
 
     @Override
