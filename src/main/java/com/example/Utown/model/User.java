@@ -5,16 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-@MappedSuperclass
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @DiscriminatorColumn(name = "dtype")
@@ -22,11 +16,10 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public abstract class User implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(name = "fcm_token", length = 600)
@@ -64,14 +57,6 @@ public abstract class User implements UserDetails {
     @Column(name = "platform")
     private boolean platform;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Role> roles;
-
     @ManyToMany
     @JoinTable(
             name = "user_addresses",
@@ -87,13 +72,6 @@ public abstract class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "restaurant_id")
     )
     private Set<Restaurant>  favoriteRestaurants;
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-                .collect(Collectors.toList());
-    }
 
     @Override
     public boolean isAccountNonExpired() {

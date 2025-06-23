@@ -1,11 +1,17 @@
 package com.example.Utown.model.UserType;
 
+import com.example.Utown.model.Role;
 import com.example.Utown.model.User;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "clients")
@@ -13,6 +19,22 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Client extends User {
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "client_roles",
+            joinColumns = @JoinColumn(name = "client_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                .collect(Collectors.toList());
+    }
+
 
 }
 
