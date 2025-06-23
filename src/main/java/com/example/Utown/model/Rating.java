@@ -1,6 +1,5 @@
 package com.example.Utown.model;
 
-import com.example.Utown.model.enumFiles.RatingStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,8 +23,7 @@ public class Rating {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Enumerated(EnumType.STRING)
-    private RatingStatus status;
+    private Long grade;
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
