@@ -1,6 +1,6 @@
 package com.example.Utown.service.UserType.admin;
 
-import com.example.Utown.dto.ClientDto;
+import com.example.Utown.dto.otherDto.ClientDto;
 import java.util.List;
 
 public interface AdminService {

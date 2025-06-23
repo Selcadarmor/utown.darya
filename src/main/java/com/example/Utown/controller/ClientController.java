@@ -2,7 +2,7 @@ package com.example.Utown.controller;
 
 import com.example.Utown.dto.clientDto.ClientChangePasswordDto;
 import com.example.Utown.dto.clientDto.ClientProfileUpdateDto;
-import com.example.Utown.service.UserType.ClientService;
+import com.example.Utown.service.UserType.client.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

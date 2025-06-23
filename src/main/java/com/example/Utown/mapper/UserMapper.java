@@ -1,6 +1,6 @@
 package com.example.Utown.mapper;
 
-import com.example.Utown.dto.UserDto;
+import com.example.Utown.dto.otherDto.UserDto;
 import com.example.Utown.model.User;
 import org.mapstruct.Mapper;
 

@@ -2,8 +2,8 @@ package com.example.Utown.service;
 
 import com.example.Utown.config.Utills.JWTProperties;
 import com.example.Utown.config.Utills.JWTUtils;
-import com.example.Utown.dto.JWTResponse;
-import com.example.Utown.dto.RefreshToken;
+import com.example.Utown.dto.tokens.JWTResponse;
+import com.example.Utown.dto.tokens.RefreshToken;
 import com.example.Utown.exception.ExpireJwtTokenException;
 import com.example.Utown.exception.RefreshTokenNotFoundException;
 import com.example.Utown.exception.UserNotFoundException;

@@ -1,6 +1,6 @@
 package com.example.Utown.service;
 
-import com.example.Utown.dto.JWTRequest;
+import com.example.Utown.dto.tokens.JWTRequest;
 import com.example.Utown.model.User;
 
 import java.util.Optional;

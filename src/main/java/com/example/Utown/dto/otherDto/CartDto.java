@@ -1,6 +1,5 @@
-package com.example.Utown.dto;
+package com.example.Utown.dto.otherDto;
 
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,4 +1,4 @@
-package com.example.Utown.dto;
+package com.example.Utown.dto.otherDto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

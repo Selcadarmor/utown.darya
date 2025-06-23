@@ -1,7 +1,7 @@
 package com.example.Utown.dto.adminDto;
 
 
-import com.example.Utown.dto.RoleDto;
+import com.example.Utown.dto.otherDto.RoleDto;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;

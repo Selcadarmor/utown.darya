@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.example.Utown.dto.mappers.ClientMapper.updateEntity;
+import static com.example.Utown.dto.clientDto.ClientMapper.updateEntity;
 
 @Service
 @RequiredArgsConstructor

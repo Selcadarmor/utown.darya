@@ -1,4 +1,4 @@
-package com.example.Utown.dto;
+package com.example.Utown.dto.otherDto;
 
 import com.example.Utown.model.DishToOrder;
 import com.example.Utown.model.enumFiles.OrderStatus;

@@ -1,6 +1,6 @@
 package com.example.Utown.repository;
 
-import com.example.Utown.dto.RefreshToken;
+import com.example.Utown.dto.tokens.RefreshToken;
 import com.example.Utown.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
