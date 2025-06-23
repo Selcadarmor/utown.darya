@@ -1,10 +1,9 @@
-package com.example.Utown.dto;
+package com.example.Utown.dto.otherDto;
 
 import com.example.Utown.model.Cart;
 import com.example.Utown.model.Dish;
 import com.example.Utown.model.Order;
 import com.example.Utown.model.Restaurant;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

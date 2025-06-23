@@ -1,7 +1,7 @@
 package com.example.Utown.controller;
 
-import com.example.Utown.dto.JWTRequest;
-import com.example.Utown.dto.JWTResponse;
+import com.example.Utown.dto.tokens.JWTRequest;
+import com.example.Utown.dto.tokens.JWTResponse;
 import com.example.Utown.dto.clientDto.ClientRegistrationDto;
 import com.example.Utown.service.AuthService;
 import com.example.Utown.service.RefreshTokenService;

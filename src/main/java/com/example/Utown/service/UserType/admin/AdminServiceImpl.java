@@ -1,6 +1,6 @@
 package com.example.Utown.service.UserType.admin;
 
-import com.example.Utown.dto.ClientDto;
+import com.example.Utown.dto.otherDto.ClientDto;
 import com.example.Utown.exception.IllegalArgumentException;
 import com.example.Utown.mapper.AdminMapper;
 import com.example.Utown.mapper.ClientMapper;

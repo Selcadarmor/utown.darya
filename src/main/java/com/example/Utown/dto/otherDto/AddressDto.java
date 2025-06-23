@@ -1,4 +1,4 @@
-package com.example.Utown.dto;
+package com.example.Utown.dto.otherDto;
 
 import com.example.Utown.model.Restaurant;
 import lombok.AllArgsConstructor;

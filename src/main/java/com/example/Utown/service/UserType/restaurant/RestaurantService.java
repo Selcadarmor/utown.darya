@@ -1,6 +1,6 @@
 package com.example.Utown.service.UserType.restaurant;
 
-import com.example.Utown.dto.RestaurantDto;
+import com.example.Utown.dto.otherDto.RestaurantDto;
 
 import java.util.List;
 

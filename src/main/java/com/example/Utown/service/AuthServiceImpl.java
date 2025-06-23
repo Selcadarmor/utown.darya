@@ -1,13 +1,12 @@
 package com.example.Utown.service;
 
 import com.example.Utown.config.Utills.JWTUtils;
-import com.example.Utown.dto.JWTRequest;
-import com.example.Utown.dto.JWTResponse;
+import com.example.Utown.dto.tokens.JWTRequest;
+import com.example.Utown.dto.tokens.JWTResponse;
 import com.example.Utown.dto.clientDto.ClientRegistrationDto;
 import com.example.Utown.exception.UserAlreadyExistsException;
-import com.example.Utown.model.UserType.Client;
 import com.example.Utown.model.enumFiles.Roles;
-import com.example.Utown.service.UserType.ClientService;
+import com.example.Utown.service.UserType.client.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

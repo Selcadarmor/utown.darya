@@ -1,6 +1,6 @@
 package com.example.Utown.service.UserType.restaurant;
 
-import com.example.Utown.dto.RestaurantDto;
+import com.example.Utown.dto.otherDto.RestaurantDto;
 import com.example.Utown.exception.EntityNotFoundException;
 import com.example.Utown.mapper.AddressMapper;
 import com.example.Utown.mapper.RestaurantMapper;

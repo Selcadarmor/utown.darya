@@ -1,8 +1,8 @@
 package com.example.Utown.dto.adminDto;
 
-import com.example.Utown.dto.AddressDto;
-import com.example.Utown.dto.RestaurantDto;
-import com.example.Utown.dto.RoleDto;
+import com.example.Utown.dto.otherDto.AddressDto;
+import com.example.Utown.dto.otherDto.RestaurantDto;
+import com.example.Utown.dto.otherDto.RoleDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
