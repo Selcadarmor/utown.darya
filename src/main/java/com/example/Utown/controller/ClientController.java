@@ -1,7 +1,7 @@
 package com.example.Utown.controller;
 
-import com.example.Utown.dto.СlientDto.ClientChangePasswordDto;
-import com.example.Utown.dto.СlientDto.ClientProfileUpdateDto;
+import com.example.Utown.dto.clientDto.ClientChangePasswordDto;
+import com.example.Utown.dto.clientDto.ClientProfileUpdateDto;
 import com.example.Utown.service.UserType.client.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,20 +20,24 @@ public class ClientController {
 
     private final ClientService clientService;
 
-        @PutMapping("/update")
-        @Operation(summary = "Update client profile")
-        public ResponseEntity<String> updateProfile(
-                @AuthenticationPrincipal User user,
-                @RequestBody ClientProfileUpdateDto dto
-        ) {
-            clientService.updateClientProfile(user.getUsername(), dto);
-            return ResponseEntity.ok("Profile updated successfully");
-        }
+    @PutMapping("/update")
+    @Operation(summary = "Update client profile", description = "" )
+    public ResponseEntity<String> updateProfile(
+            @AuthenticationPrincipal User user,
+            @RequestBody ClientProfileUpdateDto dto
+    ) {
+        clientService.updateClientProfile(user.getUsername(), dto);
+        return ResponseEntity.ok("Profile updated successfully");
+    }
 
-        @PutMapping("/change-password")
-        public ResponseEntity<String> changePassword(@RequestBody @Valid ClientChangePasswordDto dto,
-                                                 @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
-            clientService.changePassword(user.getUsername(), dto);
-            return ResponseEntity.ok("Password changed successfully");
+    @PutMapping("/change-password")
+    @Operation(summary = "Change client password", description = "")
+    public ResponseEntity<String> changePassword(
+            @RequestBody @Valid ClientChangePasswordDto dto,
+            @AuthenticationPrincipal User user
+    ) {
+        clientService.changePassword(user.getUsername(), dto);
+        return ResponseEntity.ok("Password changed successfully");
     }
 }
+

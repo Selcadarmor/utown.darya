@@ -1,9 +1,11 @@
 package com.example.Utown.service;
 
 import com.example.Utown.config.Utills.JWTUtils;
-import com.example.Utown.dto.JWTRequest;
-import com.example.Utown.dto.JWTResponse;
+import com.example.Utown.dto.tokens.JWTRequest;
+import com.example.Utown.dto.tokens.JWTResponse;
+import com.example.Utown.dto.clientDto.ClientRegistrationDto;
 import com.example.Utown.exception.UserAlreadyExistsException;
+import com.example.Utown.model.enumFiles.Roles;
 import com.example.Utown.service.UserType.client.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -40,11 +42,11 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void registerClient(JWTRequest request) {
-        if (clientService.findByUsername(request.getUsername()).isPresent()) {
-            throw new UserAlreadyExistsException(request.getUsername());
+    public void registerClient(ClientRegistrationDto dto) {
+        if (clientService.findByUsername(dto.getUsername()).isPresent()) {
+            throw new UserAlreadyExistsException(dto.getUsername());
         }
-        clientService.saveClient(request, "ROLE_CLIENT");
+        clientService.saveClient(dto, Roles.ROLE_CLIENT);
     }
 }
 

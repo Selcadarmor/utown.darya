@@ -1,4 +1,4 @@
-package com.example.Utown.dto.СlientDto;
+package com.example.Utown.dto.clientDto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
