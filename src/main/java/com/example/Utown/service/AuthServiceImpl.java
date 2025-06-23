@@ -46,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
         if (clientService.findByUsername(dto.getUsername()).isPresent()) {
             throw new UserAlreadyExistsException(dto.getUsername());
         }
-        clientService.saveClient(dto, Roles.ROLE_CLIENT.name());
+        clientService.saveClient(dto, Roles.ROLE_CLIENT);
     }
 }
 

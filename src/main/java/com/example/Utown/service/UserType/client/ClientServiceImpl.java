@@ -9,6 +9,7 @@ import com.example.Utown.exception.UserAlreadyExistsException;
 import com.example.Utown.exception.UserNotFoundException;
 import com.example.Utown.model.Role;
 import com.example.Utown.model.UserType.Client;
+import com.example.Utown.model.enumFiles.Roles;
 import com.example.Utown.repository.RoleRepository;
 import com.example.Utown.repository.UserType.ClientRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public void saveClient(ClientRegistrationDto dto, String roleName) {
+    public void saveClient(ClientRegistrationDto dto, Roles roleName) {
         if (!dto.getPassword().equals(dto.getConfirmPassword())) {
             throw new PasswordsDoNotMatchException();
         }
@@ -44,15 +45,17 @@ public class ClientServiceImpl implements ClientService {
         }
 
         Role role = roleRepository.findByName(roleName)
-                .orElseThrow(() -> new RoleNotFoundException(roleName));
+                .orElseThrow(() -> new RoleNotFoundException(roleName.name()));
 
         Client client = new Client();
         client.setUsername(dto.getUsername());
         client.setPassword(passwordEncoder.encode(dto.getPassword()));
         client.setRoles(Set.of(role));
-
+        client.setActive(true);
         clientRepository.save(client);
     }
+
+
 
     @Override
     public void updateClientProfile(String currentUsername, ClientProfileUpdateDto dto) {
