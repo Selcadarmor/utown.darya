@@ -8,10 +8,10 @@ import java.util.List;
 
 public interface RestaurantAdminService {
     /// администратор рестаранов
-    RestaurantAdminCreateDto createAdmin(RestaurantAdminCreateDto dto);
+    RestaurantAdminDto createAdmin(RestaurantAdminCreateDto dto);
     List<RestaurantAdminDto> getAllRestaurantAdmins();
     RestaurantAdminDto getRestaurantAdminById(Long id);
-    RestaurantAdminUpdateDto updateRestaurantAdmin(Long id, RestaurantAdminUpdateDto dto);
+    RestaurantAdminDto updateRestaurantAdmin(Long id, RestaurantAdminUpdateDto dto);
     void deleteRestaurantAdmin(Long id);
 }
 

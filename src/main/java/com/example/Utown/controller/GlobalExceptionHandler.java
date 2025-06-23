@@ -1,7 +1,7 @@
 package com.example.Utown.controller;
 import com.example.Utown.dto.ApiError;
 import com.example.Utown.exception.*;
-import com.example.Utown.exception.IllegalArgumentException;
+import com.example.Utown.exception.InvalidArgumentException;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
             OrderNotFoundException.class,
             RestaurantNotFoundException.class,
             RoleNotFoundException.class,
-            EntityNotFoundException.class,
+            ResourceNotFoundException.class,
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @Operation(hidden =true) /// скрыввем для Swagger
@@ -58,7 +58,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             CartIsEmptyException.class,
             RatingOutOfRangeException.class,
-            IllegalArgumentException.class,
+            InvalidArgumentException.class,
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @Operation(hidden = true)
