@@ -60,14 +60,6 @@ public abstract class User implements UserDetails {
     @Column(name = "platform")
     private boolean platform;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Role> roles;
-
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(
@@ -82,12 +74,6 @@ public abstract class User implements UserDetails {
     @JoinColumn(name = "default_address_")
     private Address defaultAddress;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-                .collect(Collectors.toList());
-    }
 
     @Override
     public boolean isAccountNonExpired() {
