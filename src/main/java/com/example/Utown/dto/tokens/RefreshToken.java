@@ -1,4 +1,4 @@
-package com.example.Utown.dto;
+package com.example.Utown.dto.tokens;
 
 import com.example.Utown.model.User;
 import jakarta.persistence.*;

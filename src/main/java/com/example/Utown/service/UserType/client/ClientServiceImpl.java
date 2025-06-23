@@ -1,14 +1,15 @@
 package com.example.Utown.service.UserType.client;
 
-import com.example.Utown.dto.СlientDto.ClientChangePasswordDto;
-import com.example.Utown.dto.СlientDto.ClientProfileUpdateDto;
-import com.example.Utown.dto.СlientDto.ClientRegistrationDto;
+import com.example.Utown.dto.clientDto.ClientChangePasswordDto;
+import com.example.Utown.dto.clientDto.ClientProfileUpdateDto;
+import com.example.Utown.dto.clientDto.ClientRegistrationDto;
 import com.example.Utown.exception.PasswordsDoNotMatchException;
 import com.example.Utown.exception.RoleNotFoundException;
 import com.example.Utown.exception.UserAlreadyExistsException;
 import com.example.Utown.exception.UserNotFoundException;
 import com.example.Utown.model.Role;
 import com.example.Utown.model.UserType.Client;
+import com.example.Utown.model.enumFiles.Roles;
 import com.example.Utown.repository.RoleRepository;
 import com.example.Utown.repository.UserType.ClientRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.Set;
+
+import static com.example.Utown.dto.clientDto.ClientMapper.updateEntity;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +35,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public void saveClient(ClientRegistrationDto dto, String roleName) {
+    public void saveClient(ClientRegistrationDto dto, Roles roleName) {
         if (!dto.getPassword().equals(dto.getConfirmPassword())) {
             throw new PasswordsDoNotMatchException();
         }
@@ -42,15 +45,17 @@ public class ClientServiceImpl implements ClientService {
         }
 
         Role role = roleRepository.findByName(roleName)
-                .orElseThrow(() -> new RoleNotFoundException(roleName));
+                .orElseThrow(() -> new RoleNotFoundException(roleName.name()));
 
         Client client = new Client();
         client.setUsername(dto.getUsername());
         client.setPassword(passwordEncoder.encode(dto.getPassword()));
         client.setRoles(Set.of(role));
-
+        client.setActive(true);
         clientRepository.save(client);
     }
+
+
 
     @Override
     public void updateClientProfile(String currentUsername, ClientProfileUpdateDto dto) {
@@ -62,10 +67,7 @@ public class ClientServiceImpl implements ClientService {
             throw new UserAlreadyExistsException(dto.getUsername());
         }
 
-        client.setFullName(dto.getFullName());
-        client.setUsername(dto.getUsername());
-        client.setDefaultAddress(dto.getDefaultAddress());
-
+        updateEntity(client, dto);
         clientRepository.save(client);
     }
 

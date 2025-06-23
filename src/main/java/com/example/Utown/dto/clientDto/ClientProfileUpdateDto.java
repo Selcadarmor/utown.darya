@@ -1,4 +1,4 @@
-package com.example.Utown.dto.СlientDto;
+package com.example.Utown.dto.clientDto;
 
 import lombok.Getter;
 import lombok.Setter;
