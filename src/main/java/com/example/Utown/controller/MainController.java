@@ -2,15 +2,19 @@ package com.example.Utown.controller;
 
 import com.example.Utown.dto.tokens.JWTRequest;
 import com.example.Utown.dto.tokens.JWTResponse;
-import com.example.Utown.dto.clientDto.ClientRegistrationDto;
+import com.example.Utown.dto.userDto.UserProfileUpdateDto;
+import com.example.Utown.dto.userDto.UserRegistrationDto;
 import com.example.Utown.service.AuthService;
 import com.example.Utown.service.RefreshTokenService;
+import com.example.Utown.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,6 +25,7 @@ public class MainController {
 
     private final AuthService authService;
     private final RefreshTokenService refreshTokenService;
+    private final UserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<JWTResponse> login(@RequestBody JWTRequest authRequest) {
@@ -29,20 +34,22 @@ public class MainController {
     }
 
 
-    @PostMapping("/register/client")
+    @PostMapping("/register/user_client")
     @Operation(summary = "Register Client", description = "Registration for client users")
-    public ResponseEntity<String> registerClient(@RequestBody ClientRegistrationDto dto) {
-        authService.registerClient(dto);
+    public ResponseEntity<String> registerClient(@RequestBody UserRegistrationDto dto) {
+        authService.registration(dto);
         return ResponseEntity.ok("Client registered successfully");
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
-//    @PostMapping("/register/admin")
-//    @Operation(summary = "Register Admin", description = "Registration_admin")
-//    public ResponseEntity<String> registerAdmin(@RequestBody JWTRequest request) {
-//        authService.createNewUser(request, Roles.ROLE_ADMIN.name());
-//        return ResponseEntity.ok("Admin registered successfully");
-//    }
+    @PutMapping("/update")
+    @Operation(summary = "Update client profile", description = "" )
+    public ResponseEntity<String> updateProfile(
+            @AuthenticationPrincipal User user,
+            @RequestBody UserProfileUpdateDto dto
+    ) {
+        userService.updateProfile(user.getUsername(), dto);
+        return ResponseEntity.ok("Profile updated successfully");
+    }
 
     @PostMapping("/refresh-token")
     @Operation(summary = "Refresh Token", description = "refreshToken_update")
