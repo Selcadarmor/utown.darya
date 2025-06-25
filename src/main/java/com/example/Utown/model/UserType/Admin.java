@@ -18,19 +18,5 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 public class Admin extends User {
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "admin_roles",
-            joinColumns = @JoinColumn(name = "admin_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Role> roles;
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-                .collect(Collectors.toList());
-    }
 
 }

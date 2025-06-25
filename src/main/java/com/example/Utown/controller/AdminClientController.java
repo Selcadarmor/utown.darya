@@ -1,6 +1,5 @@
 package com.example.Utown.controller;
 
-import com.example.Utown.dto.ClientCreateDto;
 import com.example.Utown.dto.ClientDto;
 import com.example.Utown.dto.ClientUpdateDto;
 import com.example.Utown.service.UserType.admin.AdminServiceImpl;
@@ -10,7 +9,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,22 +41,12 @@ public class AdminClientController {
         return ResponseEntity.ok(adminService.getClientById(id));
     }
 
-    @Operation(summary = "Create a new client", description = "Registers a new client in the system.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Client create successfully."),
-            @ApiResponse(responseCode = "400", description = "Invalid input data")
-    })
-    @PostMapping
-    public ResponseEntity<ClientDto> clientCreateDtoResponseEntity(@Valid @RequestBody ClientCreateDto clientCreateDto) {
-        ClientDto created = adminService.createClient(clientCreateDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
-    }
 
     @Operation(summary = "Update client by Id", description = "Updates information of an existing client.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Client updated successfully."),
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
-            @ApiResponse(responseCode = "404", description = "Client nit found")
+            @ApiResponse(responseCode = "404", description = "Client not found")
     })
     @PutMapping("/{id}")
     public ResponseEntity<ClientDto> clientUpdateDtoResponseEntity(@PathVariable Long id, @Valid @RequestBody ClientUpdateDto clientUpdateDto) {

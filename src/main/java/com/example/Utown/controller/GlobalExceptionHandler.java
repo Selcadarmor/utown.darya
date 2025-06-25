@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @Operation(hidden =true) /// скрыввем для Swagger
-    public ApiErrorResponse handleUserNotFoundException(UserNotFoundException ex, HttpServletRequest request) { /// метод если пользователь не найден 400
+    public ApiErrorResponse handleUserNotFoundException(UserNotFoundException ex, HttpServletRequest request) {
         return buildError(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
     }
 
@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     @Operation(hidden = true)
-    public ApiErrorResponse handleConflictException(RuntimeException ex, HttpServletRequest request) { ///ошибка 409 например ублирование и др...
+    public ApiErrorResponse handleConflictException(RuntimeException ex, HttpServletRequest request) { ///ошибка 409 например дублирование и др...
         return buildError(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
     }
 
@@ -62,7 +62,7 @@ public class GlobalExceptionHandler {
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @Operation(hidden = true)
-    public ApiErrorResponse handleBadRequest(RuntimeException ex, HttpServletRequest request) {/// ошибка 404
+    public ApiErrorResponse handleBadRequest(RuntimeException ex, HttpServletRequest request) {/// ошибка 400
         return buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
     }
 

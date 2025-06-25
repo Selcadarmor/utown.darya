@@ -31,39 +31,50 @@ public class Restaurant {
 
     @Column(length = 10)
     private String deliveryTime;
+
     @Column(columnDefinition = "LONGTEXT")
     private String description;
+
     @Column(length = 255)
     private String facilities;
+
     private Boolean isRecommended;
+
     @Column(precision = 10, scale = 2)
     private BigDecimal minOrderAmount;
+
     @Column(length = 20)
     private String phone;
+
     @Column(precision = 15, scale = 2)
     private BigDecimal rating;
+
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
+
     @Column(length = 170)
     private  String title;
+
     private Integer totalRatings;
+
     private Boolean statusForcedChanged;
+
     private Boolean isActive;
     @CreatedDate
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
     @LastModifiedDate
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @OneToOne
-    @JoinColumn(name = "restaurant_admin_id")
-    private RestaurantAdmin restaurantAdmin;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "user_id")
+    private User user;
 
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "file_id")
     private FileInfo fileInfo;
 

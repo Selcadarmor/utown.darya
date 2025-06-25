@@ -1,14 +1,13 @@
-package com.example.Utown.dto;
+package com.example.Utown.dto.clientDto;
 
 import com.example.Utown.model.DishToOrder;
 import com.example.Utown.model.enumFiles.OrderStatus;
-import com.example.Utown.model.Restaurant;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.userdetails.User;
+
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -50,7 +49,6 @@ public class OrderDto {
     private String deliveryStatus;
     private String endTimeOfCooking;
     private String intercomCode;
-    private UserDto userDto;
     private RestaurantDto restaurantDto;
     private List<DishToOrder> dishToOrder;
 }

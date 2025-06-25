@@ -18,7 +18,6 @@ public class ClientDto {
     private Long addressId;
     private Integer totalOrders;
     private Set<RoleDto> roles;
-    private Set<OrderShortDto> orderHistory;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

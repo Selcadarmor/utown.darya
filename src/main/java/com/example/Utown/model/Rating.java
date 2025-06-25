@@ -23,19 +23,22 @@ public class Rating {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "grade")
     private Long grade;
+
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
     @Column(name = "created_at")
+    @CreatedDate
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-    @CreatedDate
-    private LocalDateTime createAt;
     @LastModifiedDate
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
 }

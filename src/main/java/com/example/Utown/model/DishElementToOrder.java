@@ -23,7 +23,7 @@ public class DishElementToOrder {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "dish_to_order_id")
+    @JoinColumn(name = "dish_to_order")
     private DishToOrder dishToOrder;
 
     @ManyToOne

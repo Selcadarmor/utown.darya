@@ -1,9 +1,8 @@
 package com.example.Utown.service.UserType.restaurantAdmin;
 
-
-import com.example.Utown.dto.restaurantAdminDto.RestaurantAdminCreateDto;
-import com.example.Utown.dto.restaurantAdminDto.RestaurantAdminDto;
-import com.example.Utown.dto.restaurantAdminDto.RestaurantAdminUpdateDto;
+import com.example.Utown.dto.restaurantAdmin.RestaurantAdminCreateDto;
+import com.example.Utown.dto.restaurantAdmin.RestaurantAdminDto;
+import com.example.Utown.dto.restaurantAdmin.RestaurantAdminUpdateDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.RestaurantAdminMapper;
 import com.example.Utown.model.Restaurant;
@@ -40,29 +39,32 @@ public class RestaurantAdminServiceImpl implements RestaurantAdminService {
     }
     @Transactional
     @Override
-    public  RestaurantAdminDto createAdmin(RestaurantAdminCreateDto dto) {
-        RestaurantAdmin restaurantAdmin = restaurantAdminMapper.toRestaurantAdmin(dto);
-        if (dto.getRestaurantId() != null) {
-            Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId())
-                    .orElseThrow(() -> new ResourceNotFoundException("RestaurantAdmin", dto.getRestaurantId()));
+    public RestaurantAdminDto createAdmin(RestaurantAdminCreateDto createDto) {
+        RestaurantAdmin restaurantAdmin = restaurantAdminMapper.toRestaurantAdmin(createDto);
+
+        if (createDto.getRestaurantId() != null) {
+            Restaurant restaurant = restaurantRepository.findById(createDto.getRestaurantId())
+                    .orElseThrow(() -> new ResourceNotFoundException("RestaurantAdmin", createDto.getRestaurantId()));
 
             if (restaurant.getRestaurantAdmin() != null) {
                 throw new ResourceNotFoundException("RestaurantAdmin", restaurant.getId());
-
             }
+
             restaurantAdmin.setRestaurant(restaurant);
             restaurant.setRestaurantAdmin(restaurantAdmin);
         }
+
         RestaurantAdmin savedRestaurantAdmin = restaurantAdminRepository.save(restaurantAdmin);
         return restaurantAdminMapper.toDto(savedRestaurantAdmin);
     }
+
 
     @Transactional
     @Override
     public RestaurantAdminDto updateRestaurantAdmin(Long id, RestaurantAdminUpdateDto dto) {
         RestaurantAdmin restaurantAdmin = restaurantAdminRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("RestaurantAdmin", id));
-        restaurantAdminMapper.updateRestaurantAdmin(dto, restaurantAdmin);
+        restaurantAdminMapper.updateRestaurantAdminFromDto(dto, restaurantAdmin);
         return restaurantAdminMapper.toDto(restaurantAdminRepository.save(restaurantAdmin));
     }
 
