@@ -8,28 +8,25 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "dtype")
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public abstract class User implements UserDetails {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "fcm_token", length = 600)
-    private String fcmToken;
 
     @Column(name = "is_active")
     private boolean isActive;
@@ -45,11 +42,8 @@ public abstract class User implements UserDetails {
     @Column(name = "full_name", length = 170)
     private String fullName;
 
-    @Column(name = "transport", length = 50)
-    private String transport;
-
-    @Column(name = "address_id")
-    private Long addressId;
+    @Column(name = "default_address")
+    private Long defaultAddress;
 
     @CreatedDate
     private LocalDateTime createAt;
@@ -57,9 +51,28 @@ public abstract class User implements UserDetails {
     @LastModifiedDate
     private LocalDateTime updateAt;
 
-    @Column(name = "platform")
-    private boolean platform;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles;
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                .collect(Collectors.toList());
+    }
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_addresses",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "address_id")
+    )
+    private Set<Address> addresses;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(
@@ -67,13 +80,7 @@ public abstract class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "restaurant_id")
     )
-    private Set<Restaurant>  favoriteRestaurants;
-
-
-    @ManyToOne
-    @JoinColumn(name = "default_address_")
-    private Address defaultAddress;
-
+    private Set<Restaurant> favoriteRestaurants;
 
     @Override
     public boolean isAccountNonExpired() {
@@ -94,6 +101,11 @@ public abstract class User implements UserDetails {
     public boolean isEnabled() {
         return isActive;
     }
+
+
+    //    @Column(name = "fcm_token", length = 600)
+    //    private String fcmToken;
+
 }
 
 
