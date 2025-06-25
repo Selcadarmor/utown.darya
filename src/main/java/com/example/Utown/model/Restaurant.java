@@ -50,9 +50,9 @@ public class Restaurant {
     private Boolean statusForcedChanged;
     private Boolean isActive;
     @CreatedDate
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
     @LastModifiedDate
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
 
     @OneToOne
     @JoinColumn(name = "address_id")
@@ -62,6 +62,9 @@ public class Restaurant {
     @JoinColumn(name = "restaurant_admin_id")
     private RestaurantAdmin restaurantAdmin;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_category_id", nullable = false)
+    private RestaurantCategory category;
 
     @OneToOne
     @JoinColumn(name = "file_id")

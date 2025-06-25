@@ -98,10 +98,10 @@ public class Order {
     private String intercomCode;
 
     @CreatedDate
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;

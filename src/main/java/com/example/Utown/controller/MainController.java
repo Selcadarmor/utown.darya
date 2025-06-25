@@ -2,6 +2,7 @@ package com.example.Utown.controller;
 
 import com.example.Utown.dto.tokens.JWTRequest;
 import com.example.Utown.dto.tokens.JWTResponse;
+import com.example.Utown.dto.userDto.UserChangePasswordDto;
 import com.example.Utown.dto.userDto.UserProfileUpdateDto;
 import com.example.Utown.dto.userDto.UserRegistrationDto;
 import com.example.Utown.service.AuthService;
@@ -9,6 +10,7 @@ import com.example.Utown.service.RefreshTokenService;
 import com.example.Utown.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +36,7 @@ public class MainController {
     }
 
 
-    @PostMapping("/register/user_client")
+    @PostMapping("/registration-client")
     @Operation(summary = "Register Client", description = "Registration for client users")
     public ResponseEntity<String> registerClient(@RequestBody UserRegistrationDto dto) {
         authService.registration(dto);
@@ -51,7 +53,7 @@ public class MainController {
         return ResponseEntity.ok("Profile updated successfully");
     }
 
-    @PostMapping("/refresh-token")
+    @PostMapping("/refresh_token")
     @Operation(summary = "Refresh Token", description = "refreshToken_update")
     public ResponseEntity<JWTResponse> refreshToken(@RequestBody String refreshToken) {
         try {
@@ -60,6 +62,16 @@ public class MainController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JWTResponse("", ""));
         }
+    }
+
+    @PutMapping("/change_password")
+    @Operation(summary = "Change client password", description = "")
+    public ResponseEntity<String> changePassword(
+            @RequestBody @Valid UserChangePasswordDto dto,
+            @AuthenticationPrincipal User user
+    ) {
+        userService.changePassword(user.getUsername(), dto);
+        return ResponseEntity.ok("Password changed successfully");
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -73,6 +85,7 @@ public class MainController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
 }
 
 

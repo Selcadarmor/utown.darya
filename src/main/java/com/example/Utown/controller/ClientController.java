@@ -1,15 +1,15 @@
 package com.example.Utown.controller;
 
-import com.example.Utown.dto.userDto.UserChangePasswordDto;
-import com.example.Utown.service.UserService;
-import io.swagger.v3.oas.annotations.Operation;
+
+import com.example.Utown.dto.clientDto.RestaurantCategoryDto;
+import com.example.Utown.service.RestaurantCategoryService;
+import com.example.Utown.service.UserType.client.ClientService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/client")
@@ -17,17 +17,13 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Client", description = "Client specific operations")
 public class ClientController {
 
-    private final UserService userService;
+    private RestaurantCategoryService restaurantCategoryService;
 
-
-    @PutMapping("/change-password")
-    @Operation(summary = "Change client password", description = "")
-    public ResponseEntity<String> changePassword(
-            @RequestBody @Valid UserChangePasswordDto dto,
-            @AuthenticationPrincipal User user
-    ) {
-        userService.changePassword(user.getUsername(), dto);
-        return ResponseEntity.ok("Password changed successfully");
+    @GetMapping("/restaurant_categories")
+    public ResponseEntity<List<RestaurantCategoryDto>> getAllCategories() {
+        return ResponseEntity.ok(restaurantCategoryService.getAllCategoriesWithCount());
     }
+
+
 }
 

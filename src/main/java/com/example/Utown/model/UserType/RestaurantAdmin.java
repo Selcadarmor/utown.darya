@@ -15,6 +15,12 @@ public class RestaurantAdmin extends User {
     @OneToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
+
+    @Column(name = "full_name", length = 170)
+    private String fullName;
+
+    @Column(name = "default_address")
+    private Long defaultAddress;
 }
 
 

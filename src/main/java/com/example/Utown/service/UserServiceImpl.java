@@ -1,15 +1,16 @@
 package com.example.Utown.service;
 
+import com.example.Utown.dto.clientDto.ClientMapper;
 import com.example.Utown.dto.userDto.UserChangePasswordDto;
 import com.example.Utown.dto.userDto.UserProfileUpdateDto;
 import com.example.Utown.dto.userDto.UserRegistrationDto;
-import com.example.Utown.exception.PasswordsDoNotMatchException;
-import com.example.Utown.exception.RoleNotFoundException;
-import com.example.Utown.exception.UserAlreadyExistsException;
-import com.example.Utown.exception.UserNotFoundException;
+import com.example.Utown.exception.*;
+import com.example.Utown.model.Address;
 import com.example.Utown.model.Role;
 import com.example.Utown.model.User;
+import com.example.Utown.model.UserType.Client;
 import com.example.Utown.model.enumFiles.Roles;
+import com.example.Utown.repository.AddressRepository;
 import com.example.Utown.repository.RoleRepository;
 import com.example.Utown.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AddressRepository addressRepository;
 
     @Override
     public Optional<User> findByUsername(String username) {
@@ -58,16 +60,22 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UserNotFoundException(currentUsername));
 
         if (!user.getUsername().equals(dto.getUsername())
-                && userRepository.findByUsername(dto.getUsername()).isPresent()) {
+                && userRepository.existsByUsername(dto.getUsername())) {
             throw new UserAlreadyExistsException(dto.getUsername());
         }
 
-        user.setFullName(dto.getFullName());
         user.setUsername(dto.getUsername());
-        user.setDefaultAddress(dto.getDefaultAddress());
+
+        if (user instanceof Client client) {
+            Address address = addressRepository.findById(dto.getDefaultAddress())
+                    .orElseThrow(() -> new AddressNotFoundException(dto.getDefaultAddress()));
+
+            ClientMapper.updateEntity(client, dto, address);
+        }
 
         userRepository.save(user);
     }
+
 
     @Override
     public void changePassword(String username, UserChangePasswordDto dto) {
