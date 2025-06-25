@@ -38,12 +38,12 @@ public class Delivery {
     private Boolean isDeleted;
 
     @CreatedDate
-    @Column(name = "create_at", updatable = false)
-    private LocalDateTime createAt;
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 
-    @Column(name = "update_at")
+    @Column(name = "updated_at")
     @LastModifiedDate
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "restaurant_id")

@@ -30,10 +30,13 @@ public class Option {
 
     @Column(name = "is_required")
     private boolean isRequired;
+
     @Column(name = "min_value")
     private Integer min;
+
     @Column(name = "is_multiple")
     private boolean isMultiple;
+
     @Column(name = "max_value")
     private Integer max;
 
@@ -41,11 +44,12 @@ public class Option {
     private Boolean isActive;
 
     @CreatedDate
-    @Column(name = "create_at", updatable = false)
-    private LocalDateTime createAt;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
     @LastModifiedDate
-    @Column(name = "update_at")
-    private LocalDateTime updateAt;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "dish_id")

@@ -1,18 +1,16 @@
 package com.example.Utown.service.UserType.restaurant;
 
-import com.example.Utown.dto.RestaurantDto;
+
+import com.example.Utown.dto.clientDto.RestaurantDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.RestaurantMapper;
-import com.example.Utown.model.Address;
 import com.example.Utown.model.Restaurant;
-import com.example.Utown.model.UserType.RestaurantAdmin;
 import com.example.Utown.repository.AddressRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.repository.UserType.RestaurantAdminRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 
@@ -44,7 +42,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
     @Transactional
     @Override
     public RestaurantDto createRestaurant(RestaurantDto dto) {
-        Restaurant restaurant = restaurantMapper.toEntity(dto);
+        Restaurant restaurant = restaurantMapper.(dto);
         if (dto.getAddress() != null) {
             Address address = addressRepository.findById(dto.getAddressId())
                     .orElseThrow(() -> new ResourceNotFoundException("Address", dto.getAddressId()));
@@ -66,7 +64,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
         Restaurant restaurant = restaurantRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant", id));
 
-        restaurantMapper.updateFromDto(dto, restaurant);
+        restaurantMapper.updateRestaurantFromDto(dto, restaurant);
 
         if (dto.getAddressId() != null) {
             Address address = addressRepository.findById(dto.getAddressId())

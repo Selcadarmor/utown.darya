@@ -28,20 +28,28 @@ public class Address {
 
    @Column(length = 100, nullable = false)
     private String area;
+
    @Column(length = 100, nullable = false)
     private String city;
+
    @Column(length = 100, nullable = false)
     private String details;
+
     @Column(name = "full_address")
     private String fullAddress;
+
     @Column(name = "latitube")
     private Float latitude;
+
     @Column(name = "longitube")
     private Float longitude;
+
     @Column(name = "post_code")
     private String postCode;
+
     @Column(name = "state")
     private String state;
+
     @Column(length = 100, nullable = false)
     private String street;
 
@@ -50,12 +58,15 @@ public class Address {
 
     @Column(name = "type_address")
     private Integer typeAddress;
-    @Column(name = "create_at")
+
+    @Column(name = "created_at")
     @CreatedDate
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
+
     @LastModifiedDate
-    @Column(name = "update_at")
-    private LocalDateTime updateAt;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
 
     @OneToOne
     @JoinColumn(name = "restaurant_id")
