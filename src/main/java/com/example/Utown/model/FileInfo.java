@@ -30,10 +30,10 @@ public class FileInfo {
     private String type;
 
     @CreatedDate
-    @Column(name = "create_at")
+    @Column(name = "created_at")
     private LocalDateTime createAt;
 
     @LastModifiedDate
-    @Column(name = "update_at")
+    @Column(name = "updated_at")
     private LocalDateTime updateAt;
 }

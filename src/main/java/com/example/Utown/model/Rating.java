@@ -36,8 +36,5 @@ public class Rating {
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    @CreatedDate
-    private LocalDateTime createAt;
-    @LastModifiedDate
-    private LocalDateTime updateAt;
+
 }

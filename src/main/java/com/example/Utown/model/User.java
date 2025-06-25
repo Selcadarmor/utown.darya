@@ -39,17 +39,11 @@ public class User implements UserDetails {
     @NotBlank
     private String username;
 
-    @Column(name = "full_name", length = 170)
-    private String fullName;
-
-    @Column(name = "default_address")
-    private Long defaultAddress;
-
     @CreatedDate
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -102,9 +96,15 @@ public class User implements UserDetails {
         return isActive;
     }
 
+//    @OneToMany(mappedBy = "client")
+//    private List<Order> orders;
 
-    //    @Column(name = "fcm_token", length = 600)
-    //    private String fcmToken;
+//    @ManyToOne
+//    @JoinColumn(name = "cliend_id")
+//    private Client client;    ///это ордер
+
+//    @Column(name = "fcm_token", length = 600)
+//    private String fcmToken;
 
 }
 

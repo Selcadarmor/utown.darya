@@ -38,11 +38,11 @@ public class OperatingMode {
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
-    @Column(name = "create_at")
+    @Column(name = "created_at")
     @CreatedDate
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(name = "update_at")
-    private LocalDateTime updateAt;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }

@@ -54,10 +54,10 @@ public class Dish {
 
     @Column(name = "created_at")
     @CreatedDate
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     @LastModifiedDate
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
 
 }

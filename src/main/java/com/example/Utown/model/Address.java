@@ -50,12 +50,12 @@ public class Address {
 
     @Column(name = "type_address")
     private Integer typeAddress;
-    @Column(name = "create_at")
+    @Column(name = "created_at")
     @CreatedDate
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
     @LastModifiedDate
-    @Column(name = "update_at")
-    private LocalDateTime updateAt;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     @OneToOne
     @JoinColumn(name = "restaurant_id")
