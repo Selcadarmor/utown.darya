@@ -1,4 +1,4 @@
-package com.example.Utown.dto;
+package com.example.Utown.dto.tokens;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

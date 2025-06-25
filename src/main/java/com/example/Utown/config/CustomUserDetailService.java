@@ -1,4 +1,4 @@
-package com.example.Utown.service;
+package com.example.Utown.config;
 
 import com.example.Utown.model.User;
 import com.example.Utown.repository.UserRepository;
@@ -41,3 +41,4 @@ public class CustomUserDetailService implements UserDetailsService {
         );
     }
 }
+

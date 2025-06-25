@@ -7,6 +7,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -30,9 +31,13 @@ public class DishCategory {
     @Column(name = "is_active")
     private Boolean isActive;
 
-    @ManyToOne
-    @JoinColumn(name = "restaurant_id")
-    private Restaurant restaurant;
+    @ManyToMany
+    @JoinTable(
+            name = "restaurant_dish_categories",
+            joinColumns = @JoinColumn(name = "dish_category_id"),
+            inverseJoinColumns = @JoinColumn(name = "restaurant_id")
+    )
+    private Set<Restaurant> restaurants;
 
     @ManyToOne
     @JoinColumn(name = "file_id")
