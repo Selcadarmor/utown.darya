@@ -1,7 +1,9 @@
 package com.example.Utown.model.UserType;
 
+import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,4 +27,3 @@ public class RestaurantAdmin extends User {
     private Long defaultAddress;
 }
 
-}
