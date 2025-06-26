@@ -117,8 +117,9 @@ public class Order {
     private Restaurant restaurant;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "client_id")
     private Client client;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DishToOrder> dishesToOrder;
 

@@ -1,16 +1,13 @@
 package com.example.Utown.service.UserType.admin;
 
 
-import com.example.Utown.dto.ClientDto;
-import com.example.Utown.dto.ClientUpdateDto;
+import com.example.Utown.dto.adminDto.ClientInfoDto;
+import com.example.Utown.dto.adminDto.ClientUpdateDto;
+import com.example.Utown.dto.adminDto.OrderShortDto;
 import com.example.Utown.exception.ResourceNotFoundException;
-import com.example.Utown.mapper.AdminMapper;
-import com.example.Utown.mapper.ClientMapper;
 import com.example.Utown.model.UserType.Client;
-import com.example.Utown.repository.RoleRepository;
-import com.example.Utown.repository.UserType.AdminRepository;
+import com.example.Utown.repository.OrderRepository;
 import com.example.Utown.repository.UserType.ClientRepository;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,40 +18,46 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService {
 
-    private  final AdminRepository adminRepository;
-    private final AdminMapper adminMapper;
-    private final ClientRepository clientRepository;
-    private final ClientMapper clientMapper;
-    private final RoleRepository roleRepository;
+    private  final ClientRepository clientRepository;
+    private final OrderRepository orderRepository;
 
     @Override
-    public List<ClientDto> getAllClients() {
-        return clientRepository.findAll().stream()
-                .map(clientMapper::toDto)
-                .toList();
+    public List<ClientInfoDto> getAllClients() {
+        return clientRepository.findAllClientInfos();
     }
 
     @Override
-    public ClientDto getClientById(Long id) {
-        Client client = clientRepository.findById(id)
+    public ClientInfoDto getClientById(Long id) {
+        return clientRepository.findAllClientInfoById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Client", id));
-        return clientMapper.toDto(client);
     }
 
     @Transactional
     @Override
-    public ClientDto updateClient(Long id, ClientUpdateDto clientDto) {
+    public ClientInfoDto updateClient(Long id, ClientUpdateDto clientDto) {
         Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Client", id));
-            clientMapper.updateClientFromDto(clientDto, client);
-        return clientMapper.toDto(clientRepository.save(client));
+        client.setFullName(clientDto.getFullName());
+        client.setUsername(clientDto.getUsername());
+        client.setActive(clientDto.isActive());
+
+        clientRepository.save(client);
+
+        return clientRepository.findAllClientInfoById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Client", id));
     }
 
     @Transactional
     @Override
     public void deleteClient(Long id) {
-        Client client = clientRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Client", id));
-        clientRepository.delete(client);
+        if (!clientRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Client", id);
+        }
+        clientRepository.deleteById(id);
+    }
+
+    @Override
+    public List<OrderShortDto> getClientOrders(Long clientId) {
+        return orderRepository.findAllOrdersByClientId(clientId);
     }
 }

@@ -29,6 +29,9 @@ public class Restaurant {
     @Column
     private Long id;
 
+    @Column(length = 100)
+    private String category;
+
     @Column(length = 10)
     private String deliveryTime;
 
@@ -70,8 +73,8 @@ public class Restaurant {
     private Address address;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "restaurantAdmin_id")
+    private RestaurantAdmin restaurantAdmin;
 
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -80,4 +83,8 @@ public class Restaurant {
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OperatingMode> operatingModes;
+
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Order> orders;
+
 }
