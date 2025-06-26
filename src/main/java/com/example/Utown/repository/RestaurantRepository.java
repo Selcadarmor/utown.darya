@@ -4,6 +4,7 @@ import com.example.Utown.dto.adminDto.OrderShortDto;
 import com.example.Utown.dto.adminDto.RestaurantDetailsDto;
 import com.example.Utown.dto.adminDto.RestaurantInfoDto;
 import com.example.Utown.model.Restaurant;
+import com.example.Utown.model.RestaurantCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -61,4 +62,6 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
                   r.fileInfo
 """)
     Optional<RestaurantDetailsDto> findRestaurantDetailsById(@Param("id") Long id);
+
+    Long countByCategory(RestaurantCategory category);
 }
