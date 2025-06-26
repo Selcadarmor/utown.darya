@@ -1,7 +1,7 @@
 package com.example.Utown.controller;
 
-import com.example.Utown.dto.ClientDto;
-import com.example.Utown.dto.ClientUpdateDto;
+import com.example.Utown.dto.adminDto.ClientInfoDto;
+import com.example.Utown.dto.adminDto.ClientUpdateDto;
 import com.example.Utown.service.UserType.admin.AdminServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -27,7 +27,7 @@ public class AdminClientController {
             @ApiResponse(responseCode = "200", description = "List of clients retrieved successfully")
     })
     @GetMapping
-    public ResponseEntity<List<ClientDto>> getAllClients() {
+    public ResponseEntity<List<ClientInfoDto>> getAllClients() {
         return ResponseEntity.ok(adminService.getAllClients());
     }
 
@@ -37,7 +37,7 @@ public class AdminClientController {
             @ApiResponse(responseCode = "404", description = "Client not found")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<ClientDto> getClientById(@PathVariable Long id) {
+    public ResponseEntity<ClientInfoDto> getClientById(@PathVariable Long id) {
         return ResponseEntity.ok(adminService.getClientById(id));
     }
 
@@ -49,7 +49,7 @@ public class AdminClientController {
             @ApiResponse(responseCode = "404", description = "Client not found")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<ClientDto> clientUpdateDtoResponseEntity(@PathVariable Long id, @Valid @RequestBody ClientUpdateDto clientUpdateDto) {
+    public ResponseEntity<ClientInfoDto> clientUpdateDtoResponseEntity(@PathVariable Long id, @Valid @RequestBody ClientUpdateDto clientUpdateDto) {
         return ResponseEntity.ok(adminService.updateClient(id, clientUpdateDto));
     }
 

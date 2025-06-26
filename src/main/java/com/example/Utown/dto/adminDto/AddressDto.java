@@ -1,4 +1,4 @@
-package com.example.Utown.dto;
+package com.example.Utown.dto.adminDto;
 
 public class AddressDto {
     private String fullAddress;

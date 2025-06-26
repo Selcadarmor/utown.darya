@@ -1,18 +1,21 @@
 package com.example.Utown.service.UserType.restaurant;
 
-
+import com.example.Utown.dto.adminDto.OperatingModeDto;
+import com.example.Utown.dto.adminDto.RestaurantCreateUpdateDto;
+import com.example.Utown.dto.adminDto.RestaurantDetailsDto;
+import com.example.Utown.dto.adminDto.RestaurantInfoDto;
 import com.example.Utown.dto.clientDto.RestaurantDto;
 import com.example.Utown.exception.ResourceNotFoundException;
-import com.example.Utown.mapper.RestaurantMapper;
+import com.example.Utown.model.Address;
+import com.example.Utown.model.OperatingMode;
 import com.example.Utown.model.Restaurant;
-import com.example.Utown.repository.AddressRepository;
-import com.example.Utown.repository.RestaurantRepository;
-import com.example.Utown.repository.UserType.RestaurantAdminRepository;
+import com.example.Utown.model.UserType.RestaurantAdmin;
+import com.example.Utown.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
-
+import java.util.stream.Collectors;
 
 
 @Service
@@ -20,37 +23,47 @@ import java.util.List;
 public class RestaurantServiceImpl  implements RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
-    private final RestaurantMapper restaurantMapper;
     private final AddressRepository addressRepository;
-    private final RestaurantAdminRepository restaurantAdminRepository;
+    private final RestaurantCategoryRepository restaurantCategoryRepository;
+    private final OperatingModeRepository operatingModeRepository;
+    private final FileInfoRepository fileInfoRepository;
 
 
     @Override
-    public List<RestaurantDto> getAllRestaurants() {
-        return restaurantRepository.findAll().stream()
-                .map(restaurantMapper::toDto)
-                .toList();
+    public List<RestaurantInfoDto> getAllRestaurants() {
+        return restaurantRepository.findAllRestaurantInfos();
     }
 
     @Override
-    public RestaurantDto getRestaurantById(Long id) {
-        Restaurant restaurant = restaurantRepository.findById(id)
+    public RestaurantDetailsDto getRestaurantById(Long id) {
+        RestaurantDetailsDto dto = restaurantRepository.findRestaurantDetailsById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant", id));
-        return restaurantMapper.toDto(restaurant);
+        List<OperatingMode> entities = operatingModeRepository.findByRestaurantId(id);
+        List<OperatingModeDto> dtos = entities.stream()
+                    .map(m -> new OperatingModeDto(
+                        m.getId(),
+                        m.getStart(),
+                        m.getEnd(),
+                        m.getDayOff()
+                ))
+                .collect(Collectors.toList());
+        dto.setOperatingModes(dtos);
+        return dto;
     }
 
     @Transactional
     @Override
-    public RestaurantDto createRestaurant(RestaurantDto dto) {
-        Restaurant restaurant = restaurantMapper.(dto);
+    public RestaurantDetailsDto createRestaurant(RestaurantCreateUpdateDto dto) {
+        Address address = addressRepository.
+        Restaurant restaurant = restauran.toEntity(dto);
         if (dto.getAddress() != null) {
             Address address = addressRepository.findById(dto.getAddressId())
                     .orElseThrow(() -> new ResourceNotFoundException("Address", dto.getAddressId()));
             restaurant.setAddress(address);
         }
 
-        if (dto.getRestaurantAdminId() != null) {
-            RestaurantAdmin admin = restaurantAdminRepository.findById(dto.getRestaurantAdminId())
+        if (dto.getUserId() != null) {
+            RestaurantAdmin admin = restaurantAdminRepository.findById(dto.getUserId())
                     .orElseThrow(() -> new ResourceNotFoundException("RestaurantAdmin", dto.getRestaurantAdminId()));
             restaurant.setRestaurantAdmin(admin);
             admin.setRestaurant(restaurant);

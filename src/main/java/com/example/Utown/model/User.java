@@ -39,17 +39,11 @@ public class User implements UserDetails {
     @NotBlank
     private String username;
 
-    @Column(name = "full_name", length = 170)
-    private String fullName;
-
-    @Column(name = "default_address")
-    private Long defaultAddress;
-
     @CreatedDate
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -66,7 +60,7 @@ public class User implements UserDetails {
                 .collect(Collectors.toList());
     }
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
             name = "user_addresses",
             joinColumns = @JoinColumn(name = "user_id"),

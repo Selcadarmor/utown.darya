@@ -1,6 +1,6 @@
 package com.example.Utown.dto.restaurantAdmin;
 
-import com.example.Utown.dto.AddressDto;
+import com.example.Utown.dto.adminDto.AddressDto;
 import com.example.Utown.dto.RoleDto;
 import com.example.Utown.dto.clientDto.RestaurantDto;
 import lombok.AllArgsConstructor;
