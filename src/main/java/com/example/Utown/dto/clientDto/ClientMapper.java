@@ -1,14 +1,16 @@
-package com.example.Utown.dto.clientDto;;
+package com.example.Utown.dto.clientDto;
 
 import com.example.Utown.dto.userDto.UserProfileUpdateDto;
+import com.example.Utown.model.Address;
 import com.example.Utown.model.UserType.Client;
 
 public class ClientMapper {
 
-    public static void updateEntity(Client client, UserProfileUpdateDto dto) {
+    public static void updateEntity(Client client, UserProfileUpdateDto dto, Address address) {
         client.setUsername(dto.getUsername());
         client.setFullName(dto.getFullName());
-        client.setDefaultAddress(dto.getDefaultAddress());
+        client.setDefaultAddress(address);
     }
 }
+
 

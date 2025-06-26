@@ -39,7 +39,6 @@ public class Notification {
 
     @Column(name = "text")
     private String text;
-
     @Column(name = "time_notification")
     private String timeNotification;
 
@@ -65,7 +64,7 @@ public class Notification {
     private Boolean isSuccessful;
 
     @CreatedDate
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
