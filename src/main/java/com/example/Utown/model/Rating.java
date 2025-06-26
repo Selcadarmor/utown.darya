@@ -1,5 +1,6 @@
 package com.example.Utown.model;
 
+import com.example.Utown.model.enumFiles.RatingStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,22 +24,17 @@ public class Rating {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "grade")
-    private Long grade;
-
+    @Enumerated(EnumType.STRING)
+    private RatingStatus status;
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
     @Column(name = "created_at")
-    @CreatedDate
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
-    @LastModifiedDate
     private LocalDateTime updatedAt;
+
 }

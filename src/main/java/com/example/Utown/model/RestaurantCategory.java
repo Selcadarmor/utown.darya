@@ -21,6 +21,9 @@ public class RestaurantCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    @Column(name = "image_url")
+    private String imageUrl;
     private String name;
 
     private Integer sort;

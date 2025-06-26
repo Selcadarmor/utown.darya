@@ -76,6 +76,9 @@ public class Restaurant {
     @JoinColumn(name = "restaurantAdmin_id")
     private RestaurantAdmin restaurantAdmin;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_category_id", nullable = false)
+    private RestaurantCategory category;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "file_id")

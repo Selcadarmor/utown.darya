@@ -8,14 +8,21 @@ import lombok.Setter;
 
 
 @Entity
-@NoArgsConstructor
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class RestaurantAdmin extends User {
-    @Column(name = "full_name",length = 170)
+
+    @OneToOne
+    @JoinColumn(name = "restaurant_id")
+    private Restaurant restaurant;
+
+    @Column(name = "full_name", length = 170)
     private String fullName;
 
     @Column(name = "default_address")
     private Long defaultAddress;
+}
 
 }

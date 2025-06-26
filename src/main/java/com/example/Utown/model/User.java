@@ -96,9 +96,15 @@ public class User implements UserDetails {
         return isActive;
     }
 
+//    @OneToMany(mappedBy = "client")
+//    private List<Order> orders;
 
-    //    @Column(name = "fcm_token", length = 600)
-    //    private String fcmToken;
+//    @ManyToOne
+//    @JoinColumn(name = "cliend_id")
+//    private Client client;    ///это ордер
+
+//    @Column(name = "fcm_token", length = 600)
+//    private String fcmToken;
 
 }
 
