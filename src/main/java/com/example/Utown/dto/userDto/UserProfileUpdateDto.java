@@ -8,6 +8,6 @@ import lombok.Setter;
 public class UserProfileUpdateDto {
     private String fullName;
     private String username;
-    private Long defaultAddress;
+    private AddressCreateDto defaultAddress;
 }
 

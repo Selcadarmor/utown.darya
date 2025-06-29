@@ -1,6 +1,7 @@
 package com.example.Utown.service;
 
 import com.example.Utown.dto.clientDto.ClientMapper;
+import com.example.Utown.dto.userDto.AddressCreateDto;
 import com.example.Utown.dto.userDto.UserChangePasswordDto;
 import com.example.Utown.dto.userDto.UserProfileUpdateDto;
 import com.example.Utown.dto.userDto.UserRegistrationDto;
@@ -16,6 +17,8 @@ import com.example.Utown.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -67,10 +70,25 @@ public class UserServiceImpl implements UserService {
         user.setUsername(dto.getUsername());
 
         if (user instanceof Client client) {
-            Address address = addressRepository.findById(dto.getDefaultAddress())
-                    .orElseThrow(() -> new AddressNotFoundException(dto.getDefaultAddress()));
+            if (dto.getFullName() != null) {
+                client.setFullName(dto.getFullName());
+            }
 
-            ClientMapper.updateEntity(client, dto, address);
+            AddressCreateDto addrDto = dto.getDefaultAddress();
+            if (addrDto != null && addrDto.getFullAddress() != null) {
+                Address address = Address.builder()
+                        .fullAddress(addrDto.getFullAddress())
+                        .build();
+
+                addressRepository.save(address);
+
+                client.setDefaultAddress(address);
+
+                if (client.getAddresses() == null) {
+                    client.setAddresses(new HashSet<>());
+                }
+                client.getAddresses().add(address);
+            }
         }
 
         userRepository.save(user);
