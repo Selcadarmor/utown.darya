@@ -2,6 +2,7 @@ package com.example.Utown.controller;
 
 import com.example.Utown.dto.tokens.JWTRequest;
 import com.example.Utown.dto.tokens.JWTResponse;
+import com.example.Utown.dto.tokens.RefreshTokenRequest;
 import com.example.Utown.dto.userDto.UserChangePasswordDto;
 import com.example.Utown.dto.userDto.UserProfileUpdateDto;
 import com.example.Utown.dto.userDto.UserRegistrationDto;
@@ -10,6 +11,7 @@ import com.example.Utown.service.RefreshTokenService;
 import com.example.Utown.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,21 +31,20 @@ public class MainController {
     private final RefreshTokenService refreshTokenService;
     private final UserService userService;
 
-    @PostMapping("/login")
-    public ResponseEntity<JWTResponse> login(@RequestBody JWTRequest authRequest) {
-        JWTResponse response = authService.createAuthToken(authRequest);
-        return ResponseEntity.ok(response);
-    }
-
-
-    @PostMapping("/registration-client")
+    @PostMapping("/registration-client")  //Passed
     @Operation(summary = "Register Client", description = "Registration for client users")
     public ResponseEntity<String> registerClient(@RequestBody UserRegistrationDto dto) {
         authService.registration(dto);
         return ResponseEntity.ok("Client registered successfully");
     }
 
-    @PutMapping("/update")
+    @PostMapping("/login") //Passed
+    public ResponseEntity<JWTResponse> login(@RequestBody JWTRequest authRequest) {
+        JWTResponse response = authService.createAuthToken(authRequest);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/update") //Passed
     @Operation(summary = "Update client profile", description = "" )
     public ResponseEntity<String> updateProfile(
             @AuthenticationPrincipal User user,
@@ -53,18 +54,18 @@ public class MainController {
         return ResponseEntity.ok("Profile updated successfully");
     }
 
-    @PostMapping("/refresh_token")
-    @Operation(summary = "Refresh Token", description = "refreshToken_update")
-    public ResponseEntity<JWTResponse> refreshToken(@RequestBody String refreshToken) {
+    @PostMapping("/refresh_token") //Passed
+    public ResponseEntity<JWTResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
         try {
-            JWTResponse jwtResponse = refreshTokenService.refreshToken(refreshToken);
+            JWTResponse jwtResponse = refreshTokenService.refreshToken(request.getRefreshToken());
             return ResponseEntity.ok(jwtResponse);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JWTResponse("", ""));
         }
     }
 
-    @PutMapping("/change_password")
+
+    @PutMapping("/change_password")//Passed
     @Operation(summary = "Change client password", description = "")
     public ResponseEntity<String> changePassword(
             @RequestBody @Valid UserChangePasswordDto dto,
@@ -74,12 +75,13 @@ public class MainController {
         return ResponseEntity.ok("Password changed successfully");
     }
 
+    @PostMapping("/logout")//Passed
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/logout")
+    @Transactional
     @Operation(summary = "Logout", description = "Invalidate the refresh token and logout the user")
-    public ResponseEntity<String> logout(@RequestBody String refreshToken) {
+    public ResponseEntity<String> logout(@RequestBody RefreshTokenRequest request) {
         try {
-            refreshTokenService.logoutUserByRefreshToken(refreshToken);
+            refreshTokenService.logoutUserByRefreshToken(request.getRefreshToken());
             return ResponseEntity.ok("Logged out successfully");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

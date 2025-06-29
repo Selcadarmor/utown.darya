@@ -31,6 +31,7 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers("/admin/**").hasAuthority(Roles.ROLE_ADMIN.name())
                         .requestMatchers("/user/**").hasAuthority(Roles.ROLE_CLIENT.name())
                         .requestMatchers("/restaurant/**").hasAuthority(Roles.ROLE_RESTAURANT_ADMIN.name())
