@@ -11,11 +11,13 @@ public class OperatingModeDto {
     private LocalDateTime start;
     private LocalDateTime end;
     private boolean dayOff;
+    private Integer dayOffWeek;
 
-    public OperatingModeDto(Long id, LocalDateTime start, LocalDateTime end, boolean dayOff) {
+    public OperatingModeDto(Long id, LocalDateTime start, LocalDateTime end, boolean dayOff, Integer dayOffWeek) {
         this.id = id;
         this.start = start;
         this.end = end;
         this.dayOff = dayOff;
+        this.dayOffWeek = dayOffWeek;
     }
 }

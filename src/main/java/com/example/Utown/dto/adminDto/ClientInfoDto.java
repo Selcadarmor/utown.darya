@@ -12,14 +12,16 @@ public class ClientInfoDto {
     private String fullAddress;
     private String city;
     private Long orderCount;
+    private String phone;
 
     @Builder
-    public ClientInfoDto(Long id, String fullName, String username, String fullAddress, String city, Long orderCount) {
+    public ClientInfoDto(Long id, String fullName, String username, String fullAddress, String city, Long orderCount, String phone) {
         this.id = id;
         this.fullName = fullName;
         this.username = username;
         this.fullAddress = fullAddress;
         this.city = city;
         this.orderCount = orderCount;
+        this.phone = phone;
     }
 }

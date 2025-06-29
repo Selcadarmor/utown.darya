@@ -60,22 +60,6 @@ public class User implements UserDetails {
                 .collect(Collectors.toList());
     }
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "user_addresses",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "address_id")
-    )
-    private Set<Address> addresses;
-
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @JoinTable(
-            name = "favorites",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "restaurant_id")
-    )
-    private Set<Restaurant> favoriteRestaurants;
-
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -95,16 +79,6 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return isActive;
     }
-
-//    @OneToMany(mappedBy = "client")
-//    private List<Order> orders;
-
-//    @ManyToOne
-//    @JoinColumn(name = "cliend_id")
-//    private Client client;    ///это ордер
-
-//    @Column(name = "fcm_token", length = 600)
-//    private String fcmToken;
 
 }
 

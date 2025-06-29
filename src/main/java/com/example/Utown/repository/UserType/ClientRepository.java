@@ -17,15 +17,16 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
         SELECT new com.example.Utown.dto.adminDto.ClientInfoDto(
             c.id,
             c.fullName,
-            c.username,        
-            addr.city,
-            addr.fullAddress,    
-            COUNT(o)
+            c.username,
+            a.city,
+            a.fullAddress,
+            COUNT(o),
+            c.phone
         )
         FROM Client c
-        LEFT JOIN c.addresses addr
+        LEFT JOIN Address  a ON a.id = c.defaultAddress
         LEFT JOIN c.orders o
-        GROUP BY c.id, c.fullName,c.username, addr.city, addr.fullAddress               
+        GROUP BY c.id, c.fullName,c.username, a.city, a.fullAddress, c.phone
         """)
     List<ClientInfoDto> findAllClientInfos();
 
@@ -33,15 +34,17 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
         SELECT new com.example.Utown.dto.adminDto.ClientInfoDto(
             c.id,
             c.fullName,
-            c.username,        
-            addr.city,
-            addr.fullAddress,    
-            COUNT(o)
+            c.username,
+            a.city,
+            a.fullAddress,
+            COUNT(o),
+            c.phone
         )
         FROM Client c
-        LEFT JOIN c.addresses addr
+        LEFT JOIN Address a ON a.id = c.defaultAddress
         LEFT JOIN c.orders o
-        GROUP BY c.id, c.fullName,c.username, addr.city, addr.fullAddress               
+        WHERE c.id =:id
+        GROUP BY c.id, c.fullName,c.username, a.city, a.fullAddress, c.phone
         """)
     Optional<ClientInfoDto> findAllClientInfoById(Long id);
 }

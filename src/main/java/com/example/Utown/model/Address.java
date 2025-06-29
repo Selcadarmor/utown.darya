@@ -1,5 +1,6 @@
 package com.example.Utown.model;
 
+import com.example.Utown.model.UserType.Client;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -73,5 +74,5 @@ public class Address {
     private Restaurant restaurant;
 
     @ManyToMany(mappedBy = "addresses")
-    private Set<User> users;
+    private Set<Client> clients;
 }

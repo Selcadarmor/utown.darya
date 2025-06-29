@@ -60,17 +60,19 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UserNotFoundException(currentUsername));
 
         if (!user.getUsername().equals(dto.getUsername())
-                && userRepository.existsByUsername(dto.getUsername())) {
+            && userRepository.existsByUsername(dto.getUsername())) {
             throw new UserAlreadyExistsException(dto.getUsername());
         }
 
         user.setUsername(dto.getUsername());
 
         if (user instanceof Client client) {
+
             Address address = addressRepository.findById(dto.getDefaultAddress())
                     .orElseThrow(() -> new AddressNotFoundException(dto.getDefaultAddress()));
 
-            ClientMapper.updateEntity(client, dto, address);
+            client.setFullName(dto.getFullName());
+            client.setDefaultAddress(address.getId());
         }
 
         userRepository.save(user);

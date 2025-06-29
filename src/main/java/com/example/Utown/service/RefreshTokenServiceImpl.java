@@ -64,8 +64,8 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
                 .ifPresent(refreshTokenRepository::delete);
     }
 
-    @Override
-    public JWTResponse refreshToken(String requestRefreshToken) {
+     @Override
+     public JWTResponse refreshToken(String requestRefreshToken) {
         RefreshToken refreshToken = findByToken(requestRefreshToken)
                 .orElseThrow(RefreshTokenNotFoundException::new);
 

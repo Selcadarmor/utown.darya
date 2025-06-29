@@ -2,6 +2,7 @@ package com.example.Utown.controller;
 
 import com.example.Utown.dto.tokens.JWTRequest;
 import com.example.Utown.dto.tokens.JWTResponse;
+import com.example.Utown.dto.tokens.RefreshTokenRequest;
 import com.example.Utown.dto.userDto.UserChangePasswordDto;
 import com.example.Utown.dto.userDto.UserProfileUpdateDto;
 import com.example.Utown.dto.userDto.UserRegistrationDto;
@@ -54,15 +55,15 @@ public class MainController {
     }
 
     @PostMapping("/refresh_token")
-    @Operation(summary = "Refresh Token", description = "refreshToken_update")
-    public ResponseEntity<JWTResponse> refreshToken(@RequestBody String refreshToken) {
+    public ResponseEntity<JWTResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
         try {
-            JWTResponse jwtResponse = refreshTokenService.refreshToken(refreshToken);
+            JWTResponse jwtResponse = refreshTokenService.refreshToken(request.getRefreshToken());
             return ResponseEntity.ok(jwtResponse);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JWTResponse("", ""));
         }
     }
+
 
     @PutMapping("/change_password")
     @Operation(summary = "Change client password", description = "")
