@@ -42,22 +42,17 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             String jwt = authHeader.substring(7);
 
             try {
-                // Проверка токена (подпись, срок действия и пр.)
                 jwtUtils.validateToken(jwt, TokenType.ACCESS);
 
-                // Получаем имя пользователя и роли из токена
                 String username = jwtUtils.getUsernameFromToken(jwt, TokenType.ACCESS);
                 Set<String> roles = jwtUtils.getRolesFromToken(jwt, TokenType.ACCESS);
 
-                // Загружаем пользователя из базы, чтобы убедиться, что он активен, не заблокирован и пр.
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                // Преобразуем роли в GrantedAuthority
                 List<GrantedAuthority> authorities = roles.stream()
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
-                // Создаём объект Authentication с ролями из токена
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
 
