@@ -11,6 +11,7 @@ import com.example.Utown.service.RefreshTokenService;
 import com.example.Utown.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -64,7 +65,7 @@ public class MainController {
     }
 
 
-    @PutMapping("/change_password")
+    @PutMapping("/change_password")//Passed
     @Operation(summary = "Change client password", description = "")
     public ResponseEntity<String> changePassword(
             @RequestBody @Valid UserChangePasswordDto dto,
@@ -74,12 +75,13 @@ public class MainController {
         return ResponseEntity.ok("Password changed successfully");
     }
 
+    @PostMapping("/logout")//Passed
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/logout")
+    @Transactional
     @Operation(summary = "Logout", description = "Invalidate the refresh token and logout the user")
-    public ResponseEntity<String> logout(@RequestBody String refreshToken) {
+    public ResponseEntity<String> logout(@RequestBody RefreshTokenRequest request) {
         try {
-            refreshTokenService.logoutUserByRefreshToken(refreshToken);
+            refreshTokenService.logoutUserByRefreshToken(request.getRefreshToken());
             return ResponseEntity.ok("Logged out successfully");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
