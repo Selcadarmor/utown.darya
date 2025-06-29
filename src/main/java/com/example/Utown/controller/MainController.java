@@ -2,6 +2,7 @@ package com.example.Utown.controller;
 
 import com.example.Utown.dto.tokens.JWTRequest;
 import com.example.Utown.dto.tokens.JWTResponse;
+import com.example.Utown.dto.tokens.RefreshTokenRequest;
 import com.example.Utown.dto.userDto.UserChangePasswordDto;
 import com.example.Utown.dto.userDto.UserProfileUpdateDto;
 import com.example.Utown.dto.userDto.UserRegistrationDto;
@@ -29,21 +30,20 @@ public class MainController {
     private final RefreshTokenService refreshTokenService;
     private final UserService userService;
 
-    @PostMapping("/login")
-    public ResponseEntity<JWTResponse> login(@RequestBody JWTRequest authRequest) {
-        JWTResponse response = authService.createAuthToken(authRequest);
-        return ResponseEntity.ok(response);
-    }
-
-
-    @PostMapping("/registration-client")
+    @PostMapping("/registration-client")  //Passed
     @Operation(summary = "Register Client", description = "Registration for client users")
     public ResponseEntity<String> registerClient(@RequestBody UserRegistrationDto dto) {
         authService.registration(dto);
         return ResponseEntity.ok("Client registered successfully");
     }
 
-    @PutMapping("/update")
+    @PostMapping("/login") //Passed
+    public ResponseEntity<JWTResponse> login(@RequestBody JWTRequest authRequest) {
+        JWTResponse response = authService.createAuthToken(authRequest);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/update") //Passed
     @Operation(summary = "Update client profile", description = "" )
     public ResponseEntity<String> updateProfile(
             @AuthenticationPrincipal User user,
@@ -53,16 +53,16 @@ public class MainController {
         return ResponseEntity.ok("Profile updated successfully");
     }
 
-    @PostMapping("/refresh_token")
-    @Operation(summary = "Refresh Token", description = "refreshToken_update")
-    public ResponseEntity<JWTResponse> refreshToken(@RequestBody String refreshToken) {
+    @PostMapping("/refresh_token") //Passed
+    public ResponseEntity<JWTResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
         try {
-            JWTResponse jwtResponse = refreshTokenService.refreshToken(refreshToken);
+            JWTResponse jwtResponse = refreshTokenService.refreshToken(request.getRefreshToken());
             return ResponseEntity.ok(jwtResponse);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JWTResponse("", ""));
         }
     }
+
 
     @PutMapping("/change_password")
     @Operation(summary = "Change client password", description = "")
