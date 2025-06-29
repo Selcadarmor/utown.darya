@@ -29,9 +29,6 @@ public class Restaurant {
     @Column
     private Long id;
 
-    @Column(length = 100)
-    private String category;
-
     @Column(length = 10)
     private String deliveryTime;
 
@@ -76,9 +73,9 @@ public class Restaurant {
     @JoinColumn(name = "restaurantAdmin_id")
     private RestaurantAdmin restaurantAdmin;
 
-    //@ManyToOne(fetch = FetchType.LAZY)
-    //@JoinColumn(name = "restaurant_category_id", nullable = false)
-   // private RestaurantCategory category;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_category_id", nullable = false)
+    private RestaurantCategory category;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "file_id")

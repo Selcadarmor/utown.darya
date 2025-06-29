@@ -25,5 +25,8 @@ public class RestaurantAdmin extends User {
 
     @Column(name = "default_address")
     private Long defaultAddress;
+
+    @Column(name = "phone")
+    private String phone;
 }
 

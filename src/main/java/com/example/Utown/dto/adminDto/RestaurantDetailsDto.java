@@ -16,9 +16,10 @@ public class RestaurantDetailsDto {
     private BigDecimal minOrderAmount;
     private Long orderCount;
     private Long fileInfoId;
+    private String  name;
     private List<OperatingModeDto> operatingModes;
 
-    public RestaurantDetailsDto(Long id, String title, String description, String phone, String city, String area, BigDecimal minOrderAmount, Long orderCount, Long fileInfoId) {
+    public RestaurantDetailsDto(Long id, String title, String description, String phone, String city, String area, BigDecimal minOrderAmount, Long orderCount, Long fileInfoId, String name) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -28,5 +29,6 @@ public class RestaurantDetailsDto {
         this.minOrderAmount = minOrderAmount;
         this.orderCount = orderCount;
         this.fileInfoId = fileInfoId;
+        this.name = name;
     }
 }

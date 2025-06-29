@@ -10,6 +10,10 @@ public class RestaurantCategoryDto {
     private String name;
     private String imageUrl;
     private Long restaurantCount;
+
+    public RestaurantCategoryDto(String name) {
+        this.name = name;
+    }
 }
 
 

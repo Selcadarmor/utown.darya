@@ -31,16 +31,21 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/admin/**").hasAuthority(Roles.ROLE_ADMIN.name())
+                        .requestMatchers("/error").permitAll()
+                        .requestMatchers("/api/admin/**").hasAuthority(Roles.ROLE_ADMIN.name())
                         .requestMatchers("/user/**").hasAuthority(Roles.ROLE_CLIENT.name())
                         .requestMatchers("/restaurant/**").hasAuthority(Roles.ROLE_RESTAURANT_ADMIN.name())
                         .anyRequest().authenticated()
+                        //.anyRequest().permitAll()
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
+
+
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
