@@ -1,6 +1,6 @@
 package com.example.Utown.service;
 
-import com.example.Utown.dto.clientDto.ClientMapper;
+import com.example.Utown.dto.userDto.AddressCreateDto;
 import com.example.Utown.dto.userDto.UserChangePasswordDto;
 import com.example.Utown.dto.userDto.UserProfileUpdateDto;
 import com.example.Utown.dto.userDto.UserRegistrationDto;
@@ -16,6 +16,8 @@ import com.example.Utown.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -60,19 +62,32 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UserNotFoundException(currentUsername));
 
         if (!user.getUsername().equals(dto.getUsername())
-            && userRepository.existsByUsername(dto.getUsername())) {
+                && userRepository.existsByUsername(dto.getUsername())) {
             throw new UserAlreadyExistsException(dto.getUsername());
         }
 
         user.setUsername(dto.getUsername());
 
         if (user instanceof Client client) {
+            if (dto.getFullName() != null) {
+                client.setFullName(dto.getFullName());
+            }
 
-            Address address = addressRepository.findById(dto.getDefaultAddress())
-                    .orElseThrow(() -> new AddressNotFoundException(dto.getDefaultAddress()));
+            AddressCreateDto addrDto = dto.getDefaultAddress();
+            if (addrDto != null && addrDto.getFullAddress() != null) {
+                Address address = Address.builder()
+                        .fullAddress(addrDto.getFullAddress())
+                        .build();
 
-            client.setFullName(dto.getFullName());
-            client.setDefaultAddress(address.getId());
+                addressRepository.save(address);
+
+                client.setDefaultAddress(address);
+
+                if (client.getAddresses() == null) {
+                    client.setAddresses(new HashSet<>());
+                }
+                client.getAddresses().add(address);
+            }
         }
 
         userRepository.save(user);

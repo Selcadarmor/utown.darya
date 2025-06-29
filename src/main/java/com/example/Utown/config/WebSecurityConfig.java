@@ -36,16 +36,12 @@ public class WebSecurityConfig {
                         .requestMatchers("/user/**").hasAuthority(Roles.ROLE_CLIENT.name())
                         .requestMatchers("/restaurant/**").hasAuthority(Roles.ROLE_RESTAURANT_ADMIN.name())
                         .anyRequest().authenticated()
-                        //.anyRequest().permitAll()
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
-
-
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
