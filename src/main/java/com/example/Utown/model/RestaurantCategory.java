@@ -23,11 +23,18 @@ public class RestaurantCategory {
 
     @Column(name = "image_url")
     private String imageUrl;
+
     private String name;
+
     private Integer sort;
+
     private Boolean isActive;
+
+    @Column(name = "created_at")
     @CreatedDate
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
     @LastModifiedDate
     private LocalDateTime updatedAt;
 }

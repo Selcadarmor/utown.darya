@@ -1,5 +1,6 @@
 package com.example.Utown.model;
 
+import com.example.Utown.model.UserType.Client;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,20 +29,28 @@ public class Address {
 
    @Column(length = 100, nullable = false)
     private String area;
+
    @Column(length = 100, nullable = false)
     private String city;
+
    @Column(length = 100, nullable = false)
     private String details;
+
     @Column(name = "full_address")
     private String fullAddress;
+
     @Column(name = "latitube")
     private Float latitude;
+
     @Column(name = "longitube")
     private Float longitude;
+
     @Column(name = "post_code")
     private String postCode;
+
     @Column(name = "state")
     private String state;
+
     @Column(length = 100, nullable = false)
     private String street;
 
@@ -50,17 +59,20 @@ public class Address {
 
     @Column(name = "type_address")
     private Integer typeAddress;
+
     @Column(name = "created_at")
     @CreatedDate
     private LocalDateTime createdAt;
+
     @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
 
     @OneToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
     @ManyToMany(mappedBy = "addresses")
-    private Set<User> users;
+    private Set<Client> clients;
 }

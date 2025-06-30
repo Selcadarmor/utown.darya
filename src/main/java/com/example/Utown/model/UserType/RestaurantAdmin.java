@@ -3,7 +3,11 @@ package com.example.Utown.model.UserType;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.User;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 
 @Entity
 @Getter
@@ -21,6 +25,8 @@ public class RestaurantAdmin extends User {
 
     @Column(name = "default_address")
     private Long defaultAddress;
-}
 
+    @Column(name = "phone")
+    private String phone;
+}
 

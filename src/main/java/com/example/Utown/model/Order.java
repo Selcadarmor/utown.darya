@@ -1,5 +1,6 @@
 package com.example.Utown.model;
 
+import com.example.Utown.model.UserType.Client;
 import com.example.Utown.model.enumFiles.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,6 +27,8 @@ public class Order {
     private Long id;
 
     private String area;
+
+    @Column(name = "city")
     private String city;
 
     @Column(name = "client_phone")
@@ -47,18 +50,23 @@ public class Order {
     @Column(name = "is_paid")
     private Boolean isPaid;
 
+    @Column(name = "latitube")
     private Float latitude;
+
+    @Column(name = "longitube")
     private Float longitude;
 
     @Column(name = "note_for_courier")
     private String noteForCourier;
 
+    @Column(name = "number")
     private String number;
 
     @Column(name = "order_price")
     private BigDecimal orderPrice;
 
     private String payment;
+
     private String postcode;
 
     @Column(name = "restaurant_phone")
@@ -67,7 +75,9 @@ public class Order {
     private String state;
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
+
     private String street;
+
     private String time;
 
     @Column(name = "time_of_accepted")
@@ -107,8 +117,9 @@ public class Order {
     private Restaurant restaurant;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "client_id")
+    private Client client;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DishToOrder> dishesToOrder;
 
