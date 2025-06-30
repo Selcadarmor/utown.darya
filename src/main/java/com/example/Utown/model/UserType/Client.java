@@ -1,9 +1,6 @@
 package com.example.Utown.model.UserType;
 
-import com.example.Utown.model.Address;
-import com.example.Utown.model.Order;
-import com.example.Utown.model.Restaurant;
-import com.example.Utown.model.User;
+import com.example.Utown.model.*;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,8 +25,6 @@ public class Client extends User {
 
     @Column(name = "default_address")
     private Long defaultAddress;
-    @Column(name = "phone")
-    private String phone;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(
@@ -46,6 +41,10 @@ public class Client extends User {
             inverseJoinColumns = @JoinColumn(name = "address_id")
     )
     private Set<Address> addresses;
+
+    @ManyToOne
+    @JoinColumn(name = "file_id")
+    private FileInfo fileInfo;
 }
 
 
