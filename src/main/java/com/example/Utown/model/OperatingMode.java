@@ -25,6 +25,9 @@ public class OperatingMode {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "day_of_week")
+    private Integer dayOfWeek;
+
     @Column(name = "start")
     private LocalDateTime start;
 

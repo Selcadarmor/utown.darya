@@ -1,7 +1,7 @@
 package com.example.Utown.controller;
-import com.example.Utown.dto.ApiError;
+import com.example.Utown.dto.ApiErrorResponse;
 import com.example.Utown.exception.*;
-import com.example.Utown.exception.IllegalArgumentException;
+import com.example.Utown.exception.InvalidArgumentException;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -21,11 +21,11 @@ public class GlobalExceptionHandler {
             OrderNotFoundException.class,
             RestaurantNotFoundException.class,
             RoleNotFoundException.class,
-            EntityNotFoundException.class,
+            ResourceNotFoundException.class,
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @Operation(hidden =true) /// скрыввем для Swagger
-    public ApiError handleUserNotFoundException(UserNotFoundException ex, HttpServletRequest request) { /// метод если пользователь не найден 400
+    public ApiErrorResponse handleUserNotFoundException(UserNotFoundException ex, HttpServletRequest request) {
         return buildError(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
     }
 
@@ -37,37 +37,37 @@ public class GlobalExceptionHandler {
     })
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @Operation(hidden = true)
-    public ApiError handleJwtException(RuntimeException ex, HttpServletRequest request) { /// Jwt ошибки
+    public ApiErrorResponse handleJwtException(RuntimeException ex, HttpServletRequest request) { /// Jwt ошибки
         return buildError(HttpStatus.UNAUTHORIZED, ex.getMessage(), request.getRequestURI());
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     @Operation(hidden = true)
-    public ApiError handleConflictException(RuntimeException ex, HttpServletRequest request) { ///ошибка 409 например ублирование и др...
+    public ApiErrorResponse handleConflictException(RuntimeException ex, HttpServletRequest request) { ///ошибка 409 например дублирование и др...
         return buildError(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @Operation(hidden = true)
-    public ApiError handleAllOthers(Exception ex, HttpServletRequest request) {/// ошибка сервера 500
+    public ApiErrorResponse handleAllOthers(Exception ex, HttpServletRequest request) {/// ошибка сервера 500
         return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", request.getRequestURI());
     }
 
     @ExceptionHandler({
             CartIsEmptyException.class,
             RatingOutOfRangeException.class,
-            IllegalArgumentException.class,
+            InvalidArgumentException.class,
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @Operation(hidden = true)
-    public ApiError handleBadRequest(RuntimeException ex, HttpServletRequest request) {/// ошибка 404
+    public ApiErrorResponse handleBadRequest(RuntimeException ex, HttpServletRequest request) {/// ошибка 400
         return buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
     }
 
-    private ApiError buildError(HttpStatus status, String message, String path) { /// дополнительный метод что бы не прописывать каждый раз в обработке
-        return ApiError.builder()
+    private ApiErrorResponse buildError(HttpStatus status, String message, String path) { /// дополнительный метод что бы не прописывать каждый раз в обработке
+        return ApiErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(status.value())
                 .error(status.getReasonPhrase())

@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Schema(description = "Api Error")
-public class ApiError {
+public class ApiErrorResponse {
     @Schema(description = "Date and time error")
     private LocalDateTime timestamp;
     @Schema(description = "Error message")
