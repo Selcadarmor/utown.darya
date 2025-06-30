@@ -14,9 +14,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             o.id,
             o.totalSum,
             o.createdAt,
-            o.status       
+            o.status
         )
-        FROM Order o 
+        FROM Order o
         WHERE o.client.id = :clientId
         ORDER BY o.createdAt DESC            
     """)

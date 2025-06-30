@@ -1,13 +1,11 @@
 package com.example.Utown.dto.adminDto;
 
-import com.example.Utown.dto.RoleDto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import java.util.Set;
+
+
 
 @Data
 public class ClientUpdateDto {
