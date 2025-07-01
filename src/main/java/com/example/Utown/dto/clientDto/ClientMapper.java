@@ -1,7 +1,6 @@
 package com.example.Utown.dto.clientDto;
 
 import com.example.Utown.dto.userDto.UserProfileUpdateDto;
-import com.example.Utown.model.Address;
 import com.example.Utown.model.UserType.Client;
 
 public class ClientMapper {
