@@ -4,10 +4,12 @@ import com.example.Utown.dto.adminDto.ClientInfoDto;
 import com.example.Utown.dto.adminDto.ClientUpdateDto;
 import com.example.Utown.dto.adminDto.OrderShortDto;
 import com.example.Utown.exception.ResourceNotFoundException;
+import com.example.Utown.mapper.OperatingModeMapper;
 import com.example.Utown.model.UserType.Client;
 import com.example.Utown.repository.OrderRepository;
 import com.example.Utown.repository.UserType.ClientRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,7 @@ public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
     private final OrderRepository orderRepository;
+
 
     @Override
     public Optional<Client> findByUsername(String username) {
