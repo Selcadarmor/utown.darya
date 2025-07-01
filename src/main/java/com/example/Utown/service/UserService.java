@@ -1,7 +1,5 @@
 package com.example.Utown.service;
 
-import com.example.Utown.dto.userDto.UserChangePasswordDto;
-import com.example.Utown.dto.userDto.UserProfileUpdateDto;
 import com.example.Utown.dto.userDto.UserRegistrationDto;
 import com.example.Utown.model.User;
 import com.example.Utown.model.enumFiles.Roles;

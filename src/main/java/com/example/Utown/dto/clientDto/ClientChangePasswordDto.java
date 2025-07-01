@@ -1,4 +1,4 @@
-package com.example.Utown.dto.userDto;
+package com.example.Utown.dto.clientDto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserChangePasswordDto {
+public class ClientChangePasswordDto {
 
     @NotBlank(message = "New password is required")
     private String newPassword;
