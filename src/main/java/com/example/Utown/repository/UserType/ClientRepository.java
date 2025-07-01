@@ -1,6 +1,7 @@
 package com.example.Utown.repository.UserType;
 
 import com.example.Utown.dto.adminDto.ClientInfoDto;
+import com.example.Utown.dto.userDto.UserProfileUpdateDto;
 import com.example.Utown.model.UserType.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -47,5 +48,18 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
         GROUP BY c.id, c.fullName,c.username, a.city, a.fullAddress, c.phone
         """)
     Optional<ClientInfoDto> findAllClientInfoById(Long id);
+
+    @Query("""
+    SELECT new com.example.Utown.dto.userDto.UserProfileUpdateDto(
+           c.fullName,
+           c.username,
+           a.fullAddress
+       )
+       FROM Client c
+       LEFT JOIN Address a ON a.id = c.defaultAddress
+       WHERE c.id = :id
+""")
+    Optional<UserProfileUpdateDto> findUserProfileById(Long id);
+
 }
 

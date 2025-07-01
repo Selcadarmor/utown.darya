@@ -28,7 +28,8 @@ public class Client extends User {
 
     @Column(name = "default_address")
     private Long defaultAddress;
-    @Column(name = "phone")
+
+    @Column(name = "phone", length = 20)
     private String phone;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
