@@ -1,5 +1,6 @@
-package com.example.Utown.model;
+package com.example.Utown.ADDRESSCHECK;
 
+import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.UserType.Client;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
