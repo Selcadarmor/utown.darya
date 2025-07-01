@@ -3,8 +3,8 @@ package com.example.Utown.service.UserType.client;
 import com.example.Utown.dto.adminDto.ClientInfoDto;
 import com.example.Utown.dto.adminDto.ClientUpdateDto;
 import com.example.Utown.dto.adminDto.OrderShortDto;
-import com.example.Utown.dto.userDto.UserChangePasswordDto;
-import com.example.Utown.dto.userDto.UserProfileUpdateDto;
+import com.example.Utown.dto.clientDto.ClientChangePasswordDto;
+import com.example.Utown.dto.clientDto.ClientProfileUpdateDto;
 import com.example.Utown.exception.*;
 import com.example.Utown.model.Address;
 import com.example.Utown.model.User;
@@ -64,7 +64,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Transactional // For Client
-    public void updateProfile(String currentUsername, UserProfileUpdateDto dto) {
+    public void updateProfile(String currentUsername, ClientProfileUpdateDto dto) {
         User user = userRepository.findByUsername(currentUsername)
                 .orElseThrow(() -> new UserNotFoundException(currentUsername));
 
@@ -88,7 +88,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override //For Client
-    public void changePassword(String username, UserChangePasswordDto dto) {
+    public void changePassword(String username, ClientChangePasswordDto dto) {
         if (!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
             throw new PasswordsDoNotMatchException();
         }

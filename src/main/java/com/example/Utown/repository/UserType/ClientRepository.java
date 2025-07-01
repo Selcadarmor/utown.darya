@@ -1,7 +1,7 @@
 package com.example.Utown.repository.UserType;
 
 import com.example.Utown.dto.adminDto.ClientInfoDto;
-import com.example.Utown.dto.userDto.UserProfileUpdateDto;
+import com.example.Utown.dto.clientDto.ClientProfileUpdateDto;
 import com.example.Utown.model.UserType.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -50,7 +50,7 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     Optional<ClientInfoDto> findAllClientInfoById(Long id);
 
     @Query("""
-    SELECT new com.example.Utown.dto.userDto.UserProfileUpdateDto(
+    SELECT new com.example.Utown.dto.clientDto.ClientProfileUpdateDto(
            c.fullName,
            c.username,
            a.fullAddress
@@ -59,7 +59,7 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
        LEFT JOIN Address a ON a.id = c.defaultAddress
        WHERE c.id = :id
 """)
-    Optional<UserProfileUpdateDto> findUserProfileById(Long id);
+    Optional<ClientProfileUpdateDto> findUserProfileById(Long id);
 
 }
 

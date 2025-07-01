@@ -1,22 +1,21 @@
-package com.example.Utown.dto.userDto;
+package com.example.Utown.dto.clientDto;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class UserProfileUpdateDto {
+public class ClientProfileUpdateDto {
     private String fullName;
     private String username;
     private String fullAddress;
 
-    public UserProfileUpdateDto(String fullName, String username, String fullAddress) {
+    public ClientProfileUpdateDto(String fullName, String username, String fullAddress) {
         this.fullName = fullName;
         this.username = username;
         this.fullAddress = fullAddress;
     }
-
-    public UserProfileUpdateDto() {
+    public ClientProfileUpdateDto() {
     }
 }
 
