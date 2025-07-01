@@ -9,6 +9,7 @@ import com.example.Utown.dto.userDto.UserRegistrationDto;
 import com.example.Utown.service.AuthService;
 import com.example.Utown.service.RefreshTokenService;
 import com.example.Utown.service.UserService;
+import com.example.Utown.service.UserType.client.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
@@ -29,7 +30,7 @@ public class MainController {
 
     private final AuthService authService;
     private final RefreshTokenService refreshTokenService;
-    private final UserService userService;
+    private final ClientService clientService;
 
     @PostMapping("/registration-client")  //Passed
     @Operation(summary = "Register Client", description = "Registration for client users")
@@ -50,7 +51,7 @@ public class MainController {
             @AuthenticationPrincipal User user,
             @RequestBody UserProfileUpdateDto dto
     ) {
-        userService.updateProfile(user.getUsername(), dto);
+        clientService.updateProfile(user.getUsername(), dto);
         return ResponseEntity.ok("Profile updated successfully");
     }
 
@@ -71,7 +72,7 @@ public class MainController {
             @RequestBody @Valid UserChangePasswordDto dto,
             @AuthenticationPrincipal User user
     ) {
-        userService.changePassword(user.getUsername(), dto);
+        clientService.changePassword(user.getUsername(), dto);
         return ResponseEntity.ok("Password changed successfully");
     }
 

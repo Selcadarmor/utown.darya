@@ -11,7 +11,6 @@ import java.util.Optional;
 public interface UserService {
     Optional<User> findByUsername(String username);
     void save(UserRegistrationDto dto, Roles roleName);
-    void updateProfile(String currentUsername, UserProfileUpdateDto dto);
-    void changePassword(String username, UserChangePasswordDto dto);
+
 }
 
