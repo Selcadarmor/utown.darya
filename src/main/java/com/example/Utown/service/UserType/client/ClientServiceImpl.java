@@ -6,10 +6,10 @@ import com.example.Utown.dto.adminDto.OrderShortDto;
 import com.example.Utown.dto.clientDto.ClientChangePasswordDto;
 import com.example.Utown.dto.clientDto.ClientProfileUpdateDto;
 import com.example.Utown.exception.*;
-import com.example.Utown.model.Address;
+import com.example.Utown.ADDRESSCHECK.Address;
 import com.example.Utown.model.User;
 import com.example.Utown.model.UserType.Client;
-import com.example.Utown.repository.AddressRepository;
+import com.example.Utown.ADDRESSCHECK.AddressRepository;
 import com.example.Utown.repository.OrderRepository;
 import com.example.Utown.repository.UserRepository;
 import com.example.Utown.repository.UserType.ClientRepository;
@@ -67,11 +67,6 @@ public class ClientServiceImpl implements ClientService {
     public void updateProfile(String currentUsername, ClientProfileUpdateDto dto) {
         User user = userRepository.findByUsername(currentUsername)
                 .orElseThrow(() -> new UserNotFoundException(currentUsername));
-
-        if (!user.getUsername().equals(dto.getUsername())
-                && userRepository.existsByUsername(dto.getUsername())) {
-            throw new UserAlreadyExistsException(dto.getUsername());
-        }
 
         user.setUsername(dto.getUsername());
 
