@@ -3,7 +3,6 @@ package com.example.Utown.controller;
 
 import com.example.Utown.dto.clientDto.RestaurantCategoryDto;
 import com.example.Utown.service.RestaurantCategoryService;
-import com.example.Utown.service.UserType.client.ClientService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

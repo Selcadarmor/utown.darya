@@ -1,11 +1,8 @@
 package com.example.Utown.dto.adminDto;
 
-import com.example.Utown.dto.clientDto.DishDto;
-import com.example.Utown.dto.clientDto.RestaurantCategoryDto;
-import com.example.Utown.model.Dish;
 import lombok.Data;
 
-import java.util.List;
+
 
 @Data
 public class RestaurantInfoDto {

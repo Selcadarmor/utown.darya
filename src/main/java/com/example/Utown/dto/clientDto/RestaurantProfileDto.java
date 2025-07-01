@@ -1,5 +1,5 @@
 package com.example.Utown.dto.clientDto;
-import com.example.Utown.model.OperatingMode;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

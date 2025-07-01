@@ -5,9 +5,7 @@ import com.example.Utown.dto.adminDto.ClientUpdateDto;
 import com.example.Utown.dto.adminDto.OrderShortDto;
 import com.example.Utown.dto.userDto.UserChangePasswordDto;
 import com.example.Utown.dto.userDto.UserProfileUpdateDto;
-import com.example.Utown.dto.userDto.UserRegistrationDto;
 import com.example.Utown.model.UserType.Client;
-import com.example.Utown.model.enumFiles.Roles;
 
 import java.util.List;
 import java.util.Optional;
