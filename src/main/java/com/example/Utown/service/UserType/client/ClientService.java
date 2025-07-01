@@ -20,6 +20,9 @@ public interface ClientService {
         ClientInfoDto updateClient(Long id, ClientUpdateDto dto);
         void deleteClient(Long id);
         List<OrderShortDto> getClientOrders(Long clientId);
+        void updateProfile(String currentUsername, UserProfileUpdateDto dto);
+        void changePassword(String username, UserChangePasswordDto dto);
+
 }
 
 

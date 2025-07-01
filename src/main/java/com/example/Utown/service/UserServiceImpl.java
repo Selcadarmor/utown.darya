@@ -28,7 +28,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AddressRepository addressRepository;
 
     @Override
     public Optional<User> findByUsername(String username) {
@@ -56,40 +55,4 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    @Transactional
-    public void updateProfile(String currentUsername, UserProfileUpdateDto dto) {
-        User user = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new UserNotFoundException(currentUsername));
-
-        if (!user.getUsername().equals(dto.getUsername())
-                && userRepository.existsByUsername(dto.getUsername())) {
-            throw new UserAlreadyExistsException(dto.getUsername());
-        }
-
-        user.setUsername(dto.getUsername());
-
-        if (user instanceof Client client) {
-            client.setFullName(dto.getFullName());
-
-            Long addressId = client.getDefaultAddress();
-            if (addressId != null && dto.getFullAddress() != null) {
-                Address address = addressRepository.findById(addressId)
-                        .orElseThrow(() -> new AddressNotFoundException(addressId));
-                address.setFullAddress(dto.getFullAddress());
-            }
-        }
-    }
-
-    @Override
-    public void changePassword(String username, UserChangePasswordDto dto) {
-        if (!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
-            throw new PasswordsDoNotMatchException();
-        }
-
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException(username));
-
-        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
-        userRepository.save(user);
-    }
 }
