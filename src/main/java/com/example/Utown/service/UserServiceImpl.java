@@ -1,6 +1,5 @@
 package com.example.Utown.service;
 
-import com.example.Utown.dto.userDto.AddressCreateDto;
 import com.example.Utown.dto.userDto.UserChangePasswordDto;
 import com.example.Utown.dto.userDto.UserProfileUpdateDto;
 import com.example.Utown.dto.userDto.UserRegistrationDto;
@@ -16,6 +15,7 @@ import com.example.Utown.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    @Override
+    @Transactional
     public void updateProfile(String currentUsername, UserProfileUpdateDto dto) {
         User user = userRepository.findByUsername(currentUsername)
                 .orElseThrow(() -> new UserNotFoundException(currentUsername));
@@ -69,30 +69,16 @@ public class UserServiceImpl implements UserService {
         user.setUsername(dto.getUsername());
 
         if (user instanceof Client client) {
-            if (dto.getFullName() != null) {
-                client.setFullName(dto.getFullName());
-            }
+            client.setFullName(dto.getFullName());
 
-            AddressCreateDto addrDto = dto.getDefaultAddress();
-            if (addrDto != null && addrDto.getFullAddress() != null) {
-                Address address = Address.builder()
-                        .fullAddress(addrDto.getFullAddress())
-                        .build();
-
-                addressRepository.save(address);
-
-                client.setDefaultAddress(address);
-
-                if (client.getAddresses() == null) {
-                    client.setAddresses(new HashSet<>());
-                }
-                client.getAddresses().add(address);
+            Long addressId = client.getDefaultAddress();
+            if (addressId != null && dto.getFullAddress() != null) {
+                Address address = addressRepository.findById(addressId)
+                        .orElseThrow(() -> new AddressNotFoundException(addressId));
+                address.setFullAddress(dto.getFullAddress());
             }
         }
-
-        userRepository.save(user);
     }
-
 
     @Override
     public void changePassword(String username, UserChangePasswordDto dto) {
