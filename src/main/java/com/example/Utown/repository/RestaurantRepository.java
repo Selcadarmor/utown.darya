@@ -4,6 +4,7 @@ import com.example.Utown.dto.adminDto.OrderShortDto;
 import com.example.Utown.dto.adminDto.RestaurantCreateUpdateDto;
 import com.example.Utown.dto.adminDto.RestaurantDetailsDto;
 import com.example.Utown.dto.adminDto.RestaurantInfoDto;
+import com.example.Utown.dto.clientDto.RestaurantDto;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.RestaurantCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -81,4 +82,21 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     Optional<RestaurantCreateUpdateDto> findRestaurantCreateUpdateDtoById(@Param("id") Long id);// метод  обнавдения и создания ресторана
 
     Long countByCategory(RestaurantCategory category);
+
+    @Query("""
+    select new com.example.Utown.dto.clientDto.RestaurantDto(
+        r.fileInfo.path,
+        r.title,
+        null,
+        d.price,
+        r.deliveryTime
+    )
+    from Restaurant r
+    join r.category c
+    left join Delivery d on d.restaurant = r and d.isActive = true
+""")
+    List<RestaurantDto> findAllRestaurantsForClient();
+
+
+
 }

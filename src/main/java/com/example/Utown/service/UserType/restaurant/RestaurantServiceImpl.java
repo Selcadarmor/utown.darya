@@ -4,6 +4,7 @@ import com.example.Utown.dto.adminDto.OperatingModeDto;
 import com.example.Utown.dto.adminDto.RestaurantCreateUpdateDto;
 import com.example.Utown.dto.adminDto.RestaurantDetailsDto;
 import com.example.Utown.dto.adminDto.RestaurantInfoDto;
+import com.example.Utown.dto.clientDto.RestaurantDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.OperatingModeMapper;
 import com.example.Utown.model.*;
@@ -12,7 +13,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -141,6 +145,48 @@ public class RestaurantServiceImpl  implements RestaurantService {
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant", id));
         restaurantRepository.delete(restaurant);
     }
+
+    public List<RestaurantDto> getAllForClientRestaurants() { // For Client
+        List<RestaurantDto> dtos = restaurantRepository.findAllRestaurantsForClient();
+
+        List<Restaurant> restaurants = restaurantRepository.findAll();
+
+        Map<String, String> categoryMap = restaurants.stream()
+                .filter(r -> r.getCategory() != null)
+                .collect(Collectors.toMap(Restaurant::getTitle, r -> r.getCategory().getName()));
+
+        for (RestaurantDto dto : dtos) {
+            String catName = categoryMap.get(dto.getTitle());
+            dto.setCategories(catName != null ? List.of(catName) : List.of());
+        }
+
+        return dtos;
+    }
+
+    public List<RestaurantDto> getRestaurantsSortedByFastestDelivery() {
+        List<RestaurantDto> dtos = restaurantRepository.findAllRestaurantsForClient();
+        List<Restaurant> restaurants = restaurantRepository.findAll();
+
+        Map<String, String> categoryMap = restaurants.stream()
+                .filter(r -> r.getCategory() != null)
+                .collect(Collectors.toMap(Restaurant::getTitle, r -> r.getCategory().getName()));
+
+        for (RestaurantDto dto : dtos) {
+            String catName = categoryMap.get(dto.getTitle());
+            dto.setCategories(catName != null ? List.of(catName) : List.of());
+        }
+
+        dtos.sort(Comparator.comparingInt(dto -> {
+            try {
+                return Integer.parseInt(dto.getDeliveryTime());
+            } catch (NumberFormatException e) {
+                return Integer.MAX_VALUE;
+            }
+        }));
+
+        return dtos;
+    }
+
 }
 
 

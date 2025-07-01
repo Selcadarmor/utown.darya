@@ -4,8 +4,10 @@ package com.example.Utown.controller;
 import com.example.Utown.dto.clientDto.ClientChangePasswordDto;
 import com.example.Utown.dto.clientDto.ClientProfileUpdateDto;
 import com.example.Utown.dto.clientDto.RestaurantCategoryDto;
+import com.example.Utown.dto.clientDto.RestaurantDto;
 import com.example.Utown.service.RestaurantCategoryService;
 import com.example.Utown.service.UserType.client.ClientService;
+import com.example.Utown.service.UserType.restaurant.RestaurantService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,6 +27,7 @@ public class ClientController {
 
     private final RestaurantCategoryService restaurantCategoryService;
     private final ClientService clientService;
+    private final RestaurantService restaurantService;
 
     @GetMapping("/restaurant_categories")
     public ResponseEntity<List<RestaurantCategoryDto>> getAllCategories() {
@@ -49,6 +52,19 @@ public class ClientController {
     ) {
         clientService.changePassword(user.getUsername(), dto);
         return ResponseEntity.ok("Password changed successfully");
+    }
+
+    @GetMapping("/restaurants")
+    @Operation(summary = "Get all restaurants", description = "Returns restaurants for clients")
+    public ResponseEntity<List<RestaurantDto>> getAllRestaurants() {
+        List<RestaurantDto> restaurants = restaurantService.getAllForClientRestaurants();
+        return ResponseEntity.ok(restaurants);
+    }
+
+    @GetMapping("/restaurants/fastest")
+    @Operation(summary = "Get restaurants sorted by fastest delivery", description = "Sorted by deliveryTime")
+    public ResponseEntity<List<RestaurantDto>> getRestaurantsByFastestDelivery() {
+        return ResponseEntity.ok(restaurantService.getRestaurantsSortedByFastestDelivery());
     }
 
 }
