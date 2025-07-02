@@ -31,6 +31,14 @@ public class DishCategory {
     @Column(name = "is_active")
     private Boolean isActive;
 
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     @ManyToMany
     @JoinTable(
             name = "restaurant_dish_categories",
@@ -42,12 +50,4 @@ public class DishCategory {
     @ManyToOne
     @JoinColumn(name = "file_id")
     private FileInfo file;
-
-    @CreatedDate
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 }

@@ -68,10 +68,6 @@ public class Restaurant {
     private LocalDateTime updatedAt;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "address_id")
-    private Address address;
-
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "restaurantAdmin_id")
     private RestaurantAdmin restaurantAdmin;
 
@@ -80,13 +76,17 @@ public class Restaurant {
     private RestaurantCategory category;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "file_id")
-    private FileInfo fileInfo;
+    @JoinColumn(name = "address_id")
+    private Address address;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OperatingMode> operatingModes;
 
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Order> orders;
+    @OneToMany(mappedBy = "client")
+    private List<Rating> grades;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "file_id")
+    private FileInfo fileInfo;
 
 }

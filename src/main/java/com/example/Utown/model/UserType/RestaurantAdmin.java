@@ -1,5 +1,6 @@
 package com.example.Utown.model.UserType;
 
+import com.example.Utown.model.Order;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.User;
 import jakarta.persistence.*;
@@ -7,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 
 @Entity
@@ -26,5 +29,7 @@ public class RestaurantAdmin extends User {
     @Column(name = "default_address")
     private Long defaultAddress;
 
+    @OneToMany(mappedBy = "client")
+    private List<Order> orders;
 }
 

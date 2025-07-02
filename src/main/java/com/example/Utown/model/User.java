@@ -62,6 +62,9 @@ public class User implements UserDetails {
                 .collect(Collectors.toList());
     }
 
+    @OneToMany(mappedBy = "user")
+    private Set<Notification> notifications;
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

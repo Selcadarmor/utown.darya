@@ -71,8 +71,4 @@ public class Notification {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
 }
