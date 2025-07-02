@@ -67,12 +67,4 @@ public class Address {
     @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-
-    @OneToOne
-    @JoinColumn(name = "restaurant_id")
-    private Restaurant restaurant;
-
-    @ManyToMany(mappedBy = "addresses")
-    private Set<Client> clients;
 }

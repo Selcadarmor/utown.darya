@@ -16,15 +16,14 @@ import lombok.Setter;
 @AllArgsConstructor
 public class RestaurantAdmin extends User {
 
+    @Column(name = "full_name", length = 170)
+    private String fullName;
+
     @OneToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
-    @Column(name = "full_name", length = 170)
-    private String fullName;
-
-    @Column(name = "default_address")
-    private Long defaultAddress;
+    @OneToMany()/// Order
 
 }
 

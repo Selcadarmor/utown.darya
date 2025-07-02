@@ -37,10 +37,6 @@ public class OperatingMode {
     @Column(name = "day_off")
     private Boolean dayOff;
 
-    @ManyToOne
-    @JoinColumn(name = "restaurant_id")
-    private Restaurant restaurant;
-
     @Column(name = "created_at")
     @CreatedDate
     private LocalDateTime createdAt;
@@ -48,4 +44,8 @@ public class OperatingMode {
     @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "restaurant_id")
+    private Restaurant restaurant;
 }

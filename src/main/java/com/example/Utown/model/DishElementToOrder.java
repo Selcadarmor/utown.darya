@@ -17,6 +17,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Builder
 @Table(name = "dish_elements_to_order")
 
+
 public class DishElementToOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

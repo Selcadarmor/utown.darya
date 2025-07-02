@@ -17,8 +17,6 @@ import java.util.Set;
 @NoArgsConstructor
 public class Client extends User {
 
-    @OneToMany(mappedBy = "client")
-    private List<Order> orders;
 
     @Column(name = "full_name", length = 170)
     private String fullName;
@@ -26,7 +24,7 @@ public class Client extends User {
     @Column(name = "default_address")
     private Long defaultAddress;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "favorites",
             joinColumns = @JoinColumn(name = "client_id"),
@@ -34,10 +32,10 @@ public class Client extends User {
     )
     private Set<Restaurant> favoriteRestaurants;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_addresses",
-            joinColumns = @JoinColumn(name = "user_id"),
+            joinColumns = @JoinColumn(name = "client_id"),
             inverseJoinColumns = @JoinColumn(name = "address_id")
     )
     private Set<Address> addresses;
@@ -45,6 +43,14 @@ public class Client extends User {
     @ManyToOne
     @JoinColumn(name = "file_id")
     private FileInfo fileInfo;
+
+    @OneToMany(mappedBy = "client")
+    private List<Order> orders;
+
+    @OneToOne(mappedBy = "client")
+    private Cart cart;
+
+    //связь с рейтингом
 }
 
 

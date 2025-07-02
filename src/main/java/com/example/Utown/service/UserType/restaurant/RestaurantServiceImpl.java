@@ -1,9 +1,9 @@
 package com.example.Utown.service.UserType.restaurant;
 
-import com.example.Utown.dto.adminDto.OperatingModeDto;
-import com.example.Utown.dto.adminDto.RestaurantCreateUpdateDto;
-import com.example.Utown.dto.adminDto.RestaurantDetailsDto;
-import com.example.Utown.dto.adminDto.RestaurantInfoDto;
+import com.example.Utown.dto.operatingModeDto.OperatingModeDto;
+import com.example.Utown.dto.restaurantDto.RestaurantCreateUpdateDto;
+import com.example.Utown.dto.restaurantDto.RestaurantDetailsDto;
+import com.example.Utown.dto.restaurantDto.RestaurantInfoDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.OperatingModeMapper;
 import com.example.Utown.model.*;
