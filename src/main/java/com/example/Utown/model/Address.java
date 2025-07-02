@@ -54,12 +54,4 @@ public class Address {
     @Column(name = "type_address")
     private Integer typeAddress;
 
-    @Column(name = "created_at")
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
 }

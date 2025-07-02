@@ -79,6 +79,10 @@ public class Restaurant {
     @JoinColumn(name = "address_id")
     private Address address;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "delivery")
+    private Delivery delivery;
+
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OperatingMode> operatingModes;
 

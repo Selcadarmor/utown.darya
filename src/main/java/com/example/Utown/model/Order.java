@@ -123,4 +123,7 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DishToOrder> dishesToOrder;
 
+    @OneToMany(mappedBy = "dish_elements_to_order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DishElementToOrder> dishElementToOrders;
+
 }
