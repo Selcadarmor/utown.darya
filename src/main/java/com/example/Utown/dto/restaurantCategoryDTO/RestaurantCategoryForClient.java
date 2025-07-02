@@ -1,17 +1,17 @@
-package com.example.Utown.dto.clientDto;
+package com.example.Utown.dto.restaurantCategoryDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class RestaurantCategoryDto {
+public class RestaurantCategoryForClient {
     private Long id;
     private String name;
     private String imageUrl;
     private Long restaurantCount;
 
-    public RestaurantCategoryDto(String name) {
+    public RestaurantCategoryForClient(String name) {
         this.name = name;
     }
 }

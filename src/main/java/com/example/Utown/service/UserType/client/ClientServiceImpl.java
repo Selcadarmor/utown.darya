@@ -1,18 +1,19 @@
 package com.example.Utown.service.UserType.client;
 
+import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.dto.adminDto.ClientInfoDto;
 import com.example.Utown.dto.adminDto.ClientUpdateDto;
 import com.example.Utown.dto.adminDto.OrderShortDto;
 import com.example.Utown.dto.clientDto.ClientChangePasswordDto;
-import com.example.Utown.dto.clientDto.ClientProfileUpdateDto;
 import com.example.Utown.exception.*;
-import com.example.Utown.ADDRESSCHECK.Address;
+import com.example.Utown.model.Address;
 import com.example.Utown.model.User;
 import com.example.Utown.model.UserType.Client;
-import com.example.Utown.ADDRESSCHECK.AddressRepository;
+import com.example.Utown.repository.AddressRepository;
 import com.example.Utown.repository.OrderRepository;
 import com.example.Utown.repository.UserRepository;
 import com.example.Utown.repository.UserType.ClientRepository;
+import com.example.Utown.service.AddressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +30,7 @@ public class ClientServiceImpl implements ClientService {
     private final ClientRepository clientRepository;
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
+    private final AddressService addressService;
     private final AddressRepository addressRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -63,24 +66,34 @@ public class ClientServiceImpl implements ClientService {
                 .orElseThrow(() -> new ResourceNotFoundException("Client", id));
     }
 
-    @Transactional // For Client
-    public void updateProfile(String currentUsername, ClientProfileUpdateDto dto) {
-        User user = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new UserNotFoundException(currentUsername));
+    @Transactional
+    public Client updateClientProfile(Long clientId, String newFullName, List<AddressDto> updatedAddresses) {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found", clientId));
 
-        user.setUsername(dto.getUsername());
+        client.setFullName(newFullName);
 
-        if (user instanceof Client client) {
-            client.setFullName(dto.getFullName());
+        if (updatedAddresses != null && !updatedAddresses.isEmpty()) {
+            Set<Address> clientAddresses = client.getAddresses();
 
-            Long addressId = client.getDefaultAddress();
-            if (addressId != null && dto.getFullAddress() != null) {
-                Address address = addressRepository.findById(addressId)
-                        .orElseThrow(() -> new AddressNotFoundException(addressId));
-                address.setFullAddress(dto.getFullAddress());
+            for (AddressDto dto : updatedAddresses) {
+                if (dto.getId() == null) {
+                    throw new IllegalArgumentException("Address ID must be provided for update");
+                }
+
+                Address addressToUpdate = clientAddresses.stream()
+                        .filter(addr -> addr.getId().equals(dto.getId()))
+                        .findFirst()
+                        .orElseThrow(() -> new ResourceNotFoundException("Address not found in client addresses", dto.getId()));
+
+                addressService.updateAddress(addressToUpdate.getId(), dto);
             }
         }
+
+        return clientRepository.save(client);
     }
+
+
 
     @Override //For Client
     public void changePassword(String username, ClientChangePasswordDto dto) {

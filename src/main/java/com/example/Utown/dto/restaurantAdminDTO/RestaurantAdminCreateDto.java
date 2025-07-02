@@ -1,4 +1,4 @@
-package com.example.Utown.dto.restaurantAdmin;
+package com.example.Utown.dto.restaurantAdminDTO;
 
 import com.example.Utown.dto.RoleDto;
 import jakarta.validation.constraints.NotNull;

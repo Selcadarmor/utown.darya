@@ -1,4 +1,4 @@
-package com.example.Utown.dto.address;
+package com.example.Utown.dto.addressDTO;
 
 import lombok.Data;
 

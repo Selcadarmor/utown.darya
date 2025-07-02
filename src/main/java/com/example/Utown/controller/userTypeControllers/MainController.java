@@ -1,10 +1,8 @@
-package com.example.Utown.controller;
+package com.example.Utown.controller.userTypeControllers;
 
 import com.example.Utown.dto.tokens.JWTRequest;
 import com.example.Utown.dto.tokens.JWTResponse;
 import com.example.Utown.dto.tokens.RefreshTokenRequest;
-import com.example.Utown.dto.clientDto.ClientChangePasswordDto;
-import com.example.Utown.dto.clientDto.ClientProfileUpdateDto;
 import com.example.Utown.dto.userDto.UserRegistrationDto;
 import com.example.Utown.service.AuthService;
 import com.example.Utown.service.RefreshTokenService;
@@ -12,13 +10,10 @@ import com.example.Utown.service.UserType.client.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

@@ -1,9 +1,9 @@
-package com.example.Utown.controller;
+package com.example.Utown.controller.userTypeControllers;
 
 
 import com.example.Utown.dto.clientDto.ClientChangePasswordDto;
 import com.example.Utown.dto.clientDto.ClientProfileUpdateDto;
-import com.example.Utown.dto.clientDto.RestaurantCategoryDto;
+import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryForClient;
 import com.example.Utown.dto.clientDto.RestaurantDto;
 import com.example.Utown.service.RestaurantCategoryService;
 import com.example.Utown.service.UserType.client.ClientService;
@@ -30,18 +30,18 @@ public class ClientController {
     private final RestaurantService restaurantService;
 
     @GetMapping("/restaurant_categories")
-    public ResponseEntity<List<RestaurantCategoryDto>> getAllCategories() {
+    public ResponseEntity<List<RestaurantCategoryForClient>> getAllCategories() {
         return ResponseEntity.ok(restaurantCategoryService.getAllCategoriesWithCount());
     }
 
-    @PutMapping("/update") //Passed
-    @Operation(summary = "Update client profile", description = "" )
-    public ResponseEntity<String> updateProfile(
-            @AuthenticationPrincipal User user,
-            @RequestBody ClientProfileUpdateDto dto
+    @PutMapping("/{clientId}/profile_update")
+    @Operation(summary = "Update client profile with multiple addresses")
+    public ResponseEntity<String> updateClientProfile(
+            @PathVariable Long clientId,
+            @RequestBody ClientProfileUpdateDto request
     ) {
-        clientService.updateProfile(user.getUsername(), dto);
-        return ResponseEntity.ok("Profile updated successfully");
+        clientService.updateClientProfile(clientId, request.getFullName(), request.getAddresses());
+        return ResponseEntity.ok("Client profile updated successfully");
     }
 
     @PutMapping("/change_password")//Passed

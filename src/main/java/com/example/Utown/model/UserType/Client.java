@@ -1,6 +1,5 @@
 package com.example.Utown.model.UserType;
 
-import com.example.Utown.ADDRESSCHECK.Address;
 import com.example.Utown.model.*;
 import jakarta.persistence.*;
 import lombok.Getter;

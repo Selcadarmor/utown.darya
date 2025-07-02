@@ -1,5 +1,9 @@
-package com.example.Utown.ADDRESSCHECK;
+package com.example.Utown.controller;
 
+import com.example.Utown.dto.addressDTO.AddressDto;
+import com.example.Utown.mapper.AddressMapper;
+import com.example.Utown.model.Address;
+import com.example.Utown.service.AddressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +21,7 @@ public class AddressController {
     @PostMapping("/create")
     public ResponseEntity<AddressDto> createAddress(@RequestBody AddressDto dto) {
         Address address = addressService.createAddress(dto);
-        AddressDto responseDto = addressMapper.toDto(address);
+        AddressDto responseDto = addressMapper.addressToDto(address);
         return ResponseEntity.status(201).body(responseDto);
     }
 
@@ -36,7 +40,7 @@ public class AddressController {
     @PutMapping("/update/{id}")
     public ResponseEntity<AddressDto> updateAddress(@PathVariable Long id, @RequestBody AddressDto dto) {
         Address updatedAddress = addressService.updateAddress(id, dto);
-        AddressDto responseDto = addressMapper.toDto(updatedAddress);
+        AddressDto responseDto = addressMapper.addressToDto(updatedAddress);
         return ResponseEntity.ok(responseDto);
     }
 
