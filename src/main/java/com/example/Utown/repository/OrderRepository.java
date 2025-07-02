@@ -1,6 +1,6 @@
 package com.example.Utown.repository;
 
-import com.example.Utown.dto.adminDto.OrderShortDto;
+import com.example.Utown.dto.orderDto.OrderShortDto;
 import com.example.Utown.model.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

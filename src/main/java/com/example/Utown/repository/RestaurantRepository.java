@@ -1,9 +1,9 @@
 package com.example.Utown.repository;
 
-import com.example.Utown.dto.adminDto.OrderShortDto;
-import com.example.Utown.dto.adminDto.RestaurantCreateUpdateDto;
-import com.example.Utown.dto.adminDto.RestaurantDetailsDto;
-import com.example.Utown.dto.adminDto.RestaurantInfoDto;
+import com.example.Utown.dto.orderDto.OrderShortDto;
+import com.example.Utown.dto.restaurantDto.RestaurantCreateUpdateDto;
+import com.example.Utown.dto.restaurantDto.RestaurantDetailsDto;
+import com.example.Utown.dto.restaurantDto.RestaurantInfoDto;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.RestaurantCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,7 +16,7 @@ import java.util.Optional;
 
 public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     @Query("""
-        SELECT new com.example.Utown.dto.adminDto.OrderShortDto(
+        SELECT new com.example.Utown.dto.orderDto.OrderShortDto(
             o.id,
             o.totalSum,
             o.createdAt,
@@ -29,7 +29,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     List<OrderShortDto> findAllOrdersByRestaurantId(@Param("restaurantId") Long restaurantId);//метод получения всех заказов ресторана
 
     @Query("""
-        SELECT new com.example.Utown.dto.adminDto.RestaurantInfoDto(
+        SELECT new com.example.Utown.dto.restaurantDto.RestaurantInfoDto(
             r.id,
             r.title,
             r.phone,

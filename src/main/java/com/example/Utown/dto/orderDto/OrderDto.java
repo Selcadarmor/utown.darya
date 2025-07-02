@@ -1,5 +1,6 @@
-package com.example.Utown.dto.clientDto;
+package com.example.Utown.dto.orderDto;
 
+import com.example.Utown.dto.restaurantDto.RestaurantDto;
 import com.example.Utown.model.DishToOrder;
 import com.example.Utown.model.enumFiles.OrderStatus;
 import jakarta.persistence.EnumType;

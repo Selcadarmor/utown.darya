@@ -1,6 +1,10 @@
 package com.example.Utown.controller;
 
-import com.example.Utown.dto.adminDto.*;
+import com.example.Utown.dto.clientDto.ClientInfoDto;
+import com.example.Utown.dto.clientDto.ClientUpdateDto;
+import com.example.Utown.dto.restaurantDto.RestaurantCreateUpdateDto;
+import com.example.Utown.dto.restaurantDto.RestaurantDetailsDto;
+import com.example.Utown.dto.restaurantDto.RestaurantInfoDto;
 import com.example.Utown.service.UserType.client.ClientServiceImpl;
 import com.example.Utown.service.UserType.restaurant.RestaurantServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;

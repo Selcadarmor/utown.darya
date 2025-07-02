@@ -1,4 +1,4 @@
-package com.example.Utown.dto.clientDto;
+package com.example.Utown.dto.restaurantDto;
 
 import java.math.BigDecimal;
 import java.util.List;

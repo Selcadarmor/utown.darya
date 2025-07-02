@@ -1,10 +1,10 @@
 package com.example.Utown.repository.UserType;
 
-import com.example.Utown.dto.adminDto.ClientInfoDto;
 import com.example.Utown.dto.userDto.UserProfileUpdateDto;
 import com.example.Utown.model.UserType.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,40 +14,14 @@ import java.util.Optional;
 public interface ClientRepository extends JpaRepository<Client, Long> {
     Optional<Client> findByUsername(String username);
 
-    @Query("""
-        SELECT new com.example.Utown.dto.adminDto.ClientInfoDto(
-            c.id,
-            c.fullName,
-            c.username,
-            a.city,
-            a.fullAddress,
-            COUNT(o)
-        
-        )
-        FROM Client c
-        LEFT JOIN Address  a ON a.id = c.defaultAddress
-        LEFT JOIN c.orders o
-        GROUP BY c.id, c.fullName,c.username, a.city, a.fullAddress
-        """)
-    List<ClientInfoDto> findAllClientInfos();
+    @Query("SELECT DISTINCT c FROM Client c LEFT JOIN FETCH c.addresses LEFT JOIN FETCH c.orders")
+    List<Client> findAllWithAddressesAndOrders();
+
+
 
     @Query("""
-        SELECT new com.example.Utown.dto.adminDto.ClientInfoDto(
-            c.id,
-            c.fullName,
-            c.username,
-            a.fullAddress,
-            COUNT(o),
-            c.fileInfo.id
-        )
-        FROM Client c
-        LEFT JOIN Address a ON a.id = c.defaultAddress
-        LEFT JOIN c.orders o
-        LEFT JOIN c.fileInfo.id
-        WHERE c.id =:id
-        GROUP BY c.id, c.fullName,c.username, a.fullAddress, c.fileInfo.id
-        """)
-    Optional<ClientInfoDto> findAllClientInfoById(Long id);
+        SELECT c FROM Client c LEFT JOIN FETCH c.addresses LEFT JOIN FETCH c.orders LEFT JOIN FETCH c.fileInfo WHERE c.id = :clientId""")
+    Optional<Client> findAllClientInfoById(@Param("clientId")Long clientId);
 
     @Query("""
     SELECT new com.example.Utown.dto.userDto.UserProfileUpdateDto(

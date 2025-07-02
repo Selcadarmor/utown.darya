@@ -73,6 +73,7 @@ public class Order {
     private String restaurantPhone;
 
     private String state;
+
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
@@ -112,15 +113,6 @@ public class Order {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
-    @ManyToOne
-    @JoinColumn(name = "restaurant_id")
-    private Restaurant restaurant;
 
-    @ManyToOne
-    @JoinColumn(name = "client_id")
-    private Client client;
-
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DishToOrder> dishesToOrder;
 
 }

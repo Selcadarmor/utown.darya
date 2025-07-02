@@ -1,7 +1,6 @@
-package com.example.Utown.dto.adminDto;
+package com.example.Utown.dto.orderDto;
 
 import com.example.Utown.model.enumFiles.OrderStatus;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.math.BigDecimal;

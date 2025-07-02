@@ -1,8 +1,7 @@
 package com.example.Utown.service.UserType.client;
 
-import com.example.Utown.dto.adminDto.ClientInfoDto;
-import com.example.Utown.dto.adminDto.ClientUpdateDto;
-import com.example.Utown.dto.adminDto.OrderShortDto;
+import com.example.Utown.dto.clientDto.ClientInfoDto;
+import com.example.Utown.dto.clientDto.ClientUpdateDto;
 import com.example.Utown.dto.userDto.UserChangePasswordDto;
 import com.example.Utown.dto.userDto.UserProfileUpdateDto;
 import com.example.Utown.exception.*;
@@ -10,7 +9,6 @@ import com.example.Utown.model.Address;
 import com.example.Utown.model.User;
 import com.example.Utown.model.UserType.Client;
 import com.example.Utown.repository.AddressRepository;
-import com.example.Utown.repository.OrderRepository;
 import com.example.Utown.repository.UserRepository;
 import com.example.Utown.repository.UserType.ClientRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +24,6 @@ import java.util.Optional;
 public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
-    private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
     private final PasswordEncoder passwordEncoder;
@@ -37,15 +34,34 @@ public class ClientServiceImpl implements ClientService {
     }
 
 
-    @Override //For Admin
+    @Override // For Admin
     public List<ClientInfoDto> getAllClients() {
-        return clientRepository.findAllClientInfos();
+        List<Client> clients = clientRepository.findAllWithAddressesAndOrders();
+        return  clients.stream()
+                        .map(client -> new ClientInfoDto(
+                                client.getId(),
+                                client.getFullName(),
+                                client.getUsername(),
+                                client.getAddresses(),
+                                client.getOrders() != null ? client.getOrders().size() : 0,
+                                null
+                        ))
+                .toList();
     }
 
+
     @Override //For Admin + Client
-    public ClientInfoDto getClientById(Long id) {
-        return clientRepository.findAllClientInfoById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Client", id));
+    public ClientInfoDto getClientById(Long clientId) {
+        Client client =  clientRepository.findAllClientInfoById(clientId)
+                .orElseThrow(() -> new ResourceNotFoundException("Client", clientId));
+        return  new ClientInfoDto(
+                client.getId(),
+                client.getFullName(),
+                client.getUsername(),
+                client.getAddresses(),
+                client.getOrders() != null ? client.getOrders().size() : 0,
+                client.getFileInfo()
+        );
     }
 
     @Transactional //For Admin
@@ -53,14 +69,17 @@ public class ClientServiceImpl implements ClientService {
     public ClientInfoDto updateClient(Long id, ClientUpdateDto clientDto) {
         Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Client", id));
-        client.setFullName(clientDto.getFullName());
-        client.setUsername(clientDto.getUsername());
         client.setActive(clientDto.isActive());
-
         clientRepository.save(client);
 
-        return clientRepository.findAllClientInfoById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Client", id));
+        return new ClientInfoDto(
+                client.getId(),
+                client.getFullName(),
+                client.getUsername(),
+                client.getAddresses(),
+                client.getOrders() != null ? client.getOrders().size() : 0,
+                client.getFileInfo()
+        );
     }
 
     @Transactional // For Client
@@ -109,10 +128,6 @@ public class ClientServiceImpl implements ClientService {
         clientRepository.deleteById(id);
     }
 
-    @Override
-    public List<OrderShortDto> getClientOrders(Long clientId) {
-        return orderRepository.findAllOrdersByClientId(clientId);
-    }
 
 }
 

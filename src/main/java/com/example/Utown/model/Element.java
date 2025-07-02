@@ -44,11 +44,12 @@ public class Element {
     @CreatedDate
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
     @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "option_id")
-    private Option option;
+    @OneToOne()//fileInfo
+
+
 }

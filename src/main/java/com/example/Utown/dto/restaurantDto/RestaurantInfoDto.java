@@ -1,4 +1,4 @@
-package com.example.Utown.dto.adminDto;
+package com.example.Utown.dto.restaurantDto;
 
 import lombok.Data;
 
