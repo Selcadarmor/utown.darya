@@ -32,6 +32,14 @@ public class DishToOrder {
     @Column(name = "sum", precision = 12, scale = 2)
     private BigDecimal sum;
 
+    @CreatedDate
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     @ManyToOne
     @JoinColumn(name = "cart_id")
     private Cart cart;
@@ -39,20 +47,5 @@ public class DishToOrder {
     @ManyToOne
     @JoinColumn(name = "dish_id")
     private Dish dish;
-
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
-
-    @ManyToOne
-    @JoinColumn(name = "restaurant_id")
-    private Restaurant restaurant;
-
-    @CreatedDate
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-    @LastModifiedDate
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
 }

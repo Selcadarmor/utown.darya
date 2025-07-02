@@ -40,18 +40,6 @@ public class Dish {
     @Column(length = 170, nullable = false)
     private String title;
 
-    @ManyToOne
-    @JoinColumn(name = "file_id")
-    private FileInfo file;
-
-    @ManyToOne
-    @JoinColumn(name = "dish_category_id")
-    private DishCategory dishCategory;
-
-    @ManyToOne
-    @JoinColumn(name = "restaurant_id")
-    private Restaurant restaurant;
-
     @Column(name = "created_at")
     @CreatedDate
     private LocalDateTime createdAt;
@@ -60,4 +48,15 @@ public class Dish {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    @ManyToOne
+    @JoinColumn(name = "restaurant_id")
+    private Restaurant restaurant;
+
+    @ManyToOne
+    @JoinColumn(name = "dish_category_id")
+    private DishCategory dishCategory;
+
+    @ManyToOne
+    @JoinColumn(name = "file_id")
+    private FileInfo file;
 }

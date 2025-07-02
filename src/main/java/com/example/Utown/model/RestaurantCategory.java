@@ -21,9 +21,6 @@ public class RestaurantCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "image_url")
-    private String imageUrl;
-
     private String name;
 
     private Integer sort;
@@ -37,4 +34,8 @@ public class RestaurantCategory {
     @Column(name = "updated_at")
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "file_id")
+    private FileInfo file;
 }

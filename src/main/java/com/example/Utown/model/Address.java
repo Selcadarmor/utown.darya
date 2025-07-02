@@ -1,6 +1,5 @@
 package com.example.Utown.model;
 
-import com.example.Utown.model.UserType.Client;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -8,7 +7,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Entity
 @Table(name = "addresses")
@@ -64,11 +62,4 @@ public class Address {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-
-//    @OneToOne
-//    @JoinColumn(name = "restaurant_id")
-//    private Restaurant restaurant;
-
-//    @ManyToMany(mappedBy = "addresses")
-//    private Set<Client> clients;
 }
