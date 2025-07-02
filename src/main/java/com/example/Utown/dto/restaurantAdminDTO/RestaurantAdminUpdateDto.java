@@ -1,4 +1,4 @@
-package com.example.Utown.dto.restaurantAdmin;
+package com.example.Utown.dto.restaurantAdminDTO;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

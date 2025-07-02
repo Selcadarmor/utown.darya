@@ -1,7 +1,6 @@
 package com.example.Utown.service.UserType.restaurant;
 
-import com.example.Utown.ADDRESSCHECK.Address;
-import com.example.Utown.ADDRESSCHECK.AddressRepository;
+import com.example.Utown.repository.AddressRepository;
 import com.example.Utown.dto.adminDto.OperatingModeDto;
 import com.example.Utown.dto.adminDto.RestaurantCreateUpdateDto;
 import com.example.Utown.dto.adminDto.RestaurantDetailsDto;

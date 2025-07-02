@@ -1,23 +1,20 @@
 package com.example.Utown.dto.clientDto;
 
+import com.example.Utown.dto.addressDTO.AddressDto;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
 public class ClientProfileUpdateDto {
+    private Long id;
     private String fullName;
-    private String username;
-    private String fullAddress;
-
-    public ClientProfileUpdateDto(String fullName, String username, String fullAddress) {
-        this.fullName = fullName;
-        this.username = username;
-        this.fullAddress = fullAddress;
-    }
-    public ClientProfileUpdateDto() {
-    }
+    private List<AddressDto> addresses; // заменить одиночный AddressDto на список
 }
+
+
 
 
 

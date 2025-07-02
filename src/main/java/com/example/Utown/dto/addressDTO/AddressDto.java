@@ -1,4 +1,4 @@
-package com.example.Utown.ADDRESSCHECK;
+package com.example.Utown.dto.addressDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,8 +20,6 @@ public class AddressDto {
     private String street;
     private String intercomCode;
     private Integer typeAddress;
-//    private LocalDateTime createdAt;
-//    private LocalDateTime updatedAt;
 }
 
 

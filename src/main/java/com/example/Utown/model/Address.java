@@ -1,13 +1,8 @@
-package com.example.Utown.ADDRESSCHECK;
+package com.example.Utown.model;
 
-import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.UserType.Client;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -40,10 +35,10 @@ public class Address {
     @Column(name = "full_address")
     private String fullAddress;
 
-    @Column(name = "latitube")
+    @Column(name = "latitude")
     private Float latitude;
 
-    @Column(name = "longitube")
+    @Column(name = "longitude")
     private Float longitude;
 
     @Column(name = "post_code")
@@ -70,10 +65,10 @@ public class Address {
     private LocalDateTime updatedAt;
 
 
-    @OneToOne
-    @JoinColumn(name = "restaurant_id")
-    private Restaurant restaurant;
+//    @OneToOne
+//    @JoinColumn(name = "restaurant_id")
+//    private Restaurant restaurant;
 
-    @ManyToMany(mappedBy = "addresses")
-    private Set<Client> clients;
+//    @ManyToMany(mappedBy = "addresses")
+//    private Set<Client> clients;
 }

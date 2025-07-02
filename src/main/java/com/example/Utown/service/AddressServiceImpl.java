@@ -1,20 +1,26 @@
-package com.example.Utown.ADDRESSCHECK;
+package com.example.Utown.service;
 
+import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.exception.ResourceNotFoundException;
+import com.example.Utown.model.Address;
+import com.example.Utown.model.UserType.Client;
+import com.example.Utown.repository.AddressRepository;
+import com.example.Utown.repository.UserType.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class AddressServiceImpl implements AddressService {
     private final AddressRepository addressRepository;
+    private final ClientRepository clientRepository;
 
     @Override
     public Address createAddress(AddressDto dto) {
         Address address = new Address();
-//        address.setId(dto.getId());
         address.setArea(dto.getArea());
         address.setCity(dto.getCity());
         address.setDetails(dto.getDetails());
@@ -26,8 +32,6 @@ public class AddressServiceImpl implements AddressService {
         address.setStreet(dto.getStreet());
         address.setIntercomCode(dto.getIntercomCode());
         address.setTypeAddress(dto.getTypeAddress());
-//        address.setCreatedAt(dto.getCreatedAt());
-//        address.setUpdatedAt(dto.getUpdatedAt());
         return addressRepository.save(address);
     }
 
@@ -47,7 +51,6 @@ public class AddressServiceImpl implements AddressService {
         Address address = addressRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Address", id));
 
-        //        address.setId(dto.getId());
         address.setArea(dto.getArea());
         address.setCity(dto.getCity());
         address.setDetails(dto.getDetails());
@@ -59,8 +62,6 @@ public class AddressServiceImpl implements AddressService {
         address.setStreet(dto.getStreet());
         address.setIntercomCode(dto.getIntercomCode());
         address.setTypeAddress(dto.getTypeAddress());
-//        address.setCreatedAt(dto.getCreatedAt());
-//        address.setUpdatedAt(dto.getUpdatedAt());
 
         return addressRepository.save(address);
     }
@@ -71,5 +72,6 @@ public class AddressServiceImpl implements AddressService {
                 .orElseThrow(() -> new ResourceNotFoundException("Address not found", id));
         addressRepository.delete(address);
     }
+
 
 }
