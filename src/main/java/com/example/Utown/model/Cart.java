@@ -46,4 +46,5 @@ public class Cart {
     @OneToMany
     @JoinColumn(name = "dish_id")
     private List<Dish> dish;
+
 }
