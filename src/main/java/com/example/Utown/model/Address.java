@@ -38,10 +38,10 @@ public class Address {
     @Column(name = "full_address")
     private String fullAddress;
 
-    @Column(name = "latitube")
+    @Column(name = "latitude")
     private Float latitude;
 
-    @Column(name = "longitube")
+    @Column(name = "longitude")
     private Float longitude;
 
     @Column(name = "post_code")
