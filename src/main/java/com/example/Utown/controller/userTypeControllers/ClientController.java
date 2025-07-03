@@ -4,7 +4,7 @@ package com.example.Utown.controller.userTypeControllers;
 import com.example.Utown.dto.clientDto.ClientChangePasswordDto;
 import com.example.Utown.dto.clientDto.ClientProfileUpdateDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryForClient;
-import com.example.Utown.dto.clientDto.RestaurantDto;
+import com.example.Utown.dto.clientDto.RestaurantForClientDto;
 import com.example.Utown.service.RestaurantCategoryService;
 import com.example.Utown.service.UserType.client.ClientService;
 import com.example.Utown.service.UserType.restaurant.RestaurantService;
@@ -37,15 +37,14 @@ public class ClientController {
 
     @GetMapping("/restaurants")
     @Operation(summary = "Get all restaurants", description = "Returns restaurants for clients")
-    public ResponseEntity<List<RestaurantDto>> getAllRestaurants() {
-        List<RestaurantDto> restaurants = restaurantService.getAllForClientRestaurants();
-        return ResponseEntity.ok(restaurants);
-    }
+    public List<RestaurantForClientDto> getAllRestaurantsForClient() {
+        return restaurantService.getAllRestaurantsForClient();
+        }
 
     @GetMapping("/restaurants/fastest")
     @Operation(summary = "Get restaurants sorted by fastest delivery", description = "Sorted by deliveryTime")
-    public ResponseEntity<List<RestaurantDto>> getRestaurantsByFastestDelivery() {
-        return ResponseEntity.ok(restaurantService.getRestaurantsSortedByFastestDelivery());
+    public List<RestaurantForClientDto> getRestaurantsSortedByDeliveryTime() {
+        return restaurantService.getAllRestaurantsForClientSortedByDeliveryTime();
     }
 
     @PutMapping("/{clientId}/profile_update")

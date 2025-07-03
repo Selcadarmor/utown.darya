@@ -2,7 +2,7 @@ package com.example.Utown.dto.restaurantAdminDTO;
 
 import com.example.Utown.dto.addressDTO.AddressAdminDto;
 import com.example.Utown.dto.RoleDto;
-import com.example.Utown.dto.clientDto.RestaurantDto;
+import com.example.Utown.dto.clientDto.RestaurantForClientDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,7 +21,7 @@ public class RestaurantAdminDto {
     private boolean platform;
     private Set<RoleDto> roles;
     private Set<AddressAdminDto> addresses;
-    private Set<RestaurantDto> favoriteRestaurants;
+    private Set<RestaurantForClientDto> favoriteRestaurants;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Boolean isActive;

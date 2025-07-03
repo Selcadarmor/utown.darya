@@ -4,7 +4,7 @@ import com.example.Utown.dto.adminDto.OrderShortDto;
 import com.example.Utown.dto.adminDto.RestaurantCreateUpdateDto;
 import com.example.Utown.dto.adminDto.RestaurantDetailsDto;
 import com.example.Utown.dto.adminDto.RestaurantInfoDto;
-import com.example.Utown.dto.clientDto.RestaurantDto;
+import com.example.Utown.dto.clientDto.RestaurantForClientDto;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.RestaurantCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -84,10 +84,11 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     Long countByCategory(RestaurantCategory category);
 
     @Query("""
-    select new com.example.Utown.dto.clientDto.RestaurantDto(
+    select new com.example.Utown.dto.clientDto.RestaurantForClientDto(
+        r.id,
         r.fileInfo.path,
         r.title,
-        null,
+        c.name,
         d.price,
         r.deliveryTime
     )
@@ -95,6 +96,24 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     join r.category c
     left join Delivery d on d.restaurant = r and d.isActive = true
 """)
-    List<RestaurantDto> findAllRestaurantsForClient();
+    List<RestaurantForClientDto> findAllRestaurantsForClient();
+
+
+    @Query("""
+        SELECT new com.example.Utown.dto.clientDto.RestaurantForClientDto(
+            r.id,
+            f.path,
+            r.title,
+            c.name,
+            d.price,
+            r.deliveryTime
+        )
+        FROM Restaurant r
+        LEFT JOIN r.fileInfo f
+        LEFT JOIN r.category c
+        LEFT JOIN r.delivery d
+        WHERE r.isActive = true
+    """)
+    List<RestaurantForClientDto> getAllRestaurantsForClient();
     
 }
