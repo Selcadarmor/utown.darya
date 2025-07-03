@@ -93,8 +93,6 @@ public class ClientServiceImpl implements ClientService {
         return clientRepository.save(client);
     }
 
-
-
     @Override //For Client
     public void changePassword(String username, ClientChangePasswordDto dto) {
         if (!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
