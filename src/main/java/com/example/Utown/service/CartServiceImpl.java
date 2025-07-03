@@ -1,41 +1,32 @@
 package com.example.Utown.service;
 
 import com.example.Utown.dto.cartDTO.CartDto;
-import com.example.Utown.exception.ResourceNotFoundException;
-import com.example.Utown.mapper.CartMapper;
 import com.example.Utown.model.Cart;
-import com.example.Utown.model.User;
 import com.example.Utown.repository.CartRepository;
-import com.example.Utown.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
+import com.example.Utown.mapper.CartMapper;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CartServiceImpl implements CartService {
 
     private final CartRepository cartRepository;
-    private final UserRepository userRepository;
     private final CartMapper cartMapper;
 
     @Override
-    public CartDto createCart(CartDto dto) {
+    public Cart createCart(CartDto dto) {
         Cart cart = cartMapper.cartDtoToEntity(dto);
-
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found", dto.getUserId()));
-        cart.setUser(user);
-
-        Cart saved = cartRepository.save(cart);
-        return cartMapper.cartToDto(saved);
+        return cartRepository.save(cart);
     }
 
     @Override
     public CartDto getCartById(Long id) {
         Cart cart = cartRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Cart not found", id));
+                .orElseThrow(() -> new EntityNotFoundException("Cart not found with id " + id));
         return cartMapper.cartToDto(cart);
     }
 
@@ -44,33 +35,28 @@ public class CartServiceImpl implements CartService {
         return cartRepository.findAll()
                 .stream()
                 .map(cartMapper::cartToDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override
-    public CartDto updateCart(Long id, CartDto dto) {
-        Cart existing = cartRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Cart not found", id));
+    public Cart updateCart(Long id, CartDto dto) {
+        Cart existingCart = cartRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Cart not found with id " + id));
 
-        existing.setDeliveryPrice(dto.getDeliveryPrice());
-        existing.setSumOrder(dto.getSumOrder());
-        existing.setTotalDish(dto.getTotalDish());
-        existing.setTotalSum(dto.getTotalSum());
+        // Обновляем поля (примерно, можно заменить на маппинг из DTO)
+        existingCart.setDeliveryPrice(dto.getDeliveryPrice());
+        existingCart.setSumOrder(dto.getSumOrder());
+        existingCart.setTotalDish(dto.getTotalDish());
+        existingCart.setTotalSum(dto.getTotalSum());
+        existingCart.setDish(dto.getDish());
 
-        if (dto.getUserId() != null) {
-            User user = userRepository.findById(dto.getUserId())
-                    .orElseThrow(() -> new ResourceNotFoundException("User not found", dto.getUserId()));
-            existing.setUser(user);
-        }
-
-        Cart updated = cartRepository.save(existing);
-        return cartMapper.cartToDto(updated);
+        return cartRepository.save(existingCart);
     }
 
     @Override
     public void deleteCart(Long id) {
         if (!cartRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Cart not found", id);
+            throw new EntityNotFoundException("Cart not found with id " + id);
         }
         cartRepository.deleteById(id);
     }

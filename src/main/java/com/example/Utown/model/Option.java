@@ -29,11 +29,11 @@ public class Option {
     private String name;
 
     @Column(name = "is_required")
-    private boolean isRequired;
+    private boolean required;
     @Column(name = "min_value")
     private Integer min;
     @Column(name = "is_multiple")
-    private boolean isMultiple;
+    private boolean multiple;
     @Column(name = "max_value")
     private Integer max;
 
@@ -51,6 +51,8 @@ public class Option {
     @JoinColumn(name = "dish_id")
     private Dish dish;
 
-    @OneToMany(mappedBy = "option", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Element> elements;
+    @OneToMany
+    @JoinColumn(name = "option_id")
+    private List<Element> element;
+
 }

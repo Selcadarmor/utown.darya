@@ -1,4 +1,4 @@
-package com.example.Utown.dto.adminDto;
+package com.example.Utown.dto.operatingModeDTO;
 
 import lombok.*;
 

@@ -62,7 +62,7 @@ public class User implements UserDetails {
                 .collect(Collectors.toList());
     }
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany
     private Set<Notification> notifications;
 
     @Override

@@ -40,13 +40,13 @@ public class Client extends User {
     )
     private Set<Restaurant> favoriteRestaurants;
 
-    @OneToOne(mappedBy = "client")
+    @OneToOne
     private Cart cart;
 
     @OneToMany(mappedBy = "client")
     private List<Order> orders;
 
-    @OneToMany(mappedBy = "client")
+    @OneToMany()
     private List<Rating> rating;
 
     @ManyToOne

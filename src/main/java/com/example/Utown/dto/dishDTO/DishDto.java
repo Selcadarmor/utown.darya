@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+;
 
 @Data
 @NoArgsConstructor
@@ -17,9 +19,9 @@ public class DishDto {
     private BigDecimal price;
     private Integer sort;
     private String title;
-    private Long fileId;
-    private Long dishCategoryId;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private Long restaurantId;
+    private Long dishCategoryId;
+    private Long fileId;
 }
-
-

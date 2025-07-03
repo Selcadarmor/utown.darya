@@ -3,14 +3,12 @@ package com.example.Utown.service;
 import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.model.Address;
-import com.example.Utown.model.UserType.Client;
 import com.example.Utown.repository.AddressRepository;
 import com.example.Utown.repository.UserType.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor

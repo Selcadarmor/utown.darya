@@ -1,5 +1,6 @@
 package com.example.Utown.dto.adminDto;
 
+import com.example.Utown.dto.operatingModeDTO.OperatingModeDto;
 import lombok.Data;
 
 import java.math.BigDecimal;
