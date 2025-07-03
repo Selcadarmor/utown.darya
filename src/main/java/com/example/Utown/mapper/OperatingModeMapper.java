@@ -1,12 +1,21 @@
 package com.example.Utown.mapper;
 
-import com.example.Utown.dto.operatingModeDto.OperatingModeDto;
+import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
 import com.example.Utown.model.OperatingMode;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface OperatingModeMapper {
-    @Mapping(target = "dayOfWeek", expression = "java(entity.getDayOfWeek())")
-    OperatingModeDto toDto(OperatingMode entity);
+    OperatingModeInfoDto toDto(OperatingMode entity);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "dayOfWeek", source = "dayOfWeek")
+    @Mapping(target = "start", source = "start")
+    @Mapping(target = "end", source = "end")
+    @Mapping(target = "dayOff", source = "dayOff")
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    OperatingMode updateFromDto(OperatingModeInfoDto dto, @MappingTarget OperatingMode entity);
 }

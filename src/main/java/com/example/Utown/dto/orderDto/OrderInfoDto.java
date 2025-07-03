@@ -1,6 +1,6 @@
 package com.example.Utown.dto.orderDto;
 
-import com.example.Utown.dto.restaurantDto.RestaurantDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
 import com.example.Utown.model.DishToOrder;
 import com.example.Utown.model.enumFiles.OrderStatus;
 import jakarta.persistence.EnumType;
@@ -11,12 +11,13 @@ import lombok.NoArgsConstructor;
 
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderDto {
+public class OrderInfoDto {
     private Long id;
 
     private String area;
@@ -50,6 +51,8 @@ public class OrderDto {
     private String deliveryStatus;
     private String endTimeOfCooking;
     private String intercomCode;
-    private RestaurantDto restaurantDto;
+    private RestaurantDetailsDto restaurantDto;
     private List<DishToOrder> dishToOrder;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

@@ -89,6 +89,6 @@ public class Restaurant {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders;
 
-    //cвязь с рейтингом
-
+    @OneToMany(mappedBy = "rating")
+    private List<Rating> ratings;
 }

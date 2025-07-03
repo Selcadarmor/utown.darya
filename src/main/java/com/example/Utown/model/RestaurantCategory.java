@@ -7,6 +7,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -35,5 +36,6 @@ public class RestaurantCategory {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    //связь с файл инфо
+    @OneToMany(mappedBy = "fileInfo")
+    private List<FileInfo> fileInfo;
 }
