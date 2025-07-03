@@ -49,7 +49,8 @@ public class Element {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToOne()//fileInfo
+    @OneToOne(mappedBy = "fileInfo")
+    private FileInfo fileInfo;
 
 
 }

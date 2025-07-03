@@ -1,7 +1,7 @@
 package com.example.Utown.service.UserType.client;
 
-import com.example.Utown.dto.clientDto.ClientInfoDto;
-import com.example.Utown.dto.clientDto.ClientUpdateDto;
+import com.example.Utown.dto.clientDTO.ClientInfoDto;
+import com.example.Utown.dto.clientDTO.ClientUpdateDto;
 import com.example.Utown.dto.userDto.UserChangePasswordDto;
 import com.example.Utown.dto.userDto.UserProfileUpdateDto;
 import com.example.Utown.exception.*;

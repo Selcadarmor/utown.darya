@@ -1,4 +1,4 @@
-package com.example.Utown.service.order;
+package com.example.Utown.service;
 
 import com.example.Utown.dto.orderDto.OrderShortDto;
 import com.example.Utown.repository.OrderRepository;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 @Service
 @RequiredArgsConstructor
-public class OrderServiceImpl  implements OrderService{
+public class OrderServiceImpl  implements OrderService {
     private final OrderRepository orderRepository;
 
     @Override

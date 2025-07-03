@@ -1,12 +1,12 @@
 package com.example.Utown.controller;
 
-import com.example.Utown.dto.clientDto.ClientInfoDto;
-import com.example.Utown.dto.clientDto.ClientUpdateDto;
-import com.example.Utown.dto.restaurantDto.RestaurantCreateUpdateDto;
-import com.example.Utown.dto.restaurantDto.RestaurantDetailsDto;
-import com.example.Utown.dto.restaurantDto.RestaurantInfoDto;
+import com.example.Utown.dto.clientDTO.ClientInfoDto;
+import com.example.Utown.dto.clientDTO.ClientUpdateDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantCreateUpdateDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
 import com.example.Utown.service.UserType.client.ClientServiceImpl;
-import com.example.Utown.service.UserType.restaurant.RestaurantServiceImpl;
+import com.example.Utown.service.RestaurantServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

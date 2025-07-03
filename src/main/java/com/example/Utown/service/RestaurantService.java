@@ -1,8 +1,9 @@
-package com.example.Utown.service.UserType.restaurant;
+package com.example.Utown.service;
 
-import com.example.Utown.dto.restaurantDto.RestaurantCreateUpdateDto;
-import com.example.Utown.dto.restaurantDto.RestaurantDetailsDto;
-import com.example.Utown.dto.restaurantDto.RestaurantInfoDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantCreateUpdateDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
+
 
 import java.util.List;
 

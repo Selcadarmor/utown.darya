@@ -1,4 +1,4 @@
-package com.example.Utown.service.order;
+package com.example.Utown.service;
 
 import com.example.Utown.dto.orderDto.OrderShortDto;
 

@@ -1,7 +1,5 @@
-package com.example.Utown.dto.clientDto;
+package com.example.Utown.dto.clientDTO;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 

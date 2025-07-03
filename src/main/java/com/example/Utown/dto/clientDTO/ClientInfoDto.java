@@ -1,4 +1,4 @@
-package com.example.Utown.dto.clientDto;
+package com.example.Utown.dto.clientDTO;
 
 import com.example.Utown.model.Address;
 import com.example.Utown.model.FileInfo;
