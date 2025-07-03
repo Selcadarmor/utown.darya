@@ -11,6 +11,6 @@ public interface RestaurantCategoryService {
     List<RestaurantCategoryDto> getAllRestaurantCategories();
     RestaurantCategory updateRestaurantCategory(Long id, RestaurantCategoryDto dto);
     void deleteRestaurantCategory(Long id);
-    List<RestaurantCategoryForClient> getAllCategoriesWithCount();
+    List<RestaurantCategoryForClient> getAllCategoriesWithRestaurantCount();
 }
 

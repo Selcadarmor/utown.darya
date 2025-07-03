@@ -27,10 +27,8 @@ public class RestaurantAdmin extends User {
     @Column(name = "full_name", length = 170)
     private String fullName;
 
-    @Column(name = "default_address")
-    private Long defaultAddress;
-
     @OneToMany
+    @JoinColumn(name = "restaurant_id")
     private List<Order> orders;
 }
 

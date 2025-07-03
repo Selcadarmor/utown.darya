@@ -15,4 +15,5 @@ public interface RestaurantService {
     void deleteRestaurant(Long id);
     List<RestaurantDto> getAllForClientRestaurants();
     List<RestaurantDto> getRestaurantsSortedByFastestDelivery();
+    long countRestaurantsByCategory(Long categoryId);
 }

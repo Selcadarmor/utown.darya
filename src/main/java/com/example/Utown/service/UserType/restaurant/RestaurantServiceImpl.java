@@ -188,6 +188,14 @@ public class RestaurantServiceImpl  implements RestaurantService {
         return dtos;
     }
 
+    @Override //For Client
+    public long countRestaurantsByCategory(Long categoryId) {
+        RestaurantCategory category = restaurantCategoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found", categoryId));
+
+        return restaurantRepository.countByCategory(category);
+    }
+
 }
 
 

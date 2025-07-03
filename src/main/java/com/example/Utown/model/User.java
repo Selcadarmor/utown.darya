@@ -63,6 +63,7 @@ public class User implements UserDetails {
     }
 
     @OneToMany
+    @JoinColumn(name = "user_id")
     private Set<Notification> notifications;
 
     @Override

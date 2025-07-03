@@ -79,21 +79,17 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
     }
 
     @Override
-    public List<RestaurantCategoryForClient> getAllCategoriesWithCount() {
-        List<RestaurantCategory> categories = restaurantCategoryRepository.findAll();
+    public List<RestaurantCategoryForClient> getAllCategoriesWithRestaurantCount() {
+        List<RestaurantCategory> categories = restaurantCategoryRepository.findAllActiveWithFile();
 
         return categories.stream()
-                .map(category -> {
-                    Long count = restaurantRepository.countByCategory(category); // или другой корректный метод
-                    return new RestaurantCategoryForClient(
-                            category.getId(),
-                            category.getName(),
-                            category.getFile(),
-                            count
-                    );
-                })
+                .map(rc -> new RestaurantCategoryForClient(
+                        rc.getId(),
+                        rc.getName(),
+                        rc.getFile() != null ? rc.getFile().getPath() : null,
+                        restaurantRepository.countByCategory(rc)
+                ))
                 .toList();
     }
-
 }
 

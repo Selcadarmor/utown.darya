@@ -11,10 +11,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RestaurantDto {
-    private String imageUrl;              // Фото ресторана
-    private String title;                 // Название ресторана
-    private List<String> categories;     // Названия категории ресторана
-    private BigDecimal deliveryPrice;    // Стоимость доставки
-    private String deliveryTime;          // Время доставки
+    private Long id;
+    private String filePath;
+    private String title;
+    private List<String> categories;
+    private BigDecimal deliveryPrice;
+    private String deliveryTime;
 }
 
