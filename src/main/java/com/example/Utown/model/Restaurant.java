@@ -96,5 +96,4 @@ public class Restaurant {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders; // УДАЛИТЬ ПОЗЖЕ
 
-
 }
