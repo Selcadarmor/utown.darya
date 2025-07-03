@@ -30,8 +30,22 @@ public class ClientController {
     private final RestaurantService restaurantService;
 
     @GetMapping("/restaurant_categories")
-    public ResponseEntity<List<RestaurantCategoryForClient>> getAllCategories() {
-        return ResponseEntity.ok(restaurantCategoryService.getAllCategoriesWithCount());
+    public ResponseEntity<List<RestaurantCategoryForClient>> getCategoriesWithRestaurantCount() {
+        List<RestaurantCategoryForClient> categories = restaurantCategoryService.getAllCategoriesWithRestaurantCount();
+        return ResponseEntity.ok(categories);
+    }
+
+    @GetMapping("/restaurants")
+    @Operation(summary = "Get all restaurants", description = "Returns restaurants for clients")
+    public ResponseEntity<List<RestaurantDto>> getAllRestaurants() {
+        List<RestaurantDto> restaurants = restaurantService.getAllForClientRestaurants();
+        return ResponseEntity.ok(restaurants);
+    }
+
+    @GetMapping("/restaurants/fastest")
+    @Operation(summary = "Get restaurants sorted by fastest delivery", description = "Sorted by deliveryTime")
+    public ResponseEntity<List<RestaurantDto>> getRestaurantsByFastestDelivery() {
+        return ResponseEntity.ok(restaurantService.getRestaurantsSortedByFastestDelivery());
     }
 
     @PutMapping("/{clientId}/profile_update")
@@ -52,19 +66,6 @@ public class ClientController {
     ) {
         clientService.changePassword(user.getUsername(), dto);
         return ResponseEntity.ok("Password changed successfully");
-    }
-
-    @GetMapping("/restaurants")
-    @Operation(summary = "Get all restaurants", description = "Returns restaurants for clients")
-    public ResponseEntity<List<RestaurantDto>> getAllRestaurants() {
-        List<RestaurantDto> restaurants = restaurantService.getAllForClientRestaurants();
-        return ResponseEntity.ok(restaurants);
-    }
-
-    @GetMapping("/restaurants/fastest")
-    @Operation(summary = "Get restaurants sorted by fastest delivery", description = "Sorted by deliveryTime")
-    public ResponseEntity<List<RestaurantDto>> getRestaurantsByFastestDelivery() {
-        return ResponseEntity.ok(restaurantService.getRestaurantsSortedByFastestDelivery());
     }
 
 }

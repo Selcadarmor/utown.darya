@@ -6,10 +6,12 @@ import com.example.Utown.dto.adminDto.ClientUpdateDto;
 import com.example.Utown.dto.adminDto.OrderShortDto;
 import com.example.Utown.dto.clientDto.ClientChangePasswordDto;
 import com.example.Utown.dto.clientDto.ClientProfileUpdateDto;
+import com.example.Utown.model.Address;
 import com.example.Utown.model.UserType.Client;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 
 public interface ClientService {

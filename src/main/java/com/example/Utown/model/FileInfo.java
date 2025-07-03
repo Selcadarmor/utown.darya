@@ -23,6 +23,7 @@ public class FileInfo {
 
     @Column(name = "original_title")
     private String originalTitle;
+
     @Column(name = "path")
     private String path;
 

@@ -96,7 +96,5 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     left join Delivery d on d.restaurant = r and d.isActive = true
 """)
     List<RestaurantDto> findAllRestaurantsForClient();
-
-
-
+    
 }

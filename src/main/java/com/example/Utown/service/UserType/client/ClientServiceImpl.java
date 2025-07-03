@@ -6,6 +6,7 @@ import com.example.Utown.dto.adminDto.ClientUpdateDto;
 import com.example.Utown.dto.adminDto.OrderShortDto;
 import com.example.Utown.dto.clientDto.ClientChangePasswordDto;
 import com.example.Utown.exception.*;
+import com.example.Utown.mapper.AddressMapper;
 import com.example.Utown.model.Address;
 import com.example.Utown.model.User;
 import com.example.Utown.model.UserType.Client;
@@ -33,6 +34,7 @@ public class ClientServiceImpl implements ClientService {
     private final AddressService addressService;
     private final AddressRepository addressRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AddressMapper addressMapper;
 
     @Override
     public Optional<Client> findByUsername(String username) {

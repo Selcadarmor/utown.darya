@@ -9,12 +9,9 @@ import lombok.Data;
 public class RestaurantCategoryForClient {
     private Long id;
     private String name;
-    private FileInfo file;
+    private String filePath;
     private Long restaurantCount;
 
-    public RestaurantCategoryForClient(String name) {
-        this.name = name;
-    }
 }
 
 
