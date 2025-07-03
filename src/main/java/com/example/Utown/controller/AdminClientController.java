@@ -2,7 +2,8 @@ package com.example.Utown.controller;
 
 import com.example.Utown.dto.clientDTO.ClientInfoDto;
 import com.example.Utown.dto.clientDTO.ClientUpdateDto;
-import com.example.Utown.dto.restaurantDTO.RestaurantCreateUpdateDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantCreateDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
 import com.example.Utown.service.UserType.client.ClientServiceImpl;
@@ -108,8 +109,8 @@ public class AdminClientController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping("/restaurant/")
-    public ResponseEntity<RestaurantDetailsDto> createRestaurant(@Valid @RequestBody RestaurantCreateUpdateDto restaurantCreateUpdateDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(restaurantService.createRestaurant(restaurantCreateUpdateDto));
+    public ResponseEntity<RestaurantDetailsDto> createRestaurant(@Valid @RequestBody RestaurantCreateDto restaurantCreateDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(restaurantService.createRestaurant(restaurantCreateDto));
     }
 
     @Operation(summary = "Update restaurant by Id", description = "Updates information of an existing restaurant.")
@@ -120,8 +121,8 @@ public class AdminClientController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PutMapping("/restaurant/{id}")
-    public ResponseEntity<RestaurantDetailsDto> restaurantUpdateDtoResponseEntity(@PathVariable Long id, @Valid @RequestBody RestaurantCreateUpdateDto restaurantCreateUpdateDto) {
-        return ResponseEntity.ok(restaurantService.updateRestaurant(id, restaurantCreateUpdateDto));
+    public ResponseEntity<RestaurantDetailsDto> restaurantUpdateDtoResponseEntity(@PathVariable Long id, @Valid @RequestBody RestaurantUpdateDto restaurantUpdateDto) {
+        return ResponseEntity.ok(restaurantService.updateRestaurant(id, restaurantUpdateDto));
     }
 
     @Operation(summary = "Delete restaurant by Id", description = "Removes a restaurant from the system.")

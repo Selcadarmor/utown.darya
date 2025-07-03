@@ -1,4 +1,4 @@
-package com.example.Utown.dto.restaurantAdminDTO;
+package com.example.Utown.dto.fileInfoDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,11 +7,18 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class RestaurantAdminInfoDto {
-    private Long id;
-    private String fullName;
+@AllArgsConstructor
+public class FileInfoDetailsDto {
+    private  Long id;
+
+    private String originalTitle;
+
+    private String path;
+
+    private String type;
+
     private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
 }

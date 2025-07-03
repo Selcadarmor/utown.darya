@@ -55,6 +55,7 @@ public class Option {
     @JoinColumn(name = "dish_id")
     private Dish dish;
 
-    @OneToMany(mappedBy = "option", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Element> elements;
+    @OneToMany
+    @JoinColumn(name = "option_id")
+    private List<Element> element;
 }

@@ -44,13 +44,17 @@ public class Client extends User {
     @JoinColumn(name = "file_id")
     private FileInfo fileInfo;
 
-    @OneToMany(mappedBy = "client")
+    @OneToMany()
+    @JoinColumn(name = "client_id")
     private List<Order> orders;
 
-    @OneToOne(mappedBy = "client")
+    @OneToOne
+    @JoinColumn(name = "cart_id")
     private Cart cart;
 
-    //связь с рейтингом
+    @OneToMany()
+    private List<Rating> rating;
+
 }
 
 

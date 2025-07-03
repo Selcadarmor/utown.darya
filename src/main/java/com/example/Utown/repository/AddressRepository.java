@@ -11,13 +11,13 @@ import java.util.Optional;
 
 public interface AddressRepository extends JpaRepository<Address, Long> {
 
-    @Query("SELECT new com.example.Utown.dto.addressDTO.AddressInfoDto(" +
+    @Query("SELECT new com.example.Utown.dto.addressDTO.AddressDto(" +
             "a.id, a.area, a.city, a.details, a.fullAddress, a.latitude, a.longitude, " +
             "a.postCode, a.state, a.street, a.intercomCode, a.typeAddress) " +
             "FROM Address a WHERE a.id = :id")
     Optional<AddressInfoDto> findAddressById(@Param("id") Long id);
 
-    @Query("SELECT new com.example.Utown.dto.addressDTO.AddressInfoDto(" +
+    @Query("SELECT new com.example.Utown.dto.addressDTO.AddressDto(" +
             "a.id, a.area, a.city, a.details, a.fullAddress, a.latitude, a.longitude, " +
             "a.postCode, a.state, a.street, a.intercomCode, a.typeAddress) " +
             "FROM Address a")

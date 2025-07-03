@@ -89,6 +89,10 @@ public class Restaurant {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders;
 
-    @OneToMany(mappedBy = "rating")
-    private List<Rating> ratings;
+    @OneToMany(mappedBy = "restaurant")
+    private List<Rating> grades;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "delivery")
+    private Delivery delivery;
 }

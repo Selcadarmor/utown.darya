@@ -18,7 +18,4 @@ public class FileInfoDto {
 
     private String type;
 
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
 }

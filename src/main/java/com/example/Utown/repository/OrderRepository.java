@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("""
-        SELECT new com.example.Utown.dto.adminDto.OrderShortDto(
+        SELECT new com.example.Utown.dto.orderDto.OrderShortDto(
             o.id,
             o.totalSum,
             o.createdAt,

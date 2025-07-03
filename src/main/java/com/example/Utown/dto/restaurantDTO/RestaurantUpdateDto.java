@@ -1,8 +1,11 @@
 package com.example.Utown.dto.restaurantDTO;
 
+
+import com.example.Utown.dto.addressDTO.AddressInfoDto;
+import com.example.Utown.dto.fileInfoDTO.FileInfoDetailsDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
-import com.example.Utown.model.Address;
-import com.example.Utown.model.FileInfo;
+import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryDto;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,16 +16,14 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RestaurantCreateUpdateDto {
+public class RestaurantUpdateDto {
     private Long id;
     private String title;
     private String description;
     private String phone;
     private BigDecimal minOrderAmount;
-    private Address address;
-    private String name;
-    private FileInfo fileInfo;
+    private AddressInfoDto address;
+    private FileInfoDetailsDto fileInfo;
     private List<OperatingModeInfoDto> operatingModes;
-
-
+    private RestaurantCategoryDto category;
 }

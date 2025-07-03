@@ -49,8 +49,8 @@ public class Element {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToOne(mappedBy = "fileInfo")
-    private FileInfo fileInfo;
-
+    @ManyToOne
+    @JoinColumn(name = "file_id")
+    private FileInfo file;
 
 }

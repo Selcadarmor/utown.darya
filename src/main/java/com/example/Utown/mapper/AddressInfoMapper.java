@@ -8,7 +8,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
-public interface AddressMapper {
+public interface AddressInfoMapper {
     AddressInfoDto addressToDto(Address address);
     Address toEntity(AddressInfoDto addressInfoDto);
     @Mapping(target = "createdAt", ignore = true)

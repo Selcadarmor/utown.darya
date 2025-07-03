@@ -1,5 +1,6 @@
 package com.example.Utown.model;
 
+import com.example.Utown.model.UserType.Client;
 import com.example.Utown.model.enumFiles.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Getter
@@ -112,6 +114,22 @@ public class Order {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "restaurant_id")
+    private Restaurant restaurant;
+
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    private Client client;
+
+    @OneToMany
+    @JoinColumn(name = "order_id_in_dish")
+    private List<DishToOrder> dishesToOrder;
+
+    @OneToMany
+    @JoinColumn(name = "order_id_in_element")
+    private List<DishElementToOrder> dishElementToOrders;
 
 
 }

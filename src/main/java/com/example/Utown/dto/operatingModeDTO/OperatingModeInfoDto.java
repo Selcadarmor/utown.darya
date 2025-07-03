@@ -1,5 +1,7 @@
 package com.example.Utown.dto.operatingModeDTO;
 
+import com.example.Utown.model.Restaurant;
+import com.example.Utown.model.UserType.Client;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -16,5 +18,6 @@ public class OperatingModeInfoDto {
     private Integer dayOfWeek;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Restaurant restaurant;
 
 }
