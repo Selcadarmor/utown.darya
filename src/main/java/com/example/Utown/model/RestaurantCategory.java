@@ -36,6 +36,7 @@ public class RestaurantCategory {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "fileInfo")
-    private List<FileInfo> fileInfo;
+    @ManyToOne
+    @JoinColumn(name = "file_id")
+    private FileInfo file;
 }

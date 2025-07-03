@@ -2,6 +2,8 @@ package com.example.Utown.dto.orderDto;
 
 import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
 import com.example.Utown.model.DishToOrder;
+import com.example.Utown.model.Restaurant;
+import com.example.Utown.model.UserType.Client;
 import com.example.Utown.model.enumFiles.OrderStatus;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -55,4 +57,6 @@ public class OrderInfoDto {
     private List<DishToOrder> dishToOrder;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Client client;
+    private Restaurant restaurant;
 }

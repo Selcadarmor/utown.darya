@@ -7,7 +7,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
-public interface OperatingModeMapper {
+public interface OperatingModeInfoMapper {
     OperatingModeInfoDto toDto(OperatingMode entity);
 
     @Mapping(target = "id", ignore = true)
@@ -18,4 +18,6 @@ public interface OperatingModeMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     OperatingMode updateFromDto(OperatingModeInfoDto dto, @MappingTarget OperatingMode entity);
+
+    OperatingMode toEntity(OperatingModeInfoDto dto);
 }

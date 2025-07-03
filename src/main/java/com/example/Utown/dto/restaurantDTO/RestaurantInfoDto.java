@@ -32,6 +32,10 @@ public class RestaurantInfoDto {
 
     private RestaurantAdmin restaurantAdmin;
 
+    private Delivery delivery;
+
+    private List<Rating> grades;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
