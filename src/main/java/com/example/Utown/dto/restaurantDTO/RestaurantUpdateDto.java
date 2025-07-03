@@ -2,7 +2,7 @@ package com.example.Utown.dto.restaurantDTO;
 
 
 import com.example.Utown.dto.addressDTO.AddressInfoDto;
-import com.example.Utown.dto.fileInfoDTO.FileInfoDetailsDto;
+import com.example.Utown.dto.fileInfoDTO.FileInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryDto;
 
@@ -23,7 +23,7 @@ public class RestaurantUpdateDto {
     private String phone;
     private BigDecimal minOrderAmount;
     private AddressInfoDto address;
-    private FileInfoDetailsDto fileInfo;
+    private FileInfoDto fileInfo;
     private List<OperatingModeInfoDto> operatingModes;
     private RestaurantCategoryDto category;
 }

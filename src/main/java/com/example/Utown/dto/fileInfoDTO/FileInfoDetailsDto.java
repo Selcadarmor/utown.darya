@@ -21,4 +21,5 @@ public class FileInfoDetailsDto {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
 }
