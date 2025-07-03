@@ -11,7 +11,7 @@ public interface DeliveryMapper {
     @Mapping(source = "restaurant.id", target = "restaurantId")
     DeliveryDto deliveryToDto(Delivery delivery);
 
-    @Mapping(source = "restaurantId", target = "restaurant.id")
-    Delivery deliveryDtoToEntity(DeliveryDto dto);
 }
+
+
 

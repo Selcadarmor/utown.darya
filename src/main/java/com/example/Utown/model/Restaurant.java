@@ -86,11 +86,15 @@ public class Restaurant {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OperatingMode> operatingModes;
 
-    @OneToMany(mappedBy = "client")
+    @OneToMany(mappedBy = "restaurant")
     private List<Rating> grades;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "file_id")
     private FileInfo fileInfo;
+
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Order> orders; // УДАЛИТЬ ПОЗЖЕ
+
 
 }

@@ -37,5 +37,4 @@ public class FileInfo {
     @Column(name = "updated_at")
     private LocalDateTime updateAt;
 
-
 }

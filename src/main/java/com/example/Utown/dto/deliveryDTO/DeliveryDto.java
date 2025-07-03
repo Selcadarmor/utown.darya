@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -16,6 +17,9 @@ public class DeliveryDto {
     private String district;
     private Boolean isActive;
     private Boolean isDeleted;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private Long restaurantId;
 }
+
 

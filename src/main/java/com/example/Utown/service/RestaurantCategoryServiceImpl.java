@@ -9,57 +9,73 @@ import com.example.Utown.repository.RestaurantCategoryRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
+import com.example.Utown.model.FileInfo;
+import com.example.Utown.repository.FileInfoRepository;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class RestaurantCategoryServiceImpl implements RestaurantCategoryService {
 
     private final RestaurantCategoryRepository restaurantCategoryRepository;
-    private final RestaurantRepository restaurantRepository;
     private final RestaurantCategoryMapper restaurantCategoryMapper;
+    private final FileInfoRepository fileInfoRepository;
+    private final RestaurantRepository restaurantRepository;
 
     @Override
-    public RestaurantCategoryDto createCategory(RestaurantCategoryDto dto) {
+    public RestaurantCategory createRestaurantCategory(RestaurantCategoryDto dto) {
         RestaurantCategory entity = restaurantCategoryMapper.restaurantCategoryDtoToEntity(dto);
-        RestaurantCategory saved = restaurantCategoryRepository.save(entity);
-        return restaurantCategoryMapper.restaurantCategoryToDto(saved);
+
+        if (dto.getFile() != null) {
+            Long fileId = dto.getFile().getId();
+            FileInfo file = fileInfoRepository.findById(fileId)
+                    .orElseThrow(() -> new ResourceNotFoundException("File not found", fileId));
+            entity.setFile(file);
+        }
+
+        return restaurantCategoryRepository.save(entity);
     }
 
     @Override
-    public RestaurantCategoryDto getCategoryById(Long id) {
-        RestaurantCategory category = restaurantCategoryRepository.findById(id)
+    public RestaurantCategoryDto getRestaurantCategoryById(Long id) {
+        return restaurantCategoryRepository.findById(id)
+                .map(restaurantCategoryMapper::restaurantCategoryToDto)
                 .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory not found", id));
-        return restaurantCategoryMapper.restaurantCategoryToDto(category);
     }
 
     @Override
-    public List<RestaurantCategoryDto> getAllCategories() {
+    public List<RestaurantCategoryDto> getAllRestaurantCategories() {
         return restaurantCategoryRepository.findAll()
                 .stream()
                 .map(restaurantCategoryMapper::restaurantCategoryToDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override
-    public RestaurantCategoryDto updateCategory(Long id, RestaurantCategoryDto dto) {
-        RestaurantCategory existing = restaurantCategoryRepository.findById(id)
+    public RestaurantCategory updateRestaurantCategory(Long id, RestaurantCategoryDto dto) {
+        RestaurantCategory category = restaurantCategoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory not found", id));
-        existing.setImageUrl(dto.getImageUrl());
-        existing.setName(dto.getName());
-        existing.setSort(dto.getSort());
-        existing.setIsActive(dto.getIsActive());
-        RestaurantCategory updated = restaurantCategoryRepository.save(existing);
-        return restaurantCategoryMapper.restaurantCategoryToDto(updated);
+
+        category.setName(dto.getName());
+        category.setSort(dto.getSort());
+        category.setIsActive(dto.getIsActive());
+
+        if (dto.getFile() != null) {
+            Long fileId = dto.getFile().getId();
+            FileInfo file = fileInfoRepository.findById(fileId)
+                    .orElseThrow(() -> new ResourceNotFoundException("File not found", fileId));
+            category.setFile(file);
+        }
+
+        return restaurantCategoryRepository.save(category);
     }
 
     @Override
-    public void deleteCategory(Long id) {
-        if (!restaurantCategoryRepository.existsById(id)) {
-            throw new ResourceNotFoundException("RestaurantCategory not found", id);
-        }
-        restaurantCategoryRepository.deleteById(id);
+    public void deleteRestaurantCategory(Long id) {
+        RestaurantCategory category = restaurantCategoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory not found", id));
+        restaurantCategoryRepository.delete(category);
     }
 
     @Override
@@ -68,15 +84,16 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
 
         return categories.stream()
                 .map(category -> {
-                    Long count = restaurantRepository.countByCategory(category);
+                    Long count = restaurantRepository.countByCategory(category); // или другой корректный метод
                     return new RestaurantCategoryForClient(
                             category.getId(),
                             category.getName(),
-                            category.getImageUrl(),
+                            category.getFile(),
                             count
                     );
                 })
                 .toList();
     }
+
 }
 

@@ -50,6 +50,4 @@ public class OperatingMode {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "option", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DishElementToOrder> elements;
 }

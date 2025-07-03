@@ -1,23 +1,22 @@
-package com.example.Utown.dto.clientDto;
+package com.example.Utown.dto.orderDTO;
 
 import com.example.Utown.model.DishToOrder;
 import com.example.Utown.model.enumFiles.OrderStatus;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-
 import java.math.BigDecimal;
 import java.util.List;
+import com.example.Utown.model.DishElementToOrder;
+import com.example.Utown.model.Restaurant;
+import com.example.Utown.model.UserType.Client;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderDto {
     private Long id;
-
     private String area;
     private String city;
     private String clientPhone;
@@ -36,7 +35,6 @@ public class OrderDto {
     private String postcode;
     private String restaurantPhone;
     private String state;
-    @Enumerated(EnumType.STRING)
     private OrderStatus status;
     private String street;
     private String time;
@@ -49,6 +47,11 @@ public class OrderDto {
     private String deliveryStatus;
     private String endTimeOfCooking;
     private String intercomCode;
-    private RestaurantDto restaurantDto;
-    private List<DishToOrder> dishToOrder;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private Restaurant restaurant;
+    private Client client;
+    private List<DishToOrder> dishesToOrder;
+    private List<DishElementToOrder> dishElementToOrders;
 }
+

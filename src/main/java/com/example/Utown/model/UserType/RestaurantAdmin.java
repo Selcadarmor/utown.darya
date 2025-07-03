@@ -15,6 +15,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@DiscriminatorValue("restaurantAdmin")
 @NoArgsConstructor
 @AllArgsConstructor
 public class RestaurantAdmin extends User {
@@ -29,7 +30,7 @@ public class RestaurantAdmin extends User {
     @Column(name = "default_address")
     private Long defaultAddress;
 
-    @OneToMany(mappedBy = "client")
+    @OneToMany
     private List<Order> orders;
 }
 

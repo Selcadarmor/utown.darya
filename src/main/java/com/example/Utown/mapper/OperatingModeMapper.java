@@ -1,6 +1,6 @@
 package com.example.Utown.mapper;
 
-import com.example.Utown.dto.adminDto.OperatingModeDto;
+import com.example.Utown.dto.operatingModeDTO.OperatingModeDto;
 import com.example.Utown.model.OperatingMode;
 import org.mapstruct.Mapper;
 
