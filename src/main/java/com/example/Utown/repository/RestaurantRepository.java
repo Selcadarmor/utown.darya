@@ -19,7 +19,6 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
         LEFT JOIN FETCH r.address
         LEFT JOIN FETCH r.category
         LEFT JOIN FETCH r.fileInfo
-        LEFT JOIN FETCH r.orders
         LEFT JOIN FETCH r.operatingModes
     """)
     List<Restaurant> findAllRestaurants();
@@ -29,7 +28,6 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
         LEFT JOIN FETCH r.address
         LEFT JOIN FETCH r.category
         LEFT JOIN FETCH r.fileInfo
-        LEFT JOIN FETCH r.orders
         LEFT JOIN FETCH r.operatingModes
     """)
     Optional<Restaurant> findRestaurantById(Long id);

@@ -34,9 +34,6 @@ public class Option {
     @Column(name = "min_value")
     private Integer min;
 
-    @Column(name = "is_multiple")
-    private boolean multiple;
-
     @Column(name = "max_value")
     private Integer max;
 
@@ -55,7 +52,7 @@ public class Option {
     @JoinColumn(name = "dish_id")
     private Dish dish;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "option_id")
     private List<Element> element;
 

@@ -48,5 +48,7 @@ public class DishToOrder {
     @JoinColumn(name = "dish_id")
     private Dish dish;
 
-
+    @ManyToOne
+    @JoinColumn(name = "element_id")
+    private Element element;
 }

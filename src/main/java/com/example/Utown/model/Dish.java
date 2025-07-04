@@ -48,7 +48,7 @@ public class Dish {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "file_id")
     private FileInfo file;
 
@@ -59,5 +59,6 @@ public class Dish {
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
+
 
 }
