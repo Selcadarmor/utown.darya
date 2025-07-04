@@ -127,5 +127,4 @@ public class Order {
     @JoinColumn(name = "order_id_in_dish")
     private List<DishToOrder> dishesToOrder;
 
-
 }

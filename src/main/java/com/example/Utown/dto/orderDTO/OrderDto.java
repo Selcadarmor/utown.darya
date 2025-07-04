@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.util.List;
-
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.UserType.Client;
 import java.time.LocalDateTime;
