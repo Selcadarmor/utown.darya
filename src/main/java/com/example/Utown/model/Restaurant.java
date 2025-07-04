@@ -60,8 +60,10 @@ public class Restaurant {
     private Boolean statusForcedChanged;
 
     private Boolean isActive;
+
     @CreatedDate
     private LocalDateTime createdAt;
+
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
