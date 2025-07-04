@@ -12,10 +12,8 @@ import org.mapstruct.MappingTarget;
 public interface OrderInfoMapper {
 
     @Mapping(target = "dishesToOrder", ignore = true)
-    @Mapping(target = "dishElementToOrders", ignore = true)
     Order toEntity(OrderInfoDto dto);
 
     @Mapping(target = "dishesToOrder", ignore = true)
-    @Mapping(target = "dishElementToOrders", ignore = true)
     Order updateFromDto(OrderInfoDto orderInfoDto, @MappingTarget Order order);
 }

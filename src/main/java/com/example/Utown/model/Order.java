@@ -123,13 +123,9 @@ public class Order {
     @JoinColumn(name = "client_id")
     private Client client;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id_in_dish")
     private List<DishToOrder> dishesToOrder;
-
-    @OneToMany
-    @JoinColumn(name = "order_id_in_element")
-    private List<DishElementToOrder> dishElementToOrders;
 
 
 }

@@ -39,7 +39,7 @@ public class DishCategory {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "restaurant_dish_categories",
             joinColumns = @JoinColumn(name = "dish_category_id"),
@@ -47,7 +47,7 @@ public class DishCategory {
     )
     private Set<Restaurant> restaurants;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "file_id")
     private FileInfo file;
 }
