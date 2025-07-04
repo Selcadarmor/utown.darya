@@ -48,7 +48,7 @@ public class CartServiceImpl implements CartService {
         existingCart.setSumOrder(dto.getSumOrder());
         existingCart.setTotalDish(dto.getTotalDish());
         existingCart.setTotalSum(dto.getTotalSum());
-        existingCart.setDish(dto.getDish());
+        existingCart.setDishToOrder(dto.getDishToOrder());
 
         return cartRepository.save(existingCart);
     }
