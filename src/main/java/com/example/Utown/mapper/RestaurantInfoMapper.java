@@ -38,7 +38,6 @@ public interface RestaurantInfoMapper {
             @Mapping(target = "updatedAt", ignore = true),
             @Mapping(target = "restaurantAdmin", ignore = true),
             @Mapping(target = "category", ignore = true),
-            @Mapping(target = "orders", ignore = true),
             @Mapping(target = "grades", ignore = true),
             @Mapping(target = "delivery", ignore = true)
     })
