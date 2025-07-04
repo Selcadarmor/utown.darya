@@ -17,7 +17,6 @@ public class OptionDto {
     private String name;
     private boolean required;
     private Integer min;
-    private boolean multiple;
     private Integer max;
     private Boolean isActive;
     private LocalDateTime createdAt;
