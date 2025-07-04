@@ -26,7 +26,7 @@ public class RestaurantInfoDto {
 
     private List<OperatingMode> operatingModes;
 
-    private List<Order> orders;
+    private Long orderCount;
 
     private RestaurantCategory category;
 
@@ -34,10 +34,16 @@ public class RestaurantInfoDto {
 
     private Delivery delivery;
 
-    private List<Rating> grades;
-
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+
+
+    public RestaurantInfoDto(Long id, String title, Long ordersCount) {
+        this.id = id;
+        this.title = title;
+        this.orderCount = ordersCount;
+    }
 
 }

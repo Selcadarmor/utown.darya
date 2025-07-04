@@ -2,8 +2,10 @@ package com.example.Utown.dto.restaurantDTO;
 
 
 import com.example.Utown.dto.addressDTO.AddressInfoDto;
+import com.example.Utown.dto.fileInfoDTO.FileInfoDetailsDto;
 import com.example.Utown.dto.fileInfoDTO.FileInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
+import com.example.Utown.dto.restaurantAdminDTO.RestaurantAdminCreateDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryDto;
 
 import lombok.AllArgsConstructor;
@@ -17,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RestaurantUpdateDto {
-    private Long id;
+
     private String title;
     private String description;
     private String phone;
@@ -26,4 +28,5 @@ public class RestaurantUpdateDto {
     private FileInfoDto fileInfo;
     private List<OperatingModeInfoDto> operatingModes;
     private RestaurantCategoryDto category;
+    private RestaurantAdminCreateDto restaurantAdmin;
 }
