@@ -44,7 +44,7 @@ public class Cart {
     private LocalDateTime updatedAt;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dish_id")
-    private List<Dish> dish;
+    @JoinColumn(name = "dishToOrder_id")
+    private List<DishToOrder> dishToOrder;
 
 }

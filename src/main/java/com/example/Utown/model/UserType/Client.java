@@ -52,9 +52,6 @@ public class Client extends User {
     @JoinColumn(name = "cart_id")
     private Cart cart;
 
-    @OneToMany()
-    private List<Rating> rating;
-
 }
 
 
