@@ -6,9 +6,11 @@ import com.example.Utown.mapper.DishToOrderMapper;
 import com.example.Utown.model.Cart;
 import com.example.Utown.model.Dish;
 import com.example.Utown.model.DishToOrder;
+import com.example.Utown.model.Element;
 import com.example.Utown.repository.CartRepository;
 import com.example.Utown.repository.DishRepository;
 import com.example.Utown.repository.DishToOrderRepository;
+import com.example.Utown.repository.ElementRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,7 @@ public class DishToOrderServiceImpl implements DishToOrderService {
     private final CartRepository cartRepository;
     private final DishRepository dishRepository;
     private final DishToOrderMapper mapper;
+    private final ElementRepository elementRepository;
 
     @Override
     public DishToOrder create(DishToOrderDto dto) {
@@ -30,12 +33,15 @@ public class DishToOrderServiceImpl implements DishToOrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Cart not found", dto.getCart().getId()));
         Dish dish = dishRepository.findById(dto.getDish().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Dish not found", dto.getDish().getId()));
+        Element element = elementRepository.findById(dto.getElement().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Element not found", dto.getElement().getId()));
 
         DishToOrder entity = DishToOrder.builder()
                 .count(dto.getCount())
                 .sum(dto.getSum())
                 .cart(cart)
                 .dish(dish)
+                .element(element)
                 .build();
 
         return dishToOrderRepository.save(entity);
@@ -64,11 +70,14 @@ public class DishToOrderServiceImpl implements DishToOrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Cart not found", dto.getCart().getId()));
         Dish dish = dishRepository.findById(dto.getDish().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Dish not found", dto.getDish().getId()));
+        Element element = elementRepository.findById(dto.getElement().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Element not found", dto.getElement().getId()));
 
         entity.setCount(dto.getCount());
         entity.setSum(dto.getSum());
         entity.setCart(cart);
         entity.setDish(dish);
+        entity.setElement(element);
 
         return dishToOrderRepository.save(entity);
     }

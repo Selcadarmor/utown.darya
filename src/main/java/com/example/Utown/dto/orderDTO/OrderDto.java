@@ -52,5 +52,4 @@ public class OrderDto {
     private Restaurant restaurant;
     private Client client;
     private List<DishToOrder> dishesToOrder;
-    private List<DishElementToOrder> dishElementToOrders;
 }

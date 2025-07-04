@@ -57,7 +57,6 @@ public class OptionServiceImpl implements OptionService {
         option.setName(dto.getName());
         option.setRequired(dto.isRequired());
         option.setMin(dto.getMin());
-        option.setMultiple(dto.isMultiple());
         option.setMax(dto.getMax());
         option.setIsActive(dto.getIsActive());
         option.setDish(dish);
