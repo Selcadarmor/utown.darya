@@ -59,4 +59,5 @@ public class OrderInfoDto {
     private LocalDateTime updatedAt;
     private Client client;
     private Restaurant restaurant;
+
 }

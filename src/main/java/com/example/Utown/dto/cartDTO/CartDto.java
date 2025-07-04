@@ -1,3 +1,4 @@
+
 package com.example.Utown.dto.cartDTO;
 
 import com.example.Utown.model.DishToOrder;
@@ -25,7 +26,4 @@ public class CartDto {
         this.totalSum = totalSum;
         this.dishToOrder = dishToOrder;
     }
-
 }
-
-

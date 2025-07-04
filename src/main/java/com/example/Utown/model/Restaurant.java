@@ -67,6 +67,7 @@ public class Restaurant {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "restaurantAdmin_id")
     private RestaurantAdmin restaurantAdmin;

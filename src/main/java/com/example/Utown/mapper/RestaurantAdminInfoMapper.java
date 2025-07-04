@@ -31,10 +31,6 @@ public abstract class RestaurantAdminInfoMapper {
             admin.setRoles(roleMapper.mapRoles(dto.getRoles()));
         }
 
-        if (dto.getNotifications() != null) {
-            admin.setNotifications(dto.getNotifications());
-        }
-
 
         return admin;
     }
@@ -72,5 +68,5 @@ public abstract class RestaurantAdminInfoMapper {
     @Mapping(target = "orders", ignore = true)
     @Mapping(target = "authorities", ignore = true)
     @Mapping(target = "username", ignore = true)
-    public abstract RestaurantAdmin updateFromDto(RestaurantAdminInfoDto dto, @MappingTarget RestaurantAdmin admin);
+    public abstract RestaurantAdmin updateFromDto(RestaurantAdminCreateDto dto, @MappingTarget RestaurantAdmin admin);
 }
