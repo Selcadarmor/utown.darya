@@ -21,3 +21,4 @@ public class AddressDto {
     private String intercomCode;
     private Integer typeAddress;
 }
+

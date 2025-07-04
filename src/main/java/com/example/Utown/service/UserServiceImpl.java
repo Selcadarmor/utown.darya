@@ -1,23 +1,16 @@
 package com.example.Utown.service;
 
-import com.example.Utown.dto.userDto.UserChangePasswordDto;
-import com.example.Utown.dto.userDto.UserProfileUpdateDto;
 import com.example.Utown.dto.userDto.UserRegistrationDto;
 import com.example.Utown.exception.*;
-import com.example.Utown.model.Address;
 import com.example.Utown.model.Role;
 import com.example.Utown.model.User;
-import com.example.Utown.model.UserType.Client;
 import com.example.Utown.model.enumFiles.Roles;
-import com.example.Utown.repository.AddressRepository;
 import com.example.Utown.repository.RoleRepository;
 import com.example.Utown.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 

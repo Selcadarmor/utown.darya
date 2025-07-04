@@ -1,16 +1,16 @@
 package com.example.Utown.service;
 
-import com.example.Utown.dto.addressDTO.AddressInfoDto;
+
+import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.model.Address;
 
 import java.util.List;
 
-
 public interface AddressService {
-    Address createAddress(AddressInfoDto dto);
-    AddressInfoDto getAddressById(Long id);
-    List<AddressInfoDto> getAllAddresses();
-    Address updateAddress(Long id, AddressInfoDto dto);
+    Address createAddress(AddressDto dto);
+    AddressDto getAddressById(Long id);
+    List<AddressDto> getAllAddresses();
+    Address updateAddress(Long id, AddressDto dto);
     void deleteAddress(Long id);
 
 }

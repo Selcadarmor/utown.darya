@@ -1,5 +1,6 @@
 package com.example.Utown.service;
 
+import com.example.Utown.dto.clientDTO.RestaurantForClientDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantCreateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
@@ -14,4 +15,7 @@ public interface RestaurantService {
     RestaurantDetailsDto createRestaurant(RestaurantCreateDto dto);
     RestaurantDetailsDto updateRestaurant(Long id, RestaurantUpdateDto dto);
     void deleteRestaurant(Long id);
+    List<RestaurantForClientDto> getAllRestaurantsForClientSortedByDeliveryTime();
+    List<RestaurantForClientDto> getAllRestaurantsForClient();
+    long countRestaurantsByCategory(Long categoryId);
 }

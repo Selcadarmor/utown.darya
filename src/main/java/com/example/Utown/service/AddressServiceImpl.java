@@ -1,10 +1,10 @@
 package com.example.Utown.service;
 
-
-import com.example.Utown.dto.addressDTO.AddressInfoDto;
+import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.model.Address;
 import com.example.Utown.repository.AddressRepository;
+import com.example.Utown.repository.UserType.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,22 +13,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class AddressServiceImpl implements AddressService {
-    private final AddressRepository addressRepository;;
+    private final AddressRepository addressRepository;
+    private final ClientRepository clientRepository;
 
     @Override
-    public List<AddressInfoDto> getAllAddresses() {
-        return addressRepository.findAllAddresses();
-    }
-
-    @Override
-    public AddressInfoDto getAddressById(Long id) {
-        return addressRepository.findAddressById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Address not found", id));
-    }
-
-
-    @Override
-    public Address createAddress(AddressInfoDto dto) {
+    public Address createAddress(AddressDto dto) {
         Address address = new Address();
         address.setArea(dto.getArea());
         address.setCity(dto.getCity());
@@ -45,7 +34,18 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public Address updateAddress(Long id, AddressInfoDto dto) {
+    public AddressDto getAddressById(Long id) {
+        return addressRepository.findAddressById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Address not found", id));
+    }
+
+    @Override
+    public List<AddressDto> getAllAddresses() {
+        return addressRepository.findAllAddresses();
+    }
+
+    @Override
+    public Address updateAddress(Long id, AddressDto dto) {
         Address address = addressRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Address", id));
 
@@ -70,5 +70,6 @@ public class AddressServiceImpl implements AddressService {
                 .orElseThrow(() -> new ResourceNotFoundException("Address not found", id));
         addressRepository.delete(address);
     }
+
 
 }

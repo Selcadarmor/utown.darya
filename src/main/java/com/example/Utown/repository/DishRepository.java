@@ -2,10 +2,20 @@ package com.example.Utown.repository;
 
 import com.example.Utown.model.Dish;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import com.example.Utown.dto.dishDTO.DishDto;
+import org.springframework.data.jpa.repository.Query;
+import java.util.List;
+import java.util.Optional;
 
-@Repository
 public interface DishRepository extends JpaRepository<Dish, Long> {
 
+    @Query("SELECT new com.example.Utown.dto.dishDTO.DishDto(d.id, d.description, d.isActive, d.isDeleted, d.price, d.sort, d.title, d.createdAt, d.updatedAt, d.restaurant.id, d.dishCategory.id, d.file.id) " +
+            "FROM Dish d WHERE d.id = :id")
+    Optional<DishDto> findDishById(Long id);
+
+    @Query("SELECT new com.example.Utown.dto.dishDTO.DishDto(d.id, d.description, d.isActive, d.isDeleted, d.price, d.sort, d.title, d.createdAt, d.updatedAt, d.restaurant.id, d.dishCategory.id, d.file.id) " +
+            "FROM Dish d")
+    List<DishDto> findAllDishes();
 }
+
 

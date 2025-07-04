@@ -19,3 +19,4 @@ public class RestaurantCategoryDto {
     private LocalDateTime updatedAt;
     private FileInfo file;
 }
+
