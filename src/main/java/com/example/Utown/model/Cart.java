@@ -44,12 +44,10 @@ public class Cart {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    //@OneToMany(fetch = FetchType.LAZY)
-    //@JoinColumn(name = "dish_to_order")
-   // private List<DishToOrder> dishToOrders;
-
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dish_id")
-    private List<Dish> dish;
+    @JoinColumn(name = "dish_to_order")
+    private List<DishToOrder> dishToOrder;
+
+
 
 }
