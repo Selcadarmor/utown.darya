@@ -33,5 +33,4 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     """)
     Optional<Restaurant> findRestaurantById(Long id);
 
-
 }
