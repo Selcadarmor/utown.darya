@@ -1,5 +1,6 @@
 package com.example.Utown.model;
 
+import com.example.Utown.model.UserType.Client;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -42,6 +43,10 @@ public class Cart {
     @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    //@OneToMany(fetch = FetchType.LAZY)
+    //@JoinColumn(name = "dish_to_order")
+   // private List<DishToOrder> dishToOrders;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "dish_id")

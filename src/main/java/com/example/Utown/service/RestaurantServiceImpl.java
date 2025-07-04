@@ -14,6 +14,7 @@ import com.example.Utown.model.RestaurantCategory;
 import com.example.Utown.model.Role;
 import com.example.Utown.model.UserType.RestaurantAdmin;
 import com.example.Utown.model.enumFiles.Roles;
+import com.example.Utown.repository.OrderRepository;
 import com.example.Utown.repository.RestaurantCategoryRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.repository.RoleRepository;
@@ -41,19 +42,24 @@ public class RestaurantServiceImpl  implements RestaurantService {
     private final FileInfoMapper fileInfoMapper;
     private final RestaurantCategoryInfoMapper restaurantCategoryMapper;
     private final RestaurantCategoryRepository restaurantCategoryRepository;
+    private final OrderRepository orderRepository;
 
     @Override
-    public List<RestaurantInfoDto> getAllRestaurants(){
-        return restaurantRepository.findAllRestaurants().stream()
-                .map(restaurantInfoMapper::toRestaurantInfoDto)
-                .toList();
+    public List<RestaurantInfoDto> getAllRestaurants() {
+        return restaurantRepository.findAllRestaurantsWithOrderCount();
     }
+
 
     @Override
     public RestaurantDetailsDto getRestaurantById(Long id) {
         Restaurant restaurant = restaurantRepository.findRestaurantById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant", id));
-                return  restaurantInfoMapper.toDto(restaurant);
+
+        Long orderCounts = orderRepository.countByRestaurantId(id);
+
+       RestaurantDetailsDto dto =  restaurantInfoMapper.toDto(restaurant, orderCounts);
+       return dto;
+
     }
 
     @Transactional
@@ -110,6 +116,10 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
         if (dto.getCategory() != null) {
             restaurantCategoryMapper.updateFromDto(dto.getCategory(), restaurant.getCategory());
+        }
+
+        if (dto.getRestaurantAdmin() != null) {
+            restaurantAdminInfoMapper.updateFromDto(dto.getRestaurantAdmin(), restaurant.getRestaurantAdmin());
         }
 
 

@@ -16,6 +16,5 @@ public class RestaurantAdminCreateDto {
     private String password;
     private String fullName;
     private Set<Roles> roles;
-    private Set<Notification> notifications;
-    private Boolean isActive;
+
 }

@@ -1,6 +1,7 @@
 package com.example.Utown.repository;
 
 import com.example.Utown.dto.clientDTO.RestaurantForClientDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.RestaurantCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -48,6 +49,16 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
         WHERE r.isActive = true
     """)
     List<RestaurantForClientDto> getAllRestaurantsForClient();
+
+    @Query("""
+    SELECT new com.example.Utown.dto.restaurantDTO.RestaurantInfoDto(
+        r.id, r.title, COUNT(o.id)
+    )
+    FROM Restaurant r
+    LEFT JOIN Order o ON o.restaurant.id = r.id
+    GROUP BY r.id, r.title
+""")
+    List<RestaurantInfoDto> findAllRestaurantsWithOrderCount();
 
 
 }

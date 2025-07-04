@@ -2,7 +2,6 @@ package com.example.Utown.service;
 
 import com.example.Utown.dto.orderDTO.OrderDto;
 import com.example.Utown.model.Order;
-import com.example.Utown.dto.orderDTO.OrderShortDto;
 
 import java.util.List;
 
