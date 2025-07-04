@@ -3,12 +3,12 @@ package com.example.Utown.controller;
 import com.example.Utown.dto.tokens.JWTRequest;
 import com.example.Utown.dto.tokens.JWTResponse;
 import com.example.Utown.dto.tokens.RefreshTokenRequest;
-import com.example.Utown.dto.userDto.UserChangePasswordDto;
-import com.example.Utown.dto.userDto.UserProfileUpdateDto;
+import com.example.Utown.dto.clientDto.ClientChangePasswordDto;
+import com.example.Utown.dto.clientDto.ClientProfileUpdateDto;
 import com.example.Utown.dto.userDto.UserRegistrationDto;
 import com.example.Utown.service.AuthService;
 import com.example.Utown.service.RefreshTokenService;
-import com.example.Utown.service.UserService;
+import com.example.Utown.service.UserType.client.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
@@ -29,7 +29,7 @@ public class MainController {
 
     private final AuthService authService;
     private final RefreshTokenService refreshTokenService;
-    private final UserService userService;
+    private final ClientService clientService;
 
     @PostMapping("/registration-client")  //Passed
     @Operation(summary = "Register Client", description = "Registration for client users")
@@ -44,16 +44,6 @@ public class MainController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/update") //Passed
-    @Operation(summary = "Update client profile", description = "" )
-    public ResponseEntity<String> updateProfile(
-            @AuthenticationPrincipal User user,
-            @RequestBody UserProfileUpdateDto dto
-    ) {
-        userService.updateProfile(user.getUsername(), dto);
-        return ResponseEntity.ok("Profile updated successfully");
-    }
-
     @PostMapping("/refresh_token") //Passed
     public ResponseEntity<JWTResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
         try {
@@ -62,17 +52,6 @@ public class MainController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JWTResponse("", ""));
         }
-    }
-
-
-    @PutMapping("/change_password")//Passed
-    @Operation(summary = "Change client password", description = "")
-    public ResponseEntity<String> changePassword(
-            @RequestBody @Valid UserChangePasswordDto dto,
-            @AuthenticationPrincipal User user
-    ) {
-        userService.changePassword(user.getUsername(), dto);
-        return ResponseEntity.ok("Password changed successfully");
     }
 
     @PostMapping("/logout")//Passed

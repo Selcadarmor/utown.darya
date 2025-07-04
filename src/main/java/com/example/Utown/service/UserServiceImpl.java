@@ -1,23 +1,16 @@
 package com.example.Utown.service;
 
-import com.example.Utown.dto.userDto.AddressCreateDto;
-import com.example.Utown.dto.userDto.UserChangePasswordDto;
-import com.example.Utown.dto.userDto.UserProfileUpdateDto;
 import com.example.Utown.dto.userDto.UserRegistrationDto;
 import com.example.Utown.exception.*;
-import com.example.Utown.model.Address;
 import com.example.Utown.model.Role;
 import com.example.Utown.model.User;
-import com.example.Utown.model.UserType.Client;
 import com.example.Utown.model.enumFiles.Roles;
-import com.example.Utown.repository.AddressRepository;
 import com.example.Utown.repository.RoleRepository;
 import com.example.Utown.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -28,7 +21,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AddressRepository addressRepository;
 
     @Override
     public Optional<User> findByUsername(String username) {
@@ -56,54 +48,4 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    @Override
-    public void updateProfile(String currentUsername, UserProfileUpdateDto dto) {
-        User user = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new UserNotFoundException(currentUsername));
-
-        if (!user.getUsername().equals(dto.getUsername())
-                && userRepository.existsByUsername(dto.getUsername())) {
-            throw new UserAlreadyExistsException(dto.getUsername());
-        }
-
-        user.setUsername(dto.getUsername());
-
-        if (user instanceof Client client) {
-            if (dto.getFullName() != null) {
-                client.setFullName(dto.getFullName());
-            }
-
-            AddressCreateDto addrDto = dto.getDefaultAddress();
-            if (addrDto != null && addrDto.getFullAddress() != null) {
-                Address address = Address.builder()
-                        .fullAddress(addrDto.getFullAddress())
-                        .build();
-
-                addressRepository.save(address);
-
-                client.setDefaultAddress(address);
-
-                if (client.getAddresses() == null) {
-                    client.setAddresses(new HashSet<>());
-                }
-                client.getAddresses().add(address);
-            }
-        }
-
-        userRepository.save(user);
-    }
-
-
-    @Override
-    public void changePassword(String username, UserChangePasswordDto dto) {
-        if (!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
-            throw new PasswordsDoNotMatchException();
-        }
-
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException(username));
-
-        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
-        userRepository.save(user);
-    }
 }
