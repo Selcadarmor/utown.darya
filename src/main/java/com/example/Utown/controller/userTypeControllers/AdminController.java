@@ -1,4 +1,4 @@
-package com.example.Utown.controller;
+package com.example.Utown.controller.userTypeControllers;
 
 import com.example.Utown.dto.clientDTO.ClientInfoDto;
 import com.example.Utown.dto.clientDTO.ClientUpdateDto;
@@ -29,7 +29,7 @@ import java.util.List;
 )
 @RestController
 @RequestMapping("/admin/")
-public class AdminClientController {
+public class AdminController {
 
     private final ClientServiceImpl clientService;
     private final RestaurantServiceImpl restaurantService;

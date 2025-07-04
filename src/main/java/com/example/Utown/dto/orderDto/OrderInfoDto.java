@@ -1,4 +1,4 @@
-package com.example.Utown.dto.orderDto;
+package com.example.Utown.dto.orderDTO;
 
 import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
 import com.example.Utown.model.DishToOrder;

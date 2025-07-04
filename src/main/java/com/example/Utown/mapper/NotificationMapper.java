@@ -9,3 +9,4 @@ public interface NotificationMapper {
     NotificationDto toDto(Notification entity);
     Notification toEntity(NotificationDto dto);
 }
+

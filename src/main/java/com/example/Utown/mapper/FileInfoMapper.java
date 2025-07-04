@@ -12,4 +12,7 @@ public interface FileInfoMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     FileInfo updateFromDto(FileInfoDto fileInfoDto, @MappingTarget FileInfo fileInfo);
+    FileInfoDto toDto(FileInfo entity);
+
 }
+

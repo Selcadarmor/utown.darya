@@ -28,3 +28,4 @@ public class NotificationDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
+

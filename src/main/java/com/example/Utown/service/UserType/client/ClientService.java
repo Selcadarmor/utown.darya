@@ -1,9 +1,9 @@
 package com.example.Utown.service.UserType.client;
 
+import com.example.Utown.dto.addressDTO.AddressDto;
+import com.example.Utown.dto.clientDTO.ClientChangePasswordDto;
 import com.example.Utown.dto.clientDTO.ClientInfoDto;
 import com.example.Utown.dto.clientDTO.ClientUpdateDto;
-import com.example.Utown.dto.userDto.UserChangePasswordDto;
-import com.example.Utown.dto.userDto.UserProfileUpdateDto;
 import com.example.Utown.model.UserType.Client;
 
 import java.util.List;
@@ -16,9 +16,9 @@ public interface ClientService {
         ClientInfoDto getClientById(Long clientId);
         ClientInfoDto updateClient(Long id, ClientUpdateDto dto);
         void deleteClient(Long id);
-        void updateProfile(String currentUsername, UserProfileUpdateDto dto);
-        void changePassword(String username, UserChangePasswordDto dto);
-
+        void changePassword(String username, ClientChangePasswordDto dto);
+        Client updateClientProfile(Long clientId, String newFullName, List<AddressDto> updatedAddresses);
 }
+
 
 

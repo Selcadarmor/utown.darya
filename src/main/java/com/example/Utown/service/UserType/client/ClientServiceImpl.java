@@ -1,9 +1,9 @@
 package com.example.Utown.service.UserType.client;
 
+import com.example.Utown.dto.addressDTO.AddressDto;
+import com.example.Utown.dto.clientDTO.ClientChangePasswordDto;
 import com.example.Utown.dto.clientDTO.ClientInfoDto;
 import com.example.Utown.dto.clientDTO.ClientUpdateDto;
-import com.example.Utown.dto.userDto.UserChangePasswordDto;
-import com.example.Utown.dto.userDto.UserProfileUpdateDto;
 import com.example.Utown.exception.*;
 import com.example.Utown.model.Address;
 import com.example.Utown.model.User;
@@ -11,6 +11,7 @@ import com.example.Utown.model.UserType.Client;
 import com.example.Utown.repository.AddressRepository;
 import com.example.Utown.repository.UserRepository;
 import com.example.Utown.repository.UserType.ClientRepository;
+import com.example.Utown.service.AddressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +27,7 @@ public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
     private final UserRepository userRepository;
-    private final AddressRepository addressRepository;
+    private final AddressService addressService;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -82,32 +84,35 @@ public class ClientServiceImpl implements ClientService {
         );
     }
 
-    @Transactional // For Client
-    public void updateProfile(String currentUsername, UserProfileUpdateDto dto) {
-        User user = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new UserNotFoundException(currentUsername));
+    @Transactional
+    public Client updateClientProfile(Long clientId, String newFullName, List<AddressDto> updatedAddresses) {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found", clientId));
 
-        if (!user.getUsername().equals(dto.getUsername())
-                && userRepository.existsByUsername(dto.getUsername())) {
-            throw new UserAlreadyExistsException(dto.getUsername());
-        }
+        client.setFullName(newFullName);
 
-        user.setUsername(dto.getUsername());
+        if (updatedAddresses != null && !updatedAddresses.isEmpty()) {
+            Set<Address> clientAddresses = client.getAddresses();
 
-        if (user instanceof Client client) {
-            client.setFullName(dto.getFullName());
+            for (AddressDto dto : updatedAddresses) {
+                if (dto.getId() == null) {
+                    throw new IllegalArgumentException("Address ID must be provided for update");
+                }
 
-            Long addressId = client.getDefaultAddress();
-            if (addressId != null && dto.getFullAddress() != null) {
-                Address address = addressRepository.findById(addressId)
-                        .orElseThrow(() -> new AddressNotFoundException(addressId));
-                address.setFullAddress(dto.getFullAddress());
+                Address addressToUpdate = clientAddresses.stream()
+                        .filter(addr -> addr.getId().equals(dto.getId()))
+                        .findFirst()
+                        .orElseThrow(() -> new ResourceNotFoundException("Address not found in client addresses", dto.getId()));
+
+                addressService.updateAddress(addressToUpdate.getId(), dto);
             }
         }
+
+        return clientRepository.save(client);
     }
 
     @Override //For Client
-    public void changePassword(String username, UserChangePasswordDto dto) {
+    public void changePassword(String username, ClientChangePasswordDto dto) {
         if (!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
             throw new PasswordsDoNotMatchException();
         }
@@ -118,6 +123,7 @@ public class ClientServiceImpl implements ClientService {
         user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         userRepository.save(user);
     }
+
 
     @Transactional //For Admin + Client
     @Override

@@ -1,4 +1,4 @@
-package com.example.Utown.dto.orderDto;
+package com.example.Utown.dto.orderDTO;
 
 import com.example.Utown.model.enumFiles.OrderStatus;
 import lombok.Data;

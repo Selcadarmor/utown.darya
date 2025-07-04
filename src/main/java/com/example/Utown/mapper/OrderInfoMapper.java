@@ -1,6 +1,6 @@
 package com.example.Utown.mapper;
 
-import com.example.Utown.dto.orderDto.OrderInfoDto;
+import com.example.Utown.dto.orderDTO.OrderInfoDto;
 import com.example.Utown.model.Order;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
