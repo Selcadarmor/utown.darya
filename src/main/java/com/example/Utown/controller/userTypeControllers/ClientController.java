@@ -30,21 +30,32 @@ public class ClientController {
     private final RestaurantService restaurantService;
 
     @GetMapping("/restaurant_categories")
-    public ResponseEntity<List<RestaurantCategoryForClient>> getCategoriesWithRestaurantCount() {
-        List<RestaurantCategoryForClient> categories = restaurantCategoryService.getAllCategoriesWithRestaurantCount();
+    @Operation(summary = "Get all restaurant categories", description = "Restaurant categories with restaurants count for client")
+    public ResponseEntity<List<RestaurantCategoryForClient>> getAllCategoriesForClient() {
+        List<RestaurantCategoryForClient> categories =
+                restaurantCategoryService.getAllCategoriesWithRestaurantCount();
+
         return ResponseEntity.ok(categories);
     }
 
     @GetMapping("/restaurants")
     @Operation(summary = "Get all restaurants", description = "Returns restaurants for clients")
-    public List<RestaurantForClientDto> getAllRestaurantsForClient() {
-        return restaurantService.getAllRestaurantsForClient();
+    public ResponseEntity<List<RestaurantForClientDto>> getAllRestaurants() {
+        List<RestaurantForClientDto> restaurants = restaurantService.getAllRestaurantsForClient();
+        return ResponseEntity.ok(restaurants);
+    }
+
+    @GetMapping("/category/{categoryId}")
+    @Operation(summary = "Get all restaurants by Restaurant Category", description = "Get all restaurants by Restaurant Category" )
+    public ResponseEntity<List<RestaurantForClientDto>> getRestaurantsByCategory(@PathVariable Long categoryId) {
+        List<RestaurantForClientDto> result = restaurantService.getRestaurantsByCategoryId(categoryId);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/restaurants/fastest")
     @Operation(summary = "Get restaurants sorted by fastest delivery", description = "Sorted by deliveryTime")
     public List<RestaurantForClientDto> getRestaurantsSortedByDeliveryTime() {
-        return restaurantService.getAllRestaurantsForClientSortedByDeliveryTime();
+        return restaurantService.getAllRestaurantsSortedByDeliveryTime();
     }
 
     @PutMapping("/{clientId}/profile_update")

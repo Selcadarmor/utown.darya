@@ -22,6 +22,7 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
     private final RestaurantCategoryMapper restaurantCategoryMapper;
     private final FileInfoRepository fileInfoRepository;
     private final RestaurantRepository restaurantRepository;
+    private final RestaurantService restaurantService;
 
     @Override
     public RestaurantCategory createRestaurantCategory(RestaurantCategoryDto dto) {
@@ -80,16 +81,26 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
 
     @Override
     public List<RestaurantCategoryForClient> getAllCategoriesWithRestaurantCount() {
-        List<RestaurantCategory> categories = restaurantCategoryRepository.findAllActiveWithFile();
+        List<RestaurantCategory> categories = restaurantCategoryRepository.findAllActiveRestaurantCategories();
 
         return categories.stream()
-                .map(rc -> new RestaurantCategoryForClient(
-                        rc.getId(),
-                        rc.getName(),
-                        rc.getFile() != null ? rc.getFile().getPath() : null,
-                        restaurantRepository.countByCategory(rc)
-                ))
-                .toList();
+                .map(category -> {
+                    String filePath = category.getFile() != null ? category.getFile().getPath() : null;
+
+                    Long count = restaurantRepository.countRestaurantsByCategory(category);
+
+                    return new RestaurantCategoryForClient(
+                            category.getId(),
+                            category.getName(),
+                            category.getSort(),
+                            category.getIsActive(),
+                            filePath,
+                            count
+                    );
+                })
+                .collect(Collectors.toList());
     }
+
+
 }
 

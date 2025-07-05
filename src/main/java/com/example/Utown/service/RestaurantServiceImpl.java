@@ -10,12 +10,10 @@ import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.*;
 import com.example.Utown.model.OperatingMode;
 import com.example.Utown.model.Restaurant;
-import com.example.Utown.model.RestaurantCategory;
 import com.example.Utown.model.Role;
 import com.example.Utown.model.UserType.RestaurantAdmin;
 import com.example.Utown.model.enumFiles.Roles;
 import com.example.Utown.repository.OrderRepository;
-import com.example.Utown.repository.RestaurantCategoryRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
@@ -41,8 +39,8 @@ public class RestaurantServiceImpl  implements RestaurantService {
     private final OperatingModeInfoMapper operatingModeInfoMapper;
     private final FileInfoMapper fileInfoMapper;
     private final RestaurantCategoryInfoMapper restaurantCategoryMapper;
-    private final RestaurantCategoryRepository restaurantCategoryRepository;
     private final OrderRepository orderRepository;
+    private final RestaurantMapper restaurantMapper;
 
     @Override
     public List<RestaurantInfoDto> getAllRestaurants() {
@@ -139,31 +137,37 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
     @Override //For Client
     public List<RestaurantForClientDto> getAllRestaurantsForClient() {
-        return restaurantRepository.getAllRestaurantsForClient();
+        List<Restaurant> restaurants = restaurantRepository.getAllActiveRestaurantsForClient();
+        return restaurants.stream()
+                .map(restaurantMapper::toRestaurantForClientDto)
+                .collect(Collectors.toList());
+        // добавите сортировку по рейтингу???
     }
 
     @Override //For Client
-    public List<RestaurantForClientDto> getAllRestaurantsForClientSortedByDeliveryTime() {
-        List<RestaurantForClientDto> restaurants = restaurantRepository.getAllRestaurantsForClient();
+    public List<RestaurantForClientDto> getRestaurantsByCategoryId(Long categoryId) {
+        List<RestaurantForClientDto> allRestaurants = getAllRestaurantsForClient();
 
-        restaurants.sort(Comparator.comparingInt(r -> {
+        return allRestaurants.stream()
+                .filter(r -> r.getCategoryIds() != null && r.getCategoryIds().contains(categoryId))
+                .toList();
+    }
+
+    @Override //For Client
+    public List<RestaurantForClientDto> getAllRestaurantsSortedByDeliveryTime() {
+        List<RestaurantForClientDto> allRestaurants = getAllRestaurantsForClient();
+
+        allRestaurants.sort(Comparator.comparingInt(r -> {
             try {
-                String digits = r.getDeliveryTime().replaceAll("\\D", "");
-                return Integer.parseInt(digits);
+                return Integer.parseInt(r.getDeliveryTime());
             } catch (Exception e) {
                 return Integer.MAX_VALUE;
             }
         }));
+        // Добавить везде сортировку по рейтингу???
 
-        return restaurants;
+        return allRestaurants;
     }
 
 
-    @Override //For Client
-    public long countRestaurantsByCategory(Long categoryId) {
-        RestaurantCategory category = restaurantCategoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException("Category not found", categoryId));
-
-        return restaurantRepository.countByCategory(category);
-    }
 }

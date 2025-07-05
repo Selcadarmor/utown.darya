@@ -15,7 +15,8 @@ public interface RestaurantService {
     RestaurantDetailsDto createRestaurant(RestaurantCreateDto dto);
     RestaurantDetailsDto updateRestaurant(Long id, RestaurantUpdateDto dto);
     void deleteRestaurant(Long id);
-    List<RestaurantForClientDto> getAllRestaurantsForClientSortedByDeliveryTime();
     List<RestaurantForClientDto> getAllRestaurantsForClient();
-    long countRestaurantsByCategory(Long categoryId);
+    List<RestaurantForClientDto> getRestaurantsByCategoryId(Long categoryId);
+    List<RestaurantForClientDto> getAllRestaurantsSortedByDeliveryTime();
+
 }

@@ -15,6 +15,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Setter
@@ -72,9 +73,14 @@ public class Restaurant {
     @JoinColumn(name = "restaurantAdmin_id")
     private RestaurantAdmin restaurantAdmin;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "restaurant_category_id", nullable = false)
-    private RestaurantCategory category;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "restaurant_categories_link",
+            joinColumns = @JoinColumn(name = "restaurant_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private Set<RestaurantCategory> categories;
+
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "address_id")

@@ -1,6 +1,5 @@
 package com.example.Utown.dto.restaurantCategoryDTO;
 
-import com.example.Utown.model.FileInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -9,6 +8,8 @@ import lombok.Data;
 public class RestaurantCategoryForClient {
     private Long id;
     private String name;
+    private Integer sort;
+    private Boolean isActive;
     private String filePath;
     private Long restaurantCount;
 
