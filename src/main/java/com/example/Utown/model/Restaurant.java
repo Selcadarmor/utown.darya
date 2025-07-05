@@ -81,7 +81,6 @@ public class Restaurant {
     )
     private Set<RestaurantCategory> categories;
 
-
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "address_id")
     private Address address;
