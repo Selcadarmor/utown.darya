@@ -28,7 +28,7 @@ public interface RestaurantInfoMapper {
             @Mapping(target = "updatedAt", ignore = true)
     })
     Restaurant toEntity(RestaurantCreateDto dto);
-
+    @Mapping(source = "categories", target = "categories")
     RestaurantDetailsDto toDto(Restaurant restaurant);
 
 
