@@ -21,7 +21,7 @@ public class RestaurantDetailsDto {
     private BigDecimal minOrderAmount;
     private Long orderCount;
     private FileInfo fileInfo;
-    private RestaurantCategory category;
+    private List<RestaurantCategory> categories;
     private List<OperatingMode> operatingModes;
     private RestaurantAdmin restaurantAdmin;
     private LocalDateTime createdAt;

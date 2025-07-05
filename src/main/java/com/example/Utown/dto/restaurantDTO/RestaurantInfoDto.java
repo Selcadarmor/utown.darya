@@ -28,7 +28,7 @@ public class RestaurantInfoDto {
 
     private Long orderCount;
 
-    private RestaurantCategory category;
+    private List<RestaurantCategory> categories;
 
     private RestaurantAdmin restaurantAdmin;
 

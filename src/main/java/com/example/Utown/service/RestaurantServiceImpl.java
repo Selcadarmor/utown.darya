@@ -10,10 +10,12 @@ import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.*;
 import com.example.Utown.model.OperatingMode;
 import com.example.Utown.model.Restaurant;
+import com.example.Utown.model.RestaurantCategory;
 import com.example.Utown.model.Role;
 import com.example.Utown.model.UserType.RestaurantAdmin;
 import com.example.Utown.model.enumFiles.Roles;
 import com.example.Utown.repository.OrderRepository;
+import com.example.Utown.repository.RestaurantCategoryRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
@@ -38,9 +40,10 @@ public class RestaurantServiceImpl  implements RestaurantService {
     private final AddressInfoMapper addressInfoMapper;
     private final OperatingModeInfoMapper operatingModeInfoMapper;
     private final FileInfoMapper fileInfoMapper;
-    private final RestaurantCategoryInfoMapper restaurantCategoryMapper;
     private final OrderRepository orderRepository;
     private final RestaurantMapper restaurantMapper;
+    private final RestaurantCategoryRepository restaurantCategoryRepository;
+
 
     @Override
     public List<RestaurantInfoDto> getAllRestaurants() {
@@ -65,19 +68,48 @@ public class RestaurantServiceImpl  implements RestaurantService {
     public RestaurantDetailsDto createRestaurant(RestaurantCreateDto dto) {
         Restaurant restaurant = restaurantInfoMapper.toEntity(dto);
 
-        RestaurantAdminCreateDto adminDto = dto.getRestaurantCreateDto();
-
+        // 👤 Admin
+        RestaurantAdminCreateDto adminDto = dto.getRestaurantAdmin(); // выбери одно поле!
         RestaurantAdmin admin = restaurantAdminInfoMapper.toEntity(adminDto);
         admin.setPassword(passwordEncoder.encode(adminDto.getPassword()));
-        Role role = roleRepository.findByName(Roles.valueOf("ROLE_RESTAURANT_ADMIN"))
+        Role role = roleRepository.findByName(Roles.ROLE_RESTAURANT_ADMIN)
                 .orElseThrow(() -> new ResourceNotFoundException("Role", "ROLE_RESTAURANT_ADMIN"));
+
         admin.setRoles(Set.of(role));
         admin.setRestaurant(restaurant);
         restaurant.setRestaurantAdmin(admin);
 
-        Restaurant savedRestaurant = restaurantRepository.save(restaurant);
-        return restaurantInfoMapper.toDto(savedRestaurant);
+        // 📁 File
+        if (dto.getFileInfo() != null) {
+            restaurant.setFileInfo(fileInfoMapper.toDetailsEntity(dto.getFileInfo()));
+        }
+
+        // 🏷 Categories
+        if (dto.getCategoryIds() != null && !dto.getCategoryIds().isEmpty()) {
+            Set<RestaurantCategory> categories = dto.getCategoryIds().stream()
+                    .map(id -> restaurantCategoryRepository.findById(id)
+                            .orElseThrow(() -> new ResourceNotFoundException("Category", id)))
+                    .collect(Collectors.toSet());
+            restaurant.setCategories(categories);
+        }
+
+        // 🕒 Operating Modes
+        if (dto.getOperatingModes() != null && !dto.getOperatingModes().isEmpty()) {
+            List<OperatingMode> modes = dto.getOperatingModes().stream()
+                    .map(operatingModeInfoMapper::toEntity)
+                    .collect(Collectors.toList());
+            restaurant.setOperatingModes(modes);
+        }
+
+        // 🏠 Address
+        if (dto.getAddress() != null) {
+            restaurant.setAddress(addressInfoMapper.toEntity(dto.getAddress()));
+        }
+
+        Restaurant saved = restaurantRepository.save(restaurant);
+        return restaurantInfoMapper.toDto(saved);
     }
+
 
     @Transactional
     @Override
@@ -112,9 +144,15 @@ public class RestaurantServiceImpl  implements RestaurantService {
         }
 
 
-        if (dto.getCategory() != null) {
-            restaurantCategoryMapper.updateFromDto(dto.getCategory(), restaurant.getCategory());
+        if (dto.getCategoryIds() != null) {
+            Set<RestaurantCategory> updatedCategories = dto.getCategoryIds().stream()
+                    .map(categoryId -> restaurantCategoryRepository.findById(id)
+                            .orElseThrow(() -> new ResourceNotFoundException("Category", id)))
+                    .collect(Collectors.toSet());
+
+            restaurant.setCategories(updatedCategories);
         }
+
 
         if (dto.getRestaurantAdmin() != null) {
             restaurantAdminInfoMapper.updateFromDto(dto.getRestaurantAdmin(), restaurant.getRestaurantAdmin());

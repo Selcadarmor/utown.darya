@@ -27,6 +27,6 @@ public class RestaurantUpdateDto {
     private AddressInfoDto address;
     private FileInfoDto fileInfo;
     private List<OperatingModeInfoDto> operatingModes;
-    private RestaurantCategoryDto category;
+    private List<Long> categoryIds;
     private RestaurantAdminCreateDto restaurantAdmin;
 }

@@ -22,7 +22,7 @@ public class RestaurantCreateDto {
     private String phone;
     private BigDecimal minOrderAmount;
     private FileInfoDetailsDto fileInfo;
-    private RestaurantCategoryDto category;
+    private List<Long> categoryIds;
     private List<OperatingModeInfoDto> operatingModes;
     private RestaurantAdminCreateDto restaurantAdmin;
     private AddressInfoDto address;

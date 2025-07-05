@@ -20,7 +20,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     @Query(""" 
         SELECT r FROM Restaurant r
         LEFT JOIN FETCH r.address
-        LEFT JOIN FETCH r.category
+        LEFT JOIN FETCH r.categories
         LEFT JOIN FETCH r.fileInfo
         LEFT JOIN FETCH r.operatingModes
     """)
@@ -29,7 +29,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     @Query(""" 
         SELECT r FROM Restaurant r
         LEFT JOIN FETCH r.address
-        LEFT JOIN FETCH r.category
+        LEFT JOIN FETCH r.categories
         LEFT JOIN FETCH r.fileInfo
         LEFT JOIN FETCH r.operatingModes
     """)
