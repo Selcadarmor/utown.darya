@@ -3,6 +3,8 @@ package com.example.Utown.repository;
 import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.RestaurantCategory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -55,6 +57,14 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     """)
     List<Restaurant> getAllActiveRestaurantsForClient();
 
+    @Query("""
+        SELECT DISTINCT r
+        FROM Restaurant r
+        LEFT JOIN r.categories c
+        WHERE LOWER(r.title) LIKE LOWER(CONCAT('%', :query, '%'))
+           OR LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%'))
+    """)
+    Page<Restaurant> searchClient(@Param("query") String query, Pageable pageable);
 
 
 }

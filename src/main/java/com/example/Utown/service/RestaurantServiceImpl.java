@@ -1,6 +1,6 @@
 package com.example.Utown.service;
 
-import com.example.Utown.dto.clientDTO.RestaurantForClientDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
 import com.example.Utown.dto.restaurantAdminDTO.RestaurantAdminCreateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantCreateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
@@ -19,6 +19,10 @@ import com.example.Utown.repository.RestaurantCategoryRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,8 +62,8 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
         Long orderCounts = orderRepository.countByRestaurantId(id);
 
-       RestaurantDetailsDto dto =  restaurantInfoMapper.toDto(restaurant, orderCounts);
-       return dto;
+        RestaurantDetailsDto dto = restaurantInfoMapper.toDto(restaurant, orderCounts);
+        return dto;
 
     }
 
@@ -179,7 +183,8 @@ public class RestaurantServiceImpl  implements RestaurantService {
         return restaurants.stream()
                 .map(restaurantMapper::toRestaurantForClientDto)
                 .collect(Collectors.toList());
-        // добавите сортировку по рейтингу???
+        // добавить сортировку по рейтингу???
+        // добавить сортировку по рекомендации???
     }
 
     @Override //For Client
@@ -202,10 +207,38 @@ public class RestaurantServiceImpl  implements RestaurantService {
                 return Integer.MAX_VALUE;
             }
         }));
-        // Добавить везде сортировку по рейтингу???
+        // Добавить везде сортировку по рейтингу и рекомендации???
+        // Как сохранить точный порядок сортировки по рейтингу, рекомендации и время доставки???
 
         return allRestaurants;
     }
 
+    @Override
+    public Page<RestaurantForClientDto> searchRestaurants(
+            String query,
+            int page,
+            int size,
+            String sortBy,
+            String direction) {
 
+        Sort sort;
+        switch (sortBy.toLowerCase()) {
+            case "rating":
+                sort = Sort.by(Sort.Direction.fromString(direction), "rating");
+                break;
+            case "isrecommended":
+                sort = Sort.by(Sort.Direction.fromString(direction), "isRecommended");
+                break;
+            case "deliverytime":
+                sort = Sort.by(Sort.Direction.fromString(direction), "deliveryTime");
+                break;
+            default:
+                sort = Sort.by(Sort.Direction.fromString(direction), "id");
+        }
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return restaurantRepository.searchClient(query, pageable)
+                .map(restaurantMapper::toRestaurantForClientDto);
+    }
 }
