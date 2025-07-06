@@ -123,8 +123,7 @@ public class Order {
     @JoinColumn(name = "client_id")
     private Client client;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id_in_dish")
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<DishToOrder> dishesToOrder;
 
 }
