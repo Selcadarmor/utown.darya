@@ -6,12 +6,10 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DishDto {
+public class DishDetailsDto {
     private Long id;
     private String description;
     private Boolean isActive;
