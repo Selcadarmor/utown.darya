@@ -1,23 +1,25 @@
-package com.example.Utown.dto.dishCategoryDTO;
+package com.example.Utown.dto.dishDTO;
 
-import com.example.Utown.model.FileInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DishCategoryDto {
+public class DishDetailsDto {
     private Long id;
-    private String name;
-    private Integer sort;
+    private String description;
     private Boolean isActive;
+    private Boolean isDeleted;
+    private BigDecimal price;
+    private Integer sort;
+    private String title;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Long restaurantId;
-    private FileInfo file;
+    private Long dishCategoryId;
+    private Long fileId;
 }
-

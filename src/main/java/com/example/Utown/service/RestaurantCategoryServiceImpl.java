@@ -22,7 +22,6 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
     private final RestaurantCategoryMapper restaurantCategoryMapper;
     private final FileInfoRepository fileInfoRepository;
     private final RestaurantRepository restaurantRepository;
-    private final RestaurantService restaurantService;
 
     @Override
     public RestaurantCategory createRestaurantCategory(RestaurantCategoryDto dto) {
