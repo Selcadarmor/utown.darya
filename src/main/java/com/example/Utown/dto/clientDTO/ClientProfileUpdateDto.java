@@ -11,7 +11,7 @@ import java.util.List;
 public class ClientProfileUpdateDto {
     private Long id;
     private String fullName;
-    private List<AddressDto> addresses; // заменить одиночный AddressDto на список
+    private List<AddressDto> addresses;
 }
 
 
