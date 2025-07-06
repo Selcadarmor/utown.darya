@@ -1,6 +1,6 @@
 package com.example.Utown.mapper;
 
-import com.example.Utown.dto.clientDTO.RestaurantForClientDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.RestaurantCategory;
 import org.mapstruct.Mapper;
@@ -15,7 +15,7 @@ public interface RestaurantMapper {
 
     @Mapping(source = "fileInfo.path", target = "filePath")
     @Mapping(source = "categories", target = "categoryNames", qualifiedByName = "mapCategoryNames")
-    @Mapping(source = "categories", target = "categoryIds", qualifiedByName = "mapCategoryIds")  // <-- добавлено
+    @Mapping(source = "categories", target = "categoryIds", qualifiedByName = "mapCategoryIds")
     @Mapping(source = "delivery.price", target = "deliveryPrice")
     RestaurantForClientDto toRestaurantForClientDto(Restaurant restaurant);
 
