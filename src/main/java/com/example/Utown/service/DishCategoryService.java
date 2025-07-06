@@ -1,6 +1,9 @@
 package com.example.Utown.service;
 
+import com.example.Utown.dto.dishCategoryDTO.DishCategoryCreateDto;
+import com.example.Utown.dto.dishCategoryDTO.DishCategoryDetailsDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryDto;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -10,6 +13,7 @@ public interface DishCategoryService {
     List<DishCategoryDto> getAllDishCategories();
     DishCategoryDto updateDishCategory(Long id, DishCategoryDto dto);
     void deleteDishCategory(Long id);
+    Page<DishCategoryDetailsDto> getDishCategoriesByRestaurantId(Long restaurantId, int page, int size);
+    DishCategoryDetailsDto createDishCategoryForRestaurant(Long RestaurantId, DishCategoryCreateDto dto);
 }
-
 

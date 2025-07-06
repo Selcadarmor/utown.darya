@@ -14,6 +14,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -80,6 +81,7 @@ public class Restaurant {
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
     private Set<RestaurantCategory> categories;
+
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "address_id")
