@@ -99,4 +99,7 @@ public class Restaurant {
     @JoinColumn(name = "file_id")
     private FileInfo fileInfo;
 
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DishCategory> dishCategories;
+
 }

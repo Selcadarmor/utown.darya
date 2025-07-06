@@ -1,12 +1,11 @@
 package com.example.Utown.dto.dishCategoryDTO;
 
-import com.example.Utown.model.Restaurant;
+import com.example.Utown.model.FileInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -18,7 +17,7 @@ public class DishCategoryDto {
     private Boolean isActive;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Set<Restaurant> restaurants; // Вложенные сущности напрямую
-    private Long fileId;
+    private Long restaurantId;
+    private FileInfo file;
 }
 
