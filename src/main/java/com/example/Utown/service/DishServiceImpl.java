@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -102,11 +103,66 @@ public class DishServiceImpl implements DishService {
         dishRepository.delete(dish);
     }
 
-    @Override
+    @Override // метод получения вез Dish для каждого ресторана с испльзованием пагинации
     public Page<DishDetailsDto> getDishesByRestaurantId(Long restaurantId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("sort").ascending());
         return dishRepository.findByRestaurantId(restaurantId, pageable)
                 .map(dishMapper::dishDetailsToDto);
     }
+
+    @Override // метод создания Dish для каждого ресторана сделала в ручную так как не знаю менял ли кто то метод создания Dish в будущем можно переиспользовать метод Dish createDish(DishDto dto)
+    @Transactional
+    public DishDetailsDto createDishForRestaurant(Long RestaurantId, DishDetailsDto dto) {
+        Restaurant restaurant = restaurantRepository.findById(RestaurantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found", RestaurantId));
+
+
+        DishCategory dishCategory = null;
+        if (dto.getDishCategoryId() != null) {
+            dishCategory = dishCategoryRepository.findById(dto.getDishCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException("DishCategory not found", dto.getDishCategoryId()));
+        }
+
+        FileInfo file = null;
+        if (dto.getFileId() != null) {
+            file = fileInfoRepository.findById(dto.getFileId())
+                    .orElseThrow(() -> new ResourceNotFoundException("File not found", dto.getFileId()));
+        }
+        Dish dish = Dish.builder()
+                .description(dto.getDescription())
+                .isActive(dto.getIsActive())
+                .isDeleted(dto.getIsDeleted())
+                .price(dto.getPrice())
+                .title(dto.getTitle())
+                .sort(dto.getSort())
+                .dishCategory(dishCategory)
+                .file(file)
+                .restaurant(restaurant)
+                .build();
+        return dishMapper.toSavedDishDto(dishRepository.save(dish));
+    }
+
+    @Override //  метод обнавления Dish  для каждого Restaurant  хотела переиспользовать код из метода Dish updateDish(Long id, DishDto dto) но  мне не ответили работают ли над этим классом
+    @Transactional
+    public DishDetailsDto updateDishForRestaurant(Long RestaurantId, Long DishId, DishDetailsDto dto) {
+        Dish dish = dishRepository.findById(DishId)
+                .orElseThrow(() -> new ResourceNotFoundException("Dish not found", DishId));
+        if(!dish.getRestaurant().getId().equals(RestaurantId)) {
+            throw new ResourceNotFoundException("Dish not found", DishId);
+        }
+
+        DishDetailsDto dishDetailsDto = dishMapper.dishUpdateDetailsToDto(dish);
+        dishDetailsDto.setTitle(dto.getTitle());
+        dishDetailsDto.setDescription(dto.getDescription());
+        dishDetailsDto.setPrice(dto.getPrice());
+        dishDetailsDto.setSort(dto.getSort());
+        dishDetailsDto.setDishCategoryId(dto.getDishCategoryId());
+        dishDetailsDto.setFileId(dto.getFileId());
+        dishDetailsDto.setRestaurantId(dto.getRestaurantId());
+        dishDetailsDto.setIsActive(dto.getIsActive());
+        dishDetailsDto.setIsDeleted(dto.getIsDeleted());
+        return dishDetailsDto;
+    }
+
 }
 
