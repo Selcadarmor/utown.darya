@@ -11,6 +11,7 @@ import com.example.Utown.service.DishServiceImpl;
 import com.example.Utown.service.UserType.client.ClientServiceImpl;
 import com.example.Utown.service.RestaurantServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -140,20 +141,77 @@ public class AdminController {
         restaurantService.deleteRestaurant(id);
     }
 
-    @Operation(summary = "Get all dishes by Restaurant id", description = "Returns all dishes with the given  Restaurant id.")
+    @Operation(
+            summary = "Get all dishes by restaurant ID",
+            description = "Returns a paginated list of dishes for a given restaurant ID."
+    )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Restaurant retrieved successfully"),
+            @ApiResponse(responseCode = "200", description = "Dishes retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Restaurant not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("/admin/restaurants/{restaurantId}/dishes")
     public ResponseEntity<Page<DishDetailsDto>> getDishesByRestaurant(
+            @Parameter(description = "ID of the restaurant")
             @PathVariable Long restaurantId,
+
+            @Parameter(description = "Page number (zero-based)", example = "0")
             @RequestParam(defaultValue = "0") int page,
+
+            @Parameter(description = "Number of items per page", example = "10")
             @RequestParam(defaultValue = "10") int size
     ) {
         Page<DishDetailsDto> dishes = dishService.getDishesByRestaurantId(restaurantId, page, size);
         return ResponseEntity.ok(dishes);
     }
+
+
+    @Operation(
+            summary = "Create dish for restaurant",
+            description = "Create a dish for a specific restaurant via the admin panel."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Dish created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request body or validation failed"),
+            @ApiResponse(responseCode = "404", description = "Restaurant or related resource not found (e.g., category, file)"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PostMapping("/restaurants/{restaurantId}/dishes")
+    public ResponseEntity<DishDetailsDto> createDishForRestaurant(
+            @Parameter(description = "ID of the restaurant")
+            @PathVariable Long restaurantId,
+
+            @Valid @RequestBody DishDetailsDto dishDetailsDto
+    ) {
+        DishDetailsDto dish = dishService.createDishForRestaurant(restaurantId, dishDetailsDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(dish);
+    }
+
+
+    @Operation(
+            summary = "Update dish for restaurant by Id",
+            description = "Updates an existing dish for a specific restaurant via the admin panel."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dish updated successfully."),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "404", description = "Restaurant or dish not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PutMapping("/restaurants/{restaurantId}/dishes/{dishId}")
+    public ResponseEntity<DishDetailsDto> updateDishForRestaurant(
+            @Parameter(description = "ID of the restaurant")
+            @PathVariable Long restaurantId,
+
+            @Parameter(description = "ID of the dish to update")
+            @PathVariable Long dishId,
+
+            @Valid @RequestBody DishDetailsDto dishDetailsDto
+    ) {
+        DishDetailsDto dish = dishService.updateDishForRestaurant(restaurantId, dishId, dishDetailsDto);
+        return ResponseEntity.ok(dish);
+    }
+
+
 
 }
