@@ -4,7 +4,7 @@ package com.example.Utown.controller.userTypeControllers;
 import com.example.Utown.dto.clientDTO.ClientChangePasswordDto;
 import com.example.Utown.dto.clientDTO.ClientProfileUpdateDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryForClient;
-import com.example.Utown.dto.clientDTO.RestaurantForClientDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
 import com.example.Utown.service.RestaurantCategoryService;
 import com.example.Utown.service.UserType.client.ClientService;
 import com.example.Utown.service.RestaurantService;

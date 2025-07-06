@@ -1,6 +1,6 @@
 package com.example.Utown.mapper;
 
-import com.example.Utown.dto.clientDTO.RestaurantForClientDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.RestaurantCategory;
 import org.mapstruct.Mapper;
