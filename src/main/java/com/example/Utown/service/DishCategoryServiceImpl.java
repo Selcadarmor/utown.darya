@@ -1,5 +1,7 @@
 package com.example.Utown.service;
 
+import com.example.Utown.dto.dishCategoryDTO.DishCategoryCreateDto;
+import com.example.Utown.dto.dishCategoryDTO.DishCategoryDetailsDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.DishCategoryMapper;
@@ -10,8 +12,12 @@ import com.example.Utown.repository.DishCategoryRepository;
 import com.example.Utown.repository.FileInfoRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,6 +52,7 @@ public class DishCategoryServiceImpl implements DishCategoryService {
     }
 
     @Override
+    @Transactional
     public DishCategoryDto getDishCategoryById(Long id) {
         DishCategory entity = dishCategoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("DishCategory not found", id));
@@ -87,11 +94,40 @@ public class DishCategoryServiceImpl implements DishCategoryService {
     }
 
     @Override
+    @Transactional
     public void deleteDishCategory(Long id) {
         DishCategory entity = dishCategoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("DishCategory not found", id));
         dishCategoryRepository.delete(entity);
     }
+
+    @Override
+    public Page<DishCategoryDetailsDto> getDishCategoriesByRestaurantId(Long restaurantId, int page, int size) { //метод для просмотра всех категорий Dish
+        Pageable pageable = PageRequest.of(page, size, Sort.by("sort").ascending());
+        return dishCategoryRepository.findByRestaurantId(restaurantId,pageable)
+                .map(dishCategoryMapper::toDetailsDto);
+
+    }
+    @Override
+    @Transactional
+    public  DishCategoryDetailsDto createDishCategoryForRestaurant(Long RestaurantId, DishCategoryCreateDto dto) {
+        Restaurant restaurant = restaurantRepository.findById(RestaurantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found", RestaurantId));
+
+        FileInfo file = null;
+        if (dto.getFileId() != null) {
+            file = fileInfoRepository.findById(dto.getFileId())
+                    .orElseThrow(() -> new ResourceNotFoundException("File not found", dto.getFileId()));
+        }
+        DishCategory dishCategory = DishCategory.builder()
+                .name(dto.getName())
+                .sort(dto.getSort())
+                .restaurant(restaurant)
+                .file(file)
+                .build();
+        return dishCategoryMapper.toCreateDto(dishCategoryRepository.save(dishCategory));
+    }
+
 }
 
 
