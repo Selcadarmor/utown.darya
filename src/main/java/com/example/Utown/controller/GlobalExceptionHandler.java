@@ -5,8 +5,11 @@ import com.example.Utown.exception.InvalidArgumentException;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.time.LocalDateTime;
@@ -74,5 +77,27 @@ public class GlobalExceptionHandler {
                 .message(message)
                 .path(path)
                 .build();
+    }
+
+    @ExceptionHandler(DishNotInCartException.class)
+    @ResponseBody
+    public ResponseEntity<?> handleDishNotInCart(DishNotInCartException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiErrorResponse.builder()
+                        .timestamp(LocalDateTime.now())
+                        .status(HttpStatus.NOT_FOUND.value())
+                        .error("Not Found")
+                        .message(ex.getMessage())
+                        .path(request.getRequestURI())
+                        .build());
+    }
+
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @Operation(hidden = true)
+    public ApiErrorResponse handleMissingRequestParam(MissingServletRequestParameterException ex, HttpServletRequest request) {
+        String message = String.format("Missing required parameter: '%s'", ex.getParameterName());
+        return buildError(HttpStatus.BAD_REQUEST, message, request.getRequestURI());
     }
 }

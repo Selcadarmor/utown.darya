@@ -14,6 +14,7 @@ import com.example.Utown.repository.ElementRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,16 +30,25 @@ public class DishToOrderServiceImpl implements DishToOrderService {
 
     @Override
     public DishToOrder create(DishToOrderDto dto) {
-        Cart cart = cartRepository.findById(dto.getCart().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Cart not found", dto.getCart().getId()));
-        Dish dish = dishRepository.findById(dto.getDish().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Dish not found", dto.getDish().getId()));
-        Element element = elementRepository.findById(dto.getElement().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Element not found", dto.getElement().getId()));
+        Cart cart = dto.getCart();
+        if (cart == null || cart.getId() == null) {
+            throw new ResourceNotFoundException("Cart is required", null);
+        }
+
+        Dish dish = dto.getDish();
+        if (dish == null || dish.getId() == null) {
+            throw new ResourceNotFoundException("Dish is required", null);
+        }
+
+        Element element = dto.getElement(); // может быть null
+        BigDecimal elementPrice = element != null ? element.getPrice() : BigDecimal.ZERO;
+
+        BigDecimal unitPrice = dish.getPrice().add(elementPrice);
+        BigDecimal sum = unitPrice.multiply(BigDecimal.valueOf(dto.getCount()));
 
         DishToOrder entity = DishToOrder.builder()
                 .count(dto.getCount())
-                .sum(dto.getSum())
+                .sum(sum)
                 .cart(cart)
                 .dish(dish)
                 .element(element)
@@ -66,15 +76,24 @@ public class DishToOrderServiceImpl implements DishToOrderService {
         DishToOrder entity = dishToOrderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("DishToOrder not found", id));
 
-        Cart cart = cartRepository.findById(dto.getCart().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Cart not found", dto.getCart().getId()));
-        Dish dish = dishRepository.findById(dto.getDish().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Dish not found", dto.getDish().getId()));
-        Element element = elementRepository.findById(dto.getElement().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Element not found", dto.getElement().getId()));
+        Cart cart = dto.getCart();
+        if (cart == null || cart.getId() == null) {
+            throw new ResourceNotFoundException("Cart is required", null);
+        }
+
+        Dish dish = dto.getDish();
+        if (dish == null || dish.getId() == null) {
+            throw new ResourceNotFoundException("Dish is required", null);
+        }
+
+        Element element = dto.getElement(); // может быть null
+        BigDecimal elementPrice = element != null ? element.getPrice() : BigDecimal.ZERO;
+
+        BigDecimal unitPrice = dish.getPrice().add(elementPrice);
+        BigDecimal sum = unitPrice.multiply(BigDecimal.valueOf(dto.getCount()));
 
         entity.setCount(dto.getCount());
-        entity.setSum(dto.getSum());
+        entity.setSum(sum);
         entity.setCart(cart);
         entity.setDish(dish);
         entity.setElement(element);
