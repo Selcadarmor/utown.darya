@@ -2,10 +2,12 @@ package com.example.Utown.controller.userTypeControllers;
 
 import com.example.Utown.dto.clientDTO.ClientInfoDto;
 import com.example.Utown.dto.clientDTO.ClientUpdateDto;
+import com.example.Utown.dto.dishDTO.DishDetailsDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantCreateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
+import com.example.Utown.service.DishServiceImpl;
 import com.example.Utown.service.UserType.client.ClientServiceImpl;
 import com.example.Utown.service.RestaurantServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(
         name = "Admin – Users & Restaurants",
-        description = "Admin panel for managing clients, restaurants, and restaurant administrators"
+        description = "Admin panel for managing clients and restaurants"
 )
 @RestController
 @RequestMapping("/admin/")
@@ -33,6 +36,8 @@ public class AdminController {
 
     private final ClientServiceImpl clientService;
     private final RestaurantServiceImpl restaurantService;
+    private final DishServiceImpl dishService;
+
 
     @Operation(summary = "Get all clients", description = "Returns a list of all registered clients.")
     @ApiResponses(value = {
@@ -78,7 +83,6 @@ public class AdminController {
         clientService.deleteClient(id);
         return ResponseEntity.noContent().build();
     }
-
     @Operation(summary =  "Get all restaurants", description = "Returns a list of all restaurants.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of restaurants retrieved successfully"),
@@ -135,4 +139,21 @@ public class AdminController {
     public void deleteRestaurant(@PathVariable Long id) {
         restaurantService.deleteRestaurant(id);
     }
+
+    @Operation(summary = "Get all dishes by Restaurant id", description = "Returns all dishes with the given  Restaurant id.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Restaurant retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Restaurant not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @GetMapping("/admin/restaurants/{restaurantId}/dishes")
+    public ResponseEntity<Page<DishDetailsDto>> getDishesByRestaurant(
+            @PathVariable Long restaurantId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<DishDetailsDto> dishes = dishService.getDishesByRestaurantId(restaurantId, page, size);
+        return ResponseEntity.ok(dishes);
+    }
+
 }

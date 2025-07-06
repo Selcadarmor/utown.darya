@@ -1,7 +1,9 @@
 package com.example.Utown.service;
 
+import com.example.Utown.dto.dishDTO.DishDetailsDto;
 import com.example.Utown.dto.dishDTO.DishDto;
 import com.example.Utown.exception.ResourceNotFoundException;
+import com.example.Utown.mapper.DishMapper;
 import com.example.Utown.model.Dish;
 import com.example.Utown.model.DishCategory;
 import com.example.Utown.model.FileInfo;
@@ -11,6 +13,10 @@ import com.example.Utown.repository.DishCategoryRepository;
 import com.example.Utown.repository.FileInfoRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +29,7 @@ public class DishServiceImpl implements DishService {
     private final RestaurantRepository restaurantRepository;
     private final DishCategoryRepository dishCategoryRepository;
     private final FileInfoRepository fileInfoRepository;
+    private final DishMapper dishMapper;
 
     @Override
     public Dish createDish(DishDto dto) {
@@ -93,6 +100,13 @@ public class DishServiceImpl implements DishService {
         Dish dish = dishRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Dish not found", id));
         dishRepository.delete(dish);
+    }
+
+    @Override
+    public Page<DishDetailsDto> getDishesByRestaurantId(Long restaurantId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("sort").ascending());
+        return dishRepository.findByRestaurantId(restaurantId, pageable)
+                .map(dishMapper::dishDetailsToDto);
     }
 }
 
