@@ -1,6 +1,7 @@
 package com.example.Utown.controller.userTypeControllers;
 
 
+import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.dto.clientDTO.ClientChangePasswordDto;
 import com.example.Utown.dto.clientDTO.ClientProfileUpdateDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryForClient;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
@@ -56,6 +58,15 @@ public class ClientController {
     @Operation(summary = "Get restaurants sorted by fastest delivery", description = "Sorted by deliveryTime")
     public List<RestaurantForClientDto> getRestaurantsSortedByDeliveryTime() {
         return restaurantService.getAllRestaurantsSortedByDeliveryTime();
+    }
+
+    @PostMapping("/{clientId}/addresses")
+    public ResponseEntity<Void> addAddressToClient(
+            @PathVariable Long clientId,
+            @RequestBody AddressDto addressDto) {
+
+        clientService.saveAddressToClient(clientId, addressDto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PutMapping("/{clientId}/profile_update")

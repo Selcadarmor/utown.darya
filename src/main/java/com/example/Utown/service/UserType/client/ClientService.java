@@ -18,6 +18,7 @@ public interface ClientService {
         void deleteClient(Long id);
         void changePassword(String username, ClientChangePasswordDto dto);
         Client updateClientProfile(Long clientId, String newFullName, List<AddressDto> updatedAddresses);
+        void saveAddressToClient(Long clientId, AddressDto dto);
 }
 
 

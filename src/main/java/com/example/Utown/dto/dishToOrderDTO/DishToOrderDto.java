@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -22,6 +23,6 @@ public class DishToOrderDto {
     private LocalDateTime updatedAt;
     private Cart cart;
     private Dish dish;
-    private Element element;
+    private List<Element> selectedElements;
 }
 

@@ -14,6 +14,7 @@ import com.example.Utown.repository.ElementRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,21 +32,26 @@ public class DishToOrderServiceImpl implements DishToOrderService {
     public DishToOrder create(DishToOrderDto dto) {
         Cart cart = cartRepository.findById(dto.getCart().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Cart not found", dto.getCart().getId()));
+
         Dish dish = dishRepository.findById(dto.getDish().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Dish not found", dto.getDish().getId()));
-        Element element = elementRepository.findById(dto.getElement().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Element not found", dto.getElement().getId()));
+
+        List<Element> selectedElements = dto.getSelectedElements().stream()
+                .map(e -> elementRepository.findById(e.getId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Element not found", e.getId())))
+                .toList();
 
         DishToOrder entity = DishToOrder.builder()
                 .count(dto.getCount())
                 .sum(dto.getSum())
                 .cart(cart)
                 .dish(dish)
-                .element(element)
+                .selectedElements(selectedElements)
                 .build();
 
         return dishToOrderRepository.save(entity);
     }
+
 
     @Override
     public DishToOrderDto getById(Long id) {
@@ -68,19 +74,26 @@ public class DishToOrderServiceImpl implements DishToOrderService {
 
         Cart cart = cartRepository.findById(dto.getCart().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Cart not found", dto.getCart().getId()));
+
         Dish dish = dishRepository.findById(dto.getDish().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Dish not found", dto.getDish().getId()));
-        Element element = elementRepository.findById(dto.getElement().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Element not found", dto.getElement().getId()));
+
+        List<Element> selectedElements = dto.getSelectedElements() == null ?
+                new ArrayList<>() :
+                dto.getSelectedElements().stream()
+                        .map(e -> elementRepository.findById(e.getId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Element not found", e.getId())))
+                        .toList();
 
         entity.setCount(dto.getCount());
         entity.setSum(dto.getSum());
         entity.setCart(cart);
         entity.setDish(dish);
-        entity.setElement(element);
+        entity.setSelectedElements(selectedElements);
 
         return dishToOrderRepository.save(entity);
     }
+
 
     @Override
     public void delete(Long id) {

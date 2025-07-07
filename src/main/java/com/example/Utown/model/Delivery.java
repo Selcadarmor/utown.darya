@@ -1,10 +1,10 @@
 package com.example.Utown.model;
 
-import com.example.Utown.security.AuditorAwareImpl;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Table(name = "delivery")
-@EntityListeners(AuditorAwareImpl.class)
+@EntityListeners(AuditingEntityListener.class)
 public class Delivery {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
