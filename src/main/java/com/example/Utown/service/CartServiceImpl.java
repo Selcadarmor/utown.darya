@@ -133,137 +133,137 @@ public class CartServiceImpl implements CartService {
         cartRepository.deleteById(id);
     }
 
-    @Override
-    @Transactional
-    public void addDishToCart(Long clientId, AddToCartRequest request) {
-        log.info("Добавляем блюдо в корзину: clientId={}, dishId={}, elementId={}, count={}",
-                clientId, request.getDishId(), request.getElementId(), request.getCount());
+//    @Override
+//    @Transactional
+//    public void addDishToCart(Long clientId, AddToCartRequest request) {
+//        log.info("Добавляем блюдо в корзину: clientId={}, dishId={}, elementId={}, count={}",
+//                clientId, request.getDishId(), request.getElementId(), request.getCount());
+//
+//        // 1. Получаем клиента
+//        Client client = clientRepository.findById(clientId)
+//                .orElseThrow(() -> new UserNotFoundException("Клиент с id " + clientId + " не найден"));
+//        log.info("Клиент найден: clientId={}", client.getId());
+//
+//        // 2. Получаем блюдо
+//        Dish dish = dishRepository.findById(request.getDishId())
+//                .orElseThrow(() -> new DishNotFoundException(request.getDishId()));
+//        log.info("Блюдо найдено: dishId={}, title={}", dish.getId(), dish.getTitle());
+//
+//        // 3. Получаем элемент (если указан)
+//        final Element element = request.getElementId() != null
+//                ? elementRepository.findById(request.getElementId())
+//                .orElseThrow(() -> new ElementNotFoundException(request.getElementId()))
+//                : null;
+//
+//        log.info("Элемент: {}", element != null ? element.getId() : "нет");
+//
+//        // 4. Проверяем/создаём корзину
+//        Cart cart = client.getCart();
+//        if (cart == null) {
+//            log.info("🛒 У клиента нет корзины. Создаём новую...");
+//            cart = createCart(clientId);
+//            log.info("Новая корзина создана: cartId={}", cart.getId());
+//        }
+//
+//        if (cart.getDishToOrder() == null) {
+//            cart.setDishToOrder(new ArrayList<>());
+//        }
+//
+//        log.info("Обрабатываем добавление блюда в корзину");
+//
+//        // 5. Проверка на наличие уже добавленного блюда с тем же элементом
+//        Optional<DishToOrder> existing = cart.getDishToOrder().stream()
+//                .filter(dto -> dto.getDish().getId().equals(dish.getId()) &&
+//                        ((dto.getElement() == null && element == null) ||
+//                                (dto.getElement() != null && dto.getElement().equals(element))))
+//                .findFirst();
+//
+//        // 6. Расчёт цены
+//        BigDecimal elementPrice = element != null ? element.getPrice() : BigDecimal.ZERO;
+//        BigDecimal unitPrice = dish.getPrice().add(elementPrice);
+//
+//        // 7. Добавляем или обновляем
+//        if (existing.isPresent()) {
+//            DishToOrder dto = existing.get();
+//            dto.setCount(dto.getCount() + request.getCount());
+//            dto.setSum(unitPrice.multiply(BigDecimal.valueOf(dto.getCount())));
+//            log.info("Обновили блюдо в корзине: dishId={}, elementId={}, newCount={}, newSum={}",
+//                    dish.getId(), element != null ? element.getId() : null, dto.getCount(), dto.getSum());
+//        } else {
+//            DishToOrder dto = DishToOrder.builder()
+//                    .cart(cart)
+//                    .dish(dish)
+//                    .element(element)
+//                    .count(request.getCount())
+//                    .sum(unitPrice.multiply(BigDecimal.valueOf(request.getCount())))
+//                    .build();
+//            cart.getDishToOrder().add(dto);
+//            log.info("Добавили новое блюдо: dishId={}, elementId={}, count={}, sum={}",
+//                    dish.getId(), element != null ? element.getId() : null, dto.getCount(), dto.getSum());
+//        }
+//
+//        // 8. Пересчёт корзины
+//        BigDecimal totalSum = cart.getDishToOrder().stream()
+//                .map(DishToOrder::getSum)
+//                .reduce(BigDecimal.ZERO, BigDecimal::add);
+//
+//        cart.setSumOrder(totalSum);
+//        cart.setTotalDish(cart.getDishToOrder().stream().mapToInt(DishToOrder::getCount).sum());
+//        cart.setTotalSum(totalSum.add(cart.getDeliveryPrice()));
+//
+//        // 9. Сохраняем
+//        try {
+//            cartRepository.save(cart);
+//            log.info("Корзина сохранена: cartId={}, totalDish={}, sumOrder={}, totalSum={}",
+//                    cart.getId(), cart.getTotalDish(), cart.getSumOrder(), cart.getTotalSum());
+//        } catch (Exception e) {
+//            log.error("Ошибка при сохранении корзины: {}", e.getMessage(), e);
+//        }
+//    }
+//
+//    @Transactional
+//    public void updateDishInCart(Long clientId, AddToCartRequest request) {
+//        Cart cart = getClientCart(clientId);
+//
+//        final Element element = request.getElementId() != null
+//                ? elementRepository.findById(request.getElementId())
+//                .orElseThrow(() -> new ElementNotFoundException(request.getElementId()))
+//                : null;
+//
+//        // Ищем DishToOrder с таким dishId и тем же элементом
+//        DishToOrder existing = cart.getDishToOrder().stream()
+//                .filter(item -> item.getDish().getId().equals(request.getDishId())
+//                        && ((item.getElement() == null && element == null) ||
+//                        (item.getElement() != null && item.getElement().equals(element))))
+//                .findFirst()
+//                .orElseThrow(() -> new DishNotInCartException(request.getDishId()));
+//
+//        if (request.getCount() <= 0) {
+//            cart.getDishToOrder().remove(existing);
+//            existing.setCart(null);
+//        } else {
+//            existing.setCount(request.getCount());
+//
+//            BigDecimal elementPrice = element != null ? element.getPrice() : BigDecimal.ZERO;
+//            BigDecimal unitPrice = existing.getDish().getPrice().add(elementPrice);
+//            existing.setSum(unitPrice.multiply(BigDecimal.valueOf(request.getCount())));
+//        }
+//
+//        recalculateCart(cart);
+//        cartRepository.save(cart);
+//    }
 
-        // 1. Получаем клиента
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new UserNotFoundException("Клиент с id " + clientId + " не найден"));
-        log.info("Клиент найден: clientId={}", client.getId());
 
-        // 2. Получаем блюдо
-        Dish dish = dishRepository.findById(request.getDishId())
-                .orElseThrow(() -> new DishNotFoundException(request.getDishId()));
-        log.info("Блюдо найдено: dishId={}, title={}", dish.getId(), dish.getTitle());
-
-        // 3. Получаем элемент (если указан)
-        final Element element = request.getElementId() != null
-                ? elementRepository.findById(request.getElementId())
-                .orElseThrow(() -> new ElementNotFoundException(request.getElementId()))
-                : null;
-
-        log.info("Элемент: {}", element != null ? element.getId() : "нет");
-
-        // 4. Проверяем/создаём корзину
-        Cart cart = client.getCart();
-        if (cart == null) {
-            log.info("🛒 У клиента нет корзины. Создаём новую...");
-            cart = createCart(clientId);
-            log.info("Новая корзина создана: cartId={}", cart.getId());
-        }
-
-        if (cart.getDishToOrder() == null) {
-            cart.setDishToOrder(new ArrayList<>());
-        }
-
-        log.info("Обрабатываем добавление блюда в корзину");
-
-        // 5. Проверка на наличие уже добавленного блюда с тем же элементом
-        Optional<DishToOrder> existing = cart.getDishToOrder().stream()
-                .filter(dto -> dto.getDish().getId().equals(dish.getId()) &&
-                        ((dto.getElement() == null && element == null) ||
-                                (dto.getElement() != null && dto.getElement().equals(element))))
-                .findFirst();
-
-        // 6. Расчёт цены
-        BigDecimal elementPrice = element != null ? element.getPrice() : BigDecimal.ZERO;
-        BigDecimal unitPrice = dish.getPrice().add(elementPrice);
-
-        // 7. Добавляем или обновляем
-        if (existing.isPresent()) {
-            DishToOrder dto = existing.get();
-            dto.setCount(dto.getCount() + request.getCount());
-            dto.setSum(unitPrice.multiply(BigDecimal.valueOf(dto.getCount())));
-            log.info("Обновили блюдо в корзине: dishId={}, elementId={}, newCount={}, newSum={}",
-                    dish.getId(), element != null ? element.getId() : null, dto.getCount(), dto.getSum());
-        } else {
-            DishToOrder dto = DishToOrder.builder()
-                    .cart(cart)
-                    .dish(dish)
-                    .element(element)
-                    .count(request.getCount())
-                    .sum(unitPrice.multiply(BigDecimal.valueOf(request.getCount())))
-                    .build();
-            cart.getDishToOrder().add(dto);
-            log.info("Добавили новое блюдо: dishId={}, elementId={}, count={}, sum={}",
-                    dish.getId(), element != null ? element.getId() : null, dto.getCount(), dto.getSum());
-        }
-
-        // 8. Пересчёт корзины
-        BigDecimal totalSum = cart.getDishToOrder().stream()
-                .map(DishToOrder::getSum)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        cart.setSumOrder(totalSum);
-        cart.setTotalDish(cart.getDishToOrder().stream().mapToInt(DishToOrder::getCount).sum());
-        cart.setTotalSum(totalSum.add(cart.getDeliveryPrice()));
-
-        // 9. Сохраняем
-        try {
-            cartRepository.save(cart);
-            log.info("Корзина сохранена: cartId={}, totalDish={}, sumOrder={}, totalSum={}",
-                    cart.getId(), cart.getTotalDish(), cart.getSumOrder(), cart.getTotalSum());
-        } catch (Exception e) {
-            log.error("Ошибка при сохранении корзины: {}", e.getMessage(), e);
-        }
-    }
-
-    @Transactional
-    public void updateDishInCart(Long clientId, AddToCartRequest request) {
-        Cart cart = getClientCart(clientId);
-
-        final Element element = request.getElementId() != null
-                ? elementRepository.findById(request.getElementId())
-                .orElseThrow(() -> new ElementNotFoundException(request.getElementId()))
-                : null;
-
-        // Ищем DishToOrder с таким dishId и тем же элементом
-        DishToOrder existing = cart.getDishToOrder().stream()
-                .filter(item -> item.getDish().getId().equals(request.getDishId())
-                        && ((item.getElement() == null && element == null) ||
-                        (item.getElement() != null && item.getElement().equals(element))))
-                .findFirst()
-                .orElseThrow(() -> new DishNotInCartException(request.getDishId()));
-
-        if (request.getCount() <= 0) {
-            cart.getDishToOrder().remove(existing);
-            existing.setCart(null);
-        } else {
-            existing.setCount(request.getCount());
-
-            BigDecimal elementPrice = element != null ? element.getPrice() : BigDecimal.ZERO;
-            BigDecimal unitPrice = existing.getDish().getPrice().add(elementPrice);
-            existing.setSum(unitPrice.multiply(BigDecimal.valueOf(request.getCount())));
-        }
-
-        recalculateCart(cart);
-        cartRepository.save(cart);
-    }
-
-
-    @Override
-    @Transactional
-    public void removeDishFromCart(Long clientId, Long dishId, Long elementId) {
-        AddToCartRequest request = new AddToCartRequest();
-        request.setDishId(dishId);
-        request.setElementId(elementId);
-        request.setCount(0);
-
-        updateDishInCart(clientId, request);
-    }//не работает пока
+//    @Override
+//    @Transactional
+//    public void removeDishFromCart(Long clientId, Long dishId, Long elementId) {
+//        AddToCartRequest request = new AddToCartRequest();
+//        request.setDishId(dishId);
+//        request.setElementId(elementId);
+//        request.setCount(0);
+//
+//        updateDishInCart(clientId, request);
+//    }//не работает пока
 
     @Transactional
     public void clearCart(Long clientId) {
@@ -304,4 +304,3 @@ public class CartServiceImpl implements CartService {
     }
 
 }
-

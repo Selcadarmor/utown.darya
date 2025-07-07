@@ -13,10 +13,10 @@ public interface CartService {
     List<CartDto> getAllCarts();
     Cart updateCart(Long id, CartDto dto);
     void deleteCart(Long id);
-    void addDishToCart(Long clientId, AddToCartRequest request);
-    void updateDishInCart(Long clientId, AddToCartRequest request);
+//    void addDishToCart(Long clientId, AddToCartRequest request);
+//    void updateDishInCart(Long clientId, AddToCartRequest request);
     void clearCart(Long clientId);
-    void removeDishFromCart(Long clientId, Long dishId, Long elementId);
+//    void removeDishFromCart(Long clientId, Long dishId, Long elementId);
 }
 
 

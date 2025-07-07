@@ -2,6 +2,7 @@ package com.example.Utown.controller.userTypeControllers;
 
 
 import com.example.Utown.dto.cartDTO.AddToCartRequest;
+import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.dto.clientDTO.ClientChangePasswordDto;
 import com.example.Utown.dto.clientDTO.ClientProfileUpdateDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryForClient;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
@@ -62,6 +64,15 @@ public class ClientController {
         return restaurantService.getAllRestaurantsSortedByDeliveryTime();
     }
 
+    @PostMapping("/{clientId}/addresses")
+    public ResponseEntity<Void> addAddressToClient(
+            @PathVariable Long clientId,
+            @RequestBody AddressDto addressDto) {
+
+        clientService.saveAddressToClient(clientId, addressDto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
     @PutMapping("/{clientId}/profile_update")
     @Operation(summary = "Update client profile with multiple addresses")
     public ResponseEntity<String> updateClientProfile(
@@ -82,26 +93,26 @@ public class ClientController {
         return ResponseEntity.ok("Password changed successfully");
     }
 
-    @PostMapping("/{clientId}/cart/add")
-    public ResponseEntity<String> addToCart(
-            @PathVariable Long clientId,
-            @RequestBody AddToCartRequest request
-    ) {
-        System.out.println("AddToCartRequest received: " + request);
+//    @PostMapping("/{clientId}/cart/add")
+//    public ResponseEntity<String> addToCart(
+//            @PathVariable Long clientId,
+//            @RequestBody AddToCartRequest request
+//    ) {
+//        System.out.println("AddToCartRequest received: " + request);
+//
+//        cartService.addDishToCart(clientId, request);
+//        return ResponseEntity.ok("Блюдо добавлено в корзину");
+//    }
 
-        cartService.addDishToCart(clientId, request);
-        return ResponseEntity.ok("Блюдо добавлено в корзину");
-    }
-
-    @PutMapping("/{clientId}/cart/update")
-    @Operation(summary = "Обновить количество блюда в корзине")
-    public ResponseEntity<String> updateDishInCart(
-            @PathVariable Long clientId,
-            @RequestBody AddToCartRequest request
-    ) {
-        cartService.updateDishInCart(clientId, request);
-        return ResponseEntity.ok("Количество блюда в корзине обновлено");
-    }
+//    @PutMapping("/{clientId}/cart/update")
+//    @Operation(summary = "Обновить количество блюда в корзине")
+//    public ResponseEntity<String> updateDishInCart(
+//            @PathVariable Long clientId,
+//            @RequestBody AddToCartRequest request
+//    ) {
+//        cartService.updateDishInCart(clientId, request);
+//        return ResponseEntity.ok("Количество блюда в корзине обновлено");
+//    }
 
     @DeleteMapping("/{clientId}/cart/clear")
     @Operation(summary = "Очистить корзину клиента")
@@ -110,15 +121,15 @@ public class ClientController {
         return ResponseEntity.ok("Корзина успешно очищена");
     }
 
-    @DeleteMapping("/{clientId}/cart/remove")
-    public ResponseEntity<?> removeDishFromCart(
-            @PathVariable Long clientId,
-            @RequestParam Long dishId,
-            @RequestParam(name = "elementId", required = false) Long elementId) {
-
-        cartService.removeDishFromCart(clientId, dishId, elementId);
-
-        return ResponseEntity.ok().body(Map.of("message", "Блюдо удалено из корзины"));
-    }
+//    @DeleteMapping("/{clientId}/cart/remove")
+//    public ResponseEntity<?> removeDishFromCart(
+//            @PathVariable Long clientId,
+//            @RequestParam Long dishId,
+//            @RequestParam(name = "elementId", required = false) Long elementId) {
+//
+//        cartService.removeDishFromCart(clientId, dishId, elementId);
+//
+//        return ResponseEntity.ok().body(Map.of("message", "Блюдо удалено из корзины"));
+//    }
 
 }
