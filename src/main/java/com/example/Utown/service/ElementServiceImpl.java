@@ -4,7 +4,6 @@ import com.example.Utown.dto.elementDTO.ElementDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.ElementMapper;
 import com.example.Utown.model.Element;
-import com.example.Utown.model.FileInfo;
 import com.example.Utown.repository.ElementRepository;
 import com.example.Utown.repository.FileInfoRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,14 +22,8 @@ public class ElementServiceImpl implements ElementService {
 
     @Override
     public Element create(ElementDto dto) {
-        FileInfo file = null;
-        if (dto.getFileId() != null) {
-            file = fileInfoRepository.findById(dto.getFileId())
-                    .orElseThrow(() -> new ResourceNotFoundException("FileInfo not found", dto.getFileId()));
-        }
 
         Element element = elementMapper.toEntity(dto);
-        element.setFile(file);
         return elementRepository.save(element);
     }
 
@@ -53,18 +46,11 @@ public class ElementServiceImpl implements ElementService {
         Element element = elementRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Element not found", id));
 
-        FileInfo file = null;
-        if (dto.getFileId() != null) {
-            file = fileInfoRepository.findById(dto.getFileId())
-                    .orElseThrow(() -> new ResourceNotFoundException("FileInfo not found", dto.getFileId()));
-        }
-
         element.setName(dto.getName());
         element.setDescription(dto.getDescription());
         element.setPrice(dto.getPrice());
         element.setIsActive(dto.getIsActive());
         element.setIsDeleted(dto.getIsDeleted());
-        element.setFile(file);
 
         return elementRepository.save(element);
     }

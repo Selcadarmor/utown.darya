@@ -55,6 +55,11 @@ public class DishServiceImpl implements DishService {
                 .file(fileInfo)
                 .build();
 
+        if (dto.getOptions() != null) {
+            dto.getOptions().forEach(option -> option.setDish(dish));
+            dish.setOptions(dto.getOptions());
+        }
+
         return dishRepository.save(dish);
     }
 
@@ -92,6 +97,12 @@ public class DishServiceImpl implements DishService {
         dish.setRestaurant(restaurant);
         dish.setDishCategory(dishCategory);
         dish.setFile(fileInfo);
+
+        if (dto.getOptions() != null) {
+            dish.getOptions().clear();
+            dto.getOptions().forEach(option -> option.setDish(dish));
+            dish.getOptions().addAll(dto.getOptions());
+        }
 
         return dishRepository.save(dish);
     }

@@ -19,6 +19,5 @@ public class ElementDto {
     private Boolean isDeleted;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Long fileId;
 }
 

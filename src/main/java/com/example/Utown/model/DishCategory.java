@@ -39,13 +39,17 @@ public class DishCategory {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
     @OneToOne
     @JoinColumn(name = "file_id")
     private FileInfo file;
+
+    @OneToMany
+    @JoinColumn(name = "dish_id")
+    private List<Dish> dish;
 
     @OneToMany(mappedBy = "dishCategory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Dish> dishes;

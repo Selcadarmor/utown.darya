@@ -90,7 +90,19 @@ public class ClientServiceImpl implements ClientService {
         );
     }
 
-    @Transactional
+    @Transactional //For Client
+    @Override
+    public void saveAddressToClient(Long clientId, AddressDto dto) {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found", clientId));
+
+        Address address = addressService.createAddress(dto);
+
+        client.getAddresses().add(address);
+        clientRepository.save(client);
+    }
+
+    @Transactional //For Client
     public Client updateClientProfile(Long clientId, String newFullName, List<AddressDto> updatedAddresses) {
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found", clientId));
