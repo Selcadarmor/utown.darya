@@ -25,10 +25,5 @@ public class RestaurantAdmin extends User {
     @OneToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
-
-    @OneToMany
-    @JoinColumn(name = "restaurant_id")
-    private List<Order> orders;
-
 }
 

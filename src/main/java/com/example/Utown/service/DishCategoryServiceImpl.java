@@ -110,9 +110,9 @@ public class DishCategoryServiceImpl implements DishCategoryService {
     }
     @Override
     @Transactional
-    public  DishCategoryDetailsDto createDishCategoryForRestaurant(Long RestaurantId, DishCategoryCreateDto dto) {
-        Restaurant restaurant = restaurantRepository.findById(RestaurantId)
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found", RestaurantId));
+    public  DishCategoryDetailsDto createDishCategoryForRestaurant(Long restaurantId, DishCategoryCreateDto dto) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found", restaurantId));
 
         FileInfo file = null;
         if (dto.getFileId() != null) {

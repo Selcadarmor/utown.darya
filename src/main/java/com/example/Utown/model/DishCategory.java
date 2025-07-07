@@ -7,6 +7,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -45,4 +46,12 @@ public class DishCategory {
     @OneToOne
     @JoinColumn(name = "file_id")
     private FileInfo file;
+
+    @OneToMany(mappedBy = "dishCategory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Dish> dishes;
+
+    @OneToMany(mappedBy = "dishCategory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Element> elements;
+
+
 }
