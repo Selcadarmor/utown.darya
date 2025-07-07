@@ -49,8 +49,6 @@ public class Element {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToOne
-    @JoinColumn(name = "file_id")
-    private FileInfo file;
+
 
 }

@@ -30,7 +30,7 @@ public class AddressServiceImpl implements AddressService {
         address.setStreet(dto.getStreet());
         address.setIntercomCode(dto.getIntercomCode());
         address.setTypeAddress(dto.getTypeAddress());
-        return addressRepository.save(address);
+        return address;
     }
 
     @Override
