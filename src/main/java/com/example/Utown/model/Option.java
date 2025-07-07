@@ -55,6 +55,7 @@ public class Option {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "option", cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "option_id")
-    private List<Element> element;
+    private List<Element> elements;
+
 
 }
