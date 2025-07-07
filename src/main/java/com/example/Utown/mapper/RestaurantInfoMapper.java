@@ -24,7 +24,9 @@ public interface RestaurantInfoMapper {
             @Mapping(target = "delivery", ignore = true),
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "createdAt", ignore = true),
-            @Mapping(target = "updatedAt", ignore = true)
+            @Mapping(target = "updatedAt", ignore = true),
+            @Mapping(source = "dishCategories", target = "dishCategories")
+
     })
     Restaurant toEntity(RestaurantCreateDto dto);
     @Mapping(source = "categories", target = "categories")
