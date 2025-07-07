@@ -1,5 +1,8 @@
 package com.example.Utown.dto.restaurantDTO;
 
+import com.example.Utown.dto.fileInfoDTO.FileInfoDetailsDto;
+import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
+import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryDto;
 import com.example.Utown.model.*;
 import com.example.Utown.model.UserType.RestaurantAdmin;
 import lombok.AllArgsConstructor;
@@ -22,13 +25,13 @@ public class RestaurantInfoDto {
 
     private Address address;
 
-    private FileInfo fileInfo;
+    private FileInfoDetailsDto fileInfo;
 
-    private List<OperatingMode> operatingModes;
+    private List<OperatingModeInfoDto> operatingModes;
 
     private Long orderCount;
 
-    private List<RestaurantCategory> categories;
+    private List<RestaurantCategoryDto> categories;
 
     private RestaurantAdmin restaurantAdmin;
 

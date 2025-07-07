@@ -46,7 +46,7 @@ public class Cart {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DishToOrder> dishToOrder = new ArrayList<>();
+    private List<DishToOrder> dishToOrders;
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)

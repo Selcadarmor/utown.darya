@@ -32,19 +32,15 @@ public class Client extends User {
     )
     private Set<Restaurant> favoriteRestaurants;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "user_addresses",
-            joinColumns = @JoinColumn(name = "client_id"),
-            inverseJoinColumns = @JoinColumn(name = "address_id")
-    )
+    @OneToMany(mappedBy = "client",  cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id")
     private Set<Address> addresses;
 
     @ManyToOne
     @JoinColumn(name = "file_id")
     private FileInfo fileInfo;
 
-    @OneToMany()
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id")
     private List<Order> orders;
 
