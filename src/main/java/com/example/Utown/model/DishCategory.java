@@ -47,15 +47,7 @@ public class DishCategory {
     @JoinColumn(name = "file_id")
     private FileInfo file;
 
-    @OneToMany
-    @JoinColumn(name = "dish_id")
-    private List<Dish> dish;
-
     @OneToMany(mappedBy = "dishCategory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Dish> dishes;
-
-    @OneToMany(mappedBy = "dishCategory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Element> elements;
-
 
 }
