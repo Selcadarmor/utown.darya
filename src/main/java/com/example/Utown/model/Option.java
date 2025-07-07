@@ -49,11 +49,11 @@ public class Option {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "dish_id")
     private Dish dish;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "option_id")
     private List<Element> elements;
 
