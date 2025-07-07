@@ -32,12 +32,8 @@ public class Client extends User {
     )
     private Set<Restaurant> favoriteRestaurants;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "user_addresses",
-            joinColumns = @JoinColumn(name = "client_id"),
-            inverseJoinColumns = @JoinColumn(name = "address_id")
-    )
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "client_id")
     private Set<Address> addresses;
 
     @ManyToOne

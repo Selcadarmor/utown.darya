@@ -8,10 +8,8 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ElementMapper {
 
-    @Mapping(source = "file.id", target = "fileId")
     ElementDto toDto(Element element);
-
-    @Mapping(source = "fileId", target = "file.id")
+    
     Element toEntity(ElementDto dto);
 }
 
