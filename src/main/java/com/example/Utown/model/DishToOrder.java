@@ -1,11 +1,7 @@
 package com.example.Utown.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -41,7 +37,7 @@ public class DishToOrder {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id")
     private Cart cart;
 
@@ -49,11 +45,17 @@ public class DishToOrder {
     @JoinColumn(name = "dish_id")
     private Dish dish;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany
     @JoinTable(
             name = "dish_to_order_elements",
             joinColumns = @JoinColumn(name = "dish_to_order_id"),
             inverseJoinColumns = @JoinColumn(name = "element_id")
     )
     private List<Element> selectedElements;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id_in_dish")
+    private Order order;
+
+
 }

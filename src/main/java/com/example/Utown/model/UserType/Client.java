@@ -32,7 +32,7 @@ public class Client extends User {
     )
     private Set<Restaurant> favoriteRestaurants;
 
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id")
     private Set<Address> addresses;
 
@@ -40,7 +40,7 @@ public class Client extends User {
     @JoinColumn(name = "file_id")
     private FileInfo fileInfo;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id")
     private List<Order> orders;
 

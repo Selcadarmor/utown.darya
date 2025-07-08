@@ -8,6 +8,7 @@ import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
 import com.example.Utown.dto.restaurantAdminDTO.RestaurantAdminCreateDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryDto;
 
+import com.example.Utown.model.RestaurantCategory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,6 +28,6 @@ public class RestaurantUpdateDto {
     private AddressInfoDto address;
     private FileInfoDto fileInfo;
     private List<OperatingModeInfoDto> operatingModes;
-    private List<Long> categoryIds;
+    private List<RestaurantCategory> categories;
     private RestaurantAdminCreateDto restaurantAdmin;
 }

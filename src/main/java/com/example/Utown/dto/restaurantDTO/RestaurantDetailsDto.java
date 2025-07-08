@@ -20,12 +20,11 @@ public class RestaurantDetailsDto {
     private String phone;
     private BigDecimal minOrderAmount;
     private Long orderCount;
-    private FileInfo fileInfo;
-    private List<RestaurantCategory> categories;
-    private List<OperatingMode> operatingModes;
-    private RestaurantAdmin restaurantAdmin;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
+    private Long fileId;
+    private List<Long> categoryIds;
+    private List<Long> operatingModeIds;
+    private Long restaurantAdminId;
 
 }

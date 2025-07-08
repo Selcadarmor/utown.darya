@@ -5,10 +5,13 @@ import com.example.Utown.dto.clientDTO.ClientChangePasswordDto;
 import com.example.Utown.dto.clientDTO.ClientInfoDto;
 import com.example.Utown.dto.clientDTO.ClientProfileUpdateDto;
 import com.example.Utown.dto.clientDTO.ClientUpdateDto;
-import com.example.Utown.exception.*;
+import com.example.Utown.exception.PasswordsDoNotMatchException;
+import com.example.Utown.exception.ResourceNotFoundException;
+import com.example.Utown.exception.UserNotFoundException;
 import com.example.Utown.model.Address;
 import com.example.Utown.model.User;
 import com.example.Utown.model.UserType.Client;
+import com.example.Utown.repository.AddressRepository;
 import com.example.Utown.repository.UserRepository;
 import com.example.Utown.repository.UserType.ClientRepository;
 import com.example.Utown.service.AddressService;
@@ -24,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +52,7 @@ public class ClientServiceImpl implements ClientService {
                                 client.getId(),
                                 client.getFullName(),
                                 client.getUsername(),
-                                client.getAddresses(),
+                                client.getAddresses() != null ? extractAddressIds(client.getAddresses()) : null,
                                 client.getOrders() != null ? client.getOrders().size() : 0,
                                 null
                         ))
@@ -60,13 +64,15 @@ public class ClientServiceImpl implements ClientService {
     public ClientInfoDto getClientById(Long clientId) {
         Client client =  clientRepository.findAllClientInfoById(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Client", clientId));
+        Set<Long> addressIds = extractAddressIds(client.getAddresses());
+
         return  new ClientInfoDto(
                 client.getId(),
                 client.getFullName(),
                 client.getUsername(),
-                client.getAddresses(),
+                addressIds,
                 client.getOrders() != null ? client.getOrders().size() : 0,
-                client.getFileInfo()
+                client.getFileInfo() != null ? client.getFileInfo().getId() : null
         );
     }
 
@@ -78,13 +84,15 @@ public class ClientServiceImpl implements ClientService {
         client.setActive(clientDto.isActive());
         clientRepository.save(client);
 
+        Set<Long> addressIds = extractAddressIds(client.getAddresses());
+
         return new ClientInfoDto(
                 client.getId(),
                 client.getFullName(),
                 client.getUsername(),
-                client.getAddresses(),
+                addressIds,
                 client.getOrders() != null ? client.getOrders().size() : 0,
-                client.getFileInfo()
+                client.getFileInfo().getId()
         );
     }
 
@@ -141,6 +149,11 @@ public class ClientServiceImpl implements ClientService {
         clientRepository.deleteById(id);
     }
 
+    private Set<Long> extractAddressIds(Set<Address> addresses) {
+        return addresses.stream()
+                .map(Address::getId)
+                .collect(Collectors.toSet());
+    }
     @Override
     public Client getCurrentClient() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

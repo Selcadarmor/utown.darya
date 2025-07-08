@@ -1,7 +1,5 @@
 package com.example.Utown.dto.clientDTO;
 
-import com.example.Utown.model.Address;
-import com.example.Utown.model.FileInfo;
 import lombok.Data;
 
 import java.util.Set;
@@ -12,17 +10,17 @@ public class ClientInfoDto {
     private Long id;
     private String fullName;
     private String username;
-    private Set<Address> addresses;
+    private Set<Long> addressIds;
     private Integer orderCount;
-    private FileInfo fileInfo;
+    private Long fileInfoId;
 
-    public ClientInfoDto(Long id, String fullName, String username, Set<Address> addresses, Integer orderCount, FileInfo fileInfoId) {
+    public ClientInfoDto(Long id, String fullName, String username, Set<Long> addressIds, Integer orderCount, Long fileInfoId) {
         this.id = id;
         this.fullName = fullName;
         this.username = username;
-        this.addresses = addresses;
+        this.addressIds = addressIds;
         this.orderCount = orderCount;
-        this.fileInfo = fileInfo;
+        this.fileInfoId = fileInfoId;
     }
 
 }

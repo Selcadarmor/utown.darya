@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "notifications")
-@EntityListeners({AuditingEntityListener.class})
+@EntityListeners(AuditingEntityListener.class)
 public class Notification {
 
     @Id
@@ -39,6 +39,7 @@ public class Notification {
 
     @Column(name = "text")
     private String text;
+
     @Column(name = "time_notification")
     private String timeNotification;
 
