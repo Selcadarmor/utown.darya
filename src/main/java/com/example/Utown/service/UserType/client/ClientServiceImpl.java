@@ -3,6 +3,7 @@ package com.example.Utown.service.UserType.client;
 import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.dto.clientDTO.ClientChangePasswordDto;
 import com.example.Utown.dto.clientDTO.ClientInfoDto;
+import com.example.Utown.dto.clientDTO.ClientProfileUpdateDto;
 import com.example.Utown.dto.clientDTO.ClientUpdateDto;
 import com.example.Utown.exception.PasswordsDoNotMatchException;
 import com.example.Utown.exception.ResourceNotFoundException;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -92,7 +94,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Transactional //For Client
     @Override
-    public void saveAddressToClient(Long clientId, AddressDto dto) {
+    public void saveAddressForClient(Long clientId, AddressDto dto) {
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found", clientId));
 
@@ -103,31 +105,24 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Transactional //For Client
-    public Client updateClientProfile(Long clientId, String newFullName, List<AddressDto> updatedAddresses) {
+    @Override
+    public void updateProfileClient(Long clientId, ClientProfileUpdateDto dto) {
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found", clientId));
 
-        client.setFullName(newFullName);
+        client.setFullName(dto.getFullName());
 
-        if (updatedAddresses != null && !updatedAddresses.isEmpty()) {
-            Set<Address> clientAddresses = client.getAddresses();
-
-            for (AddressDto dto : updatedAddresses) {
-                if (dto.getId() == null) {
-                    throw new IllegalArgumentException("Address ID must be provided for update");
-                }
-
-                Address addressToUpdate = clientAddresses.stream()
-                        .filter(addr -> addr.getId().equals(dto.getId()))
-                        .findFirst()
-                        .orElseThrow(() -> new ResourceNotFoundException("Address not found in client addresses", dto.getId()));
-
-                addressService.updateAddress(addressToUpdate.getId(), dto);
-            }
+        Set<Address> updatedAddresses = new HashSet<>();
+        for (AddressDto addressDto : dto.getAddresses()) {
+            Address updatedAddress = addressService.updateAddress(addressDto.getId(), addressDto);
+            updatedAddresses.add(updatedAddress);
         }
 
-        return clientRepository.save(client);
+        client.setAddresses(updatedAddresses);
+        clientRepository.save(client);
     }
+
+
 
     @Override //For Client
     public void changePassword(String username, ClientChangePasswordDto dto) {
