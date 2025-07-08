@@ -7,7 +7,12 @@ import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
 import com.example.Utown.exception.ResourceNotFoundException;
-import com.example.Utown.mapper.*;
+import com.example.Utown.mapper.AddressInfoMapper;
+import com.example.Utown.mapper.FileInfoMapper;
+import com.example.Utown.mapper.OperatingModeInfoMapper;
+import com.example.Utown.mapper.RestaurantAdminInfoMapper;
+import com.example.Utown.mapper.RestaurantInfoMapper;
+import com.example.Utown.mapper.RestaurantMapper;
 import com.example.Utown.model.OperatingMode;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.RestaurantCategory;
@@ -50,8 +55,9 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
 
     @Override
-    public List<RestaurantInfoDto> getAllRestaurants() {
-        return restaurantRepository.findAllRestaurantsWithOrderCount();
+    public Page<RestaurantInfoDto> getAllRestaurants(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        return restaurantRepository.findAllRestaurantsWithOrderCount(pageable);
     }
 
 

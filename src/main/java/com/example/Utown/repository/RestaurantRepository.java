@@ -37,15 +37,15 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     """)
     Optional<Restaurant> findRestaurantById(Long id);
 
-    @Query("""
-    SELECT new com.example.Utown.dto.restaurantDTO.RestaurantInfoDto(
-        r.id, r.title, COUNT(o.id)
-    )
-    FROM Restaurant r
-    LEFT JOIN Order o ON o.restaurant.id = r.id
-    GROUP BY r.id, r.title
-""")
-    List<RestaurantInfoDto> findAllRestaurantsWithOrderCount();
+    @Query("SELECT new com.example.Utown.dto.restaurantDTO.RestaurantInfoDto(" +
+            "r.id, r.title, a.city, r.phone, COUNT(o.id), r.createdAt, r.updatedAt) " +
+            "FROM Restaurant r " +
+            "LEFT JOIN Order o ON o.restaurant.id = r.id " +
+            "LEFT JOIN Client c ON o.client.id = c.id " +
+            "LEFT JOIN c.addresses a " +
+            "GROUP BY r.id, r.title, a.city, r.phone, r.createdAt, r.updatedAt")
+    Page<RestaurantInfoDto> findAllRestaurantsWithOrderCount(Pageable pageable);
+
 
     @Query("""
         SELECT DISTINCT r

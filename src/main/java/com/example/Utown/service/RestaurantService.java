@@ -12,7 +12,8 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface RestaurantService {
-    List<RestaurantInfoDto> getAllRestaurants();
+    Page<RestaurantInfoDto> getAllRestaurants(int page, int size);
+
     RestaurantDetailsDto getRestaurantById(Long id);
     RestaurantDetailsDto createRestaurant(RestaurantCreateDto dto);
     RestaurantDetailsDto updateRestaurant(Long id, RestaurantUpdateDto dto);
