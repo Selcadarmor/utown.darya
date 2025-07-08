@@ -15,7 +15,7 @@ public interface ClientService {
         Optional<Client> findByUsername(String username);
         List<ClientInfoDto> getAllClients();
         ClientInfoDto getClientById(Long clientId);
-        ClientInfoDto updateClient(Long id, ClientUpdateDto dto);
+        void updateClient(Long id, ClientUpdateDto dto);
         void deleteClient(Long id);
         void changePassword(String username, ClientChangePasswordDto dto);
         void updateProfileClient(Long clientId, ClientProfileUpdateDto dto);

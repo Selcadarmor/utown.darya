@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -80,9 +81,9 @@ public class AdminController {
             @ApiResponse(responseCode = "404", description = "Client not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PutMapping("//client{id}")
-    public ResponseEntity<ClientInfoDto> clientUpdateDtoResponseEntity(@PathVariable Long id, @Valid @RequestBody ClientUpdateDto clientUpdateDto) {
-        return ResponseEntity.ok(clientService.updateClient(id, clientUpdateDto));
+    @PutMapping("/client/{id}")
+    public void updateClient(@PathVariable Long id, @Valid @RequestBody ClientUpdateDto clientUpdateDto) {
+        clientService.updateClient(id, clientUpdateDto);
     }
 
     @Operation(summary = "Delete client by Id", description = "Removes a client from the system.")
@@ -102,9 +103,13 @@ public class AdminController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("/restaurants")
-    public ResponseEntity<List<RestaurantInfoDto>> getAllRestaurants() {
-        return ResponseEntity.ok(restaurantService.getAllRestaurants());
+    public ResponseEntity<Page<RestaurantInfoDto>> getAllRestaurants(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<RestaurantInfoDto> restaurants = restaurantService.getAllRestaurants(page, size);
+        return ResponseEntity.ok(restaurants);
     }
+
 
     @Operation(summary = "Get restaurant by id", description = "Returns a restaurant with the given id.")
     @ApiResponses(value = {

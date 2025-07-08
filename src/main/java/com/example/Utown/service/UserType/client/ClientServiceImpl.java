@@ -40,7 +40,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
 
-    @Override // For Admin
+    @Override // For Admin //сделано
     public List<ClientInfoDto> getAllClients() {
         List<Client> clients = clientRepository.findAllWithAddressesAndOrders();
         return  clients.stream()
@@ -56,10 +56,9 @@ public class ClientServiceImpl implements ClientService {
     }
 
 
-    @Override //For Admin + Client
+    @Override //For Admin + Client //сделан
     public ClientInfoDto getClientById(Long clientId) {
-        Client client =  clientRepository.findAllClientInfoById(clientId)
-                .orElseThrow(() -> new ResourceNotFoundException("Client", clientId));
+        Client client =  findClientByIdOrThrow(clientId);
         Set<Long> addressIds = extractAddressIds(client.getAddresses());
 
         return  new ClientInfoDto(
@@ -72,24 +71,12 @@ public class ClientServiceImpl implements ClientService {
         );
     }
 
-    @Transactional //For Admin
+    @Transactional //For Admin сделано
     @Override
-    public ClientInfoDto updateClient(Long id, ClientUpdateDto clientDto) {
-        Client client = clientRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Client", id));
+    public void updateClient(Long id, ClientUpdateDto clientDto) {
+        Client client = findClientByIdOrThrow(id);
         client.setActive(clientDto.isActive());
         clientRepository.save(client);
-
-        Set<Long> addressIds = extractAddressIds(client.getAddresses());
-
-        return new ClientInfoDto(
-                client.getId(),
-                client.getFullName(),
-                client.getUsername(),
-                addressIds,
-                client.getOrders() != null ? client.getOrders().size() : 0,
-                client.getFileInfo().getId()
-        );
     }
 
     @Transactional //For Client
@@ -102,7 +89,7 @@ public class ClientServiceImpl implements ClientService {
 
         client.getAddresses().add(address);
         clientRepository.save(client);
-    }
+    }//можно переиспользовать тот код что ниже приватный
 
     @Transactional //For Client
     @Override
@@ -120,7 +107,7 @@ public class ClientServiceImpl implements ClientService {
 
         client.setAddresses(updatedAddresses);
         clientRepository.save(client);
-    }
+    }// если нужно можете переиспользовать приватный метод
 
 
 
@@ -153,5 +140,9 @@ public class ClientServiceImpl implements ClientService {
                 .collect(Collectors.toSet());
     }
 
+    private Client findClientByIdOrThrow(Long clientId) { //метод для переиспользования
+        return clientRepository.findAllClientInfoById(clientId)
+                .orElseThrow(() -> new ResourceNotFoundException("Client", clientId));
+    }
 }
 
