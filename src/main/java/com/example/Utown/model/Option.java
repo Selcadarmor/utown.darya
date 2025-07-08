@@ -53,7 +53,7 @@ public class Option {
     @JoinColumn(name = "dish_id")
     private Dish dish;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "option", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "option_id")
     private List<Element> elements;
 

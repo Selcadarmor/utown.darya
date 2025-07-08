@@ -24,7 +24,7 @@ public class RestaurantCreateDto {
     private String phone;
     private BigDecimal minOrderAmount;
     private FileInfoDetailsDto fileInfo;
-    private List<RestaurantCategory> categories;
+    private List<RestaurantCategoryDto> categories;
     private List<OperatingModeInfoDto> operatingModes;
     private RestaurantAdminCreateDto restaurantAdmin;
     private AddressInfoDto address;
