@@ -35,14 +35,20 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public AddressDto getAddressById(Long id) {
-        return addressRepository.findAddressById(id)
+        return addressRepository.getAddressById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Address not found", id));
     }
 
     @Override
     public List<AddressDto> getAllAddresses() {
-        return addressRepository.findAllAddresses();
+        return addressRepository.getAllAddresses();
     }
+
+    @Override
+    public List<AddressDto> getAddressesByClientId(Long clientId) {
+        return addressRepository.getAddressesByClientId(clientId);
+    }
+
 
     @Override
     public Address updateAddress(Long id, AddressDto dto) {
@@ -61,7 +67,7 @@ public class AddressServiceImpl implements AddressService {
         address.setIntercomCode(dto.getIntercomCode());
         address.setTypeAddress(dto.getTypeAddress());
 
-        return addressRepository.save(address);
+        return address;
     }
 
     @Override
@@ -70,6 +76,5 @@ public class AddressServiceImpl implements AddressService {
                 .orElseThrow(() -> new ResourceNotFoundException("Address not found", id));
         addressRepository.delete(address);
     }
-
 
 }

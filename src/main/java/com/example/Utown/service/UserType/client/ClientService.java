@@ -3,6 +3,7 @@ package com.example.Utown.service.UserType.client;
 import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.dto.clientDTO.ClientChangePasswordDto;
 import com.example.Utown.dto.clientDTO.ClientInfoDto;
+import com.example.Utown.dto.clientDTO.ClientProfileUpdateDto;
 import com.example.Utown.dto.clientDTO.ClientUpdateDto;
 import com.example.Utown.model.UserType.Client;
 
@@ -17,8 +18,8 @@ public interface ClientService {
         ClientInfoDto updateClient(Long id, ClientUpdateDto dto);
         void deleteClient(Long id);
         void changePassword(String username, ClientChangePasswordDto dto);
-        Client updateClientProfile(Long clientId, String newFullName, List<AddressDto> updatedAddresses);
-        void saveAddressToClient(Long clientId, AddressDto dto);
+        void updateProfileClient(Long clientId, ClientProfileUpdateDto dto);
+        void saveAddressForClient(Long clientId, AddressDto dto);
 }
 
 

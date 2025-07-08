@@ -6,6 +6,7 @@ import com.example.Utown.dto.clientDTO.ClientChangePasswordDto;
 import com.example.Utown.dto.clientDTO.ClientProfileUpdateDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryForClient;
 import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
+import com.example.Utown.service.AddressService;
 import com.example.Utown.service.RestaurantCategoryService;
 import com.example.Utown.service.UserType.client.ClientService;
 import com.example.Utown.service.RestaurantService;
@@ -30,6 +31,7 @@ public class ClientController {
     private final RestaurantCategoryService restaurantCategoryService;
     private final ClientService clientService;
     private final RestaurantService restaurantService;
+    private final AddressService addressService;
 
     @GetMapping("/restaurant_categories")
     @Operation(summary = "Get all restaurant categories", description = "Restaurant categories with restaurants count for client")
@@ -61,22 +63,30 @@ public class ClientController {
     }
 
     @PostMapping("/{clientId}/addresses")
-    public ResponseEntity<Void> addAddressToClient(
+    @Operation(summary = "Get addresses for client", description = "Get addresses by client ID")
+    public ResponseEntity<Void> addAddressForClient(
             @PathVariable Long clientId,
             @RequestBody AddressDto addressDto) {
 
-        clientService.saveAddressToClient(clientId, addressDto);
+        clientService.saveAddressForClient(clientId, addressDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PutMapping("/{clientId}/profile_update")
-    @Operation(summary = "Update client profile with multiple addresses")
-    public ResponseEntity<String> updateClientProfile(
-            @PathVariable Long clientId,
-            @RequestBody ClientProfileUpdateDto request
+    @PutMapping("/{id}/update")
+    @Operation(summary = "Update", description = "Update fullname and addresses for client")
+    public ResponseEntity<Void> updateProfileClient(
+            @PathVariable Long id,
+            @RequestBody ClientProfileUpdateDto dto
     ) {
-        clientService.updateClientProfile(clientId, request.getFullName(), request.getAddresses());
-        return ResponseEntity.ok("Client profile updated successfully");
+        clientService.updateProfileClient(id, dto);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/client/{clientId}")
+    @Operation(summary = "Get Addresses for client", description = "")
+    public ResponseEntity<List<AddressDto>> getClientAddresses(@PathVariable Long clientId) {
+        List<AddressDto> addresses = addressService.getAddressesByClientId(clientId);
+        return ResponseEntity.ok(addresses);
     }
 
     @PutMapping("/change_password")//Passed
