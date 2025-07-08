@@ -65,7 +65,6 @@ public abstract class RestaurantAdminInfoMapper {
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "notifications", ignore = true)
     @Mapping(target = "restaurant", ignore = true)
-    @Mapping(target = "orders", ignore = true)
     @Mapping(target = "authorities", ignore = true)
     @Mapping(target = "username", ignore = true)
     public abstract RestaurantAdmin updateFromDto(RestaurantAdminCreateDto dto, @MappingTarget RestaurantAdmin admin);
