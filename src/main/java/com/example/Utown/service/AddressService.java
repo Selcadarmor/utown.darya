@@ -12,5 +12,6 @@ public interface AddressService {
     List<AddressDto> getAllAddresses();
     Address updateAddress(Long id, AddressDto dto);
     void deleteAddress(Long id);
+    List<AddressDto> getAddressesByClientId(Long clientId);
 
 }

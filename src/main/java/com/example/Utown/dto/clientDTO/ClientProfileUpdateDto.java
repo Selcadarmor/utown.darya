@@ -9,7 +9,6 @@ import java.util.List;
 @Getter
 @Setter
 public class ClientProfileUpdateDto {
-    private Long id;
     private String fullName;
     private List<AddressDto> addresses;
 }
