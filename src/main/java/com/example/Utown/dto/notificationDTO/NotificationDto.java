@@ -27,5 +27,6 @@ public class NotificationDto {
     private Boolean isSuccessful;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    //private Long notificationId;
 }
 

@@ -89,9 +89,9 @@ public class RestaurantServiceImpl  implements RestaurantService {
         }
 
         // 🏷 Categories
-        if (dto.getCategoryIds() != null && !dto.getCategoryIds().isEmpty()) {
-            Set<RestaurantCategory> categories = dto.getCategoryIds().stream()
-                    .map(id -> restaurantCategoryRepository.findById(id)
+        if (dto.getCategories() != null && !dto.getCategories().isEmpty()) {
+            Set<RestaurantCategory> categories = dto.getCategories().stream()
+                    .map(id -> restaurantCategoryRepository.findById(id.getId())
                             .orElseThrow(() -> new ResourceNotFoundException("Category", id)))
                     .collect(Collectors.toSet());
             restaurant.setCategories(categories);
@@ -148,8 +148,8 @@ public class RestaurantServiceImpl  implements RestaurantService {
         }
 
 
-        if (dto.getCategoryIds() != null) {
-            Set<RestaurantCategory> updatedCategories = dto.getCategoryIds().stream()
+        if (dto.getCategories() != null) {
+            Set<RestaurantCategory> updatedCategories = dto.getCategories().stream()
                     .map(categoryId -> restaurantCategoryRepository.findById(id)
                             .orElseThrow(() -> new ResourceNotFoundException("Category", id)))
                     .collect(Collectors.toSet());

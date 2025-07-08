@@ -1,5 +1,6 @@
 package com.example.Utown.model;
 
+import com.example.Utown.model.UserType.Client;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -43,8 +45,7 @@ public class Cart {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dishToOrder_id")
-    private List<DishToOrder> dishToOrder;
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DishToOrder> dishToOrders;
 
 }

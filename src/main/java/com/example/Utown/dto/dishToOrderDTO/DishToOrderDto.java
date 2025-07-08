@@ -1,6 +1,5 @@
 package com.example.Utown.dto.dishToOrderDTO;
 
-
 import com.example.Utown.model.Cart;
 import com.example.Utown.model.Dish;
 import com.example.Utown.model.Element;
@@ -24,5 +23,6 @@ public class DishToOrderDto {
     private Cart cart;
     private Dish dish;
     private List<Element> selectedElements;
+
 }
 
