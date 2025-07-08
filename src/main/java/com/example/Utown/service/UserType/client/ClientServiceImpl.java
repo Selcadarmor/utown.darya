@@ -9,11 +9,13 @@ import com.example.Utown.exception.*;
 import com.example.Utown.model.Address;
 import com.example.Utown.model.User;
 import com.example.Utown.model.UserType.Client;
-import com.example.Utown.repository.AddressRepository;
 import com.example.Utown.repository.UserRepository;
 import com.example.Utown.repository.UserType.ClientRepository;
 import com.example.Utown.service.AddressService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -100,7 +102,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Transactional //For Client
     @Override
-    public void updateProfileClient(Long clientId, ClientProfileUpdateDto dto) {
+    public void updateClientProfile(Long clientId, ClientProfileUpdateDto dto) {
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found", clientId));
 
@@ -115,8 +117,6 @@ public class ClientServiceImpl implements ClientService {
         client.setAddresses(updatedAddresses);
         clientRepository.save(client);
     }
-
-
 
     @Override //For Client
     public void changePassword(String username, ClientChangePasswordDto dto) {
@@ -141,6 +141,29 @@ public class ClientServiceImpl implements ClientService {
         clientRepository.deleteById(id);
     }
 
+    @Override
+    public Client getCurrentClient() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("User is not authenticated");
+        }
+
+        String username = authentication.getName();
+        return clientRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Client not found: " + username));
+    }
+
+    @Override
+    public Address getAddressByDefaultAddress() {
+        Client client = getCurrentClient();
+
+        Long defaultAddressId = client.getDefaultAddress();
+        if (defaultAddressId == null) {
+            throw new IllegalStateException("Default address is not set for client");
+        }
+
+        return addressService.getAddressById(defaultAddressId);
+    }
 
 }
 

@@ -8,16 +8,15 @@ import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.*;
-import com.example.Utown.model.OperatingMode;
-import com.example.Utown.model.Restaurant;
-import com.example.Utown.model.RestaurantCategory;
-import com.example.Utown.model.Role;
+import com.example.Utown.model.*;
+import com.example.Utown.model.UserType.Client;
 import com.example.Utown.model.UserType.RestaurantAdmin;
 import com.example.Utown.model.enumFiles.Roles;
 import com.example.Utown.repository.OrderRepository;
 import com.example.Utown.repository.RestaurantCategoryRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.repository.RoleRepository;
+import com.example.Utown.service.UserType.client.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,18 +35,19 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RestaurantServiceImpl  implements RestaurantService {
 
-    private final RestaurantRepository restaurantRepository;
-    private final RestaurantInfoMapper restaurantInfoMapper;
-    private final RoleRepository roleRepository;
+    private final AddressInfoMapper addressInfoMapper;
+    private final AddressService addressService;
+    private final ClientService clientService;
+    private final FileInfoMapper fileInfoMapper;
+    private final OperatingModeInfoMapper operatingModeInfoMapper;
+    private final OrderRepository orderRepository;
     private final PasswordEncoder passwordEncoder;
     private final RestaurantAdminInfoMapper restaurantAdminInfoMapper;
-    private final AddressInfoMapper addressInfoMapper;
-    private final OperatingModeInfoMapper operatingModeInfoMapper;
-    private final FileInfoMapper fileInfoMapper;
-    private final OrderRepository orderRepository;
-    private final RestaurantMapper restaurantMapper;
     private final RestaurantCategoryRepository restaurantCategoryRepository;
-
+    private final RestaurantInfoMapper restaurantInfoMapper;
+    private final RestaurantMapper restaurantMapper;
+    private final RestaurantRepository restaurantRepository;
+    private final RoleRepository roleRepository;
 
     @Override
     public List<RestaurantInfoDto> getAllRestaurants() {
@@ -179,12 +179,16 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
     @Override //For Client
     public List<RestaurantForClientDto> getAllRestaurantsForClient() {
-        List<Restaurant> restaurants = restaurantRepository.getAllActiveRestaurantsForClient();
-        return restaurants.stream()
-                .map(restaurantMapper::toRestaurantForClientDto)
-                .collect(Collectors.toList());
-        // добавить сортировку по рейтингу???
-        // добавить сортировку по рекомендации???
+        Client client = clientService.getCurrentClient();
+
+        Long defaultAddressId = client.getDefaultAddress();
+        if (defaultAddressId == null) {
+            throw new IllegalStateException("Default address is not set for client");
+        }
+
+        Address address = addressService.getAddressById(defaultAddressId);
+
+        return restaurantRepository.getAllForClientByArea(address.getArea());
     }
 
     @Override //For Client

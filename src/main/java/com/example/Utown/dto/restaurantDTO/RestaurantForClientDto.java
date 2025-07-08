@@ -19,6 +19,18 @@ public class RestaurantForClientDto {
     private Boolean isRecommended;
     private Boolean isActive;
 
+    public RestaurantForClientDto(Long id, String title, String filePath,
+                                  BigDecimal deliveryPrice, String deliveryTime,
+                                  Boolean isRecommended, Boolean isActive) {
+        this.id = id;
+        this.title = title;
+        this.filePath = filePath;
+        this.deliveryPrice = deliveryPrice;
+        this.deliveryTime = deliveryTime;
+        this.isRecommended = isRecommended;
+        this.isActive = isActive;
+    }
+
 }
 
 

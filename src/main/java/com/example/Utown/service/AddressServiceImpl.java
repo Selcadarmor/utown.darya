@@ -34,8 +34,8 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public AddressDto getAddressById(Long id) {
-        return addressRepository.getAddressById(id)
+    public Address getAddressById(Long id) {
+        return addressRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Address not found", id));
     }
 

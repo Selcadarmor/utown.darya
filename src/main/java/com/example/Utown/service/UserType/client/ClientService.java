@@ -5,6 +5,7 @@ import com.example.Utown.dto.clientDTO.ClientChangePasswordDto;
 import com.example.Utown.dto.clientDTO.ClientInfoDto;
 import com.example.Utown.dto.clientDTO.ClientProfileUpdateDto;
 import com.example.Utown.dto.clientDTO.ClientUpdateDto;
+import com.example.Utown.model.Address;
 import com.example.Utown.model.UserType.Client;
 
 import java.util.List;
@@ -18,8 +19,10 @@ public interface ClientService {
         ClientInfoDto updateClient(Long id, ClientUpdateDto dto);
         void deleteClient(Long id);
         void changePassword(String username, ClientChangePasswordDto dto);
-        void updateProfileClient(Long clientId, ClientProfileUpdateDto dto);
+        void updateClientProfile(Long clientId, ClientProfileUpdateDto dto);
         void saveAddressForClient(Long clientId, AddressDto dto);
+        Client getCurrentClient();
+        Address getAddressByDefaultAddress();
 }
 
 

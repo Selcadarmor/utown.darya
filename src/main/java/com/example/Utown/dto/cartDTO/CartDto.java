@@ -18,12 +18,4 @@ public class CartDto {
     private BigDecimal totalSum;
     private List<DishToOrder> dishToOrder;
 
-    public CartDto(Long id, BigDecimal deliveryPrice, BigDecimal sumOrder, Integer totalDish, BigDecimal totalSum, List<DishToOrder> dishToOrder) {
-        this.id = id;
-        this.deliveryPrice = deliveryPrice;
-        this.sumOrder = sumOrder;
-        this.totalDish = totalDish;
-        this.totalSum = totalSum;
-        this.dishToOrder = dishToOrder;
-    }
 }
