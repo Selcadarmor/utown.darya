@@ -14,7 +14,10 @@ public interface DishCategoryMapper {
 
     @Mapping(source = "restaurant.id", target = "restaurantId")
     DishCategoryDto dishCategoryToDto(DishCategory entity);
+
+
     @Mapping(source = "restaurantId", target = "restaurant.id")
+    @Mapping(target = "dishes", ignore = true)
     DishCategory dishCategoryDtoToEntity(DishCategoryDto dto);
 
     @Mapping(source = "restaurant.id", target = "restaurantId")
@@ -30,7 +33,8 @@ public interface DishCategoryMapper {
             @Mapping(target = "updatedAt", ignore = true),
             @Mapping(target = "restaurant", ignore = true),
             @Mapping(target = "file", ignore = true),
-            @Mapping(target = "dishes", ignore = true)
+            @Mapping(target = "dishes", ignore = true),
+            @Mapping(target = "id", ignore = true)
     })
     DishCategory toEntity(DishCategoryCreateDto dto);
 

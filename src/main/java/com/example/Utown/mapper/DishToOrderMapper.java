@@ -10,5 +10,6 @@ public interface DishToOrderMapper {
 
     DishToOrderDto toDto(DishToOrder entity);
 
+    @Mapping(target = "order", ignore = true)
     DishToOrder toEntity(DishToOrderDto dto);
 }
