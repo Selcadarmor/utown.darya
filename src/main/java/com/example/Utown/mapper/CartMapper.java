@@ -9,8 +9,10 @@ import org.mapstruct.Mapping;
 public interface CartMapper {
 
     @Mapping(target = "dishToOrders", ignore = true)
-    @Mapping(target = "client", ignore = true)
-
     CartDto cartToDto(Cart cart);
+
+
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     Cart cartDtoToEntity(CartDto cartDto);
 }
