@@ -74,11 +74,11 @@ public class ClientController {
 
     @PutMapping("/{id}/update")
     @Operation(summary = "Update", description = "Update fullname and addresses for client")
-    public ResponseEntity<Void> updateProfileClient(
+    public ResponseEntity<Void> updateClientProfile(
             @PathVariable Long id,
             @RequestBody ClientProfileUpdateDto dto
     ) {
-        clientService.updateProfileClient(id, dto);
+        clientService.updateClientProfile(id, dto);
         return ResponseEntity.ok().build();
     }
 
@@ -87,6 +87,13 @@ public class ClientController {
     public ResponseEntity<List<AddressDto>> getClientAddresses(@PathVariable Long clientId) {
         List<AddressDto> addresses = addressService.getAddressesByClientId(clientId);
         return ResponseEntity.ok(addresses);
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Get Addresses for client", description = "")
+    public ResponseEntity<Void> deleteAddress(@PathVariable Long id) {
+        addressService.deleteAddress(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/change_password")//Passed

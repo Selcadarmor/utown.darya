@@ -1,5 +1,6 @@
 package com.example.Utown.repository;
 
+import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.RestaurantCategory;
@@ -48,14 +49,23 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     List<RestaurantInfoDto> findAllRestaurantsWithOrderCount();
 
     @Query("""
-        SELECT DISTINCT r
-        FROM Restaurant r
-        LEFT JOIN FETCH r.fileInfo
-        LEFT JOIN FETCH r.delivery
-        LEFT JOIN FETCH r.categories
-        WHERE r.isActive = true
-    """)
-    List<Restaurant> getAllActiveRestaurantsForClient();
+    SELECT new com.example.Utown.dto.restaurantDTO.RestaurantForClientDto(
+        r.id,
+        r.title,
+        f.path,
+        r.delivery.price,
+        r.deliveryTime,
+        r.isRecommended,
+        r.isActive
+    )
+    FROM Restaurant r
+    LEFT JOIN r.fileInfo f
+    LEFT JOIN r.delivery d
+    WHERE r.address.area = :area
+      AND r.isActive = true
+""")
+    List<RestaurantForClientDto> getAllForClientByArea(@Param("area") String area);
+
 
     @Query("""
         SELECT DISTINCT r
