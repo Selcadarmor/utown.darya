@@ -1,6 +1,5 @@
 package com.example.Utown.dto.restaurantAdminDTO;
 
-import com.example.Utown.model.Notification;
 import com.example.Utown.model.enumFiles.Roles;
 import lombok.AllArgsConstructor;
 import lombok.Data;

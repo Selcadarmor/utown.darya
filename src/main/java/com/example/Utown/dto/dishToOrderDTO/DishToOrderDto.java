@@ -23,5 +23,6 @@ public class DishToOrderDto {
     private Cart cart;
     private Dish dish;
     private List<Element> selectedElements;
+
 }
 

@@ -19,5 +19,6 @@ public class DishCategoryDto {
     private LocalDateTime updatedAt;
     private Long restaurantId;
     private FileInfo file;
+    //private Long dishesId; новое поле в модели -ошибка!
 }
 

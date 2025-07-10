@@ -1,13 +1,21 @@
 package com.example.Utown.service;
 
+import com.example.Utown.dto.operatingModeDTO.OperatingModeCreateDto;
+import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
+import com.example.Utown.dto.operatingModeDTO.OperatingModeUpdateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
-import com.example.Utown.dto.restaurantAdminDTO.RestaurantAdminCreateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantCreateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.*;
+import com.example.Utown.model.*;
+import com.example.Utown.mapper.AddressInfoMapper;
+import com.example.Utown.mapper.FileInfoMapper;
+import com.example.Utown.mapper.RestaurantAdminInfoMapper;
+import com.example.Utown.mapper.RestaurantInfoMapper;
+import com.example.Utown.model.Delivery;
 import com.example.Utown.model.OperatingMode;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.RestaurantCategory;
@@ -18,6 +26,7 @@ import com.example.Utown.repository.OrderRepository;
 import com.example.Utown.repository.RestaurantCategoryRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.repository.RoleRepository;
+import com.example.Utown.service.UserType.client.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,9 +35,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,46 +47,63 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RestaurantServiceImpl  implements RestaurantService {
 
-    private final RestaurantRepository restaurantRepository;
-    private final RestaurantInfoMapper restaurantInfoMapper;
-    private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final RestaurantAdminInfoMapper restaurantAdminInfoMapper;
     private final AddressInfoMapper addressInfoMapper;
-    private final OperatingModeInfoMapper operatingModeInfoMapper;
+    private final ClientService clientService;
     private final FileInfoMapper fileInfoMapper;
     private final OrderRepository orderRepository;
-    private final RestaurantMapper restaurantMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final RestaurantAdminInfoMapper restaurantAdminInfoMapper;
     private final RestaurantCategoryRepository restaurantCategoryRepository;
+    private final RestaurantInfoMapper restaurantInfoMapper;
+    private final RestaurantRepository restaurantRepository;
+    private final RoleRepository roleRepository;
+    private final OperatingModeService operatingModeService;
 
 
-    @Override
-    public List<RestaurantInfoDto> getAllRestaurants() {
-        return restaurantRepository.findAllRestaurantsWithOrderCount();
+    @Override//сделано
+    public Page<RestaurantInfoDto> getAllRestaurants(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        return restaurantRepository.findAllRestaurantsWithOrderCount(pageable);
     }
 
 
     @Override
-    public RestaurantDetailsDto getRestaurantById(Long id) {
-        Restaurant restaurant = restaurantRepository.findRestaurantById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", id));
+    public RestaurantDetailsDto getRestaurantById(Long id) { // сделала
+        Restaurant restaurant = findRestaurantByIdOrThrow(id); //вытаскиваем ресторан из базы и проверяем на ошибки
+        Long orderCounts = orderRepository.countByRestaurantId(id); //подсчитываем количество заказов
 
-        Long orderCounts = orderRepository.countByRestaurantId(id);
-
-        RestaurantDetailsDto dto = restaurantInfoMapper.toDto(restaurant, orderCounts);
-        return dto;
-
+        List<Long> categoryIds = restaurant.getCategories().stream()
+                .map(RestaurantCategory::getId)
+                .toList();//по айди подтягиваем  категорию так как в репозитории нельзя из списка вытаскивать
+        List<Long> operatingModeIds = restaurant.getOperatingModes().stream()
+                .map(OperatingMode::getId)
+                .toList(); // то же из списка по айли вытаскиваем operatingMode
+        List<Long> deliveryIds = restaurant.getDeliveries().stream()
+                .map(Delivery::getId)
+                .toList(); //  тут область доставки
+        return new RestaurantDetailsDto(
+                restaurant.getId(),
+                restaurant.getTitle(),
+                restaurant.getDescription(),
+                restaurant.getPhone(),
+                restaurant.getMinOrderAmount(),
+                restaurant.getFileInfo() != null ? restaurant.getFileInfo().getId() : null,
+                orderCounts,
+                categoryIds,
+                operatingModeIds,
+                restaurant.getRestaurantAdmin() != null ? restaurant.getRestaurantAdmin().getId() : null,
+                deliveryIds
+        );// собираем в дто
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public RestaurantDetailsDto createRestaurant(RestaurantCreateDto dto) {
         Restaurant restaurant = restaurantInfoMapper.toEntity(dto);
 
-        // 👤 Admin
-        RestaurantAdminCreateDto adminDto = dto.getRestaurantAdmin(); // выбери одно поле!
-        RestaurantAdmin admin = restaurantAdminInfoMapper.toEntity(adminDto);
-        admin.setPassword(passwordEncoder.encode(adminDto.getPassword()));
+        // 👤 Admin create
+        RestaurantAdmin admin = restaurantAdminInfoMapper.toEntity(dto.getRestaurantAdmin());
+        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
         Role role = roleRepository.findByName(Roles.ROLE_RESTAURANT_ADMIN)
                 .orElseThrow(() -> new ResourceNotFoundException("Role", "ROLE_RESTAURANT_ADMIN"));
 
@@ -84,47 +112,46 @@ public class RestaurantServiceImpl  implements RestaurantService {
         restaurant.setRestaurantAdmin(admin);
 
         // 📁 File
-        if (dto.getFileInfo() != null) {
-            restaurant.setFileInfo(fileInfoMapper.toDetailsEntity(dto.getFileInfo()));
-        }
+        Optional.ofNullable(dto.getFileInfo())// проверяем есть в ли в дто файл если есть мапим и присваиваем ресторану
+                .map(fileInfoMapper::toDetailsEntity).ifPresent(restaurant::setFileInfo);
+
 
         // 🏷 Categories
-        if (dto.getCategoryIds() != null && !dto.getCategoryIds().isEmpty()) {
-            Set<RestaurantCategory> categories = dto.getCategoryIds().stream()
-                    .map(id -> restaurantCategoryRepository.findById(id)
-                            .orElseThrow(() -> new ResourceNotFoundException("Category", id)))
+        if (!CollectionUtils.isEmpty(dto.getCategories())) { // проверяем что список не нал и не пуст и для каждого элемента вытаскиваем категорию которая соответствует ей и собираем в сет
+            Set<RestaurantCategory> categories = dto.getCategories().stream()
+                    .map(id -> restaurantCategoryRepository.findById(id.getId())
+                            .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory", id)))
                     .collect(Collectors.toSet());
             restaurant.setCategories(categories);
-        }
-
-        // 🕒 Operating Modes
-        if (dto.getOperatingModes() != null && !dto.getOperatingModes().isEmpty()) {
-            List<OperatingMode> modes = dto.getOperatingModes().stream()
-                    .map(operatingModeInfoMapper::toEntity)
-                    .collect(Collectors.toList());
-            restaurant.setOperatingModes(modes);
         }
 
         // 🏠 Address
         if (dto.getAddress() != null) {
             restaurant.setAddress(addressInfoMapper.toEntity(dto.getAddress()));
         }
+        Restaurant saved = restaurantRepository.save(restaurant); // сначала сохраняем ресторан что б получить айди и потом по ади ставим ему режим
+        List<Long> createdModeIds = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(dto.getOperatingModes())) {
+            for (OperatingModeCreateDto createDTO : dto.getOperatingModes()) {
+                createDTO.setRestaurantId(saved.getId());
+                OperatingModeInfoDto created = operatingModeService.create(createDTO);
+                createdModeIds.add(created.getId());
+            }
+        }
 
-        Restaurant saved = restaurantRepository.save(restaurant);
-        return restaurantInfoMapper.toDto(saved);
+        RestaurantDetailsDto resultDto = restaurantInfoMapper.toDto(saved);
+        resultDto.setOperatingModeIds(createdModeIds);
+        return resultDto;
+
     }
 
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public RestaurantDetailsDto updateRestaurant(Long id, RestaurantUpdateDto dto) {
-        // Получаем ресторан из БД или кидаем исключение, если не найден
-        Restaurant restaurant = restaurantRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", id));
-
+        Restaurant restaurant = findRestaurantByIdOrThrow(id);
 
         restaurantInfoMapper.updateFromDto(dto, restaurant);
-
 
         if (dto.getAddress() != null) {
             if (restaurant.getAddress() != null) {
@@ -138,107 +165,104 @@ public class RestaurantServiceImpl  implements RestaurantService {
         if (dto.getFileInfo() != null) {
             fileInfoMapper.updateFromDto(dto.getFileInfo(), restaurant.getFileInfo());
         }
-
-        if (dto.getOperatingModes() != null) {
-
-            List<OperatingMode> updatedOperatingModes = dto.getOperatingModes().stream()
-                    .map(operatingModeInfoMapper::toEntity)
-                    .collect(Collectors.toList());
-            restaurant.setOperatingModes(updatedOperatingModes);
+        //обнавляю данные режима работы
+        if (!CollectionUtils.isEmpty(dto.getOperatingModes())) {
+            for (OperatingModeUpdateDto omDto : dto.getOperatingModes()) {
+                operatingModeService.update(omDto.getId(), omDto);
+            }
         }
 
-
-        if (dto.getCategoryIds() != null) {
-            Set<RestaurantCategory> updatedCategories = dto.getCategoryIds().stream()
-                    .map(categoryId -> restaurantCategoryRepository.findById(id)
-                            .orElseThrow(() -> new ResourceNotFoundException("Category", id)))
+        if (!CollectionUtils.isEmpty(dto.getCategories())) {
+            Set<RestaurantCategory> categories = dto.getCategories().stream()
+                    .map(catDto -> restaurantCategoryRepository.findById(catDto.getId())
+                            .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory", catDto.getId())))
                     .collect(Collectors.toSet());
-
-            restaurant.setCategories(updatedCategories);
+            restaurant.setCategories(categories);
         }
 
-
-        if (dto.getRestaurantAdmin() != null) {
-            restaurantAdminInfoMapper.updateFromDto(dto.getRestaurantAdmin(), restaurant.getRestaurantAdmin());
-        }
-
+        //  if (dto.getRestaurantAdmin() != null) {
+        // restaurantAdminInfoMapper.updateFromDto(dto.getRestaurantAdmin(), restaurant.getRestaurantAdmin());
+        // }
 
         Restaurant saved = restaurantRepository.save(restaurant);
-
 
         return restaurantInfoMapper.toDto(saved);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteRestaurant(Long id) {
-        Restaurant restaurant = restaurantRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", id));
+        Restaurant restaurant = findRestaurantByIdOrThrow(id);
         restaurantRepository.delete(restaurant);
     }
 
     @Override //For Client
-    public List<RestaurantForClientDto> getAllRestaurantsForClient() {
-        List<Restaurant> restaurants = restaurantRepository.getAllActiveRestaurantsForClient();
-        return restaurants.stream()
-                .map(restaurantMapper::toRestaurantForClientDto)
-                .collect(Collectors.toList());
-        // добавить сортировку по рейтингу???
-        // добавить сортировку по рекомендации???
+    public List<RestaurantForClientDto> getRestaurantsAvailableForClient() {
+        Address address = clientService.getAddressByDefaultAddress();
+
+        return restaurantRepository.getRestaurantsByCityAndArea(
+                address.getArea()
+        );
     }
 
-    @Override //For Client
-    public List<RestaurantForClientDto> getRestaurantsByCategoryId(Long categoryId) {
-        List<RestaurantForClientDto> allRestaurants = getAllRestaurantsForClient();
 
-        return allRestaurants.stream()
-                .filter(r -> r.getCategoryIds() != null && r.getCategoryIds().contains(categoryId))
-                .toList();
-    }
+//    @Override //For Client
+//    public List<RestaurantForClientDto> getRestaurantsByCategoryId(Long categoryId) {
+//        List<RestaurantForClientDto> allRestaurants = getAllRestaurantsForClient();
+//
+//        return allRestaurants.stream()
+//                .filter(r -> r.getCategoryIds() != null && r.getCategoryIds().contains(categoryId))
+//                .toList();
+//    }
+//
+//    @Override //For Client
+//    public List<RestaurantForClientDto> getAllRestaurantsSortedByDeliveryTime() {
+//        List<RestaurantForClientDto> allRestaurants = getAllRestaurantsForClient();
+//
+//        allRestaurants.sort(Comparator.comparingInt(r -> {
+//            try {
+//                return Integer.parseInt(r.getDeliveryTime());
+//            } catch (Exception e) {
+//                return Integer.MAX_VALUE;
+//            }
+//        }));
+//        // Добавить везде сортировку по рейтингу и рекомендации???
+//        // Как сохранить точный порядок сортировки по рейтингу, рекомендации и время доставки???
+//
+//        return allRestaurants;
+//    }
 
-    @Override //For Client
-    public List<RestaurantForClientDto> getAllRestaurantsSortedByDeliveryTime() {
-        List<RestaurantForClientDto> allRestaurants = getAllRestaurantsForClient();
+//    @Override
+//    public Page<RestaurantForClientDto> searchRestaurants(
+//            String query,
+//            int page,
+//            int size,
+//            String sortBy,
+//            String direction) {
+//
+//        Sort sort;
+//        switch (sortBy.toLowerCase()) {
+//            case "rating":
+//                sort = Sort.by(Sort.Direction.fromString(direction), "rating");
+//                break;
+//            case "isrecommended":
+//                sort = Sort.by(Sort.Direction.fromString(direction), "isRecommended");
+//                break;
+//            case "deliverytime":
+//                sort = Sort.by(Sort.Direction.fromString(direction), "deliveryTime");
+//                break;
+//            default:
+//                sort = Sort.by(Sort.Direction.fromString(direction), "id");
+//        }
+//
+//        Pageable pageable = PageRequest.of(page, size, sort);
+//
+//        return restaurantRepository.searchClient(query, pageable)
+//                .map(restaurantMapper::toRestaurantForClientDto);
+//    }
 
-        allRestaurants.sort(Comparator.comparingInt(r -> {
-            try {
-                return Integer.parseInt(r.getDeliveryTime());
-            } catch (Exception e) {
-                return Integer.MAX_VALUE;
-            }
-        }));
-        // Добавить везде сортировку по рейтингу и рекомендации???
-        // Как сохранить точный порядок сортировки по рейтингу, рекомендации и время доставки???
-
-        return allRestaurants;
-    }
-
-    @Override
-    public Page<RestaurantForClientDto> searchRestaurants(
-            String query,
-            int page,
-            int size,
-            String sortBy,
-            String direction) {
-
-        Sort sort;
-        switch (sortBy.toLowerCase()) {
-            case "rating":
-                sort = Sort.by(Sort.Direction.fromString(direction), "rating");
-                break;
-            case "isrecommended":
-                sort = Sort.by(Sort.Direction.fromString(direction), "isRecommended");
-                break;
-            case "deliverytime":
-                sort = Sort.by(Sort.Direction.fromString(direction), "deliveryTime");
-                break;
-            default:
-                sort = Sort.by(Sort.Direction.fromString(direction), "id");
-        }
-
-        Pageable pageable = PageRequest.of(page, size, sort);
-
-        return restaurantRepository.searchClient(query, pageable)
-                .map(restaurantMapper::toRestaurantForClientDto);
+    private Restaurant findRestaurantByIdOrThrow(Long restaurantId) { //  для переиспользования
+        return restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
     }
 }

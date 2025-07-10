@@ -1,5 +1,6 @@
 package com.example.Utown.repository;
 
+import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.RestaurantCategory;
@@ -16,46 +17,52 @@ import java.util.Optional;
 public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 
     @Query("SELECT COUNT(r) FROM Restaurant r JOIN r.categories c WHERE c = :category")
-    Long countRestaurantsByCategory(@Param("restaurant_category") RestaurantCategory category);
+    Long countRestaurantsByCategory(@Param("category") RestaurantCategory category);
 
 
-    @Query(""" 
-        SELECT r FROM Restaurant r
-        LEFT JOIN FETCH r.address
-        LEFT JOIN FETCH r.categories
-        LEFT JOIN FETCH r.fileInfo
-        LEFT JOIN FETCH r.operatingModes
-    """)
-    List<Restaurant> findAllRestaurants();
 
-    @Query(""" 
-        SELECT r FROM Restaurant r
-        LEFT JOIN FETCH r.address
-        LEFT JOIN FETCH r.categories
-        LEFT JOIN FETCH r.fileInfo
-        LEFT JOIN FETCH r.operatingModes
-    """)
-    Optional<Restaurant> findRestaurantById(Long id);
+    @Query("SELECT r FROM Restaurant r " +       // метод получения ресторана по айди
+            "LEFT JOIN FETCH r.categories " +
+            "LEFT JOIN FETCH r.operatingModes " +
+            "LEFT JOIN FETCH r.deliveries " +
+            "LEFT JOIN FETCH r.fileInfo " +
+            "LEFT JOIN FETCH r.restaurantAdmin " +
+            "WHERE  r.id = :id")
+    Optional<Restaurant> findRestaurantById(@Param ("id") Long id);
+
+    @Query("SELECT new com.example.Utown.dto.restaurantDTO.RestaurantInfoDto(" +
+            "r.id, r.title, a.city, r.phone, COUNT(o.id), r.createdAt, r.updatedAt) " +
+            "FROM Restaurant r " +
+            "LEFT JOIN Order o ON o.restaurant.id = r.id " +
+            "LEFT JOIN Client c ON o.client.id = c.id " +
+            "LEFT JOIN c.addresses a " +
+            "GROUP BY r.id, r.title, a.city, r.phone, r.createdAt, r.updatedAt")
+    Page<RestaurantInfoDto> findAllRestaurantsWithOrderCount(Pageable pageable);
+
 
     @Query("""
-    SELECT new com.example.Utown.dto.restaurantDTO.RestaurantInfoDto(
-        r.id, r.title, COUNT(o.id)
+    SELECT new com.example.Utown.dto.restaurantDTO.RestaurantForClientDto(
+        r.id,
+        r.title,
+        f.path,
+        d.price,
+        r.deliveryTime,
+        r.isRecommended,
+        r.isActive
     )
     FROM Restaurant r
-    LEFT JOIN Order o ON o.restaurant.id = r.id
-    GROUP BY r.id, r.title
+    JOIN r.deliveries d
+    LEFT JOIN r.fileInfo f
+    WHERE d.area = :area
+      AND d.isActive = true
+      AND r.isActive = true
 """)
-    List<RestaurantInfoDto> findAllRestaurantsWithOrderCount();
+    List<RestaurantForClientDto> getRestaurantsByCityAndArea(
+            @Param("area") String area
+    );
 
-    @Query("""
-        SELECT DISTINCT r
-        FROM Restaurant r
-        LEFT JOIN FETCH r.fileInfo
-        LEFT JOIN FETCH r.delivery
-        LEFT JOIN FETCH r.categories
-        WHERE r.isActive = true
-    """)
-    List<Restaurant> getAllActiveRestaurantsForClient();
+
+
 
     @Query("""
         SELECT DISTINCT r
