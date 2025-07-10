@@ -16,7 +16,7 @@ public interface RestaurantMapper {
     @Mapping(source = "fileInfo.path", target = "filePath")
     @Mapping(source = "categories", target = "categoryNames", qualifiedByName = "mapCategoryNames")
     @Mapping(source = "categories", target = "categoryIds", qualifiedByName = "mapCategoryIds")
-    @Mapping(source = "delivery.price", target = "deliveryPrice")
+   // @Mapping(source = "delivery.price", target = "deliveryPrice")
     RestaurantForClientDto toRestaurantForClientDto(Restaurant restaurant);
 
     @Named("mapCategoryNames")
