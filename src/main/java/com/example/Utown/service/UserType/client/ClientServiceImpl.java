@@ -71,7 +71,7 @@ public class ClientServiceImpl implements ClientService {
         );
     }
 
-    @Transactional //For Admin сделано
+    @Transactional(rollbackFor = Exception.class) //For Admin сделано
     @Override
     public void updateClient(Long id, ClientUpdateDto clientDto) {
         Client client = findClientByIdOrThrow(id);
@@ -125,7 +125,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
 
-    @Transactional //For Admin + Client
+    @Transactional(rollbackFor = Exception.class) //For Admin + Client
     @Override
     public void deleteClient(Long id) {
         if (!clientRepository.existsById(id)) {

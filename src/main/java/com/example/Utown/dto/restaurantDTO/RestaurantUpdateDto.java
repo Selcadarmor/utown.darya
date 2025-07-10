@@ -5,6 +5,7 @@ import com.example.Utown.dto.addressDTO.AddressInfoDto;
 import com.example.Utown.dto.fileInfoDTO.FileInfoDetailsDto;
 import com.example.Utown.dto.fileInfoDTO.FileInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
+import com.example.Utown.dto.operatingModeDTO.OperatingModeUpdateDto;
 import com.example.Utown.dto.restaurantAdminDTO.RestaurantAdminCreateDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryDto;
 
@@ -27,7 +28,7 @@ public class RestaurantUpdateDto {
     private BigDecimal minOrderAmount;
     private AddressInfoDto address;
     private FileInfoDto fileInfo;
-    private List<OperatingModeInfoDto> operatingModes;
+    private List<OperatingModeUpdateDto> operatingModes;
     private List<RestaurantCategory> categories;
-    private RestaurantAdminCreateDto restaurantAdmin;
+    //private RestaurantAdminCreateDto restaurantAdmin;
 }

@@ -19,23 +19,14 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     Long countRestaurantsByCategory(@Param("restaurant_category") RestaurantCategory category);
 
 
-    @Query(""" 
-        SELECT r FROM Restaurant r
-        LEFT JOIN FETCH r.address
-        LEFT JOIN FETCH r.categories
-        LEFT JOIN FETCH r.fileInfo
-        LEFT JOIN FETCH r.operatingModes
-    """)
-    List<Restaurant> findAllRestaurants();
-
-    @Query(""" 
-        SELECT r FROM Restaurant r
-        LEFT JOIN FETCH r.address
-        LEFT JOIN FETCH r.categories
-        LEFT JOIN FETCH r.fileInfo
-        LEFT JOIN FETCH r.operatingModes
-    """)
-    Optional<Restaurant> findRestaurantById(Long id);
+    @Query("SELECT r FROM Restaurant r " +       // метод получения ресторана по айди
+            "LEFT JOIN FETCH r.categories " +
+            "LEFT JOIN FETCH r.operatingModes " +
+            "LEFT JOIN FETCH r.deliveries " +
+            "LEFT JOIN FETCH r.fileInfo " +
+            "LEFT JOIN FETCH r.restaurantAdmin " +
+            "WHERE  r.id = :id")
+    Optional<Restaurant> findRestaurantById(@Param ("id") Long id);
 
     @Query("SELECT new com.example.Utown.dto.restaurantDTO.RestaurantInfoDto(" +
             "r.id, r.title, a.city, r.phone, COUNT(o.id), r.createdAt, r.updatedAt) " +
@@ -51,7 +42,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
         SELECT DISTINCT r
         FROM Restaurant r
         LEFT JOIN FETCH r.fileInfo
-        LEFT JOIN FETCH r.delivery
+        LEFT JOIN FETCH r.deliveries
         LEFT JOIN FETCH r.categories
         WHERE r.isActive = true
     """)
