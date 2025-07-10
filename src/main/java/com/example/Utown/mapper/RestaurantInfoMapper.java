@@ -1,6 +1,5 @@
 package com.example.Utown.mapper;
 
-import com.example.Utown.dto.operatingModeDTO.OperatingModeCreateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantCreateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
@@ -29,19 +28,6 @@ public interface RestaurantInfoMapper {
     @Mapping(source = "deliveries", target = "deliveryIds")
     RestaurantDetailsDto toDto(Restaurant restaurant);
 
-    @Mapping(source = "restaurant.fileInfo.id", target = "fileId")
-    @Mapping(source = "restaurant.categories", target = "categoryIds")
-    @Mapping(source = "restaurant.operatingModes", target = "operatingModeIds")
-    @Mapping(source = "restaurant.restaurantAdmin.id", target = "restaurantAdminId")
-    @Mapping(source = "restaurant.id", target = "id")
-    @Mapping(source = "restaurant.title", target = "title")
-    @Mapping(source = "restaurant.description", target = "description")
-    @Mapping(source = "restaurant.phone", target = "phone")
-    @Mapping(source = "restaurant.minOrderAmount", target = "minOrderAmount")
-    @Mapping(source = "orderCount", target = "orderCount")
-    @Mapping(target = "deliveryIds", ignore = true)
-    RestaurantDetailsDto toDto(Restaurant restaurant, Long orderCount);
-
 
     @Mappings({
             @Mapping(target = "id", ignore = true),
@@ -59,7 +45,7 @@ public interface RestaurantInfoMapper {
             @Mapping(target = "dishCategories", ignore = true),
             @Mapping(target = "restaurantAdmin", ignore = true),
             @Mapping(target = "operatingModes", ignore = true)
-    })
+    })//+
     Restaurant updateFromDto(RestaurantUpdateDto restaurantUpdateDto, @MappingTarget Restaurant restaurant);
 
     @Mappings({
@@ -81,7 +67,7 @@ public interface RestaurantInfoMapper {
             @Mapping(target = "createdAt", ignore = true),
             @Mapping(target = "updatedAt", ignore = true)
     })
-    Restaurant toEntity(RestaurantCreateDto dto);
+    Restaurant toEntity(RestaurantCreateDto dto);//+
 
 
     default List<Long> mapCategories(Set<RestaurantCategory> categories) {
