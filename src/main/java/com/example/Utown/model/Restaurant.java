@@ -86,9 +86,9 @@ public class Restaurant {
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "delivery")
-    private Delivery delivery;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "restaurant_id")
+    private List<Delivery> deliveries;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<OperatingMode> operatingModes;

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 
-@Mapper(componentModel = "spring", uses = {AddressInfoMapper.class, OperatingModeInfoMapper.class, RestaurantCategoryInfoMapper.class, OrderInfoMapper.class, RestaurantAdminInfoMapper.class, DishCategoryMapper.class})
+@Mapper(componentModel = "spring", uses = {AddressInfoMapper.class, RestaurantCategoryInfoMapper.class, OrderInfoMapper.class, RestaurantAdminInfoMapper.class, DishCategoryMapper.class})
 public interface RestaurantInfoMapper {
     @Mappings({
             @Mapping(target = "deliveryTime", ignore = true),
@@ -26,7 +26,7 @@ public interface RestaurantInfoMapper {
             @Mapping(target = "totalRatings", ignore = true),
             @Mapping(target = "statusForcedChanged", ignore = true),
             @Mapping(target = "isActive", ignore = true),
-            @Mapping(target = "delivery", ignore = true),
+            @Mapping(target = "deliveries", ignore = true),
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "createdAt", ignore = true),
             @Mapping(target = "updatedAt", ignore = true),
@@ -68,7 +68,7 @@ public interface RestaurantInfoMapper {
             @Mapping(target = "isActive", ignore = true),
             @Mapping(target = "createdAt", ignore = true),
             @Mapping(target = "updatedAt", ignore = true),
-            @Mapping(target = "delivery", ignore = true),
+            @Mapping(target = "deliveries", ignore = true),
             @Mapping(target = "dishCategories", ignore = true)
     })
     Restaurant updateFromDto(RestaurantUpdateDto restaurantUpdateDto, @MappingTarget Restaurant restaurant);
@@ -85,7 +85,7 @@ public interface RestaurantInfoMapper {
             @Mapping(target = "restaurantAdmin", ignore = true),
             @Mapping(target = "categories", ignore = true),
             @Mapping(target = "address", ignore = true),
-            @Mapping(target = "delivery", ignore = true),
+            @Mapping(target = "deliveries", ignore = true),
             @Mapping(target = "operatingModes", ignore = true),
             @Mapping(target = "fileInfo", ignore = true),
             @Mapping(target = "dishCategories", ignore = true),

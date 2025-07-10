@@ -17,7 +17,8 @@ import java.util.Optional;
 public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 
     @Query("SELECT COUNT(r) FROM Restaurant r JOIN r.categories c WHERE c = :category")
-    Long countRestaurantsByCategory(@Param("restaurant_category") RestaurantCategory category);
+    Long countRestaurantsByCategory(@Param("category") RestaurantCategory category);
+
 
 
     @Query(""" 
@@ -53,18 +54,23 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
         r.id,
         r.title,
         f.path,
-        r.delivery.price,
+        d.price,
         r.deliveryTime,
         r.isRecommended,
         r.isActive
     )
     FROM Restaurant r
+    JOIN r.deliveries d
     LEFT JOIN r.fileInfo f
-    LEFT JOIN r.delivery d
-    WHERE r.address.area = :area
+    WHERE d.area = :area
+      AND d.isActive = true
       AND r.isActive = true
 """)
-    List<RestaurantForClientDto> getAllForClientByArea(@Param("area") String area);
+    List<RestaurantForClientDto> getRestaurantsByCityAndArea(
+            @Param("area") String area
+    );
+
+
 
 
     @Query("""

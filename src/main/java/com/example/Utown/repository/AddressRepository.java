@@ -21,8 +21,8 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
     @Query("SELECT new com.example.Utown.dto.addressDTO.AddressDto(" +
             "a.id, a.area, a.city, a.details, a.fullAddress, a.latitude, a.longitude, " +
             "a.postCode, a.state, a.street, a.intercomCode, a.typeAddress) " +
-            "FROM Client c JOIN c.addresses a WHERE c.id = :clientId")
-    List<AddressDto> getAddressesByClientId(@Param("clientId") Long clientId);
+            "FROM Client c JOIN c.addresses a WHERE c.username = :username")
+    List<AddressDto> getAddressesByClient(@Param("username") String username);
 
 
 }

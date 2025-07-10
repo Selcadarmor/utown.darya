@@ -1,19 +1,23 @@
 package com.example.Utown.controller.userTypeControllers;
 
+import com.example.Utown.dto.userDto.UserChangePasswordDto;
 import com.example.Utown.dto.tokens.JWTRequest;
 import com.example.Utown.dto.tokens.JWTResponse;
 import com.example.Utown.dto.tokens.RefreshTokenRequest;
-import com.example.Utown.dto.userDto.UserRegistrationDto;
+import com.example.Utown.dto.clientDTO.ClientRegistrationDto;
 import com.example.Utown.service.AuthService;
 import com.example.Utown.service.RefreshTokenService;
-import com.example.Utown.service.UserType.client.ClientService;
+import com.example.Utown.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,19 +28,22 @@ public class MainController {
 
     private final AuthService authService;
     private final RefreshTokenService refreshTokenService;
-    private final ClientService clientService;
-
-    @PostMapping("/registration-client")  //Passed
-    @Operation(summary = "Register Client", description = "Registration for client users")
-    public ResponseEntity<String> registerClient(@RequestBody UserRegistrationDto dto) {
-        authService.registration(dto);
-        return ResponseEntity.ok("Client registered successfully");
-    }
+    private final UserService userService;
 
     @PostMapping("/login") //Passed
     public ResponseEntity<JWTResponse> login(@RequestBody JWTRequest authRequest) {
         JWTResponse response = authService.createAuthToken(authRequest);
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/change_password") // Passed
+    @Operation(summary = "Change client password", description = "Allows authenticated client to change their password")
+    public ResponseEntity<String> changePassword(
+            @RequestBody @Valid UserChangePasswordDto dto,
+            @AuthenticationPrincipal User user
+    ) {
+        userService.changePassword(user.getUsername(), dto);
+        return ResponseEntity.ok("Password changed successfully");
     }
 
     @PostMapping("/refresh_token") //Passed
