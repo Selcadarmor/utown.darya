@@ -33,7 +33,7 @@ public class ClientController {
     private final AddressService addressService;
     private final AuthService authService;
 
-    @GetMapping("/restaurant_categories")
+    @GetMapping("/restaurant_categories") //Passed
     @Operation(summary = "Get all restaurant categories", description = "Restaurant categories with restaurants count for client")
     public ResponseEntity<List<RestaurantCategoryForClient>> getAllCategoriesForClient() {
         List<RestaurantCategoryForClient> categories =
