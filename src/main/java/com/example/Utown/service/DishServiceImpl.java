@@ -114,15 +114,15 @@ public class DishServiceImpl implements DishService {
         dishRepository.delete(dish);
     }
 
-    @Override // метод получения вез Dish для каждого ресторана с испльзованием пагинации
+    @Override // метод получения вез Dish для каждого ресторана пагинация
     public Page<DishDetailsDto> getDishesByRestaurantId(Long restaurantId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("sort").ascending());
         return dishRepository.findByRestaurantId(restaurantId, pageable)
                 .map(dishMapper::dishDetailsToDto);
     }
 
-    @Override // метод создания Dish для каждого ресторана сделала в ручную так как не знаю менял ли кто то метод создания Dish в будущем можно переиспользовать метод Dish createDish(DishDto dto)
-    @Transactional
+    @Override // метод создания Dish для каждого ресторана, сделала так как не знаю менял ли кто-то метод создания Dish в будущем можно переиспользовать метод Dish createDish(DishDto dto)
+    @Transactional(rollbackFor = Exception.class)
     public DishDetailsDto createDishForRestaurant(Long RestaurantId, DishDetailsDto dto) {
         Restaurant restaurant = restaurantRepository.findById(RestaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found", RestaurantId));
@@ -153,8 +153,8 @@ public class DishServiceImpl implements DishService {
         return dishMapper.toSavedDishDto(dishRepository.save(dish));
     }
 
-    @Override //  метод обнавления Dish  для каждого Restaurant  хотела переиспользовать код из метода Dish updateDish(Long id, DishDto dto) но  мне не ответили работают ли над этим классом
-    @Transactional
+    @Override //  метод обновления Dish для каждого Restaurant хотела переиспользовать код из метода Dish updateDish(Long id, DishDto dto) но мне не ответили
+    @Transactional(rollbackFor = Exception.class)
     public DishDetailsDto updateDishForRestaurant(Long RestaurantId, Long DishId, DishDetailsDto dto) {
         Dish dish = dishRepository.findById(DishId)
                 .orElseThrow(() -> new ResourceNotFoundException("Dish not found", DishId));

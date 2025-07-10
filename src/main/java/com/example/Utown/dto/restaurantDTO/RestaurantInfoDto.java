@@ -15,27 +15,16 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class RestaurantInfoDto {
-    private Long id;
+    private Long restaurantId;
 
     private String phone;
 
     private String title;
 
-    private Address address;
-
-    private FileInfoDetailsDto fileInfo;
-
-    private List<OperatingModeInfoDto> operatingModes;
+    private String city;
 
     private Long orderCount;
-
-    private List<RestaurantCategoryDto> categories;
-
-    private RestaurantAdmin restaurantAdmin;
-
-    private Delivery delivery;
 
     private LocalDateTime createdAt;
 
@@ -43,10 +32,14 @@ public class RestaurantInfoDto {
 
 
 
-    public RestaurantInfoDto(Long id, String title, Long ordersCount) {
-        this.id = id;
+    public RestaurantInfoDto(Long restaurantId, String title, String city, String phone, Long ordersCount, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.restaurantId = restaurantId;
         this.title = title;
+        this.city = city;
+        this.phone = phone;
         this.orderCount = ordersCount;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
 }
