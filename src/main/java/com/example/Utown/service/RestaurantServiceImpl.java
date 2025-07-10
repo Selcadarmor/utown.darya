@@ -45,7 +45,6 @@ public class RestaurantServiceImpl  implements RestaurantService {
     private final RestaurantAdminInfoMapper restaurantAdminInfoMapper;
     private final RestaurantCategoryRepository restaurantCategoryRepository;
     private final RestaurantInfoMapper restaurantInfoMapper;
-    private final RestaurantMapper restaurantMapper;
     private final RestaurantRepository restaurantRepository;
     private final RoleRepository roleRepository;
 
@@ -178,71 +177,67 @@ public class RestaurantServiceImpl  implements RestaurantService {
     }
 
     @Override //For Client
-    public List<RestaurantForClientDto> getAllRestaurantsForClient() {
-        Client client = clientService.getCurrentClient();
+    public List<RestaurantForClientDto> getRestaurantsAvailableForClient() {
+        Address address = clientService.getAddressByDefaultAddress();
 
-        Long defaultAddressId = client.getDefaultAddress();
-        if (defaultAddressId == null) {
-            throw new IllegalStateException("Default address is not set for client");
-        }
-
-        Address address = addressService.getAddressById(defaultAddressId);
-
-        return restaurantRepository.getAllForClientByArea(address.getArea());
+        return restaurantRepository.getRestaurantsByCityAndArea(
+                address.getArea()
+        );
     }
 
-    @Override //For Client
-    public List<RestaurantForClientDto> getRestaurantsByCategoryId(Long categoryId) {
-        List<RestaurantForClientDto> allRestaurants = getAllRestaurantsForClient();
 
-        return allRestaurants.stream()
-                .filter(r -> r.getCategoryIds() != null && r.getCategoryIds().contains(categoryId))
-                .toList();
-    }
+//    @Override //For Client
+//    public List<RestaurantForClientDto> getRestaurantsByCategoryId(Long categoryId) {
+//        List<RestaurantForClientDto> allRestaurants = getAllRestaurantsForClient();
+//
+//        return allRestaurants.stream()
+//                .filter(r -> r.getCategoryIds() != null && r.getCategoryIds().contains(categoryId))
+//                .toList();
+//    }
+//
+//    @Override //For Client
+//    public List<RestaurantForClientDto> getAllRestaurantsSortedByDeliveryTime() {
+//        List<RestaurantForClientDto> allRestaurants = getAllRestaurantsForClient();
+//
+//        allRestaurants.sort(Comparator.comparingInt(r -> {
+//            try {
+//                return Integer.parseInt(r.getDeliveryTime());
+//            } catch (Exception e) {
+//                return Integer.MAX_VALUE;
+//            }
+//        }));
+//        // Добавить везде сортировку по рейтингу и рекомендации???
+//        // Как сохранить точный порядок сортировки по рейтингу, рекомендации и время доставки???
+//
+//        return allRestaurants;
+//    }
 
-    @Override //For Client
-    public List<RestaurantForClientDto> getAllRestaurantsSortedByDeliveryTime() {
-        List<RestaurantForClientDto> allRestaurants = getAllRestaurantsForClient();
-
-        allRestaurants.sort(Comparator.comparingInt(r -> {
-            try {
-                return Integer.parseInt(r.getDeliveryTime());
-            } catch (Exception e) {
-                return Integer.MAX_VALUE;
-            }
-        }));
-        // Добавить везде сортировку по рейтингу и рекомендации???
-        // Как сохранить точный порядок сортировки по рейтингу, рекомендации и время доставки???
-
-        return allRestaurants;
-    }
-
-    @Override
-    public Page<RestaurantForClientDto> searchRestaurants(
-            String query,
-            int page,
-            int size,
-            String sortBy,
-            String direction) {
-
-        Sort sort;
-        switch (sortBy.toLowerCase()) {
-            case "rating":
-                sort = Sort.by(Sort.Direction.fromString(direction), "rating");
-                break;
-            case "isrecommended":
-                sort = Sort.by(Sort.Direction.fromString(direction), "isRecommended");
-                break;
-            case "deliverytime":
-                sort = Sort.by(Sort.Direction.fromString(direction), "deliveryTime");
-                break;
-            default:
-                sort = Sort.by(Sort.Direction.fromString(direction), "id");
-        }
-
-        Pageable pageable = PageRequest.of(page, size, sort);
-
-        return restaurantRepository.searchClient(query, pageable)
-                .map(restaurantMapper::toRestaurantForClientDto);
-    }
+//    @Override
+//    public Page<RestaurantForClientDto> searchRestaurants(
+//            String query,
+//            int page,
+//            int size,
+//            String sortBy,
+//            String direction) {
+//
+//        Sort sort;
+//        switch (sortBy.toLowerCase()) {
+//            case "rating":
+//                sort = Sort.by(Sort.Direction.fromString(direction), "rating");
+//                break;
+//            case "isrecommended":
+//                sort = Sort.by(Sort.Direction.fromString(direction), "isRecommended");
+//                break;
+//            case "deliverytime":
+//                sort = Sort.by(Sort.Direction.fromString(direction), "deliveryTime");
+//                break;
+//            default:
+//                sort = Sort.by(Sort.Direction.fromString(direction), "id");
+//        }
+//
+//        Pageable pageable = PageRequest.of(page, size, sort);
+//
+//        return restaurantRepository.searchClient(query, pageable)
+//                .map(restaurantMapper::toRestaurantForClientDto);
+//    }
 }

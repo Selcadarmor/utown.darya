@@ -1,6 +1,7 @@
 package com.example.Utown.service;
 
-import com.example.Utown.dto.userDto.UserRegistrationDto;
+import com.example.Utown.dto.userDto.UserChangePasswordDto;
+import com.example.Utown.dto.clientDTO.ClientRegistrationDto;
 import com.example.Utown.exception.*;
 import com.example.Utown.model.Role;
 import com.example.Utown.model.User;
@@ -27,24 +28,17 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByUsername(username);
     }
 
-    @Override
-    public void save(UserRegistrationDto dto, Roles roleName) {
-        if (!dto.getPassword().equals(dto.getConfirmPassword())) {
+    @Override //For Client
+    public void changePassword(String username, UserChangePasswordDto dto) {
+        if (!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
             throw new PasswordsDoNotMatchException();
         }
 
-        if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
-            throw new UserAlreadyExistsException(dto.getUsername());
-        }
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
 
-        Role role = roleRepository.findByName(roleName)
-                .orElseThrow(() -> new RoleNotFoundException(roleName.name()));
-
-        User user = new User();
-        user.setUsername(dto.getUsername());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.setRoles(Set.of(role));
-        user.setActive(true);
+        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         userRepository.save(user);
     }
+
 }

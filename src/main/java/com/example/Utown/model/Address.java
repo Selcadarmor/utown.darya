@@ -25,11 +25,17 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "state")
+     private String state;
+
+    @Column(length = 100, nullable = false)
+    private String city;
+
    @Column(length = 100, nullable = false)
     private String area;
 
    @Column(length = 100, nullable = false)
-    private String city;
+    private String street;
 
    @Column(length = 100, nullable = false)
     private String details;
@@ -45,12 +51,6 @@ public class Address {
 
     @Column(name = "post_code")
     private String postCode;
-
-    @Column(name = "state")
-    private String state;
-
-    @Column(length = 100, nullable = false)
-    private String street;
 
     @Column(name = "intercome_code", length = 100, nullable = false)
     private String intercomCode;
