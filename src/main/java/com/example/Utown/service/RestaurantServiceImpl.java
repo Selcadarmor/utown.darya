@@ -196,16 +196,6 @@ public class RestaurantServiceImpl  implements RestaurantService {
         restaurantRepository.delete(restaurant);
     }
 
-    @Override //For Client
-    public List<RestaurantForClientDto> getRestaurantsAvailableForClient() {
-        Address address = clientService.getAddressByDefaultAddress();
-
-        return restaurantRepository.getRestaurantsByCityAndArea(
-                address.getArea()
-        );
-    }
-
-
 //    @Override //For Client
 //    public List<RestaurantForClientDto> getRestaurantsByCategoryId(Long categoryId) {
 //        List<RestaurantForClientDto> allRestaurants = getAllRestaurantsForClient();
@@ -264,5 +254,14 @@ public class RestaurantServiceImpl  implements RestaurantService {
     private Restaurant findRestaurantByIdOrThrow(Long restaurantId) { //  для переиспользования
         return restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
+    }
+
+    @Override //For Client
+    public List<RestaurantForClientDto> getRestaurantsAvailableForClient() {
+        Address address = clientService.getAddressByDefaultAddress();
+
+        return restaurantRepository.getRestaurantsByCityAndArea(
+                address.getArea()
+        );
     }
 }
