@@ -1,15 +1,11 @@
 package com.example.Utown.dto.operatingModeDTO;
 
-import com.example.Utown.model.Restaurant;
-import com.example.Utown.model.UserType.Client;
-import lombok.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class OperatingModeInfoDto {
     private Long id;
     private LocalDateTime start;
@@ -18,6 +14,17 @@ public class OperatingModeInfoDto {
     private Integer dayOfWeek;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Restaurant restaurant;
+    private Long restaurantId;
+
+    public OperatingModeInfoDto(Long id, LocalDateTime start, LocalDateTime end, boolean dayOff, Integer dayOfWeek, LocalDateTime createdAt, LocalDateTime updatedAt, Long restaurantId) {
+        this.id = id;
+        this.start = start;
+        this.end = end;
+        this.dayOff = dayOff;
+        this.dayOfWeek = dayOfWeek;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.restaurantId = restaurantId;
+    }
 
 }

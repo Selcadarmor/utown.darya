@@ -21,33 +21,24 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 
 
 
-    @Query(""" 
-        SELECT r FROM Restaurant r
-        LEFT JOIN FETCH r.address
-        LEFT JOIN FETCH r.categories
-        LEFT JOIN FETCH r.fileInfo
-        LEFT JOIN FETCH r.operatingModes
-    """)
-    List<Restaurant> findAllRestaurants();
+    @Query("SELECT r FROM Restaurant r " +       // метод получения ресторана по айди
+            "LEFT JOIN FETCH r.categories " +
+            "LEFT JOIN FETCH r.operatingModes " +
+            "LEFT JOIN FETCH r.deliveries " +
+            "LEFT JOIN FETCH r.fileInfo " +
+            "LEFT JOIN FETCH r.restaurantAdmin " +
+            "WHERE  r.id = :id")
+    Optional<Restaurant> findRestaurantById(@Param ("id") Long id);
 
-    @Query(""" 
-        SELECT r FROM Restaurant r
-        LEFT JOIN FETCH r.address
-        LEFT JOIN FETCH r.categories
-        LEFT JOIN FETCH r.fileInfo
-        LEFT JOIN FETCH r.operatingModes
-    """)
-    Optional<Restaurant> findRestaurantById(Long id);
+    @Query("SELECT new com.example.Utown.dto.restaurantDTO.RestaurantInfoDto(" +
+            "r.id, r.title, a.city, r.phone, COUNT(o.id), r.createdAt, r.updatedAt) " +
+            "FROM Restaurant r " +
+            "LEFT JOIN Order o ON o.restaurant.id = r.id " +
+            "LEFT JOIN Client c ON o.client.id = c.id " +
+            "LEFT JOIN c.addresses a " +
+            "GROUP BY r.id, r.title, a.city, r.phone, r.createdAt, r.updatedAt")
+    Page<RestaurantInfoDto> findAllRestaurantsWithOrderCount(Pageable pageable);
 
-    @Query("""
-    SELECT new com.example.Utown.dto.restaurantDTO.RestaurantInfoDto(
-        r.id, r.title, COUNT(o.id)
-    )
-    FROM Restaurant r
-    LEFT JOIN Order o ON o.restaurant.id = r.id
-    GROUP BY r.id, r.title
-""")
-    List<RestaurantInfoDto> findAllRestaurantsWithOrderCount();
 
     @Query("""
     SELECT new com.example.Utown.dto.restaurantDTO.RestaurantForClientDto(
