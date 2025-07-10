@@ -76,7 +76,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
                 .toList();//по айди подтягиваем  категорию так как в репозитории нельзя из списка вытаскивать
         List<Long> operatingModeIds = restaurant.getOperatingModes().stream()
                 .map(OperatingMode::getId)
-                .toList(); // то же из списка по айли вытаскиваем operatingMode
+                .toList(); // то же из списка по айди вытаскиваем operatingMode
         List<Long>  deliveryIds = restaurant.getDeliveries().stream()
                 .map(Delivery::getId)
                 .toList(); //  тут область доставки

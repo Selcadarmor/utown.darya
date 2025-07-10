@@ -9,7 +9,6 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface AddressInfoMapper {
-    AddressInfoDto addressToDto(Address address);
     Address toEntity(AddressInfoDto addressInfoDto);
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)

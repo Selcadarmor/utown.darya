@@ -9,9 +9,6 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface RestaurantCategoryInfoMapper {
-    RestaurantCategoryDto restaurantCategoryToDto(RestaurantCategory entity);
-
-    RestaurantCategory restaurantCategoryDtoToEntity(RestaurantCategoryDto dto);
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "id", ignore = true)
