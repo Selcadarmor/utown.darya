@@ -26,13 +26,13 @@ public class Address {
     private Long id;
 
     @Column(name = "state")
-     private String state;
+     private String state; //административная область = 서울특별시, 경기도
 
     @Column(length = 100, nullable = false)
-    private String city;
-
+    private String city; //город или район = 강남구, 안성시
+                         // district в Delivery
    @Column(length = 100, nullable = false)
-    private String area;
+    private String area; //микрорайон, (동), или просто часть города например, 역삼동, 삼성동
 
    @Column(length = 100, nullable = false)
     private String street;

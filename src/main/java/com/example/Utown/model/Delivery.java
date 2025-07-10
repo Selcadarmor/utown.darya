@@ -26,7 +26,7 @@ public class Delivery {
     private String district;
 
     @Column(length = 50)
-    private String area;
+    private String area; // микрорайон, 동 или просто часть района, если доставка ограничена
 
     @Column(precision = 10, scale = 2)
     private BigDecimal price;
