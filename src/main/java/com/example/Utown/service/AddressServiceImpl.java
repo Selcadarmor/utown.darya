@@ -3,6 +3,7 @@ package com.example.Utown.service;
 import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.model.Address;
+import com.example.Utown.model.UserType.Client;
 import com.example.Utown.repository.AddressRepository;
 import com.example.Utown.repository.UserType.ClientRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,19 +31,33 @@ public class AddressServiceImpl implements AddressService {
         address.setStreet(dto.getStreet());
         address.setIntercomCode(dto.getIntercomCode());
         address.setTypeAddress(dto.getTypeAddress());
-        return address;
+        return addressRepository.save(address);
     }
 
     @Override
-    public AddressDto getAddressById(Long id) {
-        return addressRepository.findAddressById(id)
+    public Address getAddressById(Long id) {
+        return addressRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Address not found", id));
     }
 
     @Override
     public List<AddressDto> getAllAddresses() {
-        return addressRepository.findAllAddresses();
+        return addressRepository.getAllAddresses();
     }
+
+    @Override
+    public List<AddressDto> getAddressesByClient(String username) {
+        if (username == null || username.isBlank()) {
+            throw new IllegalArgumentException("Username is required to get addresses");
+        }
+
+        Client client = clientRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Client", username));
+
+        return addressRepository.getAddressesByClient(client.getUsername());
+    }
+
+
 
     @Override
     public Address updateAddress(Long id, AddressDto dto) {
@@ -61,7 +76,7 @@ public class AddressServiceImpl implements AddressService {
         address.setIntercomCode(dto.getIntercomCode());
         address.setTypeAddress(dto.getTypeAddress());
 
-        return addressRepository.save(address);
+        return address;
     }
 
     @Override
@@ -70,6 +85,5 @@ public class AddressServiceImpl implements AddressService {
                 .orElseThrow(() -> new ResourceNotFoundException("Address not found", id));
         addressRepository.delete(address);
     }
-
 
 }

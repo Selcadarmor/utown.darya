@@ -5,9 +5,11 @@ import com.example.Utown.dto.addressDTO.AddressInfoDto;
 import com.example.Utown.dto.fileInfoDTO.FileInfoDetailsDto;
 import com.example.Utown.dto.fileInfoDTO.FileInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
+import com.example.Utown.dto.operatingModeDTO.OperatingModeUpdateDto;
 import com.example.Utown.dto.restaurantAdminDTO.RestaurantAdminCreateDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryDto;
 
+import com.example.Utown.model.RestaurantCategory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,7 +28,7 @@ public class RestaurantUpdateDto {
     private BigDecimal minOrderAmount;
     private AddressInfoDto address;
     private FileInfoDto fileInfo;
-    private List<OperatingModeInfoDto> operatingModes;
-    private List<Long> categoryIds;
-    private RestaurantAdminCreateDto restaurantAdmin;
+    private List<OperatingModeUpdateDto> operatingModes;
+    private List<RestaurantCategory> categories;
+    //private RestaurantAdminCreateDto restaurantAdmin;
 }

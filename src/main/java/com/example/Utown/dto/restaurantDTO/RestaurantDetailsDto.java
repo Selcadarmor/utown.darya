@@ -1,13 +1,12 @@
 package com.example.Utown.dto.restaurantDTO;
 
-import com.example.Utown.model.*;
-import com.example.Utown.model.UserType.RestaurantAdmin;
+import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
+import com.example.Utown.model.OperatingMode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -20,12 +19,9 @@ public class RestaurantDetailsDto {
     private String phone;
     private BigDecimal minOrderAmount;
     private Long orderCount;
-    private FileInfo fileInfo;
-    private List<RestaurantCategory> categories;
-    private List<OperatingMode> operatingModes;
-    private RestaurantAdmin restaurantAdmin;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-
-
+    private Long fileId;
+    private List<Long> categoryIds;
+    private List<Long> operatingModeIds;
+    private Long restaurantAdminId;
+    private List<Long> deliveryIds;
 }

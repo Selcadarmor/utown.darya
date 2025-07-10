@@ -1,19 +1,17 @@
 package com.example.Utown.controller.userTypeControllers;
 
 
-import com.example.Utown.dto.cartDTO.AddToCartRequest;
 import com.example.Utown.dto.addressDTO.AddressDto;
-import com.example.Utown.dto.clientDTO.ClientChangePasswordDto;
 import com.example.Utown.dto.clientDTO.ClientProfileUpdateDto;
+import com.example.Utown.dto.clientDTO.ClientRegistrationDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryForClient;
-import com.example.Utown.service.CartService;
-import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
+import com.example.Utown.service.AddressService;
+import com.example.Utown.service.AuthService;
 import com.example.Utown.service.RestaurantCategoryService;
 import com.example.Utown.service.UserType.client.ClientService;
 import com.example.Utown.service.RestaurantService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +20,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/client")
@@ -33,7 +30,8 @@ public class ClientController {
     private final RestaurantCategoryService restaurantCategoryService;
     private final ClientService clientService;
     private final RestaurantService restaurantService;
-    private final CartService cartService;
+    private final AddressService addressService;
+    private final AuthService authService;
 
     @GetMapping("/restaurant_categories")
     @Operation(summary = "Get all restaurant categories", description = "Restaurant categories with restaurants count for client")
@@ -44,92 +42,69 @@ public class ClientController {
         return ResponseEntity.ok(categories);
     }
 
-    @GetMapping("/restaurants")
-    @Operation(summary = "Get all restaurants", description = "Returns restaurants for clients")
-    public ResponseEntity<List<RestaurantForClientDto>> getAllRestaurants() {
-        List<RestaurantForClientDto> restaurants = restaurantService.getAllRestaurantsForClient();
-        return ResponseEntity.ok(restaurants);
+//    @GetMapping("/restaurants")
+//    @Operation(summary = "Get all restaurants", description = "Returns restaurants for clients")
+//    public ResponseEntity<List<RestaurantForClientDto>> getAllRestaurants() {
+//        List<RestaurantForClientDto> restaurants = restaurantService.getAllRestaurantsForClient();
+//        return ResponseEntity.ok(restaurants);
+//    }
+//
+//    @GetMapping("/category/{categoryId}")
+//    @Operation(summary = "Get all restaurants by Restaurant Category", description = "Get all restaurants by Restaurant Category" )
+//    public ResponseEntity<List<RestaurantForClientDto>> getRestaurantsByCategory(@PathVariable Long categoryId) {
+//        List<RestaurantForClientDto> result = restaurantService.getRestaurantsByCategoryId(categoryId);
+//        return ResponseEntity.ok(result);
+//    }
+//
+//    @GetMapping("/restaurants/fastest")
+//    @Operation(summary = "Get restaurants sorted by fastest delivery", description = "Sorted by deliveryTime")
+//    public List<RestaurantForClientDto> getRestaurantsSortedByDeliveryTime() {
+//        return restaurantService.getAllRestaurantsSortedByDeliveryTime();
+//    }
+
+    @PostMapping("/registration_client")  //Passed
+    @Operation(summary = "Register Client", description = "Registration for client users")
+    public ResponseEntity<String> registerClient(@RequestBody ClientRegistrationDto dto) {
+        authService.registration(dto);
+        return ResponseEntity.ok("Client registered successfully");
     }
 
-    @GetMapping("/category/{categoryId}")
-    @Operation(summary = "Get all restaurants by Restaurant Category", description = "Get all restaurants by Restaurant Category" )
-    public ResponseEntity<List<RestaurantForClientDto>> getRestaurantsByCategory(@PathVariable Long categoryId) {
-        List<RestaurantForClientDto> result = restaurantService.getRestaurantsByCategoryId(categoryId);
-        return ResponseEntity.ok(result);
-    }
-
-    @GetMapping("/restaurants/fastest")
-    @Operation(summary = "Get restaurants sorted by fastest delivery", description = "Sorted by deliveryTime")
-    public List<RestaurantForClientDto> getRestaurantsSortedByDeliveryTime() {
-        return restaurantService.getAllRestaurantsSortedByDeliveryTime();
-    }
-
-    @PostMapping("/{clientId}/addresses")
-    public ResponseEntity<Void> addAddressToClient(
-            @PathVariable Long clientId,
-            @RequestBody AddressDto addressDto) {
-
-        clientService.saveAddressToClient(clientId, addressDto);
+    @PostMapping("/address_create") //Passed
+    @Operation(summary = "Add address for current user", description = "Add address to currently authenticated user")
+    public ResponseEntity<Void> addAddressForCurrentUser(
+            @RequestBody AddressDto addressDto,
+            @AuthenticationPrincipal User user
+    ) {
+        clientService.saveAddressForClient(user.getUsername(), addressDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PutMapping("/{clientId}/profile_update")
-    @Operation(summary = "Update client profile with multiple addresses")
-    public ResponseEntity<String> updateClientProfile(
-            @PathVariable Long clientId,
-            @RequestBody ClientProfileUpdateDto request
-    ) {
-        clientService.updateClientProfile(clientId, request.getFullName(), request.getAddresses());
-        return ResponseEntity.ok("Client profile updated successfully");
-    }
-
-    @PutMapping("/change_password")//Passed
-    @Operation(summary = "Change client password", description = "")
-    public ResponseEntity<String> changePassword(
-            @RequestBody @Valid ClientChangePasswordDto dto,
+    @PutMapping("/address_update")  //Passed
+    @Operation(summary = "Update", description = "Update fullname and addresses for current client")
+    public ResponseEntity<Void> updateClientProfile(
+            @RequestBody ClientProfileUpdateDto dto,
             @AuthenticationPrincipal User user
     ) {
-        clientService.changePassword(user.getUsername(), dto);
-        return ResponseEntity.ok("Password changed successfully");
+        clientService.updateClientProfile(user.getUsername(), dto);
+        return ResponseEntity.ok().build();
     }
 
-//    @PostMapping("/{clientId}/cart/add")
-//    public ResponseEntity<String> addToCart(
-//            @PathVariable Long clientId,
-//            @RequestBody AddToCartRequest request
-//    ) {
-//        System.out.println("AddToCartRequest received: " + request);
-//
-//        cartService.addDishToCart(clientId, request);
-//        return ResponseEntity.ok("Блюдо добавлено в корзину");
-//    }
-
-//    @PutMapping("/{clientId}/cart/update")
-//    @Operation(summary = "Обновить количество блюда в корзине")
-//    public ResponseEntity<String> updateDishInCart(
-//            @PathVariable Long clientId,
-//            @RequestBody AddToCartRequest request
-//    ) {
-//        cartService.updateDishInCart(clientId, request);
-//        return ResponseEntity.ok("Количество блюда в корзине обновлено");
-//    }
-
-    @DeleteMapping("/{clientId}/cart/clear")
-    @Operation(summary = "Очистить корзину клиента")
-    public ResponseEntity<String> clearCart(@PathVariable Long clientId) {
-        cartService.clearCart(clientId);
-        return ResponseEntity.ok("Корзина успешно очищена");
+    @GetMapping("/addresses") //Passed
+    @Operation(summary = "Get all addresses for current client", description = "Returns addresses for authenticated client")
+    public ResponseEntity<List<AddressDto>> getClientAddresses(@AuthenticationPrincipal User user) {
+        List<AddressDto> addresses = addressService.getAddressesByClient(user.getUsername());
+        return ResponseEntity.ok(addresses);
     }
 
-//    @DeleteMapping("/{clientId}/cart/remove")
-//    public ResponseEntity<?> removeDishFromCart(
-//            @PathVariable Long clientId,
-//            @RequestParam Long dishId,
-//            @RequestParam(name = "elementId", required = false) Long elementId) {
-//
-//        cartService.removeDishFromCart(clientId, dishId, elementId);
-//
-//        return ResponseEntity.ok().body(Map.of("message", "Блюдо удалено из корзины"));
-//    }
+    @DeleteMapping("/address/{id}") //Passed
+    @Operation(summary = "Delete address", description = "Delete address for authenticated client")
+    public ResponseEntity<Void> deleteAddressForClient(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User user
+    ) {
+        clientService.deleteAddressForCLient(id, user.getUsername());
+        return ResponseEntity.noContent().build();
+    }
+
 
 }

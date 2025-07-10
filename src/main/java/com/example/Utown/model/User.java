@@ -66,8 +66,7 @@ public class User implements UserDetails {
     )
     private Set<Role> roles;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private Set<Notification> notifications;
 
     @Override

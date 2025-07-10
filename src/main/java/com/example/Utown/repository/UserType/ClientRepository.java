@@ -2,6 +2,7 @@ package com.example.Utown.repository.UserType;
 
 import com.example.Utown.dto.clientDTO.ClientProfileUpdateDto;
 import com.example.Utown.model.UserType.Client;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,14 +15,14 @@ import java.util.Optional;
 public interface ClientRepository extends JpaRepository<Client, Long> {
     Optional<Client> findByUsername(String username);
 
-    @Query("SELECT DISTINCT c FROM Client c LEFT JOIN FETCH c.addresses LEFT JOIN FETCH c.orders")
+    @EntityGraph(attributePaths = {"addresses", "orders"})
+    @Query("SELECT c FROM Client c")
     List<Client> findAllWithAddressesAndOrders();
 
 
-
-    @Query("""
-        SELECT c FROM Client c LEFT JOIN FETCH c.addresses LEFT JOIN FETCH c.orders LEFT JOIN FETCH c.fileInfo WHERE c.id = :clientId""")
-    Optional<Client> findAllClientInfoById(@Param("clientId")Long clientId);
+    @EntityGraph(attributePaths = {"addresses", "orders", "fileInfo"})
+    @Query("SELECT c FROM Client c WHERE c.id = :id")
+    Optional<Client> findAllClientInfoById(@Param("id")Long id);
 
 
     Optional<ClientProfileUpdateDto> findUserProfileById(Long id);
