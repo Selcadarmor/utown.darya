@@ -1,10 +1,10 @@
-package com.example.Utown.dto.userDto;
+package com.example.Utown.dto.clientDTO;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class UserRegistrationDto {
+public class ClientRegistrationDto {
     @NotBlank(message = "Username is required")
     private String username;
 

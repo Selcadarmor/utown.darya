@@ -9,11 +9,12 @@ import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
 import com.example.Utown.exception.ResourceNotFoundException;
+import com.example.Utown.mapper.*;
+import com.example.Utown.model.*;
 import com.example.Utown.mapper.AddressInfoMapper;
 import com.example.Utown.mapper.FileInfoMapper;
 import com.example.Utown.mapper.RestaurantAdminInfoMapper;
 import com.example.Utown.mapper.RestaurantInfoMapper;
-import com.example.Utown.mapper.RestaurantMapper;
 import com.example.Utown.model.Delivery;
 import com.example.Utown.model.OperatingMode;
 import com.example.Utown.model.Restaurant;
@@ -25,6 +26,7 @@ import com.example.Utown.repository.OrderRepository;
 import com.example.Utown.repository.RestaurantCategoryRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.repository.RoleRepository;
+import com.example.Utown.service.UserType.client.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,7 +38,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -46,16 +47,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RestaurantServiceImpl  implements RestaurantService {
 
-    private final RestaurantRepository restaurantRepository;
-    private final RestaurantInfoMapper restaurantInfoMapper;
-    private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final RestaurantAdminInfoMapper restaurantAdminInfoMapper;
     private final AddressInfoMapper addressInfoMapper;
+    private final ClientService clientService;
     private final FileInfoMapper fileInfoMapper;
     private final OrderRepository orderRepository;
-    private final RestaurantMapper restaurantMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final RestaurantAdminInfoMapper restaurantAdminInfoMapper;
     private final RestaurantCategoryRepository restaurantCategoryRepository;
+    private final RestaurantInfoMapper restaurantInfoMapper;
+    private final RestaurantRepository restaurantRepository;
+    private final RoleRepository roleRepository;
     private final OperatingModeService operatingModeService;
 
 
@@ -195,73 +196,72 @@ public class RestaurantServiceImpl  implements RestaurantService {
         restaurantRepository.delete(restaurant);
     }
 
-    @Override //For Client
-    public List<RestaurantForClientDto> getAllRestaurantsForClient() {
-        List<Restaurant> restaurants = restaurantRepository.getAllActiveRestaurantsForClient();
-        return restaurants.stream()
-                .map(restaurantMapper::toRestaurantForClientDto)
-                .collect(Collectors.toList());
-        // добавить сортировку по рейтингу???
-        // добавить сортировку по рекомендации???
-    }
+//    @Override //For Client
+//    public List<RestaurantForClientDto> getRestaurantsByCategoryId(Long categoryId) {
+//        List<RestaurantForClientDto> allRestaurants = getAllRestaurantsForClient();
+//
+//        return allRestaurants.stream()
+//                .filter(r -> r.getCategoryIds() != null && r.getCategoryIds().contains(categoryId))
+//                .toList();
+//    }
+//
+//    @Override //For Client
+//    public List<RestaurantForClientDto> getAllRestaurantsSortedByDeliveryTime() {
+//        List<RestaurantForClientDto> allRestaurants = getAllRestaurantsForClient();
+//
+//        allRestaurants.sort(Comparator.comparingInt(r -> {
+//            try {
+//                return Integer.parseInt(r.getDeliveryTime());
+//            } catch (Exception e) {
+//                return Integer.MAX_VALUE;
+//            }
+//        }));
+//        // Добавить везде сортировку по рейтингу и рекомендации???
+//        // Как сохранить точный порядок сортировки по рейтингу, рекомендации и время доставки???
+//
+//        return allRestaurants;
+//    }
 
-    @Override //For Client
-    public List<RestaurantForClientDto> getRestaurantsByCategoryId(Long categoryId) {
-        List<RestaurantForClientDto> allRestaurants = getAllRestaurantsForClient();
-
-        return allRestaurants.stream()
-                .filter(r -> r.getCategoryIds() != null && r.getCategoryIds().contains(categoryId))
-                .toList();
-    }
-
-    @Override //For Client
-    public List<RestaurantForClientDto> getAllRestaurantsSortedByDeliveryTime() {
-        List<RestaurantForClientDto> allRestaurants = getAllRestaurantsForClient();
-
-        allRestaurants.sort(Comparator.comparingInt(r -> {
-            try {
-                return Integer.parseInt(r.getDeliveryTime());
-            } catch (Exception e) {
-                return Integer.MAX_VALUE;
-            }
-        }));
-        // Добавить везде сортировку по рейтингу и рекомендации???
-        // Как сохранить точный порядок сортировки по рейтингу, рекомендации и время доставки???
-
-        return allRestaurants;
-    }
-
-    @Override
-    public Page<RestaurantForClientDto> searchRestaurants(
-            String query,
-            int page,
-            int size,
-            String sortBy,
-            String direction) {
-
-        Sort sort;
-        switch (sortBy.toLowerCase()) {
-            case "rating":
-                sort = Sort.by(Sort.Direction.fromString(direction), "rating");
-                break;
-            case "isrecommended":
-                sort = Sort.by(Sort.Direction.fromString(direction), "isRecommended");
-                break;
-            case "deliverytime":
-                sort = Sort.by(Sort.Direction.fromString(direction), "deliveryTime");
-                break;
-            default:
-                sort = Sort.by(Sort.Direction.fromString(direction), "id");
-        }
-
-        Pageable pageable = PageRequest.of(page, size, sort);
-
-        return restaurantRepository.searchClient(query, pageable)
-                .map(restaurantMapper::toRestaurantForClientDto);
-    }
+//    @Override
+//    public Page<RestaurantForClientDto> searchRestaurants(
+//            String query,
+//            int page,
+//            int size,
+//            String sortBy,
+//            String direction) {
+//
+//        Sort sort;
+//        switch (sortBy.toLowerCase()) {
+//            case "rating":
+//                sort = Sort.by(Sort.Direction.fromString(direction), "rating");
+//                break;
+//            case "isrecommended":
+//                sort = Sort.by(Sort.Direction.fromString(direction), "isRecommended");
+//                break;
+//            case "deliverytime":
+//                sort = Sort.by(Sort.Direction.fromString(direction), "deliveryTime");
+//                break;
+//            default:
+//                sort = Sort.by(Sort.Direction.fromString(direction), "id");
+//        }
+//
+//        Pageable pageable = PageRequest.of(page, size, sort);
+//
+//        return restaurantRepository.searchClient(query, pageable)
+//                .map(restaurantMapper::toRestaurantForClientDto);
+//    }
 
     private Restaurant findRestaurantByIdOrThrow(Long restaurantId) { //  для переиспользования
         return restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
+    }
+
+    @Override //For Client
+    public List<RestaurantForClientDto> getRestaurantsAvailableForClient() {
+        Address address = clientService.getAddressByDefaultAddress();
+
+        return restaurantRepository.getRestaurantsByCityAndArea(
+                address.getArea()
+        );
     }
 }
