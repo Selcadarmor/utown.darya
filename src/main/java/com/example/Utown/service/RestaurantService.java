@@ -18,14 +18,14 @@ public interface RestaurantService {
     RestaurantDetailsDto createRestaurant(RestaurantCreateDto dto);
     RestaurantDetailsDto updateRestaurant(Long id, RestaurantUpdateDto dto);
     void deleteRestaurant(Long id);
-    List<RestaurantForClientDto> getAllRestaurantsForClient();
-    List<RestaurantForClientDto> getRestaurantsByCategoryId(Long categoryId);
-    List<RestaurantForClientDto> getAllRestaurantsSortedByDeliveryTime();
-    Page<RestaurantForClientDto> searchRestaurants(
-            String query,
-            int page,
-            int size,
-            String sortBy,
-            String direction);
+    List<RestaurantForClientDto> getRestaurantsAvailableForClient();
+//    List<RestaurantForClientDto> getRestaurantsByCategoryId(Long categoryId);
+//    List<RestaurantForClientDto> getAllRestaurantsSortedByDeliveryTime();
+//    Page<RestaurantForClientDto> searchRestaurants(
+//            String query,
+//            int page,
+//            int size,
+//            String sortBy,
+//            String direction);
 
 }

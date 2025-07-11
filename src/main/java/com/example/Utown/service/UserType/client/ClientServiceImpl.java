@@ -1,25 +1,31 @@
 package com.example.Utown.service.UserType.client;
 
 import com.example.Utown.dto.addressDTO.AddressDto;
-import com.example.Utown.dto.clientDTO.ClientChangePasswordDto;
 import com.example.Utown.dto.clientDTO.ClientInfoDto;
 import com.example.Utown.dto.clientDTO.ClientProfileUpdateDto;
+import com.example.Utown.dto.clientDTO.ClientRegistrationDto;
 import com.example.Utown.dto.clientDTO.ClientUpdateDto;
 import com.example.Utown.exception.PasswordsDoNotMatchException;
 import com.example.Utown.exception.ResourceNotFoundException;
-import com.example.Utown.exception.UserNotFoundException;
+import com.example.Utown.exception.RoleNotFoundException;
+import com.example.Utown.exception.UserAlreadyExistsException;
 import com.example.Utown.model.Address;
-import com.example.Utown.model.User;
+import com.example.Utown.model.Role;
 import com.example.Utown.model.UserType.Client;
-import com.example.Utown.repository.UserRepository;
+import com.example.Utown.model.enumFiles.Roles;
+import com.example.Utown.repository.AddressRepository;
+import com.example.Utown.repository.RoleRepository;
 import com.example.Utown.repository.UserType.ClientRepository;
 import com.example.Utown.service.AddressService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -30,8 +36,9 @@ import java.util.stream.Collectors;
 public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
-    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final AddressService addressService;
+    private final AddressRepository addressRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -40,7 +47,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
 
-    @Override // For Admin //сделано
+    @Override // For Admin
     public List<ClientInfoDto> getAllClients() {
         List<Client> clients = clientRepository.findAllWithAddressesAndOrders();
         return  clients.stream()
@@ -56,7 +63,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
 
-    @Override //For Admin + Client //сделан
+    @Override //For Admin //сделан
     public ClientInfoDto getClientById(Long clientId) {
         Client client =  findClientByIdOrThrow(clientId);
         Set<Long> addressIds = extractAddressIds(client.getAddresses());
@@ -79,11 +86,32 @@ public class ClientServiceImpl implements ClientService {
         clientRepository.save(client);
     }
 
+    @Override // For client
+    public void save(ClientRegistrationDto dto, Roles roleName) {
+        if (!dto.getPassword().equals(dto.getConfirmPassword())) {
+            throw new PasswordsDoNotMatchException();
+        }
+
+        if (clientRepository.findByUsername(dto.getUsername()).isPresent()) {
+            throw new UserAlreadyExistsException(dto.getUsername());
+        }
+
+        Role role = roleRepository.findByName(roleName)
+                .orElseThrow(() -> new RoleNotFoundException(roleName.name()));
+
+        Client client = new Client();
+        client.setUsername(dto.getUsername());
+        client.setPassword(passwordEncoder.encode(dto.getPassword()));
+        client.setRoles(Set.of(role));
+        client.setActive(true);
+        clientRepository.save(client);
+    }
+
     @Transactional //For Client
     @Override
-    public void saveAddressForClient(Long clientId, AddressDto dto) {
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new ResourceNotFoundException("Client not found", clientId));
+    public void saveAddressForClient(String username, AddressDto dto) {
+        Client client = clientRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found", username));
 
         Address address = addressService.createAddress(dto);
 
@@ -93,35 +121,39 @@ public class ClientServiceImpl implements ClientService {
 
     @Transactional //For Client
     @Override
-    public void updateProfileClient(Long clientId, ClientProfileUpdateDto dto) {
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new ResourceNotFoundException("Client not found", clientId));
+    public void updateClientProfile(String username, ClientProfileUpdateDto dto) {
+        Client client = clientRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Client", username));
 
         client.setFullName(dto.getFullName());
 
-        Set<Address> updatedAddresses = new HashSet<>();
         for (AddressDto addressDto : dto.getAddresses()) {
-            Address updatedAddress = addressService.updateAddress(addressDto.getId(), addressDto);
-            updatedAddresses.add(updatedAddress);
+            Address address = client.getAddresses().stream()
+                    .filter(a -> a.getId().equals(addressDto.getId()))
+                    .findFirst()
+                    .orElseThrow(() -> new ResourceNotFoundException("Address", addressDto.getId()));
+
+            addressService.updateAddress(address.getId(), addressDto);
         }
 
-        client.setAddresses(updatedAddresses);
         clientRepository.save(client);
     }// если нужно можете переиспользовать приватный метод
 
-
-
     @Override //For Client
-    public void changePassword(String username, ClientChangePasswordDto dto) {
-        if (!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
-            throw new PasswordsDoNotMatchException();
+    public void deleteAddressForCLient(Long addressId, String username) {
+        Client client = clientRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Client", username));
+
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new ResourceNotFoundException("Address", addressId));
+
+        if (!client.getAddresses().contains(address)) {
+            throw new AccessDeniedException("You are not allowed to delete this address");
         }
 
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException(username));
-
-        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
-        userRepository.save(user);
+        client.getAddresses().remove(address);
+        clientRepository.save(client);
+        addressRepository.delete(address);
     }
 
 
@@ -144,5 +176,29 @@ public class ClientServiceImpl implements ClientService {
         return clientRepository.findAllClientInfoById(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Client", clientId));
     }
+    @Override
+    public Client getCurrentClient() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("User is not authenticated");
+        }
+
+        String username = authentication.getName();
+        return clientRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Client not found: " + username));
+    }
+
+    @Override
+    public Address getAddressByDefaultAddress() {
+        Client client = getCurrentClient();
+
+        Long defaultAddressId = client.getDefaultAddress();
+        if (defaultAddressId == null) {
+            throw new IllegalStateException("Default address is not set for client");
+        }
+
+        return addressService.getAddressById(defaultAddressId);
+    }
+
 }
 

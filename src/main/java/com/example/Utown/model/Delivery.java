@@ -22,14 +22,14 @@ public class Delivery {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "district", length = 50) // City из Address
+    private String district;
+
     @Column(length = 50)
-    private String area;
+    private String area; // микрорайон, 동 или просто часть района, если доставка ограничена
 
     @Column(precision = 10, scale = 2)
     private BigDecimal price;
-
-    @Column(name = "district", length = 50)
-    private String district;
 
     @Column(name = "is_active")
     private Boolean isActive;
