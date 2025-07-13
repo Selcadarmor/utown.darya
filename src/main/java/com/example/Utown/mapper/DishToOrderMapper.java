@@ -1,15 +1,29 @@
 package com.example.Utown.mapper;
 
-import com.example.Utown.dto.dishToOrderDTO.DishToOrderDto;
+import com.example.Utown.dto.dishToOrderDTO.DishToOrderRequestDto;
+import com.example.Utown.dto.dishToOrderDTO.DishToOrderResponseDto;
 import com.example.Utown.model.DishToOrder;
+import com.example.Utown.model.Element;
 import org.mapstruct.*;
+
+import java.util.List;
 
 
 @Mapper(componentModel = "spring")
 public interface DishToOrderMapper {
 
-    DishToOrderDto toDto(DishToOrder entity);
+    @Mapping(source = "dish.title", target = "dishName")
+    @Mapping(source = "dish.price", target = "dishPrice")
+    @Mapping(source = ".", target = "selectedElementNames", qualifiedByName = "getElementNames")
+    DishToOrderResponseDto toResponseDto(DishToOrder entity);
 
-    @Mapping(target = "order", ignore = true)
-    DishToOrder toEntity(DishToOrderDto dto);
+    @Named("getElementNames")
+    default List<String> getElementNames(DishToOrder entity) {
+        if (entity.getSelectedElements() == null) return List.of();
+        return entity.getSelectedElements().stream()
+                .map(Element::getName)
+                .toList();
+    }
 }
+
+
