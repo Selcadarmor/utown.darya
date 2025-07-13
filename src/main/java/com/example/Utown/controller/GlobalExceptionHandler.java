@@ -1,21 +1,6 @@
 package com.example.Utown.controller;
 import com.example.Utown.dto.ApiErrorResponse;
-import com.example.Utown.exception.AddressNotFoundException;
-import com.example.Utown.exception.CartIsEmptyException;
-import com.example.Utown.exception.DishNotFoundException;
-import com.example.Utown.exception.DishNotInCartException;
-import com.example.Utown.exception.ExpireJwtTokenException;
-import com.example.Utown.exception.InvalidArgumentException;
-import com.example.Utown.exception.InvalidJwtTokenException;
-import com.example.Utown.exception.NotificationNotFoundException;
-import com.example.Utown.exception.OrderNotFoundException;
-import com.example.Utown.exception.RatingOutOfRangeException;
-import com.example.Utown.exception.RefreshTokenNotFoundException;
-import com.example.Utown.exception.ResourceNotFoundException;
-import com.example.Utown.exception.RestaurantNotFoundException;
-import com.example.Utown.exception.RoleNotFoundException;
-import com.example.Utown.exception.UserAlreadyExistsException;
-import com.example.Utown.exception.UserNotFoundException;
+import com.example.Utown.exception.*;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -27,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -94,7 +80,6 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DishNotInCartException.class)
-    @ResponseBody
     public ResponseEntity<?> handleDishNotInCart(DishNotInCartException ex, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ApiErrorResponse.builder()
@@ -113,5 +98,14 @@ public class GlobalExceptionHandler {
     public ApiErrorResponse handleMissingRequestParam(MissingServletRequestParameterException ex, HttpServletRequest request) {
         String message = String.format("Missing required parameter: '%s'", ex.getParameterName());
         return buildError(HttpStatus.BAD_REQUEST, message, request.getRequestURI());
+    }
+
+    @ExceptionHandler(CartNotFoundException.class)
+    public ResponseEntity<?> handleCartNotFound(CartNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                "message", ex.getMessage(),
+                "status", 400,
+                "error", "Bad Request"
+        ));
     }
 }
