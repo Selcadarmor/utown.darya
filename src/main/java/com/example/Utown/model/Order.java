@@ -75,6 +75,7 @@ public class Order {
 
     private String state;
 
+    @Column(name = "status", length = 30)
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
@@ -83,7 +84,7 @@ public class Order {
     private String time;
 
     @Column(name = "time_of_accepted")
-    private String timeOfAccepted;
+    private LocalDateTime timeOfAccepted;
 
     @Column(name = "time_of_delivery")
     private String timeOfDelivery;

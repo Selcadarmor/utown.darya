@@ -2,7 +2,7 @@ package com.example.Utown.model;
 
 import com.example.Utown.model.UserType.RestaurantAdmin;
 
-import com.example.Utown.model.enumFiles.OrderStatus;
+import com.example.Utown.model.enumFiles.RestaurantStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -52,7 +52,7 @@ public class Restaurant {
     private BigDecimal rating;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus status;
+    private RestaurantStatus status;
 
     @Column(length = 170)
     private  String title;
