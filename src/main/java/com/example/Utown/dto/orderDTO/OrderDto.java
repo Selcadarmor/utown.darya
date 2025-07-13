@@ -1,5 +1,8 @@
 package com.example.Utown.dto.orderDTO;
 
+import com.example.Utown.dto.clientDTO.ClientShortDto;
+import com.example.Utown.dto.dishToOrderDTO.DishToOrderResponseDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantShortDto;
 import com.example.Utown.model.DishToOrder;
 import com.example.Utown.model.enumFiles.OrderStatus;
 import lombok.AllArgsConstructor;
@@ -18,7 +21,6 @@ public class OrderDto {
     private Long id;
     private String area;
     private String city;
-    private String clientPhone;
     private String date;
     private BigDecimal deliveryPrice;
     private String deliveryTime;
@@ -48,7 +50,7 @@ public class OrderDto {
     private String intercomCode;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Restaurant restaurant;
-    private Client client;
-    private List<DishToOrder> dishesToOrder;
+    private RestaurantShortDto restaurant;
+    private ClientShortDto client;
+    private List<DishToOrderResponseDto> dishesToOrder;
 }

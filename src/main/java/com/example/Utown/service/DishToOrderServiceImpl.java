@@ -1,6 +1,7 @@
 package com.example.Utown.service;
 
-import com.example.Utown.dto.dishToOrderDTO.DishToOrderDto;
+import com.example.Utown.dto.dishToOrderDTO.DishToOrderRequestDto;
+import com.example.Utown.dto.dishToOrderDTO.DishToOrderResponseDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.DishToOrderMapper;
 import com.example.Utown.model.Cart;
@@ -12,11 +13,12 @@ import com.example.Utown.repository.DishRepository;
 import com.example.Utown.repository.DishToOrderRepository;
 import com.example.Utown.repository.ElementRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,77 +31,191 @@ public class DishToOrderServiceImpl implements DishToOrderService {
     private final ElementRepository elementRepository;
 
     @Override
-    public DishToOrder create(DishToOrderDto dto) {
-        Cart cart = cartRepository.findById(dto.getCart().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Cart not found", dto.getCart().getId()));
+    public DishToOrder create(Long cartId, DishToOrderRequestDto dto) {
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found", cartId));
 
-        Dish dish = dishRepository.findById(dto.getDish().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Dish not found", dto.getDish().getId()));
+        Dish dish = dishRepository.findById(dto.getDishId())
+                .orElseThrow(() -> new ResourceNotFoundException("Dish not found", dto.getDishId()));
 
-        List<Element> selectedElements = dto.getSelectedElements().stream()
-                .map(e -> elementRepository.findById(e.getId())
-                        .orElseThrow(() -> new ResourceNotFoundException("Element not found", e.getId())))
-                .toList();
+        List<Element> selectedElements = elementRepository.findAllById(dto.getSelectedElementIds());
+
+        BigDecimal sum = dish.getPrice().multiply(BigDecimal.valueOf(dto.getCount()));
 
         DishToOrder entity = DishToOrder.builder()
-                .count(dto.getCount())
-                .sum(dto.getSum())
-                .cart(cart)
                 .dish(dish)
+                .cart(cart)
+                .count(dto.getCount())
+                .sum(sum)
                 .selectedElements(selectedElements)
                 .build();
 
         return dishToOrderRepository.save(entity);
     }
 
-
     @Override
-    public DishToOrderDto getById(Long id) {
+    public DishToOrderResponseDto getById(Long id) {
         DishToOrder entity = dishToOrderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("DishToOrder not found", id));
-        return mapper.toDto(entity);
+        return mapper.toResponseDto(entity);
     }
 
     @Override
-    public List<DishToOrderDto> getAll() {
+    public List<DishToOrderResponseDto> getAll() {
         return dishToOrderRepository.findAll().stream()
-                .map(mapper::toDto)
-                .collect(Collectors.toList());
+                .map(mapper::toResponseDto)
+                .toList();
     }
 
     @Override
-    public DishToOrder update(Long id, DishToOrderDto dto) {
+    public DishToOrderResponseDto update(Long id, DishToOrderRequestDto dto) {
         DishToOrder entity = dishToOrderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("DishToOrder not found", id));
 
-        Cart cart = cartRepository.findById(dto.getCart().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Cart not found", dto.getCart().getId()));
+        Dish dish = dishRepository.findById(dto.getDishId())
+                .orElseThrow(() -> new ResourceNotFoundException("Dish not found", dto.getDishId()));
 
-        Dish dish = dishRepository.findById(dto.getDish().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Dish not found", dto.getDish().getId()));
+        List<Element> selectedElements = elementRepository.findAllById(dto.getSelectedElementIds());
 
-        List<Element> selectedElements = dto.getSelectedElements() == null ?
-                new ArrayList<>() :
-                dto.getSelectedElements().stream()
-                        .map(e -> elementRepository.findById(e.getId())
-                                .orElseThrow(() -> new ResourceNotFoundException("Element not found", e.getId())))
-                        .toList();
-
-        entity.setCount(dto.getCount());
-        entity.setSum(dto.getSum());
-        entity.setCart(cart);
         entity.setDish(dish);
+        entity.setCount(dto.getCount());
         entity.setSelectedElements(selectedElements);
+        entity.setSum(dish.getPrice().multiply(BigDecimal.valueOf(dto.getCount())));
 
-        return dishToOrderRepository.save(entity);
+        DishToOrder updated = dishToOrderRepository.save(entity);
+
+        // ✅ Пересчёт корзины
+        Cart cart = entity.getCart();
+        recalculateCart(cart);
+
+        return mapper.toResponseDto(updated);
     }
-
 
     @Override
     public void delete(Long id) {
         DishToOrder entity = dishToOrderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("DishToOrder not found", id));
-        dishToOrderRepository.delete(entity);
-    }
-}
 
+        Cart cart = entity.getCart(); // получаем корзину ДО удаления
+
+        dishToOrderRepository.delete(entity);
+
+        recalculateCart(cart); // пересчёт корзины после удаления
+    }
+
+    @Override
+    public void addToCart(Long cartId, DishToOrderRequestDto dto) {
+        // ✅ Проверки входных данных
+        if (cartId == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart ID must not be null");
+        }
+
+        if (dto.getDishId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dish ID must not be null");
+        }
+
+        if (dto.getSelectedElementIds() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Selected element IDs must not be null");
+        }
+
+        if (dto.getSelectedElementIds().contains(null)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Selected element IDs contain null");
+        }
+
+        if (dto.getCount() == null || dto.getCount() <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Count must be greater than 0");
+        }
+
+        // ✅ Загрузка сущностей
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found", cartId));
+
+        Dish dish = dishRepository.findById(dto.getDishId())
+                .orElseThrow(() -> new ResourceNotFoundException("Dish not found", dto.getDishId()));
+
+        List<Element> selectedElements = elementRepository.findAllById(dto.getSelectedElementIds());
+
+        // ✅ Проверка на совпадение существующего блюда с элементами
+        for (DishToOrder existing : cart.getDishToOrders()) {
+            if (existing.getDish().getId().equals(dish.getId()) &&
+                    elementsEqual(existing.getSelectedElements(), selectedElements)) {
+
+                int newCount = existing.getCount() + dto.getCount();
+                existing.setCount(newCount);
+                existing.setSum(dish.getPrice().multiply(BigDecimal.valueOf(newCount)));
+
+                dishToOrderRepository.save(existing);
+                recalculateCart(cart);
+                return;
+            }
+        }
+
+        // ✅ Создание новой позиции
+        DishToOrder newItem = DishToOrder.builder()
+                .dish(dish)
+                .cart(cart)
+                .count(dto.getCount())
+                .sum(dish.getPrice().multiply(BigDecimal.valueOf(dto.getCount())))
+                .selectedElements(selectedElements)
+                .build();
+
+        dishToOrderRepository.save(newItem);
+        cart.getDishToOrders().add(newItem);
+
+        recalculateCart(cart);
+    }
+
+    @Override
+    public List<DishToOrderResponseDto> getAllByCartId(Long cartId) {
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found", cartId));
+
+        return cart.getDishToOrders().stream()
+                .map(mapper::toResponseDto)
+                .toList();
+    }
+
+    public void clearCart(Long cartId) {
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found", cartId));
+
+        List<DishToOrder> items = cart.getDishToOrders();
+
+        dishToOrderRepository.deleteAll(items);
+        items.clear(); // очищаем список в памяти
+
+        recalculateCart(cart); // чтобы обнулить totalDish и totalSum
+    }
+
+
+    private boolean elementsEqual(List<Element> a, List<Element> b) {
+        if (a.size() != b.size()) return false;
+
+        List<Long> aIds = a.stream().map(Element::getId).sorted().toList();
+        List<Long> bIds = b.stream().map(Element::getId).sorted().toList();
+
+        return aIds.equals(bIds);
+    }
+
+    private void recalculateCart(Cart cart) {
+        List<DishToOrder> items = cart.getDishToOrders();
+
+        BigDecimal sumOrder = items.stream()
+                .map(DishToOrder::getSum)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        int totalDish = items.stream()
+                .mapToInt(DishToOrder::getCount)
+                .sum();
+
+        BigDecimal deliveryPrice = cart.getDeliveryPrice() != null ? cart.getDeliveryPrice() : BigDecimal.ZERO;
+        BigDecimal totalSum = sumOrder.add(deliveryPrice);
+
+        cart.setSumOrder(sumOrder);
+        cart.setTotalDish(totalDish);
+        cart.setTotalSum(totalSum);
+
+        cartRepository.save(cart);
+    }
+
+}

@@ -10,6 +10,7 @@ import lombok.Setter;
 
 
 @Entity
+@DiscriminatorValue("restaurant_admin")
 @Getter
 @Setter
 @NoArgsConstructor
