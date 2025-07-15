@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -72,4 +73,12 @@ public class OperatingModeServiceImpl implements OperatingModeService {
     public void deleteAllByRestaurantId(Long restaurantId) {
         operatingModeRepository.deleteById(restaurantId);
     }
+
+    @Override
+    public List<OperatingModeInfoDto> createAll(List<OperatingModeCreateDto> dtos) {
+        return dtos.stream()
+                .map(this::create)
+                .collect(Collectors.toList());
+    }
+
 }

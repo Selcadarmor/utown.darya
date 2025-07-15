@@ -68,4 +68,6 @@ public abstract class RestaurantAdminInfoMapper {
     @Mapping(target = "authorities", ignore = true)
     @Mapping(target = "username", ignore = true)
     public abstract RestaurantAdmin updateFromDto(RestaurantAdminCreateDto dto, @MappingTarget RestaurantAdmin admin);
+    public  abstract RestaurantAdminInfoDto toDtos(RestaurantAdmin restaurantAdmin);
+
 }

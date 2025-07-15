@@ -13,11 +13,10 @@ import java.util.List;
 
 public interface RestaurantService {
     Page<RestaurantInfoDto> getAllRestaurants(int page, int size);
-
-    RestaurantDetailsDto getRestaurantById(Long id);
+    RestaurantDetailsDto getRestaurantDetails(Long restaurantId);
     RestaurantDetailsDto createRestaurant(RestaurantCreateDto dto);
     RestaurantDetailsDto updateRestaurant(Long id, RestaurantUpdateDto dto);
-    void deleteRestaurant(Long id);
+    void deactivateRestaurant(Long restaurantId);
     List<RestaurantForClientDto> getRestaurantsAvailableForClient();
 //    List<RestaurantForClientDto> getRestaurantsByCategoryId(Long categoryId);
 //    List<RestaurantForClientDto> getAllRestaurantsSortedByDeliveryTime();
