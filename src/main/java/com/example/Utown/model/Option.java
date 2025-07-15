@@ -57,5 +57,4 @@ public class Option {
     @JoinColumn(name = "option_id")
     private List<Element> elements;
 
-
 }

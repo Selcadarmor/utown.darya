@@ -20,11 +20,12 @@ public interface ClientService {
         void updateClient(Long id, ClientUpdateDto dto);
         void deleteClient(Long id);
         void save(ClientRegistrationDto dto, Roles roleName);
-        void updateClientProfile(String username, ClientProfileUpdateDto dto);
-        void saveAddressForClient(String username, AddressDto dto);
+        ClientProfileUpdateDto updateClientProfile(ClientProfileUpdateDto dto);
+        Address saveAddressForClient(AddressDto dto);
         Client getCurrentClient();
         Address getAddressByDefaultAddress();
-        void deleteAddressForCLient(Long addressId, String username);
+        List<AddressDto> getAddressesByClient();
+        void deleteAddressForCLient(Long addressId);
 }
 
 

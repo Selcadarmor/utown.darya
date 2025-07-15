@@ -46,20 +46,6 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public List<AddressDto> getAddressesByClient(String username) {
-        if (username == null || username.isBlank()) {
-            throw new IllegalArgumentException("Username is required to get addresses");
-        }
-
-        Client client = clientRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Client", username));
-
-        return addressRepository.getAddressesByClient(client.getUsername());
-    }
-
-
-
-    @Override
     public Address updateAddress(Long id, AddressDto dto) {
         Address address = addressRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Address", id));
@@ -76,7 +62,7 @@ public class AddressServiceImpl implements AddressService {
         address.setIntercomCode(dto.getIntercomCode());
         address.setTypeAddress(dto.getTypeAddress());
 
-        return address;
+        return addressRepository.save(address);
     }
 
     @Override
