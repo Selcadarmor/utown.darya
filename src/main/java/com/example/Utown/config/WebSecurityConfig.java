@@ -35,7 +35,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/client/**").hasAuthority(Roles.ROLE_CLIENT.name()) // 👈 разрешаем остальное клиентам
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/api/admin/**").hasAuthority(Roles.ROLE_ADMIN.name())
-                        .requestMatchers("/user/**").hasAuthority(Roles.ROLE_CLIENT.name())
+                        .requestMatchers("/client/**").hasAuthority(Roles.ROLE_CLIENT.name())
                         .requestMatchers("/restaurant/**").hasAuthority(Roles.ROLE_RESTAURANT_ADMIN.name())
                         .requestMatchers("/restaurant-admin/**").hasAuthority(Roles.ROLE_RESTAURANT_ADMIN.name())
                         .anyRequest().authenticated()

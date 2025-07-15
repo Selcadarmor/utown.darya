@@ -57,7 +57,7 @@ public class Restaurant {
     @Column(length = 170)
     private  String title;
 
-    private Integer totalRatings;
+    private Double totalRatings;
 
     private Boolean statusForcedChanged;
 
@@ -68,7 +68,6 @@ public class Restaurant {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
-
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "restaurantAdmin_id")
@@ -87,8 +86,7 @@ public class Restaurant {
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "delivery")
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Delivery> deliveries;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

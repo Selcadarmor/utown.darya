@@ -44,9 +44,9 @@ public class Client extends User {
     @JoinColumn(name = "client_id")
     private List<Order> orders;
 
-    @OneToOne
-    @JoinColumn(name = "cart_id")
+    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL)
     private Cart cart;
+
 
 }
 
