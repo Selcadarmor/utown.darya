@@ -134,14 +134,17 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
             "WHERE d.isActive = true " +
             "AND d.isDeleted = false " +
             "AND d.district = :city " +
+            "AND (:area IS NULL OR d.area = :area) " +
             "AND (LOWER(r.title) LIKE LOWER(CONCAT('%', :query, '%')) " +
             "OR LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%')))"
     )
     Page<RestaurantForClientDto> searchClient(
             @Param("query") String query,
-            @Param("state") String state,
+            @Param("city") String city,
+            @Param("area") String area,
             Pageable pageable
     );
+
 
 
 }

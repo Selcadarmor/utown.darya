@@ -224,7 +224,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
         return restaurantRepository.findRestaurantsByCategory(address.getCity(), address.getArea(), categoryId, pageable);
     }
 
-    @Override //For Client
+    @Override
     public Page<RestaurantForClientDto> searchRestaurants(
             String query,
             int page,
@@ -254,8 +254,14 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        return restaurantRepository.searchClient(query, address.getState(), pageable);
+        return restaurantRepository.searchClient(
+                query,
+                address.getCity(),
+                address.getArea(),
+                pageable
+        );
     }
+
 
     @Override
     @Transactional(readOnly = true)
