@@ -22,4 +22,6 @@ public class DishDetailsDto {
     private Long restaurantId;
     private Long dishCategoryId;
     private Long fileId;
+    // убрать рстаурант айди и использовать его в контроллере
+    //убрать createdAt and updatedAt and id
 }

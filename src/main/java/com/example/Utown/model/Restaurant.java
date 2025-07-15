@@ -25,6 +25,16 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @EntityListeners(AuditingEntityListener.class)
+@NamedEntityGraph(
+        name = "Restaurant.detail",
+        attributeNodes = {
+                @NamedAttributeNode("categories"),
+                @NamedAttributeNode("operatingModes"),
+                @NamedAttributeNode("deliveries"),
+                @NamedAttributeNode("fileInfo"),
+                @NamedAttributeNode("restaurantAdmin")
+        }
+)
 public class Restaurant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -87,9 +97,9 @@ public class Restaurant {
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "delivery")
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Delivery> deliveries;
+
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<OperatingMode> operatingModes;

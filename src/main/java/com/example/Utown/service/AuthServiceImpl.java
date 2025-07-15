@@ -6,6 +6,7 @@ import com.example.Utown.dto.tokens.JWTResponse;
 import com.example.Utown.dto.clientDTO.ClientRegistrationDto;
 import com.example.Utown.exception.UserAlreadyExistsException;
 import com.example.Utown.model.enumFiles.Roles;
+import com.example.Utown.repository.UserRepository;
 import com.example.Utown.service.UserType.client.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,6 +14,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,9 +25,11 @@ public class AuthServiceImpl implements AuthService {
     private final JWTUtils jwtUtils;
     private final RefreshTokenService refreshTokenService;
     private final ClientService clientService;
+  
 
     @Override
     public JWTResponse createAuthToken(JWTRequest authRequest) {
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         authRequest.getUsername(),

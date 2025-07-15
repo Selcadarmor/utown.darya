@@ -1,28 +1,25 @@
 package com.example.Utown.dto.clientDTO;
 
-
 import com.example.Utown.dto.addressDTO.AddressInfoDto;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Set;
-
-
 @Data
-public class ClientInfoDto {
+@NoArgsConstructor
+public class ClientDetailsDto {
     private Long id;
     private String fullName;
     private String username;
-    private Set<AddressInfoDto> addresses;
+    private AddressInfoDto defaultAddress;
     private Integer orderCount;
-    private Long fileInfoId;
 
-    public ClientInfoDto(Long id, String fullName, String username, Set<AddressInfoDto> addresses, Integer orderCount, Long fileInfoId) {
+    public ClientDetailsDto(Long id, String fullName, String username, AddressInfoDto defaultAddress, Integer orderCount) {
         this.id = id;
         this.fullName = fullName;
         this.username = username;
-        this.addresses = addresses;
+        this.defaultAddress = defaultAddress;
         this.orderCount = orderCount;
-        this.fileInfoId = fileInfoId;
     }
-
 }
+
