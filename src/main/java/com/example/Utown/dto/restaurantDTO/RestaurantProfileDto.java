@@ -8,6 +8,7 @@ import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -22,6 +23,7 @@ public class RestaurantProfileDto {
     private String deliveryTime;
     private Double totalRating;
     private BigDecimal minOrderAmount;
+    private Set<Long> favouriteRestaurantIds;
     private List<OperatingModeRestaurantProfileDto> operatingModes;
 }
 
