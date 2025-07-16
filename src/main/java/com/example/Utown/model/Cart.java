@@ -47,8 +47,7 @@ public class Cart {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DishToOrder> dishToOrders;
 
-    @OneToOne
-    @JoinColumn(name = "client_id")
+    @OneToOne(mappedBy = "cart")
     private Client client;
 
 

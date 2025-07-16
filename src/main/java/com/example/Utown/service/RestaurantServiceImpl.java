@@ -201,7 +201,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
     public Page<RestaurantForClientDto> getRecommendedRestaurantsForClient(Pageable pageable) {
         Client client = clientService.getCurrentClient();
         Address address = addressRepository.findById(client.getDefaultAddress())
-                .orElseThrow(() -> new RuntimeException("Адрес клиента не найден"));
+                .orElseThrow(() -> new RuntimeException("Address not found"));
 
         return restaurantRepository.findRecommendedRestaurants(address.getCity(), address.getArea(), pageable);
     }
@@ -210,7 +210,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
     public Page<RestaurantForClientDto> getFastestDeliveryRestaurantsForClient(Pageable pageable) {
         Client client = clientService.getCurrentClient();
         Address address = addressRepository.findById(client.getDefaultAddress())
-                .orElseThrow(() -> new RuntimeException("Адрес клиента не найден"));
+                .orElseThrow(() -> new RuntimeException("Address not found"));
 
         return restaurantRepository.findFastestDeliveryRestaurants(address.getCity(), address.getArea(), pageable);
     }
@@ -219,7 +219,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
     public Page<RestaurantForClientDto> getRestaurantsByCategory(Long categoryId, Pageable pageable) {
         Client client = clientService.getCurrentClient();
         Address address = addressRepository.findById(client.getDefaultAddress())
-                .orElseThrow(() -> new RuntimeException("Адрес клиента не найден"));
+                .orElseThrow(() -> new RuntimeException("Address not found"));
 
         return restaurantRepository.findRestaurantsByCategory(address.getCity(), address.getArea(), categoryId, pageable);
     }
@@ -234,7 +234,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
         Client client = clientService.getCurrentClient();
         Address address = addressRepository.findById(client.getDefaultAddress())
-                .orElseThrow(() -> new RuntimeException("Адрес клиента не найден"));
+                .orElseThrow(() -> new RuntimeException("Address not found"));
 
         Sort sort = Sort.by(Sort.Direction.DESC, "isRecommended");
 
@@ -261,7 +261,6 @@ public class RestaurantServiceImpl  implements RestaurantService {
                 pageable
         );
     }
-
 
     @Override
     @Transactional(readOnly = true)
