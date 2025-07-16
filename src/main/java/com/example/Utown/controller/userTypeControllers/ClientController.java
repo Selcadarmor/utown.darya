@@ -54,14 +54,14 @@ public class ClientController {
         return ResponseEntity.ok(categories);
     }
 
-    @GetMapping("/restaurants")
+    @GetMapping("/restaurants") //Passed
     @Operation(summary = "Get all restaurants", description = "Sorted by recommendation")
     public ResponseEntity<Page<RestaurantForClientDto>> getRecommendedRestaurantsForClient(Pageable pageable) {
         Page<RestaurantForClientDto> restaurants = restaurantService.getRecommendedRestaurantsForClient(pageable);
         return ResponseEntity.ok(restaurants);
     }
 
-    @GetMapping("/restaurants_fastest_delivery")
+    @GetMapping("/restaurants_fastest_delivery") //Passed
     @Operation(summary = "Get all restaurants", description = "Sorted by DeliveryTime")
     public ResponseEntity<Page<RestaurantForClientDto>> getFastestDeliveryRestaurantsForClient(Pageable pageable) {
         Page<RestaurantForClientDto> restaurants = restaurantService.getFastestDeliveryRestaurantsForClient(pageable);
