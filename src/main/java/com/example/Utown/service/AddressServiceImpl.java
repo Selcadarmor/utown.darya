@@ -1,6 +1,7 @@
 package com.example.Utown.service;
 
 import com.example.Utown.dto.addressDTO.AddressDto;
+import com.example.Utown.dto.addressDTO.AddressInfoDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.model.Address;
 import com.example.Utown.model.UserType.Client;

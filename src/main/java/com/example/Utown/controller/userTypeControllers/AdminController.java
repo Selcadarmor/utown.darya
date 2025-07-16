@@ -1,5 +1,6 @@
 package com.example.Utown.controller.userTypeControllers;
 
+import com.example.Utown.dto.clientDTO.ClientDetailsDto;
 import com.example.Utown.dto.clientDTO.ClientInfoDto;
 import com.example.Utown.dto.clientDTO.ClientUpdateDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryCreateDto;
@@ -21,9 +22,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,14 +38,14 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 
-
+@PreAuthorize("hasRole('ADMIN')")
 @RequiredArgsConstructor
 @Tag(
         name = "Admin – Users & Restaurants",
         description = "Admin panel for managing clients and restaurants"
 )
 @RestController
-@RequestMapping("/admin/")
+@RequestMapping("/admin")
 public class AdminController {
 
     private final ClientServiceImpl clientService;
@@ -57,8 +58,8 @@ public class AdminController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of clients retrieved successfully")
     })
-    @GetMapping("/clients")
-    public ResponseEntity<List<ClientInfoDto>> getAllClients() {
+    @GetMapping("/clients")//работает но пересмотреть!
+    public ResponseEntity<List<ClientDetailsDto>> getAllClients() {
         return ResponseEntity.ok(clientService.getAllClients());
     }
 
@@ -68,7 +69,7 @@ public class AdminController {
             @ApiResponse(responseCode = "404", description = "Client not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("/client/{id}")
+    @GetMapping("/clients/{id}")//работает
     public ResponseEntity<ClientInfoDto> getClientById(@PathVariable Long id) {
         return ResponseEntity.ok(clientService.getClientById(id));
     }
@@ -81,7 +82,7 @@ public class AdminController {
             @ApiResponse(responseCode = "404", description = "Client not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PutMapping("/client/{id}")
+    @PutMapping("/clients/{id}")//работает
     public void updateClient(@PathVariable Long id, @Valid @RequestBody ClientUpdateDto clientUpdateDto) {
         clientService.updateClient(id, clientUpdateDto);
     }
@@ -92,7 +93,7 @@ public class AdminController {
             @ApiResponse(responseCode = "404", description = "Client not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @DeleteMapping("/client{id}")
+    @DeleteMapping("/clients/{id}")// проверить в конце
     public ResponseEntity<String> deleteClient(@PathVariable Long id) {
         clientService.deleteClient(id);
         return ResponseEntity.noContent().build();
@@ -102,7 +103,7 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "List of restaurants retrieved successfully"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("/restaurants")
+    @GetMapping("/restaurants")//работает но уточнить надо ли передовать не нужные поля
     public ResponseEntity<Page<RestaurantInfoDto>> getAllRestaurants(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -117,9 +118,9 @@ public class AdminController {
             @ApiResponse(responseCode = "404", description = "Restaurant not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("/restaurant/{id}")
+    @GetMapping("/restaurants/{id}")//работает но тоже надо уточнить надо ли передовать ненужные поля
     public ResponseEntity<RestaurantDetailsDto> getRestaurantById(@PathVariable Long id) {
-        return ResponseEntity.ok(restaurantService.getRestaurantById(id));
+        return ResponseEntity.ok(restaurantService.getRestaurantDetails(id));
     }
 
     @Operation(summary = "Create restaurant", description = "Create Restaurant via the admin panel.")
@@ -130,8 +131,10 @@ public class AdminController {
             @ApiResponse(responseCode = "409", description = "Restaurant with such data already exists"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PostMapping("/restaurant/")
-    public ResponseEntity<RestaurantDetailsDto> createRestaurant(@Valid @RequestBody RestaurantCreateDto restaurantCreateDto) {
+    @PostMapping("/restaurant")//не работает
+    public ResponseEntity<RestaurantDetailsDto> createRestaurant(
+                                                @Valid @RequestBody RestaurantCreateDto restaurantCreateDto) {
+        System.out.println(">> POST /admin/restaurant called");
         return ResponseEntity.status(HttpStatus.CREATED).body(restaurantService.createRestaurant(restaurantCreateDto));
     }
 
@@ -142,7 +145,7 @@ public class AdminController {
             @ApiResponse(responseCode = "404", description = "Restaurant not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PutMapping("/restaurant/{id}")
+    @PutMapping("/restaurants/{id}")//работает нужные поля
     public ResponseEntity<RestaurantDetailsDto> restaurantUpdateDtoResponseEntity(@PathVariable Long id, @Valid @RequestBody RestaurantUpdateDto restaurantUpdateDto) {
         return ResponseEntity.ok(restaurantService.updateRestaurant(id, restaurantUpdateDto));
     }
@@ -152,10 +155,10 @@ public class AdminController {
             @ApiResponse(responseCode = "204", description = "Restaurant deleted successfully."),
             @ApiResponse(responseCode = "404", description = "Restaurant not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    @DeleteMapping("/restaurant/{id}")
-    public void deleteRestaurant(@PathVariable Long id) {
-        restaurantService.deleteRestaurant(id);
+    })//изменить описание
+    @DeleteMapping("/restaurants/{id}")//работает
+    public void deactivateRestaurant (@PathVariable Long id) {
+        restaurantService.deactivateRestaurant(id);
     }
 
     @Operation(
@@ -167,7 +170,7 @@ public class AdminController {
             @ApiResponse(responseCode = "404", description = "Restaurant not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("/admin/restaurants/{restaurantId}/dishes")
+    @GetMapping("restaurants/{restaurantId}/dishes")//работает
     public ResponseEntity<Page<DishDetailsDto>> getDishesByRestaurant(
             @Parameter(description = "ID of the restaurant")
             @PathVariable Long restaurantId,
@@ -193,7 +196,7 @@ public class AdminController {
             @ApiResponse(responseCode = "404", description = "Restaurant or related resource not found (e.g., category, file)"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PostMapping("/restaurants/{restaurantId}/dishes")
+    @PostMapping("/restaurants/{restaurantId}/dishes") // работает изменить поля
     public ResponseEntity<DishDetailsDto> createDishForRestaurant(
             @Parameter(description = "ID of the restaurant")
             @PathVariable Long restaurantId,
@@ -215,7 +218,7 @@ public class AdminController {
             @ApiResponse(responseCode = "404", description = "Restaurant or dish not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PutMapping("/restaurants/{restaurantId}/dishes/{dishId}")
+    @PutMapping("/restaurants/{restaurantId}/dishes/{dishId}")//работает но нужно изменить поля
     public ResponseEntity<DishDetailsDto> updateDishForRestaurant(
             @Parameter(description = "ID of the restaurant")
             @PathVariable Long restaurantId,

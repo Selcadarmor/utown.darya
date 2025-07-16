@@ -1,6 +1,5 @@
 package com.example.Utown.mapper;
 
-import com.example.Utown.dto.operatingModeDTO.OperatingModeCreateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantCreateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
@@ -18,29 +17,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 
-@Mapper(componentModel = "spring", uses = {AddressInfoMapper.class, RestaurantCategoryInfoMapper.class, OrderInfoMapper.class, RestaurantAdminInfoMapper.class, DishCategoryMapper.class})
+@Mapper(componentModel = "spring", uses = {AddressInfoMapper.class, RestaurantCategoryInfoMapper.class, OrderInfoMapper.class, RestaurantAdminInfoMapper.class, DishCategoryMapper.class, DeliveryMapper.class, OperatingModeInfoMapper.class})
 public interface RestaurantInfoMapper {
-
     @Mapping(source = "fileInfo.id", target = "fileId")
-    @Mapping(source = "categories", target = "categoryIds")
-    @Mapping(source = "operatingModes", target = "operatingModeIds")
-    @Mapping(source = "restaurantAdmin.id", target = "restaurantAdminId")
     @Mapping(target = "orderCount", ignore = true)
-    @Mapping(source = "deliveries", target = "deliveryIds")
+    @Mapping(source = "categories", target = "categories")
+    @Mapping(source = "operatingModes", target = "operatingModes")
+    @Mapping(source = "restaurantAdmin", target = "restaurantAdmin")
+    @Mapping(source = "deliveries", target = "deliveries")
     RestaurantDetailsDto toDto(Restaurant restaurant);
-
-    @Mapping(source = "restaurant.fileInfo.id", target = "fileId")
-    @Mapping(source = "restaurant.categories", target = "categoryIds")
-    @Mapping(source = "restaurant.operatingModes", target = "operatingModeIds")
-    @Mapping(source = "restaurant.restaurantAdmin.id", target = "restaurantAdminId")
-    @Mapping(source = "restaurant.id", target = "id")
-    @Mapping(source = "restaurant.title", target = "title")
-    @Mapping(source = "restaurant.description", target = "description")
-    @Mapping(source = "restaurant.phone", target = "phone")
-    @Mapping(source = "restaurant.minOrderAmount", target = "minOrderAmount")
-    @Mapping(source = "orderCount", target = "orderCount")
-    @Mapping(target = "deliveryIds", ignore = true)
-    RestaurantDetailsDto toDto(Restaurant restaurant, Long orderCount);
 
 
     @Mappings({
@@ -59,7 +44,7 @@ public interface RestaurantInfoMapper {
             @Mapping(target = "dishCategories", ignore = true),
             @Mapping(target = "restaurantAdmin", ignore = true),
             @Mapping(target = "operatingModes", ignore = true)
-    })
+    })//+
     Restaurant updateFromDto(RestaurantUpdateDto restaurantUpdateDto, @MappingTarget Restaurant restaurant);
 
     @Mappings({
@@ -79,9 +64,31 @@ public interface RestaurantInfoMapper {
             @Mapping(target = "fileInfo", ignore = true),
             @Mapping(target = "dishCategories", ignore = true),
             @Mapping(target = "createdAt", ignore = true),
-            @Mapping(target = "updatedAt", ignore = true)
+            @Mapping(target = "updatedAt", ignore = true),
+            @Mapping(target = "id", ignore = true)
     })
-    Restaurant toEntity(RestaurantCreateDto dto);
+    Restaurant toEntity(RestaurantCreateDto dto);//+
+
+    @Mappings({
+            @Mapping(target = "deliveryTime", ignore = true),
+            @Mapping(target = "facilities", ignore = true),
+            @Mapping(target = "isRecommended", ignore = true),
+            @Mapping(target = "rating", ignore = true),
+            @Mapping(target = "status", ignore = true),
+            @Mapping(target = "totalRatings", ignore = true),
+            @Mapping(target = "statusForcedChanged", ignore = true),
+            @Mapping(target = "isActive", ignore = true),
+            @Mapping(target = "createdAt", ignore = true),
+            @Mapping(target = "updatedAt", ignore = true),
+            @Mapping(target = "address", ignore = true),
+            @Mapping(target = "fileInfo", ignore = true),
+            @Mapping(target = "dishCategories", ignore = true),
+            @Mapping(target = "restaurantAdmin", ignore = true),
+            @Mapping(target = "deliveries", ignore = true),
+            @Mapping(target = "operatingModes", ignore = true)
+    })
+    Restaurant toEntity(RestaurantDetailsDto dto);
+
 
 
     default List<Long> mapCategories(Set<RestaurantCategory> categories) {

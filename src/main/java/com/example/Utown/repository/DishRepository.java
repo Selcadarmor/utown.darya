@@ -25,6 +25,9 @@ public interface DishRepository extends JpaRepository<Dish, Long> {
 
     Page<Dish> findByRestaurantId(Long restaurantId, Pageable pageable);
 
+    List<Dish> findAllByRestaurantId(Long restaurantId);
+
+
 }
 
 

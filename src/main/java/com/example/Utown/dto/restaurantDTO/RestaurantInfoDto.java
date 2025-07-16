@@ -1,16 +1,10 @@
 package com.example.Utown.dto.restaurantDTO;
 
-import com.example.Utown.dto.fileInfoDTO.FileInfoDetailsDto;
-import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
-import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryDto;
-import com.example.Utown.model.*;
-import com.example.Utown.model.UserType.RestaurantAdmin;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
+
 
 
 @Data
@@ -26,9 +20,9 @@ public class RestaurantInfoDto {
 
     private Long orderCount;
 
-    private LocalDateTime createdAt;
+    //private LocalDateTime createdAt;
 
-    private LocalDateTime updatedAt;
+    //private LocalDateTime updatedAt;
 
 
 
@@ -38,8 +32,8 @@ public class RestaurantInfoDto {
         this.city = city;
         this.phone = phone;
         this.orderCount = ordersCount;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        //this.createdAt = createdAt;
+       // this.updatedAt = updatedAt;
     }
 
 }
