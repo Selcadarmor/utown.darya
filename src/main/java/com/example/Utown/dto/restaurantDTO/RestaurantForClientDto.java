@@ -14,7 +14,6 @@ public class RestaurantForClientDto {
     private String filePath;
     private Set<String> categoryNames;
     private Set<Long> categoryIds;
-    private Set<Long> favouriteRestaurantIds;
     private BigDecimal deliveryPrice;
     private String deliveryTime;
     private Boolean isRecommended;
