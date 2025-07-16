@@ -13,4 +13,5 @@ public interface OperatingModeService {
     void deleteAllByRestaurantId(Long restaurantId);
     OperatingModeInfoDto create(OperatingModeCreateDto dto);
     OperatingModeInfoDto update(Long id, OperatingModeUpdateDto dto);
+    List<OperatingModeInfoDto> createAll(List<OperatingModeCreateDto> dtos);
 }

@@ -119,7 +119,7 @@ public class DishServiceImpl implements DishService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("sort").ascending());
         return dishRepository.findByRestaurantId(restaurantId, pageable)
                 .map(dishMapper::dishDetailsToDto);
-    }
+    } //сделан не правилно не нужно ресторан айди сделать для конкретногореторана и ненужные поля поставить по умолчанию
 
     @Override // метод создания Dish для каждого ресторана, сделала так как не знаю менял ли кто-то метод создания Dish в будущем можно переиспользовать метод Dish createDish(DishDto dto)
     @Transactional(rollbackFor = Exception.class)
@@ -150,7 +150,7 @@ public class DishServiceImpl implements DishService {
                 .file(file)
                 .restaurant(restaurant)
                 .build();
-        return dishMapper.toSavedDishDto(dishRepository.save(dish));
+        return dishMapper.toSavedDishDto(dishRepository.save(dish));// вот тут тоже посомтреть просто передовать айди в кнтроллео
     }
 
     @Override //  метод обновления Dish для каждого Restaurant хотела переиспользовать код из метода Dish updateDish(Long id, DishDto dto) но мне не ответили

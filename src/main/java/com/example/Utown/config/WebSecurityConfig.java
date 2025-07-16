@@ -39,6 +39,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/restaurant/**").hasAuthority(Roles.ROLE_RESTAURANT_ADMIN.name())
                         .requestMatchers("/restaurant-admin/**").hasAuthority(Roles.ROLE_RESTAURANT_ADMIN.name())
                         .anyRequest().authenticated()
+                       // .anyRequest().permitAll()
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -57,7 +58,7 @@ public class WebSecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
-    }
+   }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

@@ -11,17 +11,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class AddressInfoDto {
     private Long id;
-    private String area;
     private String city;
-    private String details;
     private String fullAddress;
-    private Float latitude;
-    private Float longitude;
-    private String postCode;
-    private String state;
-    private String street;
-    private String intercomCode;
-    private Integer typeAddress;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

@@ -9,6 +9,9 @@ import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "spring", uses = {
         RestaurantInfoMapper.class,
+        DeliveryMapper.class,
+        OperatingModeInfoMapper.class,
+        RestaurantAdminInfoMapper.class
 })
 public interface OrderInfoMapper {
 
@@ -53,7 +56,6 @@ public interface OrderInfoMapper {
 
 
     @Mappings({
-            @Mapping(source = "restaurantDto", target = "restaurant"),
             @Mapping(target = "city", ignore = true),
             @Mapping(target = "clientPhone", ignore = true),
             @Mapping(target = "date", ignore = true),
@@ -86,7 +88,9 @@ public interface OrderInfoMapper {
             @Mapping(target = "createdAt", ignore = true),
             @Mapping(target = "updatedAt", ignore = true),
             @Mapping(target = "client", ignore = true),
-            @Mapping(target = "dishesToOrder", ignore = true)
+            @Mapping(target = "dishesToOrder", ignore = true),
+            @Mapping(source = "restaurantDto", target = "restaurant")
     })
+
     Order updateFromDto(OrderInfoDto orderInfoDto, @MappingTarget Order order);
 }

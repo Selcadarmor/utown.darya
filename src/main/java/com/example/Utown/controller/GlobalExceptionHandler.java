@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -27,9 +28,10 @@ public class GlobalExceptionHandler {
             ResourceNotFoundException.class,
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @Operation(hidden =true) /// скрыввем для Swagger
-    public ApiErrorResponse handleUserNotFoundException(UserNotFoundException ex, HttpServletRequest request) {
-        return buildError(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    @Operation(hidden = true)
+    public ApiErrorResponse handleUserNotFoundException(UserNotFoundException ex, WebRequest request) {
+        String path = request.getDescription(false).replace("uri=", "");
+        return buildError(HttpStatus.NOT_FOUND, ex.getMessage(), path);
     }
 
 

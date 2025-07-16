@@ -5,10 +5,13 @@ import com.example.Utown.dto.clientDTO.ClientInfoDto;
 import com.example.Utown.dto.clientDTO.ClientProfileUpdateDto;
 import com.example.Utown.dto.clientDTO.ClientRegistrationDto;
 import com.example.Utown.dto.clientDTO.ClientUpdateDto;
+import com.example.Utown.dto.addressDTO.AddressInfoDto;
+import com.example.Utown.dto.clientDTO.*;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.exception.RoleNotFoundException;
 import com.example.Utown.exception.UserAlreadyExistsException;
 import com.example.Utown.mapper.AddressMapper;
+import com.example.Utown.mapper.AddressInfoMapper;
 import com.example.Utown.model.Address;
 import com.example.Utown.model.Cart;
 import com.example.Utown.model.Role;
@@ -42,45 +45,57 @@ public class ClientServiceImpl implements ClientService {
     private final AddressMapper addressMapper;
     private final PasswordEncoder passwordEncoder;
     private final CartRepository cartRepository;
+    private final AddressInfoMapper addressInfoMapper;
 
     @Override
     public Optional<Client> findByUsername(String username) {
         return clientRepository.findByUsername(username);
     }
 
-
-    @Override // For Admin
-    public List<ClientInfoDto> getAllClients() {
+    @Override
+    public List<ClientDetailsDto> getAllClients() {
         List<Client> clients = clientRepository.findAllWithAddressesAndOrders();
-        return  clients.stream()
-                        .map(client -> new ClientInfoDto(
-                                client.getId(),
-                                client.getFullName(),
-                                client.getUsername(),
-                                client.getAddresses() != null ? extractAddressIds(client.getAddresses()) : null,
-                                client.getOrders() != null ? client.getOrders().size() : 0,
-                                null
-                        ))
+        return clients.stream()
+                .map(client -> {
+                    AddressInfoDto defaultAddress = null;
+
+                    if (client.getDefaultAddress() != null && client.getAddresses() != null) {
+                        defaultAddress = client.getAddresses().stream()
+                                .filter(a -> a.getId().equals(client.getDefaultAddress()))
+                                .findFirst()
+                                .map(addressInfoMapper::toDto)
+                                .orElse(null);
+                    }
+
+                    return new ClientDetailsDto(
+                            client.getId(),
+                            client.getFullName(),
+                            client.getUsername(),
+                            defaultAddress,
+                            client.getOrders() != null ? client.getOrders().size() : 0
+                    );
+                })
                 .toList();
     }
 
 
-    @Override //For Admin //сделан
-    public ClientInfoDto getClientById(Long clientId) {
-        Client client =  findClientByIdOrThrow(clientId);
-        Set<Long> addressIds = extractAddressIds(client.getAddresses());
 
-        return  new ClientInfoDto(
-                client.getId(),
+    @Override // For Admin
+    public ClientInfoDto getClientById(Long clientId) {
+        Client client = clientRepository.findAllClientInfoById(clientId) // возвращает Optional<Client>
+                .orElseThrow(() -> new ResourceNotFoundException("Client", clientId));
+
+        return new ClientInfoDto(
+                client.getId(),//
                 client.getFullName(),
                 client.getUsername(),
-                addressIds,
+                mapAddressDtos(client.getAddresses()),
                 client.getOrders() != null ? client.getOrders().size() : 0,
                 client.getFileInfo() != null ? client.getFileInfo().getId() : null
         );
     }
 
-    @Transactional(rollbackFor = Exception.class) //For Admin сделано
+    @Transactional(rollbackFor = RuntimeException.class) //For Admin сделано
     @Override
     public void updateClient(Long id, ClientUpdateDto clientDto) {
         Client client = findClientByIdOrThrow(id);
@@ -182,20 +197,15 @@ public class ClientServiceImpl implements ClientService {
     }
 
 
-    @Transactional(rollbackFor = Exception.class) //For Admin + Client
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteClient(Long id) {
-        if (!clientRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Client", id);
-        }
-        clientRepository.deleteById(id);
+        Client client = clientRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Client", id));
+
+        clientRepository.delete(client); // сработает каскадно
     }
 
-    private Set<Long> extractAddressIds(Set<Address> addresses) {
-        return addresses.stream()
-                .map(Address::getId)
-                .collect(Collectors.toSet());
-    }
 
     private Client findClientByIdOrThrow(Long clientId) { //метод для переиспользования
         return clientRepository.findAllClientInfoById(clientId)
@@ -223,6 +233,17 @@ public class ClientServiceImpl implements ClientService {
         }
 
         return addressService.getAddressById(defaultAddressId);
+    }
+
+    private Set<AddressInfoDto> mapAddressDtos(Set<Address> addresses) {
+        if (addresses == null) return Collections.emptySet();
+        return addresses.stream()
+                .map(address -> new AddressInfoDto(
+                        address.getId(),
+                        address.getCity(),
+                        address.getFullAddress()
+                ))
+                .collect(Collectors.toSet());
     }
 
 }

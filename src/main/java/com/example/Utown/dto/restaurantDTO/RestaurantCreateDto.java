@@ -1,17 +1,15 @@
 package com.example.Utown.dto.restaurantDTO;
 
+import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.dto.addressDTO.AddressInfoDto;
-import com.example.Utown.dto.dishCategoryDTO.DishCategoryCreateDto;
+import com.example.Utown.dto.deliveryDTO.DeliveryDto;
 import com.example.Utown.dto.fileInfoDTO.FileInfoDetailsDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeCreateDto;
-import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
 import com.example.Utown.dto.restaurantAdminDTO.RestaurantAdminCreateDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryDto;
-import com.example.Utown.model.RestaurantCategory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -28,7 +26,7 @@ public class RestaurantCreateDto {
     private List<RestaurantCategoryDto> categories;
     private List<OperatingModeCreateDto> operatingModes;
     private RestaurantAdminCreateDto restaurantAdmin;
-    private AddressInfoDto address;
+    private AddressDto address;
     private RestaurantAdminCreateDto restaurantCreateDto;
-    private List<DishCategoryCreateDto> dishCategories;
+    private List<DeliveryDto> deliveries;
 }

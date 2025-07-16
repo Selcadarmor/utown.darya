@@ -51,10 +51,10 @@ public class Order {
     @Column(name = "is_paid")
     private Boolean isPaid;
 
-    @Column(name = "latitube")
+    @Column(name = "latitude")
     private Float latitude;
 
-    @Column(name = "longitube")
+    @Column(name = "longitude")
     private Float longitude;
 
     @Column(name = "note_for_courier")
