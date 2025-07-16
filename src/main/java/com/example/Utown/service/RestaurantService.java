@@ -17,14 +17,5 @@ public interface RestaurantService {
     RestaurantDetailsDto createRestaurant(RestaurantCreateDto dto);
     RestaurantDetailsDto updateRestaurant(Long id, RestaurantUpdateDto dto);
     void deactivateRestaurant(Long restaurantId);
-    Page<RestaurantForClientDto> getRecommendedRestaurantsForClient(Pageable pageable);
-    Page<RestaurantForClientDto> getFastestDeliveryRestaurantsForClient(Pageable pageable);
-    Page<RestaurantForClientDto> getRestaurantsByCategory(Long categoryId, Pageable pageable);
-    Page<RestaurantForClientDto> searchRestaurants(
-            String query,
-            int page,
-            int size,
-            String sortBy,
-            String direction);
-    RestaurantProfileDto getRestaurantProfile(Long restaurantId);
+
 }
