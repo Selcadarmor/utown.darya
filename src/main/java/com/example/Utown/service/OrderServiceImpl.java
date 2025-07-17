@@ -3,25 +3,31 @@ package com.example.Utown.service;
 import com.example.Utown.dto.orderDTO.OrderDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.OrderMapper;
-import com.example.Utown.model.*;
+import com.example.Utown.model.Cart;
+import com.example.Utown.model.Dish;
+import com.example.Utown.model.DishToOrder;
+import com.example.Utown.model.Order;
+import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.UserType.Client;
 import com.example.Utown.model.UserType.RestaurantAdmin;
-import com.example.Utown.repository.*;
+import com.example.Utown.model.enumFiles.OrderStatus;
+import com.example.Utown.repository.CartRepository;
+import com.example.Utown.repository.DishToOrderRepository;
+import com.example.Utown.repository.OrderRepository;
+import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.repository.UserType.ClientRepository;
 import com.example.Utown.repository.UserType.RestaurantAdminRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import com.example.Utown.model.enumFiles.OrderStatus;
-import org.springframework.security.access.AccessDeniedException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-
 
 @Service
 @RequiredArgsConstructor

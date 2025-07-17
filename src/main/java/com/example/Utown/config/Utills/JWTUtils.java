@@ -2,7 +2,11 @@ package com.example.Utown.config.Utills;
 
 import com.example.Utown.exception.ExpireJwtTokenException;
 import com.example.Utown.exception.InvalidJwtTokenException;
-import io.jsonwebtoken.*;
+import com.example.Utown.model.enumFiles.TokenType;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,8 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import com.example.Utown.model.enumFiles.TokenType;
 
 @Component
 public class JWTUtils {

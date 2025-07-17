@@ -1,6 +1,5 @@
 package com.example.Utown.mapper;
 
-
 import com.example.Utown.dto.addressDTO.AddressInfoDto;
 import com.example.Utown.model.Address;
 import org.mapstruct.BeanMapping;

@@ -9,7 +9,6 @@ import com.example.Utown.model.enumFiles.Roles;
 import java.util.List;
 import java.util.Optional;
 
-
 public interface ClientService {
         Optional<Client> findByUsername(String username);
         List<ClientDetailsDto> getAllClients();

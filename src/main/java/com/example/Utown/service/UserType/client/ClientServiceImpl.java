@@ -1,17 +1,17 @@
 package com.example.Utown.service.UserType.client;
 
 import com.example.Utown.dto.addressDTO.AddressDto;
+import com.example.Utown.dto.addressDTO.AddressInfoDto;
+import com.example.Utown.dto.clientDTO.ClientDetailsDto;
 import com.example.Utown.dto.clientDTO.ClientInfoDto;
 import com.example.Utown.dto.clientDTO.ClientProfileUpdateDto;
 import com.example.Utown.dto.clientDTO.ClientRegistrationDto;
 import com.example.Utown.dto.clientDTO.ClientUpdateDto;
-import com.example.Utown.dto.addressDTO.AddressInfoDto;
-import com.example.Utown.dto.clientDTO.*;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.exception.RoleNotFoundException;
 import com.example.Utown.exception.UserAlreadyExistsException;
-import com.example.Utown.mapper.AddressMapper;
 import com.example.Utown.mapper.AddressInfoMapper;
+import com.example.Utown.mapper.AddressMapper;
 import com.example.Utown.model.Address;
 import com.example.Utown.model.Cart;
 import com.example.Utown.model.Role;
@@ -31,7 +31,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service

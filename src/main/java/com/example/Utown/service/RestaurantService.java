@@ -1,6 +1,11 @@
 package com.example.Utown.service;
 
-import com.example.Utown.dto.restaurantDTO.*;
+import com.example.Utown.dto.restaurantDTO.RestaurantCreateDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantProfileDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
