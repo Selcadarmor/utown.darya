@@ -8,7 +8,6 @@ import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
-
 @Mapper(componentModel = "spring")
 public interface RestaurantCategoryInfoMapper {
     @Mapping(target = "createdAt", ignore = true)

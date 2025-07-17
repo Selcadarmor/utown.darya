@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
 @Mapper(componentModel = "spring", uses = {AddressInfoMapper.class, RestaurantCategoryInfoMapper.class, OrderInfoMapper.class, RestaurantAdminInfoMapper.class, DishCategoryMapper.class, DeliveryMapper.class, OperatingModeInfoMapper.class})
 public interface RestaurantInfoMapper {
     @Mapping(source = "fileInfo.id", target = "fileId")
