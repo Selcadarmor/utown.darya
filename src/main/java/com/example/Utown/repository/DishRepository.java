@@ -3,6 +3,7 @@ package com.example.Utown.repository;
 import com.example.Utown.model.Dish;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.Utown.dto.dishDTO.DishDto;
 import org.springframework.data.jpa.repository.Modifying;
@@ -23,11 +24,10 @@ public interface DishRepository extends JpaRepository<Dish, Long> {
             "FROM Dish d")
     List<DishDto> findAllDishes();
 
+    @EntityGraph(attributePaths = {"dishCategory", "file", "options.elements"})
     Page<Dish> findByRestaurantId(Long restaurantId, Pageable pageable);
 
     List<Dish> findAllByRestaurantId(Long restaurantId);
-
-
 }
 
 

@@ -8,17 +8,17 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 public class ClientDetailsDto {
-    private Long id;
     private String fullName;
     private String username;
-    private AddressInfoDto defaultAddress;
+    private String city;
+    private String fullAddress;
     private Integer orderCount;
 
-    public ClientDetailsDto(Long id, String fullName, String username, AddressInfoDto defaultAddress, Integer orderCount) {
-        this.id = id;
+    public ClientDetailsDto(String fullName, String username, String city, String fullAddress, Integer orderCount) {
         this.fullName = fullName;
         this.username = username;
-        this.defaultAddress = defaultAddress;
+        this.city = city;
+        this.fullAddress = fullAddress;
         this.orderCount = orderCount;
     }
 }

@@ -11,5 +11,6 @@ public interface FileInfoService {
     List<FileInfoDto> getAll();
     FileInfo update(Long id, FileInfoDto dto);
     void delete(Long id);
+    FileInfo getFileInfoById(Long id);
 }
 

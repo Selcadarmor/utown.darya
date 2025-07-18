@@ -7,6 +7,7 @@ import com.example.Utown.model.FileInfo;
 import com.example.Utown.repository.FileInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,6 +56,13 @@ public class FileInfoServiceImpl implements FileInfoService {
         FileInfo file = fileInfoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("FileInfo not found", id));
         fileInfoRepository.delete(file);
+    }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
+    public FileInfo getFileInfoById(Long id) {
+        return fileInfoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("FileInfo not found", id));
     }
 }
 

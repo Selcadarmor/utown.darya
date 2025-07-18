@@ -2,6 +2,7 @@ package com.example.Utown.service;
 
 
 import com.example.Utown.dto.addressDTO.AddressDto;
+import com.example.Utown.dto.addressDTO.AddressInfoDto;
 import com.example.Utown.model.Address;
 
 import java.util.List;
@@ -13,5 +14,6 @@ public interface AddressService {
     Address updateAddress(Long id, AddressDto dto);
     void deleteAddress(Long id);
     List<AddressDto> getAddressesByClient(String username);
+    Address updateAddressByRestaurant(Long id, AddressInfoDto dto);
 
 }
