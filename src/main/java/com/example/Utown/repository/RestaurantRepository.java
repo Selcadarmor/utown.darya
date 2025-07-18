@@ -22,21 +22,27 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     Long countRestaurantsByCategory(@Param("category") RestaurantCategory category);
 
     @Query("SELECT new com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto(" +
-            "r.id, r.title, r.description, r.phone, r.minOrderAmount, COUNT(o.id), r.fileInfo.id) " +
+            "r.title, r.description, r.phone, r.minOrderAmount, COUNT(o.id), r.fileInfo.id) " +
             "FROM Restaurant r " +
             "LEFT JOIN Order o ON o.restaurant.id = r.id " +
             "WHERE r.id = :id " +
             "GROUP BY r.id, r.title, r.description, r.phone, r.minOrderAmount, r.fileInfo.id")
-    Optional<RestaurantDetailsDto> findRestaurantDetailsById(@Param("id") Long id);
+    Optional<RestaurantDetailsDto> findRestaurantSummaryById(@Param("id") Long id);
 
 
-    @Query("SELECT new com.example.Utown.dto.restaurantDTO.RestaurantInfoDto(" +
-            "r.id, r.title, a.city, r.phone, COUNT(o.id), r.createdAt, r.updatedAt) " +
-            "FROM Restaurant r " +
-            "LEFT JOIN Order o ON o.restaurant.id = r.id " +
-            "LEFT JOIN Client c ON o.client.id = c.id " +
-            "LEFT JOIN c.addresses a " +
-            "GROUP BY r.id, r.title, a.city, r.phone, r.createdAt, r.updatedAt")
+    @Query("""
+    SELECT new com.example.Utown.dto.restaurantDTO.RestaurantInfoDto(
+        r.id,
+        r.title,
+        a.city,
+        r.phone,
+        COUNT(DISTINCT o.id)
+    )
+    FROM Restaurant r
+    LEFT JOIN r.address a
+    LEFT JOIN Order o ON o.restaurant.id = r.id
+    GROUP BY r.id, r.title, a.city, r.phone
+""")
     Page<RestaurantInfoDto> findAllRestaurantsWithOrderCount(Pageable pageable);
 
     @Query("SELECT new com.example.Utown.dto.restaurantDTO.RestaurantForClientDto(" +

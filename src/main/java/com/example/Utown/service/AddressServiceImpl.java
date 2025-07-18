@@ -9,6 +9,7 @@ import com.example.Utown.repository.AddressRepository;
 import com.example.Utown.repository.UserType.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -71,6 +72,16 @@ public class AddressServiceImpl implements AddressService {
         Address address = addressRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Address not found", id));
         addressRepository.delete(address);
+    }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
+    public Address updateAddressByRestaurant(Long id, AddressInfoDto dto) {
+        Address address = getAddressById(id);
+        address.setFullAddress(dto.getFullAddress());
+        address.getCity();
+        return addressRepository.save(address);
+
     }
 
 }
