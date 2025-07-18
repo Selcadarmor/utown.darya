@@ -19,4 +19,3 @@ public class OptionForClientDto {
     private Boolean isActive;
     private List<ElementForClientDto> elements;
 }
-

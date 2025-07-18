@@ -74,7 +74,6 @@ public class AdminController {
         return ResponseEntity.ok(clientService.getClientById(id));
     }
 
-
     @Operation(summary = "Update client by Id", description = "Updates information of an existing client.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Client updated successfully."),

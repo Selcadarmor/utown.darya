@@ -1,5 +1,6 @@
 package com.example.Utown.service;
 
+import com.example.Utown.exception.RoleNotFoundException;
 import com.example.Utown.model.Role;
 import com.example.Utown.model.enumFiles.Roles;
 import com.example.Utown.repository.RoleRepository;
@@ -15,8 +16,9 @@ public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
 
     @Override
-    public Optional<Role> findByName(Roles name) {
-        return roleRepository.findByName(name);
+    public Role findByName(Roles name) {
+        return roleRepository.findByName(name)
+                .orElseThrow(() -> new RoleNotFoundException(name.name()));
     }
 }
 

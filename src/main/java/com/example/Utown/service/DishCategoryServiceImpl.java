@@ -110,6 +110,7 @@ public class DishCategoryServiceImpl implements DishCategoryService {
                 .map(dishCategoryMapper::toDetailsDto);
 
     }
+
     @Override
     @Transactional
     public  DishCategoryDetailsDto createDishCategoryForRestaurant(Long restaurantId, DishCategoryCreateDto dto) {
@@ -131,7 +132,7 @@ public class DishCategoryServiceImpl implements DishCategoryService {
     }
 
     @Override
-    public List<DishCategoryRestaurantProfileDto> getDishCategoriesByRestaurant(Long restaurantId) {
+    public List<DishCategoryRestaurantProfileDto> getDishCategoriesByRestaurantForClient(Long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
 
