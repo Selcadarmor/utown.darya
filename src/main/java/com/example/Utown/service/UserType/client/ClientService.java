@@ -2,6 +2,7 @@ package com.example.Utown.service.UserType.client;
 
 import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.dto.clientDTO.*;
+import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
 import com.example.Utown.model.Address;
 import com.example.Utown.model.UserType.Client;
 import com.example.Utown.model.enumFiles.Roles;
@@ -17,6 +18,9 @@ public interface ClientService {
         void deleteClient(Long id);
         void save(ClientRegistrationDto dto, Roles roleName);
         ClientProfileUpdateDto updateClientProfile(ClientProfileUpdateDto dto);
+        void addFavoriteRestaurant(Long restaurantId);
+        List<RestaurantForClientDto> getFavoriteRestaurants();
+        void removeFavoriteRestaurant(Long restaurantId);
         Address saveAddressForClient(AddressDto dto);
         Client getCurrentClient();
         Address getAddressByDefaultAddress();

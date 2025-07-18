@@ -2,6 +2,10 @@ package com.example.Utown.service;
 
 import com.example.Utown.dto.dishDTO.DishDetailsDto;
 import com.example.Utown.dto.dishDTO.DishDto;
+import com.example.Utown.dto.dishDTO.DishForClientDto;
+import com.example.Utown.dto.elementDTO.ElementForClientDto;
+import com.example.Utown.dto.optionDTO.OptionForClientDto;
+import com.example.Utown.exception.DishNotFoundException;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.DishMapper;
 import com.example.Utown.model.Dish;
@@ -173,6 +177,61 @@ public class DishServiceImpl implements DishService {
         dishDetailsDto.setIsActive(dto.getIsActive());
         dishDetailsDto.setIsDeleted(dto.getIsDeleted());
         return dishDetailsDto;
+    }
+
+    @Override
+    public DishForClientDto getDishByIdForClient(Long dishId) {
+        Dish dish = dishRepository.findDishByIdForClient(dishId)
+                .orElseThrow(() -> new DishNotFoundException(dishId));
+
+        return mapToDishForClientDto(dish);
+    }
+
+    @Override
+    public List<DishForClientDto> getDishesByCategoryForClient(Long categoryId) {
+        List<Dish> dishes = dishRepository.findDishByCategoryForClient(categoryId);
+        return dishes.stream()
+                .map(this::mapToDishForClientDto)
+                .toList();
+    }
+
+    private DishForClientDto mapToDishForClientDto(Dish dish) {
+        List<OptionForClientDto> optionDto = dish.getOptions().stream().map(option -> {
+            List<ElementForClientDto> elementDto = option.getElements().stream().map(element ->
+                    new ElementForClientDto(
+                            element.getId(),
+                            element.getName(),
+                            element.getDescription(),
+                            element.getPrice(),
+                            element.getIsActive(),
+                            element.getIsDeleted()
+                    )
+            ).toList();
+
+            return new OptionForClientDto(
+                    option.getId(),
+                    option.getName(),
+                    option.isRequired(),
+                    option.getMin(),
+                    option.getMax(),
+                    option.getIsActive(),
+                    elementDto
+            );
+        }).toList();
+
+        return new DishForClientDto(
+                dish.getId(),
+                dish.getTitle(),
+                dish.getDescription(),
+                dish.getIsActive(),
+                dish.getIsDeleted(),
+                dish.getPrice(),
+                dish.getSort(),
+                dish.getRestaurant().getId(),
+                dish.getDishCategory().getId(),
+                dish.getFile() != null ? dish.getFile().getPath() : null,
+                optionDto
+        );
     }
 
 }

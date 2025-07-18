@@ -29,7 +29,6 @@ import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.RestaurantCategory;
 import com.example.Utown.model.UserType.Client;
 import com.example.Utown.model.UserType.RestaurantAdmin;
-import com.example.Utown.repository.AddressRepository;
 import com.example.Utown.repository.DishRepository;
 import com.example.Utown.repository.OperatingModeRepository;
 import com.example.Utown.repository.OrderRepository;
@@ -58,7 +57,6 @@ import java.util.stream.Collectors;
 public class RestaurantServiceImpl  implements RestaurantService {
 
     private final AddressInfoMapper addressInfoMapper;
-    private final AddressRepository addressRepository;
     private final ClientService clientService;
     private final FileInfoMapper fileInfoMapper;
     private final OrderRepository orderRepository;
@@ -73,8 +71,8 @@ public class RestaurantServiceImpl  implements RestaurantService {
     private final OperatingModeInfoMapper operatingModeInfoMapper;
     private final DeliveryMapper deliveryMapper;
     private final RestaurantAdminService restaurantAdminService;
-    private  final AddressService addressService;
-    private  final DeliveryService deliveryService;
+    private final AddressService addressService;
+    private final DeliveryService deliveryService;
     private final DishRepository dishRepository;
 
 
@@ -84,10 +82,9 @@ public class RestaurantServiceImpl  implements RestaurantService {
         return restaurantRepository.findAllRestaurantsWithOrderCount(pageable);
     }
 
-
     @Override
     public RestaurantDetailsDto getRestaurantDetails(Long restaurantId) {
-        Restaurant restaurant = findRestaurantByIdOrThrow(restaurantId);
+        Restaurant restaurant = findRestaurantById(restaurantId);
 
         Long orderCount = orderRepository.countByRestaurantId(restaurantId);
 
@@ -109,7 +106,6 @@ public class RestaurantServiceImpl  implements RestaurantService {
                 deliveryMapper.toDtoList(restaurant.getDeliveries())
         );
     }
-
 
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
@@ -167,11 +163,10 @@ public class RestaurantServiceImpl  implements RestaurantService {
         return restaurantInfoMapper.toDto(saved);
     }
 
-
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
     public RestaurantDetailsDto updateRestaurant(Long id, RestaurantUpdateDto dto) {
-        Restaurant restaurant = findRestaurantByIdOrThrow(id);
+        Restaurant restaurant = findRestaurantById(id);
 
         restaurantInfoMapper.updateFromDto(dto, restaurant);
 
@@ -210,7 +205,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
     public void deactivateRestaurant(Long restaurantId) {
-        Restaurant restaurant = findRestaurantByIdOrThrow(restaurantId);
+        Restaurant restaurant = findRestaurantById(restaurantId);
         restaurant.setIsActive(false);
 
         if (restaurant.getRestaurantAdmin() != null) {
@@ -228,36 +223,34 @@ public class RestaurantServiceImpl  implements RestaurantService {
         dishRepository.saveAll(dishes);
         restaurantRepository.save(restaurant);
     }
-    private Restaurant findRestaurantByIdOrThrow(Long restaurantId) { //  для переиспользования
+
+    public Restaurant findRestaurantById(Long restaurantId) {
         return restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
+                .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
     }
 
     @Override //For Client
     public Page<RestaurantForClientDto> getRecommendedRestaurantsForClient(Pageable pageable) {
         Client client = clientService.getCurrentClient();
-        Address address = addressRepository.findById(client.getDefaultAddress())
-                .orElseThrow(() -> new RuntimeException("Address not found"));
+        Address address = addressService.getAddressById(client.getDefaultAddress());
 
-        return restaurantRepository.findRecommendedRestaurants(address.getCity(), address.getArea(), pageable);
+        return restaurantRepository.findRecommendedRestaurants(address.getState(), address.getCity(), address.getArea(), pageable);
     }
 
     @Override //For Client
     public Page<RestaurantForClientDto> getFastestDeliveryRestaurantsForClient(Pageable pageable) {
         Client client = clientService.getCurrentClient();
-        Address address = addressRepository.findById(client.getDefaultAddress())
-                .orElseThrow(() -> new RuntimeException("Address not found"));
+        Address address = addressService.getAddressById(client.getDefaultAddress());
 
-        return restaurantRepository.findFastestDeliveryRestaurants(address.getCity(), address.getArea(), pageable);
+        return restaurantRepository.findFastestDeliveryRestaurants(address.getState(), address.getCity(), address.getArea(), pageable);
     }
 
     @Override //For Client
     public Page<RestaurantForClientDto> getRestaurantsByCategory(Long categoryId, Pageable pageable) {
         Client client = clientService.getCurrentClient();
-        Address address = addressRepository.findById(client.getDefaultAddress())
-                .orElseThrow(() -> new RuntimeException("Address not found"));
+        Address address = addressService.getAddressById(client.getDefaultAddress());
 
-        return restaurantRepository.findRestaurantsByCategory(address.getCity(), address.getArea(), categoryId, pageable);
+        return restaurantRepository.findRestaurantsByCategory(address.getState(), address.getCity(), address.getArea(), categoryId, pageable);
     }
 
     @Override
@@ -269,8 +262,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
             String direction) {
 
         Client client = clientService.getCurrentClient();
-        Address address = addressRepository.findById(client.getDefaultAddress())
-                .orElseThrow(() -> new RuntimeException("Address not found"));
+        Address address = addressService.getAddressById(client.getDefaultAddress());
 
         Sort sort = Sort.by(Sort.Direction.DESC, "isRecommended");
 
@@ -292,6 +284,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
         return restaurantRepository.searchClient(
                 query,
+                address.getState(),
                 address.getCity(),
                 address.getArea(),
                 pageable
