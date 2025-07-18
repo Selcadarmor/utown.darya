@@ -6,11 +6,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -30,10 +32,10 @@ public class OperatingMode {
     private Integer dayOfWeek;
 
     @Column(name = "start")
-    private LocalDateTime start;
+    private LocalTime start;
 
     @Column(name = "end")
-    private LocalDateTime end;
+    private LocalTime end;
 
     @Column(name = "day_off")
     private Boolean dayOff;

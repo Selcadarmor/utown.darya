@@ -16,7 +16,10 @@ import com.example.Utown.repository.AddressRepository;
 import com.example.Utown.repository.RoleRepository;
 import com.example.Utown.repository.UserType.ClientRepository;
 import com.example.Utown.service.AddressService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -45,55 +48,27 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public List<ClientDetailsDto> getAllClients() {
-        List<Client> clients = clientRepository.findAllWithAddressesAndOrders();
-        return clients.stream()
-                .map(client -> {
-                    AddressInfoDto defaultAddress = null;
-
-                    if (client.getDefaultAddress() != null && client.getAddresses() != null) {
-                        defaultAddress = client.getAddresses().stream()
-                                .filter(a -> a.getId().equals(client.getDefaultAddress()))
-                                .findFirst()
-                                .map(addressInfoMapper::toDto)
-                                .orElse(null);
-                    }
-
-                    return new ClientDetailsDto(
-                            client.getId(),
-                            client.getFullName(),
-                            client.getUsername(),
-                            defaultAddress,
-                            client.getOrders() != null ? client.getOrders().size() : 0
-                    );
-                })
-                .toList();
+    public Page<ClientDetailsDto> getAllClients(Pageable pageable) {
+        return clientRepository.findAllClientDetails(pageable);
     }
 
 
 
     @Override // For Admin
     public ClientInfoDto getClientById(Long clientId) {
-        Client client = clientRepository.findAllClientInfoById(clientId) // возвращает Optional<Client>
-                .orElseThrow(() -> new ResourceNotFoundException("Client", clientId));
-
-        return new ClientInfoDto(
-                client.getId(),//
-                client.getFullName(),
-                client.getUsername(),
-                mapAddressDtos(client.getAddresses()),
-                client.getOrders() != null ? client.getOrders().size() : 0,
-                client.getFileInfo() != null ? client.getFileInfo().getId() : null
-        );
+        return clientRepository.findClientInfoById(clientId)
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found", clientId));
     }
 
     @Transactional(rollbackFor = RuntimeException.class) //For Admin сделано
     @Override
-    public void updateClient(Long id, ClientUpdateDto clientDto) {
-        Client client = findClientByIdOrThrow(id);
-        client.setActive(clientDto.isActive());
+    public void updateClientActiveStatus(Long id, Boolean active) {
+        Client client = clientRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Client", id));
+        client.setActive(active);
         clientRepository.save(client);
     }
+
 
     @Override // For client
     public void save(ClientRegistrationDto dto, Roles roleName) {
@@ -169,17 +144,10 @@ public class ClientServiceImpl implements ClientService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteClient(Long id) {
-        Client client = clientRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Client", id));
-
-        clientRepository.delete(client); // сработает каскадно
+        updateClientActiveStatus(id, false);
     }
 
 
-    private Client findClientByIdOrThrow(Long clientId) { //метод для переиспользования
-        return clientRepository.findAllClientInfoById(clientId)
-                .orElseThrow(() -> new ResourceNotFoundException("Client", clientId));
-    }
     @Override
     public Client getCurrentClient() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
