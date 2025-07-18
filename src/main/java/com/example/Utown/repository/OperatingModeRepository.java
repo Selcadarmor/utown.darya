@@ -16,12 +16,12 @@ public interface OperatingModeRepository extends JpaRepository<OperatingMode, Lo
     List<OperatingMode> findByRestaurantId(Long restaurantId);
 
    @Query("SELECT new com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto " +
-           "(o.id, o.start, o.end, o.dayOff, o.dayOfWeek, o.createdAt, o.updatedAt, o.restaurant.id) " +
+           "(o.start, o.end, o.dayOff, o.dayOfWeek, o.restaurant.id) " +
            "FROM OperatingMode o ")
     List<OperatingModeInfoDto> findAllOperatingModes();
 
    @Query("SELECT new com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto " +
-           "(o.id, o.start, o.end, o.dayOff, o.dayOfWeek, o.createdAt, o.updatedAt, o.restaurant.id) " +
+           "(o.start, o.end, o.dayOff, o.dayOfWeek, o.restaurant.id) " +
            "FROM OperatingMode o WHERE o.id =:id ")
    Optional<OperatingModeInfoDto> findProjectedById (@Param("id")Long id);
 

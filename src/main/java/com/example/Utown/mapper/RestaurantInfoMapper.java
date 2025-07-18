@@ -23,7 +23,6 @@ public interface RestaurantInfoMapper {
     @Mapping(target = "orderCount", ignore = true)
     @Mapping(source = "categories", target = "categories")
     @Mapping(source = "operatingModes", target = "operatingModes")
-    @Mapping(source = "restaurantAdmin", target = "restaurantAdmin")
     @Mapping(source = "deliveries", target = "deliveries")
     RestaurantDetailsDto toDto(Restaurant restaurant);
 
@@ -43,7 +42,9 @@ public interface RestaurantInfoMapper {
             @Mapping(target = "deliveries", ignore = true),
             @Mapping(target = "dishCategories", ignore = true),
             @Mapping(target = "restaurantAdmin", ignore = true),
-            @Mapping(target = "operatingModes", ignore = true)
+            @Mapping(target = "operatingModes", ignore = true),
+            @Mapping(target = "categories", ignore = true),
+            @Mapping(target = "fileInfo", ignore = true)
     })//+
     Restaurant updateFromDto(RestaurantUpdateDto restaurantUpdateDto, @MappingTarget Restaurant restaurant);
 
@@ -77,15 +78,13 @@ public interface RestaurantInfoMapper {
             @Mapping(target = "status", ignore = true),
             @Mapping(target = "totalRatings", ignore = true),
             @Mapping(target = "statusForcedChanged", ignore = true),
-            @Mapping(target = "isActive", ignore = true),
-            @Mapping(target = "createdAt", ignore = true),
-            @Mapping(target = "updatedAt", ignore = true),
             @Mapping(target = "address", ignore = true),
             @Mapping(target = "fileInfo", ignore = true),
             @Mapping(target = "dishCategories", ignore = true),
             @Mapping(target = "restaurantAdmin", ignore = true),
             @Mapping(target = "deliveries", ignore = true),
-            @Mapping(target = "operatingModes", ignore = true)
+            @Mapping(target = "operatingModes", ignore = true),
+            @Mapping(target = "isActive", ignore = true),
     })
     Restaurant toEntity(RestaurantDetailsDto dto);
 

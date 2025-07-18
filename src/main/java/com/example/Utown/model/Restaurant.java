@@ -2,6 +2,8 @@ package com.example.Utown.model;
 
 import com.example.Utown.model.UserType.RestaurantAdmin;
 
+
+import com.example.Utown.model.enumFiles.OrderStatus;
 import com.example.Utown.model.enumFiles.RestaurantStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

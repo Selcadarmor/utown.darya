@@ -5,6 +5,7 @@ import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeUpdateDto;
 import com.example.Utown.exception.ElementNotFoundException;
 import com.example.Utown.exception.ResourceNotFoundException;
+import com.example.Utown.mapper.OperatingModeInfoMapper;
 import com.example.Utown.model.OperatingMode;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.repository.OperatingModeRepository;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,6 +26,7 @@ public class OperatingModeServiceImpl implements OperatingModeService {
 
     private final OperatingModeRepository operatingModeRepository;
     private final RestaurantRepository restaurantRepository;
+    private final OperatingModeInfoMapper operatingModeInfoMapper;
 
     @Override
     public List<OperatingModeInfoDto> findAll() {
@@ -59,14 +63,21 @@ public class OperatingModeServiceImpl implements OperatingModeService {
                 .orElseThrow(() -> new ResourceNotFoundException("OperatingMode", id));
 
         updated.setDayOff(dto.isDayOff());
-        updated.setStart(LocalDateTime.parse(dto.getStart()));
-        updated.setEnd(LocalDateTime.parse(dto.getEnd()));
+
+        if (dto.getStart() != null) {
+            updated.setStart(dto.getStart());
+        }
+        if (dto.getEnd() != null) {
+            updated.setEnd(dto.getEnd());
+        }
+
         updated.setDayOfWeek(dto.getDayOfWeek());
-        updated.setUpdatedAt(LocalDateTime.now());
 
         return operatingModeRepository.findProjectedById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("OperatingMode", id));
     }
+
+
 
 
     @Override
@@ -79,6 +90,30 @@ public class OperatingModeServiceImpl implements OperatingModeService {
         return dtos.stream()
                 .map(this::create)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<OperatingModeInfoDto> getOperatingModesByRestaurantId(Long restaurantId) {
+        List<OperatingMode> modes = operatingModeRepository.findByRestaurantId(restaurantId);
+        return  operatingModeInfoMapper.toDtoList(modes);
+
+    }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
+    public void updateOperatingModes(Restaurant restaurant, List<OperatingModeUpdateDto> dtos) {
+        List<OperatingMode> newModes = dtos.stream()
+                .map(dto -> {
+                    OperatingMode mode = new OperatingMode();
+                    mode.setRestaurant(restaurant);
+                    mode.setDayOfWeek(dto.getDayOfWeek());
+                    mode.setStart(dto.getStart());
+                    mode.setEnd(dto.getEnd());
+                    mode.setDayOfWeek(dto.getDayOfWeek());
+                    return mode;
+                }).collect(Collectors.toList());
+
+        operatingModeRepository.saveAll(newModes);
     }
 
 }

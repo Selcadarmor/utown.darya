@@ -3,27 +3,22 @@ package com.example.Utown.dto.operatingModeDTO;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 
 @Data
 public class OperatingModeInfoDto {
-    private Long id;
-    private LocalDateTime start;
-    private LocalDateTime end;
+    private LocalTime start;
+    private LocalTime end;
     private boolean dayOff;
     private Integer dayOfWeek;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
     private Long restaurantId;
 
-    public OperatingModeInfoDto(Long id, LocalDateTime start, LocalDateTime end, boolean dayOff, Integer dayOfWeek, LocalDateTime createdAt, LocalDateTime updatedAt, Long restaurantId) {
-        this.id = id;
+    public OperatingModeInfoDto(LocalTime start, LocalTime end, boolean dayOff, Integer dayOfWeek, Long restaurantId) {
         this.start = start;
         this.end = end;
         this.dayOff = dayOff;
         this.dayOfWeek = dayOfWeek;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
         this.restaurantId = restaurantId;
     }
 

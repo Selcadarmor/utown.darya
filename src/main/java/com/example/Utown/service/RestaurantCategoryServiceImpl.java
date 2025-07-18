@@ -2,6 +2,7 @@ package com.example.Utown.service;
 
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryForClient;
+import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryInfoDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.RestaurantCategoryInfoMapper;
 import com.example.Utown.mapper.RestaurantCategoryMapper;
@@ -131,6 +132,14 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
                 .collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
+    public RestaurantCategory updateRestaurantCategoryForRestaurant(Long id, RestaurantCategoryInfoDto dto) {
+        RestaurantCategory restaurantCategory = restaurantCategoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory not found", id));
+        restaurantCategory.setName(dto.getName());
+        return  restaurantCategoryRepository.save(restaurantCategory);
+    }
 
 }
 
