@@ -15,5 +15,4 @@ public interface AddressService {
     void deleteAddress(Long id);
     List<AddressDto> getAddressesByClient(String username);
     Address updateAddressByRestaurant(Long id, AddressInfoDto dto);
-
 }

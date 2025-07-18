@@ -4,6 +4,10 @@ import com.example.Utown.dto.deliveryDTO.DeliveryDto;
 import com.example.Utown.dto.deliveryDTO.DeliveryInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeCreateDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
+import com.example.Utown.dto.operatingModeDTO.OperatingModeRestaurantProfileDto;
+import com.example.Utown.dto.operatingModeDTO.OperatingModeUpdateDto;
+import com.example.Utown.dto.restaurantDTO.*;
+import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryInfoDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantCreateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
@@ -21,7 +25,9 @@ import com.example.Utown.model.FileInfo;
 import com.example.Utown.model.OperatingMode;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.RestaurantCategory;
+import com.example.Utown.model.UserType.Client;
 import com.example.Utown.model.UserType.RestaurantAdmin;
+import com.example.Utown.repository.*;
 import com.example.Utown.repository.DishRepository;
 import com.example.Utown.repository.FileInfoRepository;
 import com.example.Utown.repository.OperatingModeRepository;
@@ -45,12 +51,22 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class RestaurantServiceImpl  implements RestaurantService {
 
+    private final AddressInfoMapper addressInfoMapper;
+    private final AddressRepository addressRepository;
+    private final ClientService clientService;
     private final FileInfoMapper fileInfoMapper;
     private final RestaurantCategoryService restaurantCategoryService;
     private final RestaurantCategoryRepository restaurantCategoryRepository;
     private final RestaurantInfoMapper restaurantInfoMapper;
     private final RestaurantRepository restaurantRepository;
     private final OperatingModeService operatingModeService;
+    private final OperatingModeRepository operatingModeRepository;
+    private final RestaurantCategoryInfoMapper restaurantCategoryInfoMapper;
+    private final OperatingModeInfoMapper operatingModeInfoMapper;
+    private final DeliveryMapper deliveryMapper;
+    private final RestaurantAdminService restaurantAdminService;
+    private  final AddressService addressService;
+    private  final DeliveryService deliveryService;
     private final RestaurantAdminService restaurantAdminService;
     private final AddressService addressService;
     private final OperatingModeRepository operatingModeRepository;
@@ -207,5 +223,91 @@ public class RestaurantServiceImpl  implements RestaurantService {
         return restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
     }
+
+    @Override //For Client
+    public Page<RestaurantForClientDto> getRecommendedRestaurantsForClient(Pageable pageable) {
+        Client client = clientService.getCurrentClient();
+        Address address = addressRepository.findById(client.getDefaultAddress())
+                .orElseThrow(() -> new RuntimeException("Address not found"));
+
+        return restaurantRepository.findRecommendedRestaurants(address.getCity(), address.getArea(), pageable);
+    }
+
+    @Override //For Client
+    public Page<RestaurantForClientDto> getFastestDeliveryRestaurantsForClient(Pageable pageable) {
+        Client client = clientService.getCurrentClient();
+        Address address = addressRepository.findById(client.getDefaultAddress())
+                .orElseThrow(() -> new RuntimeException("Address not found"));
+
+        return restaurantRepository.findFastestDeliveryRestaurants(address.getCity(), address.getArea(), pageable);
+    }
+
+    @Override //For Client
+    public Page<RestaurantForClientDto> getRestaurantsByCategory(Long categoryId, Pageable pageable) {
+        Client client = clientService.getCurrentClient();
+        Address address = addressRepository.findById(client.getDefaultAddress())
+                .orElseThrow(() -> new RuntimeException("Address not found"));
+
+        return restaurantRepository.findRestaurantsByCategory(address.getCity(), address.getArea(), categoryId, pageable);
+    }
+
+    @Override
+    public Page<RestaurantForClientDto> searchRestaurants(
+            String query,
+            int page,
+            int size,
+            String sortBy,
+            String direction) {
+
+        Client client = clientService.getCurrentClient();
+        Address address = addressRepository.findById(client.getDefaultAddress())
+                .orElseThrow(() -> new RuntimeException("Address not found"));
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "isRecommended");
+
+        if (sortBy != null) {
+            switch (sortBy.toLowerCase()) {
+                case "rating":
+                    sort = Sort.by(Sort.Direction.fromString(direction), "rating");
+                    break;
+                case "deliverytime":
+                    sort = Sort.by(Sort.Direction.fromString(direction), "deliveryTime");
+                    break;
+                case "isrecommended":
+                    sort = Sort.by(Sort.Direction.fromString(direction), "isRecommended");
+                    break;
+            }
+        }
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return restaurantRepository.searchClient(
+                query,
+                address.getCity(),
+                address.getArea(),
+                pageable
+        );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public RestaurantProfileDto getRestaurantProfile(Long restaurantId) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
+        List<OperatingModeRestaurantProfileDto> operatingModes = operatingModeRepository.findRawOperatingModesByRestaurantId(restaurantId);
+        return RestaurantProfileDto.builder()
+                .id(restaurant.getId())
+                .title(restaurant.getTitle())
+                .phone(restaurant.getPhone())
+                .filePath(restaurant.getFileInfo() != null ? restaurant.getFileInfo().getPath() : null)
+                .description(restaurant.getDescription())
+                .deliveryTime(restaurant.getDeliveryTime())
+                .totalRating(restaurant.getTotalRatings())
+                .minOrderAmount(restaurant.getMinOrderAmount())
+                .operatingModes(operatingModes)
+                .build();
+    }
+
+
 
 }
