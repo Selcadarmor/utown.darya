@@ -1,10 +1,9 @@
 package com.example.Utown.controller.userTypeControllers;
 
-import com.example.Utown.dto.userDto.UserChangePasswordDto;
+import com.example.Utown.dto.clientDTO.ClientRegistrationDto;
 import com.example.Utown.dto.tokens.JWTRequest;
 import com.example.Utown.dto.tokens.JWTResponse;
 import com.example.Utown.dto.tokens.RefreshTokenRequest;
-import com.example.Utown.dto.clientDTO.ClientRegistrationDto;
 import com.example.Utown.service.AuthService;
 import com.example.Utown.service.RefreshTokenService;
 import com.example.Utown.service.UserService;
@@ -30,6 +29,13 @@ public class MainController {
     private final RefreshTokenService refreshTokenService;
     private final UserService userService;
 
+    @PostMapping("/registration_client")  //Passed
+    @Operation(summary = "Register Client", description = "Registration for client users")
+    public ResponseEntity<String> registerClient(@RequestBody ClientRegistrationDto dto) {
+        authService.registration(dto);
+        return ResponseEntity.ok("Client registered successfully");
+    }
+
     @PostMapping("/login") //Passed
     public ResponseEntity<JWTResponse> login(@RequestBody JWTRequest authRequest) {
         JWTResponse response = authService.createAuthToken(authRequest);
@@ -39,10 +45,10 @@ public class MainController {
     @PutMapping("/change_password") // Passed
     @Operation(summary = "Change client password", description = "Allows authenticated client to change their password")
     public ResponseEntity<String> changePassword(
-            @RequestBody @Valid UserChangePasswordDto dto,
+            @RequestBody @Valid String newPassword,
             @AuthenticationPrincipal User user
     ) {
-        userService.changePassword(user.getUsername(), dto);
+        userService.changePassword(user.getUsername(), newPassword);
         return ResponseEntity.ok("Password changed successfully");
     }
 

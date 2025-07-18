@@ -11,11 +11,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
-
+@Repository
 public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 
     @Query("SELECT COUNT(r) FROM Restaurant r JOIN r.categories c WHERE c = :category")
@@ -45,39 +45,114 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 """)
     Page<RestaurantInfoDto> findAllRestaurantsWithOrderCount(Pageable pageable);
 
-
-    @Query("""
-    SELECT new com.example.Utown.dto.restaurantDTO.RestaurantForClientDto(
-        r.id,
-        r.title,
-        f.path,
-        d.price,
-        r.deliveryTime,
-        r.isRecommended,
-        r.isActive
+    @Query("SELECT new com.example.Utown.dto.restaurantDTO.RestaurantForClientDto(" +
+            "r.id, " +
+            "r.title, " +
+            "f.path, " +
+            "d.price, " +
+            "r.deliveryTime, " +
+            "r.isRecommended, " +
+            "r.isActive, " +
+            "d.isDeleted" +
+            ") " +
+            "FROM Restaurant r " +
+            "JOIN r.deliveries d " +
+            "LEFT JOIN r.fileInfo f " +
+            "WHERE r.isActive = true " +
+            "  AND d.isActive = true " +
+            "  AND d.isDeleted = false " +
+            "  AND d.district = :city " +
+            "  AND (d.area IS NULL OR d.area = :area) " +
+            "ORDER BY r.isRecommended DESC"
     )
-    FROM Restaurant r
-    JOIN r.deliveries d
-    LEFT JOIN r.fileInfo f
-    WHERE d.area = :area
-      AND d.isActive = true
-      AND r.isActive = true
-""")
-    List<RestaurantForClientDto> getRestaurantsByCityAndArea(
-            @Param("area") String area
+    Page<RestaurantForClientDto> findRecommendedRestaurants(
+            @Param("city") String city,
+            @Param("area") String area,
+            Pageable pageable
     );
 
+    @Query("SELECT new com.example.Utown.dto.restaurantDTO.RestaurantForClientDto(" +
+            "r.id, " +
+            "r.title, " +
+            "f.path, " +
+            "d.price, " +
+            "r.deliveryTime, " +
+            "r.isRecommended, " +
+            "r.isActive, " +
+            "d.isDeleted" +
+            ") " +
+            "FROM Restaurant r " +
+            "JOIN r.deliveries d " +
+            "LEFT JOIN r.fileInfo f " +
+            "WHERE r.isActive = true " +
+            "  AND d.isActive = true " +
+            "  AND d.isDeleted = false " +
+            "  AND d.district = :city " +
+            "  AND (d.area IS NULL OR d.area = :area) " +
+            "ORDER BY d.price ASC, r.deliveryTime ASC"
+    )
+    Page<RestaurantForClientDto> findFastestDeliveryRestaurants(
+            @Param("city") String city,
+            @Param("area") String area,
+            Pageable pageable
+    );
 
+    @Query("SELECT new com.example.Utown.dto.restaurantDTO.RestaurantForClientDto(" +
+            "r.id, " +
+            "r.title, " +
+            "f.path, " +
+            "d.price, " +
+            "r.deliveryTime, " +
+            "r.isRecommended, " +
+            "r.isActive, " +
+            "d.isDeleted" +
+            ") " +
+            "FROM Restaurant r " +
+            "JOIN r.categories c " +
+            "JOIN r.deliveries d " +
+            "LEFT JOIN r.fileInfo f " +
+            "WHERE r.isActive = true " +
+            "  AND d.isActive = true " +
+            "  AND d.isDeleted = false " +
+            "  AND d.district = :city " +
+            "  AND (d.area IS NULL OR d.area = :area) " +
+            "  AND c.id = :categoryId"
+    )
+    Page<RestaurantForClientDto> findRestaurantsByCategory(
+            @Param("city") String city,
+            @Param("area") String area,
+            @Param("categoryId") Long categoryId,
+            Pageable pageable
+    );
 
+    @Query("SELECT DISTINCT new com.example.Utown.dto.restaurantDTO.RestaurantForClientDto(" +
+            "r.id, " +
+            "r.title, " +
+            "f.path, " +
+            "d.price, " +
+            "r.deliveryTime, " +
+            "r.isRecommended, " +
+            "r.isActive, " +
+            "d.isDeleted " +
+            ") " +
+            "FROM Restaurant r " +
+            "JOIN r.deliveries d " +
+            "LEFT JOIN r.categories c " +
+            "LEFT JOIN r.fileInfo f " +
+            "WHERE d.isActive = true " +
+            "AND d.isDeleted = false " +
+            "AND d.district = :city " +
+            "AND (:area IS NULL OR d.area = :area) " +
+            "AND (LOWER(r.title) LIKE LOWER(CONCAT('%', :query, '%')) " +
+            "OR LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%')))"
+    )
+    Page<RestaurantForClientDto> searchClient(
+            @Param("query") String query,
+            @Param("city") String city,
+            @Param("area") String area,
+            Pageable pageable
+    );
 
-    @Query("""
-        SELECT DISTINCT r
-        FROM Restaurant r
-        LEFT JOIN r.categories c
-        WHERE LOWER(r.title) LIKE LOWER(CONCAT('%', :query, '%'))
-           OR LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%'))
-    """)
-    Page<Restaurant> searchClient(@Param("query") String query, Pageable pageable);
 
     @Modifying
     @Query("UPDATE Restaurant r SET r.isActive = false WHERE r.id = :id")

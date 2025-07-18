@@ -2,6 +2,7 @@ package com.example.Utown.model;
 
 import com.example.Utown.model.UserType.RestaurantAdmin;
 
+
 import com.example.Utown.model.enumFiles.OrderStatus;
 import com.example.Utown.model.enumFiles.RestaurantStatus;
 import jakarta.persistence.*;
@@ -68,7 +69,7 @@ public class Restaurant {
     @Column(length = 170)
     private  String title;
 
-    private Integer totalRatings;
+    private Double totalRatings;
 
     private Boolean statusForcedChanged;
 
@@ -79,7 +80,6 @@ public class Restaurant {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
-
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "restaurantAdmin_id")

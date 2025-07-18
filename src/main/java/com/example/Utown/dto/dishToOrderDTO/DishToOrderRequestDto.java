@@ -14,15 +14,9 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DishToOrderDto {
-    private Long id;
+public class DishToOrderRequestDto {
+    private Long dishId;
     private Integer count;
-    private BigDecimal sum;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private Cart cart;
-    private Dish dish;
-    private List<Element> selectedElements;
-
+    private List<Long> selectedElementIds;
 }
 
