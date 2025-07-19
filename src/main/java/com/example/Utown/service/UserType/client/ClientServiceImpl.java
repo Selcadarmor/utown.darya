@@ -1,28 +1,29 @@
 package com.example.Utown.service.UserType.client;
 
 import com.example.Utown.dto.addressDTO.AddressDto;
+import com.example.Utown.dto.addressDTO.AddressInfoDto;
+import com.example.Utown.dto.clientDTO.ClientDetailsDto;
 import com.example.Utown.dto.clientDTO.ClientInfoDto;
 import com.example.Utown.dto.clientDTO.ClientProfileUpdateDto;
 import com.example.Utown.dto.clientDTO.ClientRegistrationDto;
-import com.example.Utown.dto.clientDTO.ClientUpdateDto;
-import com.example.Utown.dto.addressDTO.AddressInfoDto;
-import com.example.Utown.dto.clientDTO.*;
+import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
 import com.example.Utown.exception.ResourceNotFoundException;
-import com.example.Utown.exception.RoleNotFoundException;
+import com.example.Utown.exception.RestaurantNotFoundException;
 import com.example.Utown.exception.UserAlreadyExistsException;
-import com.example.Utown.mapper.AddressMapper;
 import com.example.Utown.mapper.AddressInfoMapper;
+import com.example.Utown.mapper.AddressMapper;
 import com.example.Utown.model.Address;
 import com.example.Utown.model.Cart;
+import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.Role;
 import com.example.Utown.model.UserType.Client;
 import com.example.Utown.model.enumFiles.Roles;
 import com.example.Utown.repository.AddressRepository;
 import com.example.Utown.repository.CartRepository;
-import com.example.Utown.repository.RoleRepository;
+import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.repository.UserType.ClientRepository;
 import com.example.Utown.service.AddressService;
-import jakarta.persistence.EntityNotFoundException;
+import com.example.Utown.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,21 +35,27 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ClientServiceImpl implements ClientService {
 
-    private final ClientRepository clientRepository;
-    private final RoleRepository roleRepository;
     private final AddressService addressService;
     private final AddressRepository addressRepository;
     private final AddressMapper addressMapper;
-    private final PasswordEncoder passwordEncoder;
-    private final CartRepository cartRepository;
     private final AddressInfoMapper addressInfoMapper;
+    private final ClientRepository clientRepository;
+    private final CartRepository cartRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleService roleService;
+    private final RestaurantRepository restaurantRepository;
 
     @Override
     public Optional<Client> findByUsername(String username) {
@@ -77,7 +84,6 @@ public class ClientServiceImpl implements ClientService {
         clientRepository.save(client);
     }
 
-
     @Override // For client
     public void save(ClientRegistrationDto dto, Roles roleName) {
 
@@ -85,8 +91,7 @@ public class ClientServiceImpl implements ClientService {
             throw new UserAlreadyExistsException(dto.getUsername());
         }
 
-        Role role = roleRepository.findByName(roleName)
-                .orElseThrow(() -> new RoleNotFoundException(roleName.name()));
+        Role role = roleService.findByName(roleName);
 
         Cart cart = new Cart(); // создаём пустую корзину
         cartRepository.save(cart);
@@ -159,8 +164,7 @@ public class ClientServiceImpl implements ClientService {
     public void deleteAddressForCLient(Long addressId) {
         Client client = getCurrentClient();
 
-        Address address = addressRepository.findById(addressId)
-                .orElseThrow(() -> new ResourceNotFoundException("Address", addressId));
+        Address address = addressService.getAddressById(client.getDefaultAddress());
 
         if (!client.getAddresses().contains(address)) {
             throw new AccessDeniedException("You are not allowed to delete this address");
@@ -171,13 +175,39 @@ public class ClientServiceImpl implements ClientService {
         addressRepository.delete(address);
     }
 
+    @Transactional //For client
+    @Override
+    public void addFavoriteRestaurant(Long restaurantId) {
+        Client client = getCurrentClient();
+
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
+
+        client.getFavoriteRestaurants().add(restaurant);
+        clientRepository.save(client);
+    }
+
+    @Transactional(readOnly = true) //For client
+    public List<RestaurantForClientDto> getFavoriteRestaurants() {
+        Client client = getCurrentClient();
+        return clientRepository.findFavoriteRestaurants(client.getUsername());
+    }
+
+    @Transactional
+    @Override
+    public void removeFavoriteRestaurant(Long restaurantId) {
+        Client client = getCurrentClient();
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
+        client.getFavoriteRestaurants().remove(restaurant);
+        clientRepository.save(client);
+    }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteClient(Long id) {
         updateClientActiveStatus(id, false);
     }
-
 
     @Override
     public Client getCurrentClient() {

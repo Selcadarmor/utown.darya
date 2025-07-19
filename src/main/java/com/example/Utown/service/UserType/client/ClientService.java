@@ -5,15 +5,15 @@ import com.example.Utown.dto.clientDTO.ClientDetailsDto;
 import com.example.Utown.dto.clientDTO.ClientInfoDto;
 import com.example.Utown.dto.clientDTO.ClientProfileUpdateDto;
 import com.example.Utown.dto.clientDTO.ClientRegistrationDto;
-import com.example.Utown.dto.clientDTO.ClientUpdateDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
 import com.example.Utown.model.Address;
 import com.example.Utown.model.UserType.Client;
 import com.example.Utown.model.enumFiles.Roles;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
-
 
 public interface ClientService {
         Optional<Client> findByUsername(String username);
@@ -23,6 +23,9 @@ public interface ClientService {
         void deleteClient(Long id);
         void save(ClientRegistrationDto dto, Roles roleName);
         ClientProfileUpdateDto updateClientProfile(ClientProfileUpdateDto dto);
+        void addFavoriteRestaurant(Long restaurantId);
+        List<RestaurantForClientDto> getFavoriteRestaurants();
+        void removeFavoriteRestaurant(Long restaurantId);
         Address saveAddressForClient(AddressDto dto);
         Client getCurrentClient();
         Address getAddressByDefaultAddress();

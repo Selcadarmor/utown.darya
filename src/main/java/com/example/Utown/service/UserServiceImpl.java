@@ -1,6 +1,6 @@
 package com.example.Utown.service;
 
-import com.example.Utown.exception.*;
+import com.example.Utown.exception.UserNotFoundException;
 import com.example.Utown.model.User;
 import com.example.Utown.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

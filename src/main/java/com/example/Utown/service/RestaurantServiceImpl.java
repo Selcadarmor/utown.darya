@@ -5,17 +5,18 @@ import com.example.Utown.dto.deliveryDTO.DeliveryInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeCreateDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeRestaurantProfileDto;
-import com.example.Utown.dto.operatingModeDTO.OperatingModeUpdateDto;
-import com.example.Utown.dto.restaurantDTO.*;
-import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryInfoDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantCreateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantProfileDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.exception.ResourceNotFoundException;
-import com.example.Utown.mapper.AddressInfoMapper;
+import com.example.Utown.exception.RestaurantNotFoundException;
+import com.example.Utown.mapper.DeliveryMapper;
 import com.example.Utown.mapper.FileInfoMapper;
+import com.example.Utown.mapper.OperatingModeInfoMapper;
 import com.example.Utown.mapper.RestaurantCategoryInfoMapper;
 import com.example.Utown.mapper.RestaurantInfoMapper;
 import com.example.Utown.model.Address;
@@ -27,13 +28,11 @@ import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.RestaurantCategory;
 import com.example.Utown.model.UserType.Client;
 import com.example.Utown.model.UserType.RestaurantAdmin;
-import com.example.Utown.repository.*;
 import com.example.Utown.repository.DishRepository;
-import com.example.Utown.repository.FileInfoRepository;
 import com.example.Utown.repository.OperatingModeRepository;
-import com.example.Utown.repository.OrderRepository;
 import com.example.Utown.repository.RestaurantCategoryRepository;
 import com.example.Utown.repository.RestaurantRepository;
+import com.example.Utown.service.UserType.client.ClientService;
 import com.example.Utown.service.UserType.client.RestaurantAdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -51,8 +50,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class RestaurantServiceImpl  implements RestaurantService {
 
-    private final AddressInfoMapper addressInfoMapper;
-    private final AddressRepository addressRepository;
     private final ClientService clientService;
     private final FileInfoMapper fileInfoMapper;
     private final RestaurantCategoryService restaurantCategoryService;
@@ -67,12 +64,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
     private final RestaurantAdminService restaurantAdminService;
     private  final AddressService addressService;
     private  final DeliveryService deliveryService;
-    private final RestaurantAdminService restaurantAdminService;
-    private final AddressService addressService;
-    private final OperatingModeRepository operatingModeRepository;
-    private final DeliveryService deliveryService;
     private final DishRepository dishRepository;
-    private final RestaurantCategoryInfoMapper restaurantCategoryInfoMapper;
     private final FileInfoService fileInfoService;
 
 
@@ -99,7 +91,6 @@ public class RestaurantServiceImpl  implements RestaurantService {
         restaurant.setDeliveries(deliveryDtos);
         return restaurant;
     }
-
 
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
@@ -157,11 +148,10 @@ public class RestaurantServiceImpl  implements RestaurantService {
         return restaurantInfoMapper.toDto(saved);
     }
 
-
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
     public RestaurantDetailsDto updateRestaurant(Long id, RestaurantUpdateDto dto) {
-        Restaurant restaurant = findRestaurantByIdOrThrow(id);
+        Restaurant restaurant = findRestaurantById(id);
 
         restaurantInfoMapper.updateFromDto(dto, restaurant);
 
@@ -201,7 +191,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
     public void deactivateRestaurant(Long restaurantId) {
-        Restaurant restaurant = findRestaurantByIdOrThrow(restaurantId);
+        Restaurant restaurant = findRestaurantById(restaurantId);
         restaurant.setIsActive(false);
 
         if (restaurant.getRestaurantAdmin() != null) {
@@ -219,36 +209,34 @@ public class RestaurantServiceImpl  implements RestaurantService {
         dishRepository.saveAll(dishes);
         restaurantRepository.save(restaurant);
     }
-    private Restaurant findRestaurantByIdOrThrow(Long restaurantId) { //  для переиспользования
+
+    public Restaurant findRestaurantById(Long restaurantId) {
         return restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
+                .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
     }
 
     @Override //For Client
     public Page<RestaurantForClientDto> getRecommendedRestaurantsForClient(Pageable pageable) {
         Client client = clientService.getCurrentClient();
-        Address address = addressRepository.findById(client.getDefaultAddress())
-                .orElseThrow(() -> new RuntimeException("Address not found"));
+        Address address = addressService.getAddressById(client.getDefaultAddress());
 
-        return restaurantRepository.findRecommendedRestaurants(address.getCity(), address.getArea(), pageable);
+        return restaurantRepository.findRecommendedRestaurants(address.getState(), address.getCity(), address.getArea(), pageable);
     }
 
     @Override //For Client
     public Page<RestaurantForClientDto> getFastestDeliveryRestaurantsForClient(Pageable pageable) {
         Client client = clientService.getCurrentClient();
-        Address address = addressRepository.findById(client.getDefaultAddress())
-                .orElseThrow(() -> new RuntimeException("Address not found"));
+        Address address = addressService.getAddressById(client.getDefaultAddress());
 
-        return restaurantRepository.findFastestDeliveryRestaurants(address.getCity(), address.getArea(), pageable);
+        return restaurantRepository.findFastestDeliveryRestaurants(address.getState(), address.getCity(), address.getArea(), pageable);
     }
 
     @Override //For Client
     public Page<RestaurantForClientDto> getRestaurantsByCategory(Long categoryId, Pageable pageable) {
         Client client = clientService.getCurrentClient();
-        Address address = addressRepository.findById(client.getDefaultAddress())
-                .orElseThrow(() -> new RuntimeException("Address not found"));
+        Address address = addressService.getAddressById(client.getDefaultAddress());
 
-        return restaurantRepository.findRestaurantsByCategory(address.getCity(), address.getArea(), categoryId, pageable);
+        return restaurantRepository.findRestaurantsByCategory(address.getState(), address.getCity(), address.getArea(), categoryId, pageable);
     }
 
     @Override
@@ -260,8 +248,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
             String direction) {
 
         Client client = clientService.getCurrentClient();
-        Address address = addressRepository.findById(client.getDefaultAddress())
-                .orElseThrow(() -> new RuntimeException("Address not found"));
+        Address address = addressService.getAddressById(client.getDefaultAddress());
 
         Sort sort = Sort.by(Sort.Direction.DESC, "isRecommended");
 
@@ -283,6 +270,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
         return restaurantRepository.searchClient(
                 query,
+                address.getState(),
                 address.getCity(),
                 address.getArea(),
                 pageable

@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
 @Mapper(componentModel = "spring", uses = {RoleMapper.class, NotificationMapper.class})
 public abstract class RestaurantAdminInfoMapper {
 
