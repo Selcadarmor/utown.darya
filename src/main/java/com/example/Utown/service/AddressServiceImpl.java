@@ -17,7 +17,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AddressServiceImpl implements AddressService {
     private final AddressRepository addressRepository;
-    private final ClientRepository clientRepository;
 
     @Override
     public Address createAddress(AddressDto dto) {
