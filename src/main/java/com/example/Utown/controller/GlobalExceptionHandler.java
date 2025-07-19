@@ -1,15 +1,32 @@
 package com.example.Utown.controller;
+
 import com.example.Utown.dto.ApiErrorResponse;
-import com.example.Utown.exception.*;
+import com.example.Utown.exception.AddressNotFoundException;
+import com.example.Utown.exception.CartIsEmptyException;
+import com.example.Utown.exception.CartNotFoundException;
+import com.example.Utown.exception.DishNotFoundException;
+import com.example.Utown.exception.DishNotInCartException;
+import com.example.Utown.exception.ExpireJwtTokenException;
+import com.example.Utown.exception.InvalidArgumentException;
+import com.example.Utown.exception.InvalidJwtTokenException;
+import com.example.Utown.exception.NotificationNotFoundException;
+import com.example.Utown.exception.OrderNotFoundException;
+import com.example.Utown.exception.RatingOutOfRangeException;
+import com.example.Utown.exception.RefreshTokenNotFoundException;
+import com.example.Utown.exception.ResourceNotFoundException;
+import com.example.Utown.exception.RestaurantNotFoundException;
+import com.example.Utown.exception.RoleNotFoundException;
+import com.example.Utown.exception.UserAlreadyExistsException;
+import com.example.Utown.exception.UserNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -27,9 +44,10 @@ public class GlobalExceptionHandler {
             ResourceNotFoundException.class,
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @Operation(hidden =true) /// скрыввем для Swagger
-    public ApiErrorResponse handleUserNotFoundException(UserNotFoundException ex, HttpServletRequest request) {
-        return buildError(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    @Operation(hidden = true)
+    public ApiErrorResponse handleUserNotFoundException(UserNotFoundException ex, WebRequest request) {
+        String path = request.getDescription(false).replace("uri=", "");
+        return buildError(HttpStatus.NOT_FOUND, ex.getMessage(), path);
     }
 
 

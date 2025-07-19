@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Data
 @AllArgsConstructor
@@ -12,9 +13,8 @@ import java.time.LocalDateTime;
 public class OperatingModeUpdateDto {
     private Long id;
     private Integer dayOfWeek;
-    private String start;
-    private String end;
+    private LocalTime start;
+    private LocalTime end;
     private boolean dayOff;
     private Long restaurantId;
-    private LocalDateTime updatedAt;
 }

@@ -3,7 +3,9 @@ package com.example.Utown.service;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryCreateDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryDetailsDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryDto;
+import com.example.Utown.dto.dishCategoryDTO.DishCategoryRestaurantProfileDto;
 import com.example.Utown.exception.ResourceNotFoundException;
+import com.example.Utown.exception.RestaurantNotFoundException;
 import com.example.Utown.mapper.DishCategoryMapper;
 import com.example.Utown.model.DishCategory;
 import com.example.Utown.model.FileInfo;
@@ -108,6 +110,7 @@ public class DishCategoryServiceImpl implements DishCategoryService {
                 .map(dishCategoryMapper::toDetailsDto);
 
     }
+
     @Override
     @Transactional
     public  DishCategoryDetailsDto createDishCategoryForRestaurant(Long restaurantId, DishCategoryCreateDto dto) {
@@ -127,6 +130,27 @@ public class DishCategoryServiceImpl implements DishCategoryService {
                 .build();
         return dishCategoryMapper.toCreateDto(dishCategoryRepository.save(dishCategory));
     }
+
+    @Override
+    public List<DishCategoryRestaurantProfileDto> getDishCategoriesByRestaurantForClient(Long restaurantId) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
+
+        return restaurant.getDishCategories().stream()
+                .map(category -> {
+                    Long dishCount = dishCategoryRepository.countDishesByDishCategoryId(category.getId());
+                    return new DishCategoryRestaurantProfileDto(
+                            category.getId(),
+                            category.getName(),
+                            category.getSort(),
+                            category.getIsActive(),
+                            category.getFile() != null ? category.getFile().getPath() : null,
+                            dishCount
+                    );
+                })
+                .toList();
+    }
+
 
 }
 

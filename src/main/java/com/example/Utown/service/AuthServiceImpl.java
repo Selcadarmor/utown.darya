@@ -22,9 +22,11 @@ public class AuthServiceImpl implements AuthService {
     private final JWTUtils jwtUtils;
     private final RefreshTokenService refreshTokenService;
     private final ClientService clientService;
+  
 
     @Override
     public JWTResponse createAuthToken(JWTRequest authRequest) {
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         authRequest.getUsername(),

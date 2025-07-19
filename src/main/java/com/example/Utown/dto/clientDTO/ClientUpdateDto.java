@@ -1,16 +1,16 @@
 package com.example.Utown.dto.clientDTO;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
-
-
+@NoArgsConstructor
 @Data
 public class ClientUpdateDto {
 
-    private boolean isActive;
+    private Boolean active;
 
-    public ClientUpdateDto(boolean isActive) {
-        this.isActive = isActive;
+    public ClientUpdateDto(Boolean active) {
+        this.active = active;
     }
 }

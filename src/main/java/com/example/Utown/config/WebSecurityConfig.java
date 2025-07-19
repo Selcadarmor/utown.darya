@@ -35,10 +35,11 @@ public class WebSecurityConfig {
                         .requestMatchers("/client/**").hasAuthority(Roles.ROLE_CLIENT.name()) // 👈 разрешаем остальное клиентам
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/api/admin/**").hasAuthority(Roles.ROLE_ADMIN.name())
-                        .requestMatchers("/user/**").hasAuthority(Roles.ROLE_CLIENT.name())
+                        .requestMatchers("/client/**").hasAuthority(Roles.ROLE_CLIENT.name())
                         .requestMatchers("/restaurant/**").hasAuthority(Roles.ROLE_RESTAURANT_ADMIN.name())
                         .requestMatchers("/restaurant-admin/**").hasAuthority(Roles.ROLE_RESTAURANT_ADMIN.name())
                         .anyRequest().authenticated()
+                       // .anyRequest().permitAll()
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -57,7 +58,7 @@ public class WebSecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
-    }
+   }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
