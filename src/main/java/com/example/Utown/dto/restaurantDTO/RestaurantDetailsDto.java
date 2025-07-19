@@ -1,16 +1,10 @@
 package com.example.Utown.dto.restaurantDTO;
 
-import com.example.Utown.dto.deliveryDTO.DeliveryDto;
 import com.example.Utown.dto.deliveryDTO.DeliveryInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
-import com.example.Utown.dto.restaurantAdminDTO.RestaurantAdminInfoDto;
-import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryInfoDto;
-import com.example.Utown.model.OperatingMode;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.math.BigDecimal;
 import java.util.List;
 

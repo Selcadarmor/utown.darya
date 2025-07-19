@@ -46,67 +46,50 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     Page<RestaurantInfoDto> findAllRestaurantsWithOrderCount(Pageable pageable);
 
     @Query("SELECT new com.example.Utown.dto.restaurantDTO.RestaurantForClientDto(" +
-            "r.id, " +
-            "r.title, " +
-            "f.path, " +
-            "d.price, " +
-            "r.deliveryTime, " +
-            "r.isRecommended, " +
-            "r.isActive, " +
-            "d.isDeleted" +
-            ") " +
+            "r.id, r.title, f.path, r.description, d.price, r.deliveryTime, " +
+            "r.isRecommended, r.isActive, d.isDeleted) " +
             "FROM Restaurant r " +
             "JOIN r.deliveries d " +
             "LEFT JOIN r.fileInfo f " +
             "WHERE r.isActive = true " +
             "  AND d.isActive = true " +
             "  AND d.isDeleted = false " +
+            "  AND r.address.state = :state " +
             "  AND d.district = :city " +
             "  AND (d.area IS NULL OR d.area = :area) " +
             "ORDER BY r.isRecommended DESC"
     )
     Page<RestaurantForClientDto> findRecommendedRestaurants(
+            @Param("state") String state,
             @Param("city") String city,
             @Param("area") String area,
             Pageable pageable
     );
 
     @Query("SELECT new com.example.Utown.dto.restaurantDTO.RestaurantForClientDto(" +
-            "r.id, " +
-            "r.title, " +
-            "f.path, " +
-            "d.price, " +
-            "r.deliveryTime, " +
-            "r.isRecommended, " +
-            "r.isActive, " +
-            "d.isDeleted" +
-            ") " +
+            "r.id, r.title, f.path, r.description, d.price, r.deliveryTime, " +
+            "r.isRecommended, r.isActive, d.isDeleted) " +
             "FROM Restaurant r " +
             "JOIN r.deliveries d " +
             "LEFT JOIN r.fileInfo f " +
             "WHERE r.isActive = true " +
             "  AND d.isActive = true " +
             "  AND d.isDeleted = false " +
+            "  AND r.address.state = :state " +
             "  AND d.district = :city " +
             "  AND (d.area IS NULL OR d.area = :area) " +
             "ORDER BY d.price ASC, r.deliveryTime ASC"
     )
     Page<RestaurantForClientDto> findFastestDeliveryRestaurants(
+            @Param("state") String state,
             @Param("city") String city,
             @Param("area") String area,
             Pageable pageable
     );
 
     @Query("SELECT new com.example.Utown.dto.restaurantDTO.RestaurantForClientDto(" +
-            "r.id, " +
-            "r.title, " +
-            "f.path, " +
-            "d.price, " +
-            "r.deliveryTime, " +
-            "r.isRecommended, " +
-            "r.isActive, " +
-            "d.isDeleted" +
-            ") " +
+            "r.id, r.title, f.path, r.description, d.price, r.deliveryTime, " +
+            "r.isRecommended, r.isActive, d.isDeleted) " +
             "FROM Restaurant r " +
             "JOIN r.categories c " +
             "JOIN r.deliveries d " +
@@ -119,6 +102,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
             "  AND c.id = :categoryId"
     )
     Page<RestaurantForClientDto> findRestaurantsByCategory(
+            @Param("state") String state,
             @Param("city") String city,
             @Param("area") String area,
             @Param("categoryId") Long categoryId,
@@ -126,15 +110,8 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     );
 
     @Query("SELECT DISTINCT new com.example.Utown.dto.restaurantDTO.RestaurantForClientDto(" +
-            "r.id, " +
-            "r.title, " +
-            "f.path, " +
-            "d.price, " +
-            "r.deliveryTime, " +
-            "r.isRecommended, " +
-            "r.isActive, " +
-            "d.isDeleted " +
-            ") " +
+            "r.id, r.title, f.path, r.description, d.price, r.deliveryTime, " +
+            "r.isRecommended, r.isActive, d.isDeleted) " +
             "FROM Restaurant r " +
             "JOIN r.deliveries d " +
             "LEFT JOIN r.categories c " +
@@ -148,11 +125,11 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     )
     Page<RestaurantForClientDto> searchClient(
             @Param("query") String query,
+            @Param("state") String state,
             @Param("city") String city,
             @Param("area") String area,
             Pageable pageable
     );
-
 
     @Modifying
     @Query("UPDATE Restaurant r SET r.isActive = false WHERE r.id = :id")

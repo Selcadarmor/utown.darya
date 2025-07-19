@@ -16,6 +16,6 @@ public interface DishCategoryService {
     void deleteDishCategory(Long id);
     Page<DishCategoryDetailsDto> getDishCategoriesByRestaurantId(Long restaurantId, int page, int size);
     DishCategoryDetailsDto createDishCategoryForRestaurant(Long restaurantId, DishCategoryCreateDto dto);
-    List<DishCategoryRestaurantProfileDto> getDishCategoriesByRestaurant(Long restaurantId);
+    List<DishCategoryRestaurantProfileDto> getDishCategoriesByRestaurantForClient(Long restaurantId);
 }
 

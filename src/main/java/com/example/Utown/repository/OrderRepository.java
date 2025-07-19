@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 

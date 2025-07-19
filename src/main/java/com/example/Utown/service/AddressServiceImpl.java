@@ -4,9 +4,7 @@ import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.dto.addressDTO.AddressInfoDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.model.Address;
-import com.example.Utown.model.UserType.Client;
 import com.example.Utown.repository.AddressRepository;
-import com.example.Utown.repository.UserType.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,8 +14,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class AddressServiceImpl implements AddressService {
+
     private final AddressRepository addressRepository;
-    private final ClientRepository clientRepository;
 
     @Override
     public Address createAddress(AddressDto dto) {
