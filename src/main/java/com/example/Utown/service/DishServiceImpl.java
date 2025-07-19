@@ -2,6 +2,12 @@ package com.example.Utown.service;
 
 import com.example.Utown.dto.dishDTO.DishDetailsDto;
 import com.example.Utown.dto.dishDTO.DishDto;
+import com.example.Utown.dto.elementDTO.ElementInfoDto;
+import com.example.Utown.dto.optionDTO.OptionInfoDto;
+import com.example.Utown.dto.dishDTO.DishForClientDto;
+import com.example.Utown.dto.elementDTO.ElementForClientDto;
+import com.example.Utown.dto.optionDTO.OptionForClientDto;
+import com.example.Utown.exception.DishNotFoundException;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.DishMapper;
 import com.example.Utown.model.Dish;
@@ -117,9 +123,36 @@ public class DishServiceImpl implements DishService {
     @Override // метод получения вез Dish для каждого ресторана пагинация
     public Page<DishDetailsDto> getDishesByRestaurantId(Long restaurantId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("sort").ascending());
-        return dishRepository.findByRestaurantId(restaurantId, pageable)
-                .map(dishMapper::dishDetailsToDto);
+
+        Page<Dish> dishPage = dishRepository.findByRestaurantId(restaurantId, pageable);
+        return dishPage.map(dish -> {
+            List<OptionInfoDto> optionDtos = dish.getOptions().stream().map(option -> {
+                List<ElementInfoDto> elementDtos = option.getElements().stream()
+                        .map(element -> new ElementInfoDto(element.getId(), element.getName(), element.getPrice()))
+                        .toList();
+                return new OptionInfoDto(
+                        option.getId(),
+                        option.getName(),
+                        option.isRequired(),
+                        option.getMin(),
+                        option.getMax(),
+                        option.getIsActive(),
+                        elementDtos
+                );
+            }).toList();
+            return new DishDetailsDto(
+                    dish.getDescription(),
+                    dish.getIsActive(),
+                    dish.getPrice(),
+                    dish.getSort(),
+                    dish.getTitle(),
+                    dish.getDishCategory().getId(),
+                    dish.getFile() != null ? dish.getFile().getId() : null,
+                    optionDtos
+            );
+        });
     }
+
 
     @Override // метод создания Dish для каждого ресторана, сделала так как не знаю менял ли кто-то метод создания Dish в будущем можно переиспользовать метод Dish createDish(DishDto dto)
     @Transactional(rollbackFor = Exception.class)
@@ -142,7 +175,6 @@ public class DishServiceImpl implements DishService {
         Dish dish = Dish.builder()
                 .description(dto.getDescription())
                 .isActive(dto.getIsActive())
-                .isDeleted(dto.getIsDeleted())
                 .price(dto.getPrice())
                 .title(dto.getTitle())
                 .sort(dto.getSort())
@@ -150,7 +182,7 @@ public class DishServiceImpl implements DishService {
                 .file(file)
                 .restaurant(restaurant)
                 .build();
-        return dishMapper.toSavedDishDto(dishRepository.save(dish));
+        return dishMapper.toSavedDishDto(dishRepository.save(dish));// вот тут тоже посомтреть просто передовать айди в кнтроллео
     }
 
     @Override //  метод обновления Dish для каждого Restaurant хотела переиспользовать код из метода Dish updateDish(Long id, DishDto dto) но мне не ответили
@@ -161,7 +193,6 @@ public class DishServiceImpl implements DishService {
         if(!dish.getRestaurant().getId().equals(RestaurantId)) {
             throw new ResourceNotFoundException("Dish not found", DishId);
         }
-
         DishDetailsDto dishDetailsDto = dishMapper.dishUpdateDetailsToDto(dish);
         dishDetailsDto.setTitle(dto.getTitle());
         dishDetailsDto.setDescription(dto.getDescription());
@@ -169,10 +200,63 @@ public class DishServiceImpl implements DishService {
         dishDetailsDto.setSort(dto.getSort());
         dishDetailsDto.setDishCategoryId(dto.getDishCategoryId());
         dishDetailsDto.setFileId(dto.getFileId());
-        dishDetailsDto.setRestaurantId(dto.getRestaurantId());
         dishDetailsDto.setIsActive(dto.getIsActive());
-        dishDetailsDto.setIsDeleted(dto.getIsDeleted());
         return dishDetailsDto;
+    }
+
+    @Override
+    public DishForClientDto getDishByIdForClient(Long dishId) {
+        Dish dish = dishRepository.findDishByIdForClient(dishId)
+                .orElseThrow(() -> new DishNotFoundException(dishId));
+
+        return mapToDishForClientDto(dish);
+    }
+
+    @Override
+    public List<DishForClientDto> getDishesByCategoryForClient(Long categoryId) {
+        List<Dish> dishes = dishRepository.findDishByCategoryForClient(categoryId);
+        return dishes.stream()
+                .map(this::mapToDishForClientDto)
+                .toList();
+    }
+
+    private DishForClientDto mapToDishForClientDto(Dish dish) {
+        List<OptionForClientDto> optionDto = dish.getOptions().stream().map(option -> {
+            List<ElementForClientDto> elementDto = option.getElements().stream().map(element ->
+                    new ElementForClientDto(
+                            element.getId(),
+                            element.getName(),
+                            element.getDescription(),
+                            element.getPrice(),
+                            element.getIsActive(),
+                            element.getIsDeleted()
+                    )
+            ).toList();
+
+            return new OptionForClientDto(
+                    option.getId(),
+                    option.getName(),
+                    option.isRequired(),
+                    option.getMin(),
+                    option.getMax(),
+                    option.getIsActive(),
+                    elementDto
+            );
+        }).toList();
+
+        return new DishForClientDto(
+                dish.getId(),
+                dish.getTitle(),
+                dish.getDescription(),
+                dish.getIsActive(),
+                dish.getIsDeleted(),
+                dish.getPrice(),
+                dish.getSort(),
+                dish.getRestaurant().getId(),
+                dish.getDishCategory().getId(),
+                dish.getFile() != null ? dish.getFile().getPath() : null,
+                optionDto
+        );
     }
 
 }

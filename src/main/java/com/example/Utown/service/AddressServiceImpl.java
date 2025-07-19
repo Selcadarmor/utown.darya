@@ -1,21 +1,21 @@
 package com.example.Utown.service;
 
 import com.example.Utown.dto.addressDTO.AddressDto;
+import com.example.Utown.dto.addressDTO.AddressInfoDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.model.Address;
-import com.example.Utown.model.UserType.Client;
 import com.example.Utown.repository.AddressRepository;
-import com.example.Utown.repository.UserType.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class AddressServiceImpl implements AddressService {
+
     private final AddressRepository addressRepository;
-    private final ClientRepository clientRepository;
 
     @Override
     public Address createAddress(AddressDto dto) {
@@ -46,20 +46,6 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public List<AddressDto> getAddressesByClient(String username) {
-        if (username == null || username.isBlank()) {
-            throw new IllegalArgumentException("Username is required to get addresses");
-        }
-
-        Client client = clientRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Client", username));
-
-        return addressRepository.getAddressesByClient(client.getUsername());
-    }
-
-
-
-    @Override
     public Address updateAddress(Long id, AddressDto dto) {
         Address address = addressRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Address", id));
@@ -76,7 +62,7 @@ public class AddressServiceImpl implements AddressService {
         address.setIntercomCode(dto.getIntercomCode());
         address.setTypeAddress(dto.getTypeAddress());
 
-        return address;
+        return addressRepository.save(address);
     }
 
     @Override
@@ -84,6 +70,16 @@ public class AddressServiceImpl implements AddressService {
         Address address = addressRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Address not found", id));
         addressRepository.delete(address);
+    }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
+    public Address updateAddressByRestaurant(Long id, AddressInfoDto dto) {
+        Address address = getAddressById(id);
+        address.setFullAddress(dto.getFullAddress());
+        address.getCity();
+        return addressRepository.save(address);
+
     }
 
 }

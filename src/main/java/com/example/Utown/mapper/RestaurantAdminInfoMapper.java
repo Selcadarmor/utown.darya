@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
 @Mapper(componentModel = "spring", uses = {RoleMapper.class, NotificationMapper.class})
 public abstract class RestaurantAdminInfoMapper {
 
@@ -68,4 +67,6 @@ public abstract class RestaurantAdminInfoMapper {
     @Mapping(target = "authorities", ignore = true)
     @Mapping(target = "username", ignore = true)
     public abstract RestaurantAdmin updateFromDto(RestaurantAdminCreateDto dto, @MappingTarget RestaurantAdmin admin);
+    public  abstract RestaurantAdminInfoDto toDtos(RestaurantAdmin restaurantAdmin);
+
 }

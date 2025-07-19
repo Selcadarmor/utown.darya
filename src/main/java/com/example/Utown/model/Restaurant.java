@@ -1,9 +1,24 @@
 package com.example.Utown.model;
 
 import com.example.Utown.model.UserType.RestaurantAdmin;
-
 import com.example.Utown.model.enumFiles.RestaurantStatus;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,6 +40,16 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @EntityListeners(AuditingEntityListener.class)
+@NamedEntityGraph(
+        name = "Restaurant.detail",
+        attributeNodes = {
+                @NamedAttributeNode("categories"),
+                @NamedAttributeNode("operatingModes"),
+                @NamedAttributeNode("deliveries"),
+                @NamedAttributeNode("fileInfo"),
+                @NamedAttributeNode("restaurantAdmin")
+        }
+)
 public class Restaurant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,7 +82,7 @@ public class Restaurant {
     @Column(length = 170)
     private  String title;
 
-    private Integer totalRatings;
+    private Double totalRatings;
 
     private Boolean statusForcedChanged;
 
@@ -68,7 +93,6 @@ public class Restaurant {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
-
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "restaurantAdmin_id")
@@ -82,13 +106,11 @@ public class Restaurant {
     )
     private Set<RestaurantCategory> categories;
 
-
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "delivery")
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Delivery> deliveries;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

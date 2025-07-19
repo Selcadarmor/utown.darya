@@ -2,23 +2,22 @@ package com.example.Utown.dto.clientDTO;
 
 import lombok.Data;
 
-import java.util.Set;
 
 
 @Data
 public class ClientInfoDto {
-    private Long id;
     private String fullName;
     private String username;
-    private Set<Long> addressIds;
+    private String city;
+    private String fullAddress;
     private Integer orderCount;
     private Long fileInfoId;
 
-    public ClientInfoDto(Long id, String fullName, String username, Set<Long> addressIds, Integer orderCount, Long fileInfoId) {
-        this.id = id;
+    public ClientInfoDto(String fullName, String username, String city, String fullAddress, Integer orderCount, Long fileInfoId) {
         this.fullName = fullName;
         this.username = username;
-        this.addressIds = addressIds;
+        this.city = city;
+        this.fullAddress = fullAddress;
         this.orderCount = orderCount;
         this.fileInfoId = fileInfoId;
     }
