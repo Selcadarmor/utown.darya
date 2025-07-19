@@ -8,11 +8,14 @@ import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.DishMapper;
 import com.example.Utown.model.Dish;
 import com.example.Utown.model.DishCategory;
+import com.example.Utown.model.Element;
 import com.example.Utown.model.FileInfo;
+import com.example.Utown.model.Option;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.repository.DishRepository;
 import com.example.Utown.repository.DishCategoryRepository;
 import com.example.Utown.repository.FileInfoRepository;
+import com.example.Utown.repository.OptionRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +38,7 @@ public class DishServiceImpl implements DishService {
     private final DishCategoryRepository dishCategoryRepository;
     private final FileInfoRepository fileInfoRepository;
     private final DishMapper dishMapper;
+    private final OptionRepository optionRepository;
 
     @Override
     public Dish createDish(DishDto dto) {
@@ -117,16 +122,39 @@ public class DishServiceImpl implements DishService {
         dishRepository.delete(dish);
     }
 
-    @Override // метод получения вез Dish для каждого ресторана пагинация
+    @Override
     public Page<DishDetailsDto> getDishesByRestaurantId(Long restaurantId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("sort").ascending());
+        Page<Dish> dishPage = dishRepository.findAll(PageRequest.of(page, size));
 
-        Page<Dish> dishPage = dishRepository.findByRestaurantId(restaurantId, pageable);
+        // Получаем все option IDs из всех блюд на странице
+        List<Long> optionIds = dishPage.stream()
+                .flatMap(dish -> dish.getOptions().stream())
+                .map(Option::getId)
+                .distinct()
+                .toList();
+
+        // Загружаем опции вместе с элементами одним запросом (чтобы избежать N+1)
+        List<Option> optionsWithElements = optionRepository.findAllWithElementsByIds(optionIds);
+
+        // Строим карту: optionId -> List<Element>
+        Map<Long, List<Element>> elementsMap = optionsWithElements.stream()
+                .collect(Collectors.toMap(
+                        Option::getId,
+                        Option::getElements
+                ));
+
+        // Теперь мапим блюда в DTO с элементами из elementsMap
         return dishPage.map(dish -> {
             List<OptionInfoDto> optionDtos = dish.getOptions().stream().map(option -> {
-                List<ElementInfoDto> elementDtos = option.getElements().stream()
-                        .map(element -> new ElementInfoDto(element.getId(), element.getName(), element.getPrice()))
+                List<ElementInfoDto> elementDtos = elementsMap.getOrDefault(option.getId(), List.of())
+                        .stream()
+                        .map(element -> new ElementInfoDto(
+                                element.getId(),
+                                element.getName(),
+                                element.getPrice()
+                        ))
                         .toList();
+
                 return new OptionInfoDto(
                         option.getId(),
                         option.getName(),
@@ -137,6 +165,7 @@ public class DishServiceImpl implements DishService {
                         elementDtos
                 );
             }).toList();
+
             return new DishDetailsDto(
                     dish.getDescription(),
                     dish.getIsActive(),
@@ -149,6 +178,8 @@ public class DishServiceImpl implements DishService {
             );
         });
     }
+
+
 
 
     @Override // метод создания Dish для каждого ресторана, сделала так как не знаю менял ли кто-то метод создания Dish в будущем можно переиспользовать метод Dish createDish(DishDto dto)

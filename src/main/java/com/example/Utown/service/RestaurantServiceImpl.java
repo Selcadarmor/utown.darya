@@ -14,8 +14,11 @@ import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.exception.ResourceNotFoundException;
+import com.example.Utown.exception.RestaurantNotFoundException;
 import com.example.Utown.mapper.AddressInfoMapper;
+import com.example.Utown.mapper.DeliveryMapper;
 import com.example.Utown.mapper.FileInfoMapper;
+import com.example.Utown.mapper.OperatingModeInfoMapper;
 import com.example.Utown.mapper.RestaurantCategoryInfoMapper;
 import com.example.Utown.mapper.RestaurantInfoMapper;
 import com.example.Utown.model.Address;
@@ -34,6 +37,7 @@ import com.example.Utown.repository.OperatingModeRepository;
 import com.example.Utown.repository.OrderRepository;
 import com.example.Utown.repository.RestaurantCategoryRepository;
 import com.example.Utown.repository.RestaurantRepository;
+import com.example.Utown.service.UserType.client.ClientService;
 import com.example.Utown.service.UserType.client.RestaurantAdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -46,12 +50,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class RestaurantServiceImpl  implements RestaurantService {
 
-    private final AddressInfoMapper addressInfoMapper;
     private final AddressRepository addressRepository;
     private final ClientService clientService;
     private final FileInfoMapper fileInfoMapper;
@@ -62,17 +66,10 @@ public class RestaurantServiceImpl  implements RestaurantService {
     private final OperatingModeService operatingModeService;
     private final OperatingModeRepository operatingModeRepository;
     private final RestaurantCategoryInfoMapper restaurantCategoryInfoMapper;
-    private final OperatingModeInfoMapper operatingModeInfoMapper;
-    private final DeliveryMapper deliveryMapper;
     private final RestaurantAdminService restaurantAdminService;
     private  final AddressService addressService;
     private  final DeliveryService deliveryService;
-    private final RestaurantAdminService restaurantAdminService;
-    private final AddressService addressService;
-    private final OperatingModeRepository operatingModeRepository;
-    private final DeliveryService deliveryService;
     private final DishRepository dishRepository;
-    private final RestaurantCategoryInfoMapper restaurantCategoryInfoMapper;
     private final FileInfoService fileInfoService;
 
 
@@ -309,5 +306,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
     }
 
 
-
+    public RestaurantCategoryInfoMapper getRestaurantCategoryInfoMapper() {
+        return restaurantCategoryInfoMapper;
+    }
 }

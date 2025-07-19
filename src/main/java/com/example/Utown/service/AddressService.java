@@ -13,6 +13,6 @@ public interface AddressService {
     List<AddressDto> getAllAddresses();
     Address updateAddress(Long id, AddressDto dto);
     void deleteAddress(Long id);
-    List<AddressDto> getAddressesByClient(String username);
+   // List<AddressDto> getAddressesByClient(String username);
     Address updateAddressByRestaurant(Long id, AddressInfoDto dto);
 }
