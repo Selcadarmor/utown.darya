@@ -6,14 +6,14 @@ import java.time.LocalTime;
 @Data
 public class OperatingModeRestaurantProfileDto {
         private Integer dayOfWeek;
-        private LocalTime start;
-        private LocalTime end;
+        private LocalTime startTime;
+        private LocalTime endTime;
         private Boolean dayOff;
 
-        public OperatingModeRestaurantProfileDto(Integer dayOfWeek, LocalTime start, LocalTime end, Boolean dayOff) {
+        public OperatingModeRestaurantProfileDto(Integer dayOfWeek, LocalTime startTime, LocalTime endTime, Boolean dayOff) {
                 this.dayOfWeek = dayOfWeek;
-                this.start = start;
-                this.end = end;
+                this.startTime = startTime;
+                this.endTime = endTime;
                 this.dayOff = dayOff;
         }
 }
