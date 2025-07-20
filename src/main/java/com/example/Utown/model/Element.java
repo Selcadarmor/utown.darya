@@ -49,4 +49,9 @@ public class Element {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @ManyToOne
+    @JoinColumn(name = "option_id")
+    private Option option;
+
+
 }

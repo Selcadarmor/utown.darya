@@ -19,6 +19,7 @@ import com.example.Utown.model.FileInfo;
 import com.example.Utown.repository.FileInfoRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -140,6 +141,23 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
         restaurantCategory.setName(dto.getName());
         return  restaurantCategoryRepository.save(restaurantCategory);
     }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RestaurantCategory> findCategoriesByIds(List<RestaurantCategoryDto> dtos) {
+        List<Long> ids = dtos.stream()
+                .map(RestaurantCategoryDto::getId)
+                .filter(Objects::nonNull)
+                .toList();
+
+        if (ids.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return restaurantCategoryRepository.findAllById(ids);
+    }
+
 
 }
 

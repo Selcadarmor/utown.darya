@@ -24,10 +24,19 @@ public interface DishRepository extends JpaRepository<Dish, Long> {
             "FROM Dish d")
     List<DishDto> findAllDishes();
 
-    @EntityGraph(attributePaths = {"dishCategory", "file", "options"})
+    @EntityGraph(attributePaths = {"dishCategory", "options"})
     Page<Dish> findByRestaurantId(Long restaurantId, Pageable pageable);
 
     List<Dish> findAllByRestaurantId(Long restaurantId);
+
+    @EntityGraph(attributePaths = {
+            "dishCategory",
+            "file",
+            "options",
+            "options.elements"
+    })
+    Optional<Dish> findById(Long id);
+
 }
 
 
