@@ -11,13 +11,16 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
+import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 
-@Mapper(componentModel = "spring", uses = {AddressInfoMapper.class, RestaurantCategoryInfoMapper.class, OrderInfoMapper.class, RestaurantAdminInfoMapper.class, DishCategoryMapper.class, DeliveryMapper.class, OperatingModeInfoMapper.class})
+@Mapper(componentModel = "spring", uses = {AddressInfoMapper.class, RestaurantCategoryInfoMapper.class, OrderInfoMapper.class,
+        RestaurantAdminInfoMapper.class, DishCategoryMapper.class, DeliveryMapper.class, OperatingModeInfoMapper.class},
+        unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface RestaurantInfoMapper {
     @Mapping(source = "fileInfo.id", target = "fileId")
     @Mapping(target = "orderCount", ignore = true)

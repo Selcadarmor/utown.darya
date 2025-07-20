@@ -1,7 +1,9 @@
 package com.example.Utown.service;
 
+import com.example.Utown.dto.dishDTO.DishCreateDto;
 import com.example.Utown.dto.dishDTO.DishDetailsDto;
 import com.example.Utown.dto.dishDTO.DishDto;
+import com.example.Utown.dto.dishDTO.DishInfoDto;
 import com.example.Utown.dto.elementDTO.ElementInfoDto;
 import com.example.Utown.dto.optionDTO.OptionInfoDto;
 import com.example.Utown.exception.ResourceNotFoundException;
@@ -14,17 +16,17 @@ import com.example.Utown.model.Option;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.repository.DishRepository;
 import com.example.Utown.repository.DishCategoryRepository;
+import com.example.Utown.repository.ElementRepository;
 import com.example.Utown.repository.FileInfoRepository;
 import com.example.Utown.repository.OptionRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -39,6 +41,7 @@ public class DishServiceImpl implements DishService {
     private final FileInfoRepository fileInfoRepository;
     private final DishMapper dishMapper;
     private final OptionRepository optionRepository;
+    private final ElementRepository elementRepository;
 
     @Override
     public Dish createDish(DishDto dto) {
@@ -124,7 +127,7 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public Page<DishDetailsDto> getDishesByRestaurantId(Long restaurantId, int page, int size) {
-        Page<Dish> dishPage = dishRepository.findAll(PageRequest.of(page, size));
+        Page<Dish> dishPage = dishRepository.findByRestaurantId(restaurantId, PageRequest.of(page, size));
 
         // Получаем все option IDs из всех блюд на странице
         List<Long> optionIds = dishPage.stream()
@@ -158,10 +161,6 @@ public class DishServiceImpl implements DishService {
                 return new OptionInfoDto(
                         option.getId(),
                         option.getName(),
-                        option.isRequired(),
-                        option.getMin(),
-                        option.getMax(),
-                        option.getIsActive(),
                         elementDtos
                 );
             }).toList();
@@ -173,7 +172,6 @@ public class DishServiceImpl implements DishService {
                     dish.getSort(),
                     dish.getTitle(),
                     dish.getDishCategory().getId(),
-                    dish.getFile() != null ? dish.getFile().getId() : null,
                     optionDtos
             );
         });
@@ -184,7 +182,7 @@ public class DishServiceImpl implements DishService {
 
     @Override // метод создания Dish для каждого ресторана, сделала так как не знаю менял ли кто-то метод создания Dish в будущем можно переиспользовать метод Dish createDish(DishDto dto)
     @Transactional(rollbackFor = Exception.class)
-    public DishDetailsDto createDishForRestaurant(Long RestaurantId, DishDetailsDto dto) {
+    public DishInfoDto createDishForRestaurant(Long RestaurantId, DishCreateDto dto) {
         Restaurant restaurant = restaurantRepository.findById(RestaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found", RestaurantId));
 
@@ -198,8 +196,10 @@ public class DishServiceImpl implements DishService {
         FileInfo file = null;
         if (dto.getFileId() != null) {
             file = fileInfoRepository.findById(dto.getFileId())
-                    .orElseThrow(() -> new ResourceNotFoundException("File not found", dto.getFileId()));
+                    .orElse(null);
+        //Throw(() -> new ResourceNotFoundException("File not found", dto.getFileId()));
         }
+
         Dish dish = Dish.builder()
                 .description(dto.getDescription())
                 .isActive(dto.getIsActive())
@@ -210,27 +210,83 @@ public class DishServiceImpl implements DishService {
                 .file(file)
                 .restaurant(restaurant)
                 .build();
-        return dishMapper.toSavedDishDto(dishRepository.save(dish));// вот тут тоже посомтреть просто передовать айди в кнтроллео
+        dishRepository.save(dish);
+        if (dto.getOptions() != null && !dto.getOptions().isEmpty()) {
+            for (OptionInfoDto optionDto : dto.getOptions()) {
+                Option option = Option.builder()
+                        .name(optionDto.getName())
+                        .dish(dish)
+                        .build();
+                optionRepository.save(option);
+
+                if (optionDto.getElements() != null && !optionDto.getElements().isEmpty()) {
+                    for (ElementInfoDto elementInfoDto : optionDto.getElements()) {
+                        Element element = Element.builder()
+                                .name(elementInfoDto.getName())
+                                .price(elementInfoDto.getPrice())
+                                .isActive(true)
+                                .isDeleted(false)
+                                .option(option)
+                                .build();
+                        elementRepository.save(element);
+                    }
+                }
+            }
+        }
+        return dishMapper.toSavedDishDto(dish);
     }
 
-    @Override //  метод обновления Dish для каждого Restaurant хотела переиспользовать код из метода Dish updateDish(Long id, DishDto dto) но мне не ответили
     @Transactional(rollbackFor = Exception.class)
-    public DishDetailsDto updateDishForRestaurant(Long RestaurantId, Long DishId, DishDetailsDto dto) {
-        Dish dish = dishRepository.findById(DishId)
-                .orElseThrow(() -> new ResourceNotFoundException("Dish not found", DishId));
-        if(!dish.getRestaurant().getId().equals(RestaurantId)) {
-            throw new ResourceNotFoundException("Dish not found", DishId);
+    public DishInfoDto updateDishForRestaurant(Long restaurantId, Long dishId, DishCreateDto dto) {
+        Dish dish = dishRepository.findById(dishId)
+                .orElseThrow(() -> new ResourceNotFoundException("Dish not found", dishId));
+
+        if (!dish.getRestaurant().getId().equals(restaurantId)) {
+            throw new ResourceNotFoundException("Dish not found in this restaurant", dishId);
         }
-        DishDetailsDto dishDetailsDto = dishMapper.dishUpdateDetailsToDto(dish);
-        dishDetailsDto.setTitle(dto.getTitle());
-        dishDetailsDto.setDescription(dto.getDescription());
-        dishDetailsDto.setPrice(dto.getPrice());
-        dishDetailsDto.setSort(dto.getSort());
-        dishDetailsDto.setDishCategoryId(dto.getDishCategoryId());
-        dishDetailsDto.setFileId(dto.getFileId());
-        dishDetailsDto.setIsActive(dto.getIsActive());
-        return dishDetailsDto;
+
+        dish.setTitle(dto.getTitle());
+        dish.setDescription(dto.getDescription());
+        dish.setPrice(dto.getPrice());
+        dish.setSort(dto.getSort());
+        dish.setIsActive(dto.getIsActive());
+
+        if (dto.getDishCategoryId() != null) {
+            DishCategory category = dishCategoryRepository.findById(dto.getDishCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Category not found", dto.getDishCategoryId()));
+            dish.setDishCategory(category);
+        }
+
+        // Удаляем старые опции
+        dish.getOptions().clear();
+
+        // Добавляем новые
+        if (dto.getOptions() != null) {
+            for (OptionInfoDto optionDto : dto.getOptions()) {
+                Option option = new Option();
+                option.setName(optionDto.getName());
+                option.setDish(dish);
+
+                if (optionDto.getElements() != null) {
+                    for (ElementInfoDto elementDto : optionDto.getElements()) {
+                        Element element = new Element();
+                        element.setName(elementDto.getName());
+                        element.setPrice(elementDto.getPrice());
+                        element.setIsActive(true);
+                        element.setIsDeleted(false);
+                        element.setOption(option);
+                        option.getElements().add(element);
+                    }
+                }
+
+                dish.getOptions().add(option);
+            }
+        }
+
+        Dish savedDish = dishRepository.save(dish);
+        return dishMapper.dishUpdateInfoToDto(savedDish);
     }
+
 
 }
 

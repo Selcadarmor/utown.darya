@@ -21,4 +21,6 @@ public interface RestaurantCategoryService {
 
     RestaurantCategory updateRestaurantCategoryForRestaurant(Long id, RestaurantCategoryInfoDto categoriesDto);
 
+    List<RestaurantCategory> findCategoriesByIds(List<RestaurantCategoryDto> dtos);
+
 }

@@ -11,10 +11,11 @@ import com.example.Utown.model.UserType.Client;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {DishToOrderMapper.class})
+@Mapper(componentModel = "spring", uses = {DishToOrderMapper.class}, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface OrderMapper {
 
     @Mapping(target = "restaurant", source = "restaurant", qualifiedByName = "toRestaurantShortDto")

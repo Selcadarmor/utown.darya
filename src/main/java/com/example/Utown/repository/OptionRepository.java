@@ -14,4 +14,5 @@ public interface OptionRepository extends JpaRepository<Option, Long> {
     List<Option> findAllWithElementsByIds(@Param("ids") List<Long> ids);
 
 
+    void deleteByDishId(Long dishId);
 }
