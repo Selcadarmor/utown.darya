@@ -5,7 +5,6 @@ import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeUpdateDto;
 import com.example.Utown.model.Restaurant;
 
-
 import java.util.List;
 
 public interface OperatingModeService {

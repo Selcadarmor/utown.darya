@@ -3,15 +3,12 @@ package com.example.Utown.dto.orderDTO;
 import com.example.Utown.dto.clientDTO.ClientShortDto;
 import com.example.Utown.dto.dishToOrderDTO.DishToOrderResponseDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantShortDto;
-import com.example.Utown.model.DishToOrder;
 import com.example.Utown.model.enumFiles.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.util.List;
-import com.example.Utown.model.Restaurant;
-import com.example.Utown.model.UserType.Client;
 import java.time.LocalDateTime;
 
 @Data

@@ -4,7 +4,6 @@ import com.example.Utown.dto.addressDTO.AddressInfoDto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
 @Data
 @NoArgsConstructor
 public class ClientDetailsDto {
