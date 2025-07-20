@@ -4,5 +4,6 @@ public enum RestaurantStatus {
 
     OPEN,
     CLOSE,
-    NOT_ACTIVE
+    NOT_ACTIVE,
+    PROCESSING
 }

@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface RestaurantCategoryRepository extends JpaRepository<RestaurantCategory, Long> {
     Optional<RestaurantCategory> findByName(String name);
 
-    @Query("SELECT rc FROM RestaurantCategory rc WHERE rc.isActive = true ORDER BY rc.sort ASC")
+    @Query("SELECT c FROM RestaurantCategory c WHERE c.isActive = true ORDER BY c.sort")
     List<RestaurantCategory> findAllActiveRestaurantCategories();
 
 }

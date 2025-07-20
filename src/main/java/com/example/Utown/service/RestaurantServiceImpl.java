@@ -59,8 +59,6 @@ public class RestaurantServiceImpl  implements RestaurantService {
     private final OperatingModeService operatingModeService;
     private final OperatingModeRepository operatingModeRepository;
     private final RestaurantCategoryInfoMapper restaurantCategoryInfoMapper;
-    private final OperatingModeInfoMapper operatingModeInfoMapper;
-    private final DeliveryMapper deliveryMapper;
     private final RestaurantAdminService restaurantAdminService;
     private  final AddressService addressService;
     private  final DeliveryService deliveryService;

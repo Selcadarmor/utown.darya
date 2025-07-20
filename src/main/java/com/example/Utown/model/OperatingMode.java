@@ -38,10 +38,10 @@ public class OperatingMode {
     @Column(name = "day_of_week")
     private Integer dayOfWeek;
 
-    @Column(name = "start_time")
+    @Column(name = "start")
     private LocalTime start;
 
-    @Column(name = "end_time")
+    @Column(name = "end")
     private LocalTime end;
 
     @Column(name = "day_off")
