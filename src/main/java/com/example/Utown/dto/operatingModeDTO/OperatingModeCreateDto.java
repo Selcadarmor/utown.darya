@@ -9,8 +9,8 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OperatingModeCreateDto {
-    private LocalTime start;
-    private LocalTime end;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private boolean dayOff;
     private Integer dayOfWeek;
     private Long restaurantId;
