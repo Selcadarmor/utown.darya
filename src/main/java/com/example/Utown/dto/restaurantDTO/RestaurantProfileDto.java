@@ -21,7 +21,7 @@ public class RestaurantProfileDto {
     private String filePath;
     private String description;
     private String deliveryTime;
-    private Double totalRating;
+    private Integer totalRating;
     private BigDecimal minOrderAmount;
     private Set<Long> favouriteRestaurantIds;
     private List<OperatingModeRestaurantProfileDto> operatingModes;

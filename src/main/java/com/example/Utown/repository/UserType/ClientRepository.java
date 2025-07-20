@@ -44,8 +44,9 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     List<AddressDto> getAddressesByClient(@Param("username") String username);
 
     @Query("SELECT DISTINCT new com.example.Utown.dto.restaurantDTO.RestaurantForClientDto(" +
-            "r.id, r.title, f.path, r.description, d.price, r.deliveryTime, r.isRecommended, " +
-            "r.isActive, d.isDeleted) " +
+            "r.id, r.title, f.path, r.description, d.price, r.deliveryTime, " +
+            "r.isRecommended, r.isActive, d.isDeleted, " +
+            "r.rating, r.totalRatings) " +
             "FROM Client c " +
             "JOIN c.favoriteRestaurants r " +
             "LEFT JOIN r.fileInfo f " +

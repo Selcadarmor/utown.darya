@@ -82,7 +82,7 @@ public class Restaurant {
     @Column(length = 170)
     private  String title;
 
-    private Double totalRatings;
+    private Integer totalRatings;
 
     private Boolean statusForcedChanged;
 

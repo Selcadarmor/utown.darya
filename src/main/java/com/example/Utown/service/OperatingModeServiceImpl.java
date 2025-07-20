@@ -77,9 +77,6 @@ public class OperatingModeServiceImpl implements OperatingModeService {
                 .orElseThrow(() -> new ResourceNotFoundException("OperatingMode", id));
     }
 
-
-
-
     @Override
     public void deleteAllByRestaurantId(Long restaurantId) {
         operatingModeRepository.deleteById(restaurantId);

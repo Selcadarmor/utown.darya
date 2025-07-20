@@ -118,7 +118,7 @@ public class ClientController {
         return ResponseEntity.ok(restaurants);
     }
 
-    @GetMapping("/favorites")
+    @GetMapping("/favorites") //Unpassed
     @Operation(summary = "Get favorite restaurants", description = "Returns the list of restaurants added to client's favorites")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of favorite restaurants returned"),
@@ -129,7 +129,7 @@ public class ClientController {
         return ResponseEntity.ok(favorites);
     }
 
-    @GetMapping("/restaurants/search") //Passed
+    @GetMapping("/restaurants/search") //Passed but not found yet
     @Operation(
             summary = "Search restaurants",
             description = "Search restaurants by query with sorting and pagination",
@@ -176,7 +176,7 @@ public class ClientController {
         return ResponseEntity.ok(dishes);
     }
 
-    @GetMapping("/{dishId}")
+    @GetMapping("dish/{dishId}")
     @Operation(summary = "Get dish by ID", description = "Returns a single dish with options and elements by its ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Dish returned successfully"),
@@ -250,7 +250,7 @@ public class ClientController {
         return ResponseEntity.ok(updatedProfile);
     }
 
-    @PutMapping("/favorites/{restaurantId}")
+    @PutMapping("/favorites/{restaurantId}") //Passed (but restaurant Status need to change)
     @Operation(
             summary = "Add restaurant to favorites",
             description = "Add a restaurant to the client's favorite list",
