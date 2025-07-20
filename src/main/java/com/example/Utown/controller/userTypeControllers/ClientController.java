@@ -164,6 +164,21 @@ public class ClientController {
         return ResponseEntity.ok(profile);
     }
 
+    @GetMapping("restaurant/{restaurantId}/dish_categories") //Passed
+    @Operation(
+            summary = "Get dish categories for restaurant",
+            description = "Returns all dish categories for a specific restaurant with dish count",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successfully retrieved dish categories"),
+                    @ApiResponse(responseCode = "404", description = "Restaurant not found"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            }
+    )
+    public ResponseEntity<List<DishCategoryRestaurantProfileDto>> getDishCategoriesByRestaurant(@PathVariable Long restaurantId) {
+        List<DishCategoryRestaurantProfileDto> categories = dishCategoryService.getDishCategoriesByRestaurantForClient(restaurantId);
+        return ResponseEntity.ok(categories);
+    }
+
     @GetMapping("dish/category/{categoryId}")
     @Operation(summary = "Get dishes by category", description = "Returns all dishes for a given category, each with options and elements")
     @ApiResponses(value = {
@@ -201,21 +216,6 @@ public class ClientController {
     public ResponseEntity<List<AddressDto>> getClientAddresses() {
         List<AddressDto> addresses = clientService.getAddressesByClient();
         return ResponseEntity.ok(addresses);
-    }
-
-    @GetMapping("restaurant/{restaurantId}/dish_categories") //Passed
-    @Operation(
-            summary = "Get dish categories for restaurant",
-            description = "Returns all dish categories for a specific restaurant with dish count",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Successfully retrieved dish categories"),
-                    @ApiResponse(responseCode = "404", description = "Restaurant not found"),
-                    @ApiResponse(responseCode = "500", description = "Internal server error")
-            }
-    )
-    public ResponseEntity<List<DishCategoryRestaurantProfileDto>> getDishCategoriesByRestaurant(@PathVariable Long restaurantId) {
-        List<DishCategoryRestaurantProfileDto> categories = dishCategoryService.getDishCategoriesByRestaurantForClient(restaurantId);
-        return ResponseEntity.ok(categories);
     }
 
     @PostMapping("/address/create") //Passed
@@ -282,7 +282,7 @@ public class ClientController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/favorites/{restaurantId}")
+    @DeleteMapping("/favorites/{restaurantId}") //not tested
     @Operation(summary = "Remove restaurant from favorites", description = "Removes a restaurant from the client's favorite list")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Restaurant removed from favorites"),
