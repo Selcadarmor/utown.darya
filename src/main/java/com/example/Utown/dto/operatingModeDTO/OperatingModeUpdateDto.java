@@ -13,8 +13,8 @@ import java.time.LocalTime;
 public class OperatingModeUpdateDto {
     private Long id;
     private Integer dayOfWeek;
-    private LocalTime start;
-    private LocalTime end;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private boolean dayOff;
     private Long restaurantId;
 }

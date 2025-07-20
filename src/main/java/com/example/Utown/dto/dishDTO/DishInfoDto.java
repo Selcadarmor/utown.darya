@@ -7,12 +7,11 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DishDetailsDto {
+public class DishInfoDto {
     private String description;
     private Boolean isActive;
     private BigDecimal price;
@@ -20,5 +19,5 @@ public class DishDetailsDto {
     private String title;
     private Long dishCategoryId;
     private List<OptionInfoDto> options;
-
+    private Long fileId;
 }

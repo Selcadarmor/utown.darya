@@ -5,7 +5,9 @@ import com.example.Utown.dto.clientDTO.ClientInfoDto;
 import com.example.Utown.dto.clientDTO.ClientUpdateDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryCreateDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryDetailsDto;
+import com.example.Utown.dto.dishDTO.DishCreateDto;
 import com.example.Utown.dto.dishDTO.DishDetailsDto;
+import com.example.Utown.dto.dishDTO.DishInfoDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantCreateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
@@ -184,10 +186,10 @@ public class AdminController {
             @ApiResponse(responseCode = "404", description = "Restaurant or category not found")
     })
     @PostMapping("/restaurants/{restaurantId}/dishes")
-    public ResponseEntity<DishDetailsDto> createDishForRestaurant(
+    public ResponseEntity<DishInfoDto> createDishForRestaurant(
             @PathVariable Long restaurantId,
-            @Valid @RequestBody DishDetailsDto dishDetailsDto) {
-        DishDetailsDto dish = dishService.createDishForRestaurant(restaurantId, dishDetailsDto);
+            @Valid @RequestBody DishCreateDto dishCreateDto) {
+        DishInfoDto dish = dishService.createDishForRestaurant(restaurantId, dishCreateDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(dish);
     }
 
@@ -197,11 +199,11 @@ public class AdminController {
             @ApiResponse(responseCode = "404", description = "Dish or restaurant not found")
     })
     @PutMapping("/restaurants/{restaurantId}/dishes/{dishId}")
-    public ResponseEntity<DishDetailsDto> updateDishForRestaurant(
+    public ResponseEntity<DishInfoDto> updateDishForRestaurant(
             @PathVariable Long restaurantId,
             @PathVariable Long dishId,
-            @Valid @RequestBody DishDetailsDto dishDetailsDto) {
-        DishDetailsDto dish = dishService.updateDishForRestaurant(restaurantId, dishId, dishDetailsDto);
+            @Valid @RequestBody DishCreateDto dishDto) {
+        DishInfoDto dish = dishService.updateDishForRestaurant(restaurantId, dishId, dishDto);
         return ResponseEntity.ok(dish);
     }
 

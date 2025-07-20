@@ -5,6 +5,7 @@ import com.example.Utown.dto.deliveryDTO.DeliveryInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeCreateDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeRestaurantProfileDto;
+import com.example.Utown.dto.restaurantAdminDTO.RestaurantAdminCreateDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryInfoDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantCreateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
@@ -14,9 +15,6 @@ import com.example.Utown.dto.restaurantDTO.RestaurantProfileDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.exception.RestaurantNotFoundException;
-import com.example.Utown.mapper.DeliveryMapper;
-import com.example.Utown.mapper.FileInfoMapper;
-import com.example.Utown.mapper.OperatingModeInfoMapper;
 import com.example.Utown.mapper.RestaurantCategoryInfoMapper;
 import com.example.Utown.mapper.RestaurantInfoMapper;
 import com.example.Utown.model.Address;
@@ -29,6 +27,7 @@ import com.example.Utown.model.RestaurantCategory;
 import com.example.Utown.model.UserType.Client;
 import com.example.Utown.model.UserType.RestaurantAdmin;
 import com.example.Utown.repository.DishRepository;
+import com.example.Utown.repository.FileInfoRepository;
 import com.example.Utown.repository.OperatingModeRepository;
 import com.example.Utown.repository.RestaurantCategoryRepository;
 import com.example.Utown.repository.RestaurantRepository;
@@ -41,17 +40,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class RestaurantServiceImpl  implements RestaurantService {
 
     private final ClientService clientService;
-    private final FileInfoMapper fileInfoMapper;
     private final RestaurantCategoryService restaurantCategoryService;
     private final RestaurantCategoryRepository restaurantCategoryRepository;
     private final RestaurantInfoMapper restaurantInfoMapper;
@@ -64,7 +62,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
     private  final DeliveryService deliveryService;
     private final DishRepository dishRepository;
     private final FileInfoService fileInfoService;
-
+    private final FileInfoRepository fileInfoRepository;
 
     @Override//сделано
     public Page<RestaurantInfoDto> getAllRestaurants(int page, int size) {
@@ -93,58 +91,69 @@ public class RestaurantServiceImpl  implements RestaurantService {
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
     public RestaurantDetailsDto createRestaurant(RestaurantCreateDto dto) {
+        // 1. Преобразуем DTO в сущность ресторана (без админа)
         Restaurant restaurant = restaurantInfoMapper.toEntity(dto);
 
-        // 👤 Admin create
-        RestaurantAdmin admin = restaurantAdminService.createAdmin(dto.getRestaurantAdmin());
-        admin.setRestaurant(restaurant);
-        restaurant.setRestaurantAdmin(admin);
-
-        // 📁 File
-        Optional.ofNullable(dto.getFileInfo())// проверяем есть в ли в дто файл если есть мапим и присваиваем ресторану
-                .map(fileInfoMapper::toDetailsEntity).ifPresent(restaurant::setFileInfo);
-
-
-        // 🏷 Categories
-        if (dto.getCategories() != null && !dto.getCategories().isEmpty()) {
-            List<RestaurantCategory> createdCategories =
-                    restaurantCategoryService.createRestaurantCategories(dto.getCategories());
-
-            restaurant.setCategories(new HashSet<>(createdCategories));
+        // 2. Обработка файла
+        FileInfo file = null;
+        if (dto.getFileId() != null) {
+            file = fileInfoRepository.findById(dto.getFileId()).orElse(null);
         }
-        // 🏠 Address
+        restaurant.setFileInfo(file);
+
+        // 3. Обработка категорий
+        List<RestaurantCategory> categories =
+                restaurantCategoryService.findCategoriesByIds(dto.getCategories());
+        restaurant.setCategories(new HashSet<>(categories));
+
+        // 4. Обработка адреса
         if (dto.getAddress() != null) {
             Address address = addressService.createAddress(dto.getAddress());
             restaurant.setAddress(address);
         }
 
+        // 5. Сохраняем ресторан без админа (теперь у ресторана будет id)
+        Restaurant savedRestaurant = restaurantRepository.save(restaurant);
+
+        // 6. Создаём админа и связываем с рестораном
+        RestaurantAdmin admin = restaurantAdminService.createAdmin(dto.getRestaurantAdmin(), savedRestaurant);
+
+// 7. Связываем ресторан с админом
+        savedRestaurant.setRestaurantAdmin(admin);
+
+// 8. Сохраняем ресторан (если нужно обновить связь restaurant → admin)
+        restaurantRepository.save(savedRestaurant);
+        // 8. Обработка режимов работы
         if (dto.getOperatingModes() != null && !dto.getOperatingModes().isEmpty()) {
-            List<OperatingMode> modes = new ArrayList<>();
             for (OperatingModeCreateDto modeDto : dto.getOperatingModes()) {
                 OperatingMode mode = new OperatingMode();
-                mode.setRestaurant(restaurant);
-                mode.setStart(modeDto.getStart());
-                mode.setEnd(modeDto.getEnd());
+                mode.setStartTime(modeDto.getStartTime());
+                mode.setEndTime(modeDto.getEndTime());
                 mode.setDayOff(modeDto.isDayOff());
                 mode.setDayOfWeek(modeDto.getDayOfWeek());
-                modes.add(mode);
-            }
 
-            List<OperatingMode> savedModes = operatingModeRepository.saveAll(modes);
-            restaurant.setOperatingModes(savedModes);
+                // Устанавливаем связь с обеих сторон
+                savedRestaurant.addOperatingMode(mode);
+            }
         }
+
+        // 9. Обработка доставок
         if (dto.getDeliveries() != null && !dto.getDeliveries().isEmpty()) {
-            List<Delivery> deliveries = new ArrayList<>();
             for (DeliveryDto deliveryDto : dto.getDeliveries()) {
                 Delivery delivery = deliveryService.createDelivery(deliveryDto);
-                delivery.setRestaurant(restaurant);
-                deliveries.add(delivery);
+                savedRestaurant.addDelivery(delivery);
             }
-            restaurant.setDeliveries(new ArrayList<>(deliveries));
         }
-        Restaurant saved = restaurantRepository.save(restaurant);
-        return restaurantInfoMapper.toDto(saved);
+
+        // 10. Финальное сохранение ресторана со всеми связями
+        savedRestaurant = restaurantRepository.save(savedRestaurant);
+
+        // 11. Возврат DTO
+        return restaurantInfoMapper.toDto(savedRestaurant);
     }
+
+
+
 
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
@@ -293,7 +302,5 @@ public class RestaurantServiceImpl  implements RestaurantService {
                 .operatingModes(operatingModes)
                 .build();
     }
-
-
 
 }

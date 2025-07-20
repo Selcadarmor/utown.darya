@@ -1,7 +1,6 @@
 SET FOREIGN_KEY_CHECKS = 0;
 DELETE FROM dish_to_order_elements;
 
-
 -- 1. Роли
 INSERT INTO roles (id, name, created_at, updated_at) VALUES
                                                          (1, 'ROLE_ADMIN', NOW(), NOW()),
@@ -16,7 +15,7 @@ INSERT INTO files (id, original_title, path, type, created_at, updated_at) VALUE
                                                                                (3, 'mock-document.pdf', '/mock/path/mock-document.pdf', 'application/pdf', NOW(), NOW())
 ON DUPLICATE KEY UPDATE original_title = VALUES(original_title);
 
--- 3. Адреса (client_id = 1)
+-- 3. Адреса
 INSERT INTO addresses (
     id, area, city, details, full_address, latitude, longitude, post_code, state, street,
     intercome_code, type_address, created_at, updated_at, client_id
@@ -37,7 +36,7 @@ INSERT INTO restaurant (
     total_ratings, status_forced_changed, is_active, created_at, updated_at, address_id, file_id, restaurant_admin_id
 ) VALUES (
              1, '30 мин', 'Очень вкусная еда', 'WiFi, Парковка', TRUE, 15000.00, '+821012345678', 4.8,
-             'PENDING', 'K-BBQ House', 127, FALSE, TRUE, NOW(), NOW(), 1, 2, 101
+             'OPEN', 'K-BBQ House', 127, FALSE, TRUE, NOW(), NOW(), 1, 2, 101
          )
 ON DUPLICATE KEY UPDATE title = VALUES(title), restaurant_admin_id = VALUES(restaurant_admin_id);
 
