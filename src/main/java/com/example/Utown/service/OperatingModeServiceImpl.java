@@ -49,8 +49,8 @@ public class OperatingModeServiceImpl implements OperatingModeService {
        operatingMode.setDayOff(dto.isDayOff());
        operatingMode.setRestaurant(restaurant);
        operatingMode.setDayOfWeek(dto.getDayOfWeek());
-       operatingMode.setEnd(dto.getEnd());
-       operatingMode.setStart(dto.getStart());
+       operatingMode.setEndTime(dto.getEndTime());
+       operatingMode.setStartTime(dto.getStartTime());
         OperatingMode saved = operatingModeRepository.save(operatingMode);
        return operatingModeRepository.findProjectedById(saved.getId())
                .orElseThrow(() -> new ElementNotFoundException("OperatingMode"));
@@ -64,11 +64,11 @@ public class OperatingModeServiceImpl implements OperatingModeService {
 
         updated.setDayOff(dto.isDayOff());
 
-        if (dto.getStart() != null) {
-            updated.setStart(dto.getStart());
+        if (dto.getStartTime() != null) {
+            updated.setStartTime(dto.getStartTime());
         }
-        if (dto.getEnd() != null) {
-            updated.setEnd(dto.getEnd());
+        if (dto.getEndTime() != null) {
+            updated.setEndTime(dto.getEndTime());
         }
 
         updated.setDayOfWeek(dto.getDayOfWeek());
@@ -104,8 +104,8 @@ public class OperatingModeServiceImpl implements OperatingModeService {
                     OperatingMode mode = new OperatingMode();
                     mode.setRestaurant(restaurant);
                     mode.setDayOfWeek(dto.getDayOfWeek());
-                    mode.setStart(dto.getStart());
-                    mode.setEnd(dto.getEnd());
+                    mode.setStartTime(dto.getStartTime());
+                    mode.setEndTime(dto.getEndTime());
                     mode.setDayOfWeek(dto.getDayOfWeek());
                     return mode;
                 }).collect(Collectors.toList());

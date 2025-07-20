@@ -23,8 +23,7 @@ public class RestaurantCreateDto {
     private Long fileId;
     private List<RestaurantCategoryDto> categories;
     private List<OperatingModeCreateDto> operatingModes;
-    private RestaurantAdminCreateDto restaurantAdmin;
     private AddressDto address;
-    private RestaurantAdminCreateDto restaurantCreateDto;
+    private RestaurantAdminCreateDto restaurantAdmin;
     private List<DeliveryDto> deliveries;
 }

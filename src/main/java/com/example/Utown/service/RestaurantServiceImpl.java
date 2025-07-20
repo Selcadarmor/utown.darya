@@ -5,6 +5,7 @@ import com.example.Utown.dto.deliveryDTO.DeliveryInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeCreateDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeRestaurantProfileDto;
+import com.example.Utown.dto.restaurantAdminDTO.RestaurantAdminCreateDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryInfoDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantCreateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
@@ -63,7 +64,6 @@ public class RestaurantServiceImpl  implements RestaurantService {
     private final FileInfoService fileInfoService;
     private final FileInfoRepository fileInfoRepository;
 
-
     @Override//сделано
     public Page<RestaurantInfoDto> getAllRestaurants(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
@@ -117,18 +117,18 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
         // 6. Создаём админа и связываем с рестораном
         RestaurantAdmin admin = restaurantAdminService.createAdmin(dto.getRestaurantAdmin(), savedRestaurant);
+
+// 7. Связываем ресторан с админом
         savedRestaurant.setRestaurantAdmin(admin);
-        admin.setRestaurant(savedRestaurant);
 
-        // 7. Сохраняем ресторан с админом
+// 8. Сохраняем ресторан (если нужно обновить связь restaurant → admin)
         restaurantRepository.save(savedRestaurant);
-
         // 8. Обработка режимов работы
         if (dto.getOperatingModes() != null && !dto.getOperatingModes().isEmpty()) {
             for (OperatingModeCreateDto modeDto : dto.getOperatingModes()) {
                 OperatingMode mode = new OperatingMode();
-                mode.setStart(modeDto.getStart());
-                mode.setEnd(modeDto.getEnd());
+                mode.setStartTime(modeDto.getStartTime());
+                mode.setEndTime(modeDto.getEndTime());
                 mode.setDayOff(modeDto.isDayOff());
                 mode.setDayOfWeek(modeDto.getDayOfWeek());
 
