@@ -119,7 +119,7 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
                 .map(category -> {
                     String filePath = category.getFile() != null ? category.getFile().getPath() : null;
 
-                    Long count = restaurantRepository.countRestaurantsByCategory(category);
+                    Long count = restaurantRepository.countRestaurantsByCategory(category.getId());
 
                     return new RestaurantCategoryForClient(
                             category.getId(),
@@ -132,6 +132,7 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
                 })
                 .collect(Collectors.toList());
     }
+
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)

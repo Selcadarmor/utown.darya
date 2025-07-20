@@ -4,7 +4,6 @@ import com.example.Utown.dto.elementDTO.ElementDto;
 import com.example.Utown.dto.elementDTO.ElementInfoDto;
 import com.example.Utown.model.Element;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 import java.util.List;
 

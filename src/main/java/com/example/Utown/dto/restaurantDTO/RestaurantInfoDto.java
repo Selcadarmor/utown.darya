@@ -1,12 +1,7 @@
 package com.example.Utown.dto.restaurantDTO;
 
-import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryDto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
 
 @Data
 @NoArgsConstructor

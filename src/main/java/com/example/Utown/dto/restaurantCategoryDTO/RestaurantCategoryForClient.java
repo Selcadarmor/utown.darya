@@ -14,7 +14,3 @@ public class RestaurantCategoryForClient {
     private Long restaurantCount;
 
 }
-
-
-
-
