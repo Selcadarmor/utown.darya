@@ -5,7 +5,6 @@ import com.example.Utown.dto.dishCategoryDTO.DishCategoryDetailsDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryRestaurantProfileDto;
 import com.example.Utown.exception.ResourceNotFoundException;
-import com.example.Utown.exception.RestaurantNotFoundException;
 import com.example.Utown.mapper.DishCategoryMapper;
 import com.example.Utown.model.DishCategory;
 import com.example.Utown.model.FileInfo;
@@ -29,8 +28,9 @@ public class DishCategoryServiceImpl implements DishCategoryService {
 
     private final DishCategoryRepository dishCategoryRepository;
     private final DishCategoryMapper dishCategoryMapper;
-    private final RestaurantRepository restaurantRepository;
+    private final RestaurantService restaurantService;
     private final FileInfoRepository fileInfoRepository;
+    private final RestaurantRepository restaurantRepository;
 
     @Override
     public DishCategoryDto createDishCategory(DishCategoryDto dto) {
@@ -133,23 +133,9 @@ public class DishCategoryServiceImpl implements DishCategoryService {
 
     @Override
     public List<DishCategoryRestaurantProfileDto> getDishCategoriesByRestaurantForClient(Long restaurantId) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
-
-        return restaurant.getDishCategories().stream()
-                .map(category -> {
-                    Long dishCount = dishCategoryRepository.countDishesByDishCategoryId(category.getId());
-                    return new DishCategoryRestaurantProfileDto(
-                            category.getId(),
-                            category.getName(),
-                            category.getSort(),
-                            category.getIsActive(),
-                            category.getFile() != null ? category.getFile().getPath() : null,
-                            dishCount
-                    );
-                })
-                .toList();
+        return dishCategoryRepository.findDishCategoriesWithDishCountByRestaurantId(restaurantId);
     }
+
 
 
 }

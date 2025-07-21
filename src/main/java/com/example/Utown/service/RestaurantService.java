@@ -6,6 +6,7 @@ import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantProfileDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
+import com.example.Utown.model.Restaurant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -25,5 +26,6 @@ public interface RestaurantService {
             String direction);
     RestaurantProfileDto getRestaurantProfile(Long restaurantId);
     void deactivateRestaurant(Long restaurantId);
+    Restaurant findRestaurantById(Long restaurantId);
 
 }

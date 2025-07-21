@@ -234,14 +234,15 @@ public class ClientController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PutMapping("/profile/update") //Passed
+    @PutMapping("/profile/update") // Passed
     @Operation(
-            summary = "Update",
-            description = "Update fullName and default address for current client",
+            summary = "Update client profile",
+            description = "Update full name and default address for the current client. " ,
             responses = {
                     @ApiResponse(responseCode = "200", description = "Profile updated successfully"),
-                    @ApiResponse(responseCode = "400", description = "Invalid input"),
+                    @ApiResponse(responseCode = "400", description = "Default address not set or invalid data"),
                     @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "404", description = "Default address not found"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )

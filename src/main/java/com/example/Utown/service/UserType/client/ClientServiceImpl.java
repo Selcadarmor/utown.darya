@@ -7,9 +7,14 @@ import com.example.Utown.dto.clientDTO.ClientInfoDto;
 import com.example.Utown.dto.clientDTO.ClientProfileUpdateDto;
 import com.example.Utown.dto.clientDTO.ClientRegistrationDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
+import com.example.Utown.exception.DefaultAddressNotSetException;
+import com.example.Utown.exception.InvalidArgumentException;
 import com.example.Utown.exception.ResourceNotFoundException;
+import com.example.Utown.exception.RestaurantAlreadyFavoritedException;
 import com.example.Utown.exception.RestaurantNotFoundException;
+import com.example.Utown.exception.RestaurantNotInFavoritesException;
 import com.example.Utown.exception.UserAlreadyExistsException;
+import com.example.Utown.exception.UserNotFoundException;
 import com.example.Utown.mapper.AddressInfoMapper;
 import com.example.Utown.mapper.AddressMapper;
 import com.example.Utown.model.Address;
@@ -39,7 +44,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -50,17 +54,12 @@ public class ClientServiceImpl implements ClientService {
     private final AddressService addressService;
     private final AddressRepository addressRepository;
     private final AddressMapper addressMapper;
-    private final AddressInfoMapper addressInfoMapper;
     private final ClientRepository clientRepository;
     private final CartRepository cartRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleService roleService;
     private final RestaurantRepository restaurantRepository;
-
-    @Override
-    public Optional<Client> findByUsername(String username) {
-        return clientRepository.findByUsername(username);
-    }
+//    private final RestaurantService restaurantService; нельзя использовать
 
     @Override
     public Page<ClientDetailsDto> getAllClients(Pageable pageable) {
@@ -133,7 +132,7 @@ public class ClientServiceImpl implements ClientService {
 
         Long defaultAddressId = client.getDefaultAddress();
         if (defaultAddressId == null) {
-            throw new IllegalStateException("Client has no default address set");
+            throw new DefaultAddressNotSetException();
         }
 
         boolean hasDefaultAddress = client.getAddresses().stream()
@@ -181,25 +180,36 @@ public class ClientServiceImpl implements ClientService {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
 
+        if (client.getFavoriteRestaurants().contains(restaurant)) {
+            throw new RestaurantAlreadyFavoritedException(restaurant.getTitle());
+        }
+
         client.getFavoriteRestaurants().add(restaurant);
         clientRepository.save(client);
     }
 
     @Transactional(readOnly = true) //For client
+    @Override
     public List<RestaurantForClientDto> getFavoriteRestaurants() {
         Client client = getCurrentClient();
         return clientRepository.findFavoriteRestaurants(client.getUsername());
     }
 
-    @Transactional
+    @Transactional // For Client
     @Override
     public void removeFavoriteRestaurant(Long restaurantId) {
         Client client = getCurrentClient();
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
+
+        if (!client.getFavoriteRestaurants().contains(restaurant)) {
+            throw new RestaurantNotInFavoritesException(restaurant.getTitle());
+        }
+
         client.getFavoriteRestaurants().remove(restaurant);
         clientRepository.save(client);
     }
+
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -215,8 +225,13 @@ public class ClientServiceImpl implements ClientService {
         }
 
         String username = authentication.getName();
+        return findByUsername(username);
+    }
+
+    @Override
+    public Client findByUsername(String username) {
         return clientRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Client not found: " + username));
+                .orElseThrow(() -> new UsernameNotFoundException(username));
     }
 
     @Override
