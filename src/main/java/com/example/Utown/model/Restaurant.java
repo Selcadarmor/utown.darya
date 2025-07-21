@@ -77,6 +77,7 @@ public class Restaurant {
     @Column(precision = 15, scale = 2)
     private BigDecimal rating;
 
+    @Column(name = "restaurant_status")
     @Enumerated(EnumType.STRING)
     private RestaurantStatus status;
 
