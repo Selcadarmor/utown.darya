@@ -22,9 +22,6 @@ public interface DeliveryRepository extends JpaRepository<Delivery, Long> {
             "FROM Delivery d")
     List<DeliveryDto> findAllDeliveries();
 
-    @Modifying
-    @Query("UPDATE Delivery d SET d.isActive = false WHERE d.restaurant.id = :restaurantId")
-    void deactivateByRestaurantId(@Param("restaurantId") Long restaurantId);
 
     @Query("SELECT d FROM Delivery d WHERE d.restaurant.id = :restaurantId")
     List<Delivery> findByRestaurantId(@Param("restaurantId") Long restaurantId);

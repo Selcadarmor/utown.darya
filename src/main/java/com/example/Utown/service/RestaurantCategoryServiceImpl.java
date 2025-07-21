@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
 public class RestaurantCategoryServiceImpl implements RestaurantCategoryService {
@@ -32,8 +31,65 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
     private final RestaurantRepository restaurantRepository;
     private final RestaurantCategoryInfoMapper restaurantCategoryInfoMapper;
 
-    @Transactional(rollbackFor = RuntimeException.class)
+    // ===== GET =====
+
     @Override
+    @Transactional(readOnly = true)
+    public RestaurantCategoryDto getRestaurantCategoryById(Long id) {
+        return restaurantCategoryRepository.findById(id)
+                .map(restaurantCategoryMapper::restaurantCategoryToDto)
+                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory not found", id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RestaurantCategoryDto> getAllRestaurantCategories() {
+        return restaurantCategoryRepository.findAll()
+                .stream()
+                .map(restaurantCategoryMapper::restaurantCategoryToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RestaurantCategoryForClient> getAllCategoriesWithRestaurantCount() {
+        List<RestaurantCategory> categories = restaurantCategoryRepository.findAllActiveRestaurantCategories();
+
+        return categories.stream()
+                .map(category -> {
+                    String filePath = category.getFile() != null ? category.getFile().getPath() : null;
+                    Long count = restaurantRepository.countRestaurantsByCategory(category.getId());
+
+                    return new RestaurantCategoryForClient(
+                            category.getId(),
+                            category.getName(),
+                            category.getSort(),
+                            category.getIsActive(),
+                            filePath,
+                            count
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RestaurantCategory> findCategoriesByIds(List<RestaurantCategoryDto> dtos) {
+        List<Long> ids = dtos.stream()
+                .map(RestaurantCategoryDto::getId)
+                .filter(Objects::nonNull)
+                .toList();
+
+        if (ids.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return restaurantCategoryRepository.findAllById(ids);
+    }
+
+    // ===== POST =====
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
     public List<RestaurantCategory> createRestaurantCategories(List<RestaurantCategoryDto> dtos) {
         if (dtos == null || dtos.isEmpty()) {
             return Collections.emptyList();
@@ -44,13 +100,10 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
         for (RestaurantCategoryDto dto : dtos) {
             RestaurantCategory entity;
             if (dto.getId() != null) {
-                // Загрузка из базы для обновления существующей категории
                 entity = restaurantCategoryRepository.findById(dto.getId())
                         .orElseThrow(() -> new ResourceNotFoundException("Category not found", dto.getId()));
-                // Обновляем поля entity на основании dto (например через маппер)
                 restaurantCategoryInfoMapper.updateEntityFromDto(dto, entity);
             } else {
-                // Новая категория
                 entity = restaurantCategoryMapper.restaurantCategoryDtoToEntity(dto);
             }
 
@@ -67,25 +120,10 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
         return restaurantCategoryRepository.saveAll(categories);
     }
 
-
-
-
-    @Override
-    public RestaurantCategoryDto getRestaurantCategoryById(Long id) {
-        return restaurantCategoryRepository.findById(id)
-                .map(restaurantCategoryMapper::restaurantCategoryToDto)
-                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory not found", id));
-    }
+    // ===== PUT =====
 
     @Override
-    public List<RestaurantCategoryDto> getAllRestaurantCategories() {
-        return restaurantCategoryRepository.findAll()
-                .stream()
-                .map(restaurantCategoryMapper::restaurantCategoryToDto)
-                .collect(Collectors.toList());
-    }
     @Transactional(rollbackFor = RuntimeException.class)
-    @Override
     public RestaurantCategory updateRestaurantCategory(Long id, RestaurantCategoryDto dto) {
         RestaurantCategory category = restaurantCategoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory not found", id));
@@ -105,60 +143,21 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
     }
 
     @Override
-    public void deleteRestaurantCategory(Long id) {
-        RestaurantCategory category = restaurantCategoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory not found", id));
-        restaurantCategoryRepository.delete(category);
-    }
-
-    @Override
-    public List<RestaurantCategoryForClient> getAllCategoriesWithRestaurantCount() {
-        List<RestaurantCategory> categories = restaurantCategoryRepository.findAllActiveRestaurantCategories();
-
-        return categories.stream()
-                .map(category -> {
-                    String filePath = category.getFile() != null ? category.getFile().getPath() : null;
-
-                    Long count = restaurantRepository.countRestaurantsByCategory(category.getId());
-
-                    return new RestaurantCategoryForClient(
-                            category.getId(),
-                            category.getName(),
-                            category.getSort(),
-                            category.getIsActive(),
-                            filePath,
-                            count
-                    );
-                })
-                .collect(Collectors.toList());
-    }
-
-
-    @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public RestaurantCategory updateRestaurantCategoryForRestaurant(Long id, RestaurantCategoryInfoDto dto) {
         RestaurantCategory restaurantCategory = restaurantCategoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory not found", id));
         restaurantCategory.setName(dto.getName());
-        return  restaurantCategoryRepository.save(restaurantCategory);
+        return restaurantCategoryRepository.save(restaurantCategory);
     }
 
+    // ===== DELETE =====
 
     @Override
-    @Transactional(readOnly = true)
-    public List<RestaurantCategory> findCategoriesByIds(List<RestaurantCategoryDto> dtos) {
-        List<Long> ids = dtos.stream()
-                .map(RestaurantCategoryDto::getId)
-                .filter(Objects::nonNull)
-                .toList();
-
-        if (ids.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return restaurantCategoryRepository.findAllById(ids);
+    @Transactional(rollbackFor = RuntimeException.class)
+    public void deleteRestaurantCategory(Long id) {
+        RestaurantCategory category = restaurantCategoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory not found", id));
+        restaurantCategoryRepository.delete(category);
     }
-
-
 }
-

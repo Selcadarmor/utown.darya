@@ -6,6 +6,7 @@ public enum OrderStatus {
     READY_FOR_PICKUP,
     DELIVERY,
     COMPLETED, // order is completed
-    CANCELED,// order canceled and refunded
-    REJECTED
+    CANCELED,
+    REJECTED// order canceled and refunded
+
 }

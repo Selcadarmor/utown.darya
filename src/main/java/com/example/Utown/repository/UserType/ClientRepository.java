@@ -22,7 +22,7 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     @Query("SELECT new com.example.Utown.dto.clientDTO.ClientDetailsDto(" +
             "c.fullName, c.username, a.city, a.fullAddress, SIZE(c.orders)) " +
             "FROM Client c " +
-            "LEFT JOIN Address a ON a.id = c.defaultAddress")
+            "INNER JOIN Address a ON a.id = c.defaultAddress")
     Page<ClientDetailsDto> findAllClientDetails(Pageable pageable);
 
     @Query("SELECT c FROM Client c LEFT JOIN FETCH c.addresses WHERE c.username = :username")

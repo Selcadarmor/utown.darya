@@ -1,6 +1,7 @@
 package com.example.Utown.service.UserType.client;
 
 import com.example.Utown.dto.restaurantAdminDTO.RestaurantAdminCreateDto;
+import com.example.Utown.exception.RoleNotFoundException;
 import com.example.Utown.mapper.RestaurantAdminInfoMapper;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.Role;
@@ -22,24 +23,24 @@ public class RestaurantAdminServiceImpl  implements RestaurantAdminService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final RestaurantAdminInfoMapper restaurantAdminInfoMapper;
-
-    @Override
     @Transactional
+    @Override
     public RestaurantAdmin createAdmin(RestaurantAdminCreateDto dto, Restaurant restaurant) {
-        RestaurantAdmin restaurantAdmin = restaurantAdminInfoMapper.toEntity(dto);
-        restaurantAdmin.setPassword(passwordEncoder.encode(dto.getPassword()));
+        RestaurantAdmin admin = restaurantAdminInfoMapper.toEntity(dto);
+        admin.setPassword(passwordEncoder.encode(dto.getPassword()));
+
         Role role = roleRepository.findByName(Roles.ROLE_RESTAURANT_ADMIN)
-                .orElseThrow(() -> new RuntimeException("Role not found: " + Roles.ROLE_RESTAURANT_ADMIN));
-        restaurantAdmin.setRestaurant(restaurant);
+                .orElseThrow(() -> new RoleNotFoundException(Roles.ROLE_RESTAURANT_ADMIN.name()));
+        admin.setRestaurant(restaurant); // Владелец связи
 
-        // Добавляем роль в пользователя, если roles еще не инициализирована
-        if (restaurantAdmin.getRoles() == null) {
-            restaurantAdmin.setRoles(new HashSet<>());
+        if (admin.getRoles() == null) {
+            admin.setRoles(new HashSet<>());
         }
-        restaurantAdmin.getRoles().add(role);
+        admin.getRoles().add(role);
 
-        return restaurantAdminRepository.save(restaurantAdmin);
+        return restaurantAdminRepository.save(admin);
     }
+
 
 
 }
