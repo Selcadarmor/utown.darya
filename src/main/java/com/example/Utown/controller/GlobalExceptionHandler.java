@@ -4,6 +4,7 @@ import com.example.Utown.dto.ApiErrorResponse;
 import com.example.Utown.exception.AddressNotFoundException;
 import com.example.Utown.exception.CartIsEmptyException;
 import com.example.Utown.exception.CartNotFoundException;
+import com.example.Utown.exception.DefaultAddressNotSetException;
 import com.example.Utown.exception.DishNotFoundException;
 import com.example.Utown.exception.DishNotInCartException;
 import com.example.Utown.exception.ExpireJwtTokenException;
@@ -14,7 +15,9 @@ import com.example.Utown.exception.OrderNotFoundException;
 import com.example.Utown.exception.RatingOutOfRangeException;
 import com.example.Utown.exception.RefreshTokenNotFoundException;
 import com.example.Utown.exception.ResourceNotFoundException;
+import com.example.Utown.exception.RestaurantAlreadyFavoritedException;
 import com.example.Utown.exception.RestaurantNotFoundException;
+import com.example.Utown.exception.RestaurantNotInFavoritesException;
 import com.example.Utown.exception.RoleNotFoundException;
 import com.example.Utown.exception.UserAlreadyExistsException;
 import com.example.Utown.exception.UserNotFoundException;
@@ -126,4 +129,27 @@ public class GlobalExceptionHandler {
                 "error", "Bad Request"
         ));
     }
+
+    @ExceptionHandler(DefaultAddressNotSetException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @Operation(hidden = true)
+    public ApiErrorResponse handleDefaultAddressNotSetException(DefaultAddressNotSetException ex, HttpServletRequest request) {
+        return buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(RestaurantAlreadyFavoritedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @Operation(hidden = true)
+    public ApiErrorResponse handleRestaurantAlreadyFavorited(RestaurantAlreadyFavoritedException ex, HttpServletRequest request) {
+        return buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(RestaurantNotInFavoritesException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @Operation(hidden = true)
+    public ApiErrorResponse handleRestaurantNotInFavorites(RestaurantNotInFavoritesException ex, HttpServletRequest request) {
+        return buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
+
+
 }

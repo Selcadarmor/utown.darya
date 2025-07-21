@@ -13,10 +13,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ClientService {
-        Optional<Client> findByUsername(String username);
+        Client findByUsername(String username);
         Page<ClientDetailsDto> getAllClients(Pageable pageable);
         ClientInfoDto getClientById(Long clientId);
         void updateClientActiveStatus(Long id, Boolean active);
