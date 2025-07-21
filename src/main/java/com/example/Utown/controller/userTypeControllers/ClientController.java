@@ -118,7 +118,7 @@ public class ClientController {
         return ResponseEntity.ok(restaurants);
     }
 
-    @GetMapping("/favorites") //Unpassed
+    @GetMapping("/favourites") //Passed
     @Operation(summary = "Get favorite restaurants", description = "Returns the list of restaurants added to client's favorites")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of favorite restaurants returned"),
@@ -164,6 +164,21 @@ public class ClientController {
         return ResponseEntity.ok(profile);
     }
 
+    @GetMapping("restaurant/{restaurantId}/dish_categories") //Passed
+    @Operation(
+            summary = "Get dish categories for restaurant",
+            description = "Returns all dish categories for a specific restaurant with dish count",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successfully retrieved dish categories"),
+                    @ApiResponse(responseCode = "404", description = "Restaurant not found"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            }
+    )
+    public ResponseEntity<List<DishCategoryRestaurantProfileDto>> getDishCategoriesByRestaurant(@PathVariable Long restaurantId) {
+        List<DishCategoryRestaurantProfileDto> categories = dishCategoryService.getDishCategoriesByRestaurantForClient(restaurantId);
+        return ResponseEntity.ok(categories);
+    }
+
     @GetMapping("dish/category/{categoryId}")
     @Operation(summary = "Get dishes by category", description = "Returns all dishes for a given category, each with options and elements")
     @ApiResponses(value = {
@@ -203,21 +218,6 @@ public class ClientController {
         return ResponseEntity.ok(addresses);
     }
 
-    @GetMapping("restaurant/{restaurantId}/dish_categories") //Passed
-    @Operation(
-            summary = "Get dish categories for restaurant",
-            description = "Returns all dish categories for a specific restaurant with dish count",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Successfully retrieved dish categories"),
-                    @ApiResponse(responseCode = "404", description = "Restaurant not found"),
-                    @ApiResponse(responseCode = "500", description = "Internal server error")
-            }
-    )
-    public ResponseEntity<List<DishCategoryRestaurantProfileDto>> getDishCategoriesByRestaurant(@PathVariable Long restaurantId) {
-        List<DishCategoryRestaurantProfileDto> categories = dishCategoryService.getDishCategoriesByRestaurantForClient(restaurantId);
-        return ResponseEntity.ok(categories);
-    }
-
     @PostMapping("/address/create") //Passed
     @Operation(
             summary = "Add address for current user",
@@ -250,7 +250,7 @@ public class ClientController {
         return ResponseEntity.ok(updatedProfile);
     }
 
-    @PutMapping("/favorites/{restaurantId}") //Passed (but restaurant Status need to change)
+    @PutMapping("/favorites/{restaurantId}") //Passed
     @Operation(
             summary = "Add restaurant to favorites",
             description = "Add a restaurant to the client's favorite list",
@@ -265,7 +265,7 @@ public class ClientController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/address/{id}") // For Client
+    @DeleteMapping("/address/{id}") //Passed
     @Operation(
             summary = "Delete address for current client",
             description = "Deletes an address belonging to the authenticated client",
@@ -282,7 +282,7 @@ public class ClientController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/favorites/{restaurantId}")
+    @DeleteMapping("/favorites/{restaurantId}") //Passed
     @Operation(summary = "Remove restaurant from favorites", description = "Removes a restaurant from the client's favorite list")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Restaurant removed from favorites"),
