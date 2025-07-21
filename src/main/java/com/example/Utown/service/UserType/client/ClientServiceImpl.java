@@ -66,6 +66,7 @@ public class ClientServiceImpl implements ClientService {
         return clientRepository.findAllClientDetails(pageable);
     }
 
+
     @Override
     public ClientInfoDto getClientById(Long clientId) {
         return clientRepository.findClientInfoById(clientId)
@@ -222,7 +223,7 @@ public class ClientServiceImpl implements ClientService {
     public void deleteAddressForCLient(Long addressId) {
         Client client = getCurrentClient();
 
-        Address address = addressService.getAddressById(client.getDefaultAddress());
+        Address address = addressService.getAddressById(addressId);
 
         if (!client.getAddresses().contains(address)) {
             throw new AccessDeniedException("You are not allowed to delete this address");
