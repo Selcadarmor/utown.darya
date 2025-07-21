@@ -1,5 +1,6 @@
 package com.example.Utown.service;
 
+import com.example.Utown.dto.orderDTO.OrderDetailsDto;
 import com.example.Utown.dto.orderDTO.OrderDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.OrderMapper;
@@ -20,6 +21,9 @@ import com.example.Utown.repository.UserType.RestaurantAdminRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -234,4 +238,31 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
     }
 
+    @Override
+    public Page<OrderDetailsDto> getOrderDetailsByClient(Long clientId, Pageable pageable) {
+        Page<Order> orders = orderRepository.findAllByClientId(clientId, pageable);
+
+        List<OrderDetailsDto> dtos = orders.getContent().stream()
+                .map(order -> {
+                    List<String> dishTitles = dishToOrderRepository.findDishTitleByOrderId(order.getId());
+
+                    return new OrderDetailsDto(
+                            order.getClientPhone(),
+                            order.getClient().getFullName(),
+                            order.getFullAddress(),
+                            order.getRestaurant().getTitle(),
+                            order.getRestaurant().getAddress().getFullAddress(),
+                            order.getRestaurantPhone(),
+                            order.getNumber(),
+                            order.getTotalSum(),
+                            order.getTimeOfAccepted(),
+                            order.getTimeOfDelivery(),
+                            order.getTimeOfSending(),
+                            dishTitles
+                    );
+                })
+                .toList();
+        return  new PageImpl<>(dtos, pageable, orders.getTotalElements());
+
+    }
 }
