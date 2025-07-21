@@ -36,5 +36,4 @@ build/
 
 # Ignore local app config
 application-local.properties
-src/main/resources/application-local.properties
 
