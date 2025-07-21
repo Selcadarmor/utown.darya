@@ -5,7 +5,6 @@ import com.example.Utown.dto.dishCategoryDTO.DishCategoryDetailsDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryRestaurantProfileDto;
 import com.example.Utown.exception.ResourceNotFoundException;
-import com.example.Utown.exception.RestaurantNotFoundException;
 import com.example.Utown.mapper.DishCategoryMapper;
 import com.example.Utown.model.DishCategory;
 import com.example.Utown.model.FileInfo;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
 public class DishCategoryServiceImpl implements DishCategoryService {
@@ -33,30 +31,7 @@ public class DishCategoryServiceImpl implements DishCategoryService {
     private final FileInfoRepository fileInfoRepository;
     private final FileInfoService fileInfoService;
 
-    @Override
-    public DishCategoryDto createDishCategory(DishCategoryDto dto) {
-        DishCategory entity = dishCategoryMapper.dishCategoryDtoToEntity(dto);
-
-        return getDishCategoryDto(dto, entity);
-    }
-
-    private DishCategoryDto getDishCategoryDto(DishCategoryDto dto, DishCategory entity) {
-        if (dto.getRestaurantId() != null) {
-            Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found", dto.getRestaurantId()));
-            entity.setRestaurant(restaurant);
-        }
-
-        if (dto.getFile() != null) {
-            Long fileId = dto.getFile().getId();
-            FileInfo file = fileInfoRepository.findById(fileId)
-                    .orElseThrow(() -> new ResourceNotFoundException("File not found", fileId));
-            entity.setFile(file);
-        }
-
-        DishCategory saved = dishCategoryRepository.save(entity);
-        return dishCategoryMapper.dishCategoryToDto(saved);
-    }
+    // ===== GET =====
 
     @Override
     @Transactional
@@ -75,51 +50,10 @@ public class DishCategoryServiceImpl implements DishCategoryService {
     }
 
     @Override
-    public DishCategoryDto updateDishCategory(Long id, DishCategoryDto dto) {
-        DishCategory entity = dishCategoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("DishCategory not found", id));
-
-        entity.setName(dto.getName());
-        entity.setSort(dto.getSort());
-        entity.setIsActive(dto.getIsActive());
-
-        return getDishCategoryDto(dto, entity);
-    }
-
-    @Override
-    @Transactional
-    public void deleteDishCategory(Long id) {
-        DishCategory entity = dishCategoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("DishCategory not found", id));
-        dishCategoryRepository.delete(entity);
-    }
-
-    @Override
-    public Page<DishCategoryDetailsDto> getDishCategoriesByRestaurantId(Long restaurantId, int page, int size) { //метод для просмотра всех категорий Dish
+    public Page<DishCategoryDetailsDto> getDishCategoriesByRestaurantId(Long restaurantId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("sort").ascending());
-        return dishCategoryRepository.findByRestaurantId(restaurantId,pageable)
+        return dishCategoryRepository.findByRestaurantId(restaurantId, pageable)
                 .map(dishCategoryMapper::toDetailsDto);
-
-    }
-
-    @Override
-    @Transactional
-    public  DishCategoryDetailsDto createDishCategoryForRestaurant(Long restaurantId, DishCategoryCreateDto dto) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
-
-       FileInfo file = null;
-        if (dto.getFileInfoId() != null) {
-            FileInfo fileInfo = fileInfoService.getFileInfoById(dto.getFileInfoId());
-            restaurant.setFileInfo(fileInfo);
-        }
-        DishCategory dishCategory = DishCategory.builder()
-                .name(dto.getName())
-                .sort(dto.getSort())
-                .restaurant(restaurant)
-                .file(file)
-                .build();
-        return dishCategoryMapper.toCreateDto(dishCategoryRepository.save(dishCategory));
     }
 
     @Override
@@ -142,8 +76,77 @@ public class DishCategoryServiceImpl implements DishCategoryService {
                 .toList();
     }
 
+    // ===== POST =====
+
+    @Override
+    public DishCategoryDto createDishCategory(DishCategoryDto dto) {
+        DishCategory entity = dishCategoryMapper.dishCategoryDtoToEntity(dto);
+        return getDishCategoryDto(dto, entity);
+    }
+
+    @Override
+    @Transactional
+    public DishCategoryDetailsDto createDishCategoryForRestaurant(Long restaurantId, DishCategoryCreateDto dto) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
+
+        FileInfo file = null;
+        if (dto.getFileInfoId() != null) {
+            file = fileInfoService.getFileInfoById(dto.getFileInfoId());
+        }
+
+        DishCategory dishCategory = DishCategory.builder()
+                .name(dto.getName())
+                .sort(dto.getSort())
+                .restaurant(restaurant)
+                .file(file)
+                .build();
+
+        return dishCategoryMapper.toCreateDto(dishCategoryRepository.save(dishCategory));
+    }
+
+    // ===== PUT =====
+
+    @Override
+    public DishCategoryDto updateDishCategory(Long id, DishCategoryDto dto) {
+        DishCategory entity = dishCategoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("DishCategory", id));
+
+        entity.setName(dto.getName());
+        entity.setSort(dto.getSort());
+        entity.setIsActive(dto.getIsActive());
+
+        return getDishCategoryDto(dto, entity);
+    }
+
+    // ===== DELETE =====
+
+    @Override
+    @Transactional
+    public void deleteDishCategory(Long id) {
+        DishCategory entity = dishCategoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("DishCategory not found", id));
+        dishCategoryRepository.delete(entity);
+    }
+
+    // ===== PRIVATE =====
+
+    private DishCategoryDto getDishCategoryDto(DishCategoryDto dto, DishCategory entity) {
+        if (dto.getRestaurantId() != null) {
+            Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found", dto.getRestaurantId()));
+            entity.setRestaurant(restaurant);
+        }
+
+        if (dto.getFile() != null) {
+            Long fileId = dto.getFile().getId();
+            FileInfo file = fileInfoRepository.findById(fileId)
+                    .orElseThrow(() -> new ResourceNotFoundException("File not found", fileId));
+            entity.setFile(file);
+        }
+
+        DishCategory saved = dishCategoryRepository.save(entity);
+        return dishCategoryMapper.dishCategoryToDto(saved);
+    }
+
 }
-
-
-
-

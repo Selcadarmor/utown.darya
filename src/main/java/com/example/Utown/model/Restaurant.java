@@ -95,8 +95,7 @@ public class Restaurant {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "restaurantAdmin_id")
+    @OneToOne(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private RestaurantAdmin restaurantAdmin;
 
     @ManyToMany(fetch = FetchType.LAZY)

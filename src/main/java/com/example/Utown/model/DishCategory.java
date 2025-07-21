@@ -38,7 +38,7 @@ public class DishCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 100, nullable = false)
+    @Column(length = 100, nullable = false, unique = true)
     private String name;
 
     @Column(name = "sort")

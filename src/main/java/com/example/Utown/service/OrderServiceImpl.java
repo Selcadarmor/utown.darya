@@ -44,6 +44,34 @@ public class OrderServiceImpl implements OrderService {
     private final DishToOrderRepository dishToOrderRepository;
     private final CartRepository cartRepository;
     private final RestaurantAdminRepository restaurantAdminRepository;
+
+    @Override
+    public Page<OrderDetailsDto> getOrderDetailsByClient(Long clientId, Pageable pageable) {
+        Page<Order> orders = orderRepository.findAllByClientId(clientId, pageable);
+
+        List<OrderDetailsDto> dtos = orders.getContent().stream()
+                .map(order -> {
+                    List<String> dishTitles = dishToOrderRepository.findDishTitleByOrderId(order.getId());
+
+                    return new OrderDetailsDto(
+                            order.getClientPhone(),
+                            order.getClient().getFullName(),
+                            order.getFullAddress(),
+                            order.getRestaurant().getTitle(),
+                            order.getRestaurant().getAddress().getFullAddress(),
+                            order.getRestaurantPhone(),
+                            order.getNumber(),
+                            order.getTotalSum(),
+                            order.getTimeOfAccepted(),
+                            order.getTimeOfDelivery(),
+                            order.getTimeOfSending(),
+                            dishTitles
+                    );
+                })
+                .toList();
+        return  new PageImpl<>(dtos, pageable, orders.getTotalElements());
+    }
+
     @Override
     public Order create(OrderDto dto) {
         Restaurant restaurant = restaurantRepository.findById(dto.getRestaurant().getId())
@@ -238,31 +266,4 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
     }
 
-    @Override
-    public Page<OrderDetailsDto> getOrderDetailsByClient(Long clientId, Pageable pageable) {
-        Page<Order> orders = orderRepository.findAllByClientId(clientId, pageable);
-
-        List<OrderDetailsDto> dtos = orders.getContent().stream()
-                .map(order -> {
-                    List<String> dishTitles = dishToOrderRepository.findDishTitleByOrderId(order.getId());
-
-                    return new OrderDetailsDto(
-                            order.getClientPhone(),
-                            order.getClient().getFullName(),
-                            order.getFullAddress(),
-                            order.getRestaurant().getTitle(),
-                            order.getRestaurant().getAddress().getFullAddress(),
-                            order.getRestaurantPhone(),
-                            order.getNumber(),
-                            order.getTotalSum(),
-                            order.getTimeOfAccepted(),
-                            order.getTimeOfDelivery(),
-                            order.getTimeOfSending(),
-                            dishTitles
-                    );
-                })
-                .toList();
-        return  new PageImpl<>(dtos, pageable, orders.getTotalElements());
-
-    }
 }
