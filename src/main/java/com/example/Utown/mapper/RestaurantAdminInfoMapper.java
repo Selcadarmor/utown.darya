@@ -5,8 +5,6 @@ import com.example.Utown.dto.restaurantAdminDTO.RestaurantAdminInfoDto;
 import com.example.Utown.model.UserType.RestaurantAdmin;
 import com.example.Utown.model.enumFiles.Roles;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Set;
@@ -55,18 +53,6 @@ public abstract class RestaurantAdminInfoMapper {
         return dto;
     }
 
-
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "active", ignore = true)
-    @Mapping(target = "password", ignore = true)
-    @Mapping(target = "roles", ignore = true)
-    @Mapping(target = "notifications", ignore = true)
-    @Mapping(target = "restaurant", ignore = true)
-    @Mapping(target = "authorities", ignore = true)
-    @Mapping(target = "username", ignore = true)
-    public abstract RestaurantAdmin updateFromDto(RestaurantAdminCreateDto dto, @MappingTarget RestaurantAdmin admin);
     public  abstract RestaurantAdminInfoDto toDtos(RestaurantAdmin restaurantAdmin);
 
 }

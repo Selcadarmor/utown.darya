@@ -10,6 +10,5 @@ import lombok.NoArgsConstructor;
 public class DishCategoryCreateDto {
     private String name;
     private Integer sort;
-    private Long fileId;
-    private Long restaurantId;
+    private Long fileInfoId;
 }

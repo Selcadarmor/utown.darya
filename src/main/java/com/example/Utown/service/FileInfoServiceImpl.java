@@ -62,7 +62,8 @@ public class FileInfoServiceImpl implements FileInfoService {
     @Transactional(rollbackFor = RuntimeException.class)
     public FileInfo getFileInfoById(Long id) {
         return fileInfoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("FileInfo not found", id));
+                .orElse( null);
     }
+
 }
 

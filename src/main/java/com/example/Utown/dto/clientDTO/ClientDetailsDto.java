@@ -1,6 +1,5 @@
 package com.example.Utown.dto.clientDTO;
 
-import com.example.Utown.dto.addressDTO.AddressInfoDto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

@@ -30,11 +30,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
 public class DishServiceImpl implements DishService {
@@ -46,6 +44,84 @@ public class DishServiceImpl implements DishService {
     private final DishMapper dishMapper;
     private final OptionRepository optionRepository;
     private final ElementRepository elementRepository;
+
+    // ===== GET =====
+
+    @Override
+    public DishDto getDishById(Long id) {
+        return dishRepository.findDishById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Dish not found", id));
+    }
+
+    @Override
+    public List<DishDto> getAllDishes() {
+        return dishRepository.findAllDishes();
+    }
+
+    @Override
+    public Page<DishDetailsDto> getDishesByRestaurantId(Long restaurantId, int page, int size) {
+        Page<Dish> dishPage = dishRepository.findByRestaurantId(restaurantId, PageRequest.of(page, size));
+
+        List<Long> optionIds = dishPage.stream()
+                .flatMap(dish -> dish.getOptions().stream())
+                .map(Option::getId)
+                .distinct()
+                .toList();
+
+        List<Option> optionsWithElements = optionRepository.findAllWithElementsByIds(optionIds);
+
+        Map<Long, List<Element>> elementsMap = optionsWithElements.stream()
+                .collect(Collectors.toMap(
+                        Option::getId,
+                        Option::getElements
+                ));
+
+        return dishPage.map(dish -> {
+            List<OptionInfoDto> optionDtos = dish.getOptions().stream().map(option -> {
+                List<ElementInfoDto> elementDtos = elementsMap.getOrDefault(option.getId(), List.of())
+                        .stream()
+                        .map(element -> new ElementInfoDto(
+                                element.getId(),
+                                element.getName(),
+                                element.getPrice()
+                        ))
+                        .toList();
+
+                return new OptionInfoDto(
+                        option.getId(),
+                        option.getName(),
+                        elementDtos
+                );
+            }).toList();
+
+            return new DishDetailsDto(
+                    dish.getDescription(),
+                    dish.getIsActive(),
+                    dish.getPrice(),
+                    dish.getSort(),
+                    dish.getTitle(),
+                    dish.getDishCategory().getId(),
+                    optionDtos
+            );
+        });
+    }
+
+    @Override
+    public DishForClientDto getDishByIdForClient(Long dishId) {
+        Dish dish = dishRepository.findDishByIdForClient(dishId)
+                .orElseThrow(() -> new DishNotFoundException(dishId));
+        return mapToDishForClientDto(dish);
+    }
+
+    @Override
+    public List<DishForClientDto> getDishesByCategoryForClient(Long categoryId) {
+        List<Dish> dishes = dishRepository.findDishByCategoryForClient(categoryId);
+        return dishes.stream()
+                .map(this::mapToDishForClientDto)
+                .toList();
+    }
+
+    // ===== POST =====
 
     @Override
     public Dish createDish(DishDto dto) {
@@ -79,15 +155,62 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public DishDto getDishById(Long id) {
-        return dishRepository.findDishById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Dish not found", id));
+    @Transactional(rollbackFor = Exception.class)
+    public DishInfoDto createDishForRestaurant(Long restaurantId, DishCreateDto dto) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found", restaurantId));
+
+        DishCategory dishCategory = null;
+        if (dto.getDishCategoryId() != null) {
+            dishCategory = dishCategoryRepository.findById(dto.getDishCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException("DishCategory not found", dto.getDishCategoryId()));
+        }
+
+        FileInfo file = null;
+        if (dto.getFileId() != null) {
+            file = fileInfoRepository.findById(dto.getFileId()).orElse(null);
+        }
+
+        Dish dish = Dish.builder()
+                .description(dto.getDescription())
+                .isActive(dto.getIsActive())
+                .price(dto.getPrice())
+                .title(dto.getTitle())
+                .sort(dto.getSort())
+                .dishCategory(dishCategory)
+                .file(file)
+                .restaurant(restaurant)
+                .build();
+
+        dishRepository.save(dish);
+
+        if (dto.getOptions() != null && !dto.getOptions().isEmpty()) {
+            for (OptionInfoDto optionDto : dto.getOptions()) {
+                Option option = Option.builder()
+                        .name(optionDto.getName())
+                        .dish(dish)
+                        .build();
+                optionRepository.save(option);
+
+                if (optionDto.getElements() != null && !optionDto.getElements().isEmpty()) {
+                    for (ElementInfoDto elementInfoDto : optionDto.getElements()) {
+                        Element element = Element.builder()
+                                .name(elementInfoDto.getName())
+                                .price(elementInfoDto.getPrice())
+                                .isActive(true)
+                                .isDeleted(false)
+                                .option(option)
+                                .build();
+                        elementRepository.save(element);
+                    }
+                }
+            }
+        }
+
+        return dishMapper.toSavedDishDto(dish);
     }
 
-    @Override
-    public List<DishDto> getAllDishes() {
-        return dishRepository.findAllDishes();
-    }
+    // ===== PUT =====
 
     @Override
     public Dish updateDish(Long id, DishDto dto) {
@@ -122,124 +245,6 @@ public class DishServiceImpl implements DishService {
         return dishRepository.save(dish);
     }
 
-    @Override
-    public void deleteDish(Long id) {
-        Dish dish = dishRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Dish not found", id));
-        dishRepository.delete(dish);
-    }
-
-    @Override
-    public Page<DishDetailsDto> getDishesByRestaurantId(Long restaurantId, int page, int size) {
-        Page<Dish> dishPage = dishRepository.findByRestaurantId(restaurantId, PageRequest.of(page, size));
-
-        // Получаем все option IDs из всех блюд на странице
-        List<Long> optionIds = dishPage.stream()
-                .flatMap(dish -> dish.getOptions().stream())
-                .map(Option::getId)
-                .distinct()
-                .toList();
-
-        // Загружаем опции вместе с элементами одним запросом (чтобы избежать N+1)
-        List<Option> optionsWithElements = optionRepository.findAllWithElementsByIds(optionIds);
-
-        // Строим карту: optionId -> List<Element>
-        Map<Long, List<Element>> elementsMap = optionsWithElements.stream()
-                .collect(Collectors.toMap(
-                        Option::getId,
-                        Option::getElements
-                ));
-
-        // Теперь мапим блюда в DTO с элементами из elementsMap
-        return dishPage.map(dish -> {
-            List<OptionInfoDto> optionDtos = dish.getOptions().stream().map(option -> {
-                List<ElementInfoDto> elementDtos = elementsMap.getOrDefault(option.getId(), List.of())
-                        .stream()
-                        .map(element -> new ElementInfoDto(
-                                element.getId(),
-                                element.getName(),
-                                element.getPrice()
-                        ))
-                        .toList();
-
-                return new OptionInfoDto(
-                        option.getId(),
-                        option.getName(),
-                        elementDtos
-                );
-            }).toList();
-
-            return new DishDetailsDto(
-                    dish.getDescription(),
-                    dish.getIsActive(),
-                    dish.getPrice(),
-                    dish.getSort(),
-                    dish.getTitle(),
-                    dish.getDishCategory().getId(),
-                    optionDtos
-            );
-        });
-    }
-
-
-
-
-    @Override // метод создания Dish для каждого ресторана, сделала так как не знаю менял ли кто-то метод создания Dish в будущем можно переиспользовать метод Dish createDish(DishDto dto)
-    @Transactional(rollbackFor = Exception.class)
-    public DishInfoDto createDishForRestaurant(Long RestaurantId, DishCreateDto dto) {
-        Restaurant restaurant = restaurantRepository.findById(RestaurantId)
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found", RestaurantId));
-
-
-        DishCategory dishCategory = null;
-        if (dto.getDishCategoryId() != null) {
-            dishCategory = dishCategoryRepository.findById(dto.getDishCategoryId())
-                    .orElseThrow(() -> new ResourceNotFoundException("DishCategory not found", dto.getDishCategoryId()));
-        }
-
-        FileInfo file = null;
-        if (dto.getFileId() != null) {
-            file = fileInfoRepository.findById(dto.getFileId())
-                    .orElse(null);
-        //Throw(() -> new ResourceNotFoundException("File not found", dto.getFileId()));
-        }
-
-        Dish dish = Dish.builder()
-                .description(dto.getDescription())
-                .isActive(dto.getIsActive())
-                .price(dto.getPrice())
-                .title(dto.getTitle())
-                .sort(dto.getSort())
-                .dishCategory(dishCategory)
-                .file(file)
-                .restaurant(restaurant)
-                .build();
-        dishRepository.save(dish);
-        if (dto.getOptions() != null && !dto.getOptions().isEmpty()) {
-            for (OptionInfoDto optionDto : dto.getOptions()) {
-                Option option = Option.builder()
-                        .name(optionDto.getName())
-                        .dish(dish)
-                        .build();
-                optionRepository.save(option);
-
-                if (optionDto.getElements() != null && !optionDto.getElements().isEmpty()) {
-                    for (ElementInfoDto elementInfoDto : optionDto.getElements()) {
-                        Element element = Element.builder()
-                                .name(elementInfoDto.getName())
-                                .price(elementInfoDto.getPrice())
-                                .isActive(true)
-                                .isDeleted(false)
-                                .option(option)
-                                .build();
-                        elementRepository.save(element);
-                    }
-                }
-            }
-        }
-        return dishMapper.toSavedDishDto(dish);
-    }
-
     @Transactional(rollbackFor = Exception.class)
     public DishInfoDto updateDishForRestaurant(Long restaurantId, Long dishId, DishCreateDto dto) {
         Dish dish = dishRepository.findById(dishId)
@@ -261,10 +266,8 @@ public class DishServiceImpl implements DishService {
             dish.setDishCategory(category);
         }
 
-        // Удаляем старые опции
         dish.getOptions().clear();
 
-        // Добавляем новые
         if (dto.getOptions() != null) {
             for (OptionInfoDto optionDto : dto.getOptions()) {
                 Option option = new Option();
@@ -291,22 +294,16 @@ public class DishServiceImpl implements DishService {
         return dishMapper.dishUpdateInfoToDto(savedDish);
     }
 
+    // ===== DELETE =====
 
     @Override
-    public DishForClientDto getDishByIdForClient(Long dishId) {
-        Dish dish = dishRepository.findDishByIdForClient(dishId)
-                .orElseThrow(() -> new DishNotFoundException(dishId));
-
-        return mapToDishForClientDto(dish);
+    public void deleteDish(Long id) {
+        Dish dish = dishRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Dish not found", id));
+        dishRepository.delete(dish);
     }
 
-    @Override
-    public List<DishForClientDto> getDishesByCategoryForClient(Long categoryId) {
-        List<Dish> dishes = dishRepository.findDishByCategoryForClient(categoryId);
-        return dishes.stream()
-                .map(this::mapToDishForClientDto)
-                .toList();
-    }
+    // ===== PRIVATE =====
 
     private DishForClientDto mapToDishForClientDto(Dish dish) {
         List<OptionForClientDto> optionDto = dish.getOptions().stream().map(option -> {
@@ -346,6 +343,4 @@ public class DishServiceImpl implements DishService {
                 optionDto
         );
     }
-
 }
-

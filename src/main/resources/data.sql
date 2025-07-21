@@ -156,7 +156,7 @@ INSERT INTO operating_mode (
       (7, 7, NULL, NULL, TRUE, NOW(), NOW(), 1)
 ON DUPLICATE KEY UPDATE day_of_week = VALUES(day_of_week);
 
--- 22. Заказ
+-- 22. Заказ (исправлен time_of_accepted)
 INSERT INTO orders (
     id, area, city, client_phone, date, delivery_price, delivery_time,
     details, full_address, is_paid, latitude, longitude, note_for_courier,
@@ -168,8 +168,8 @@ INSERT INTO orders (
              1, 'Gangnam', 'Seoul', '010-1234-5678', '2025-07-10', 3000.00, '30 min',
              'Leave at door', '123 Gangnam-daero', TRUE, 37.4979, 127.0276, 'Ring once',
              'ORD-001', 15000.00, 'CARD', '12345', '02-9876-5432', 'Seoul',
-             'COMPLETED', 'Gangnam-daero', '12:00', '11:55', '12:30', '12:05',
-             18000.00, 1, 15, 'Preparing', '12:20',
+             'COMPLETED', 'Gangnam-daero', '12:00:00', '2025-07-10 11:55:00', '2025-07-10 12:30:00', '2025-07-10 12:05:00',
+             18000.00, 1, 15, 'Preparing', '2025-07-10 12:20:00',
              '1234', NOW(), NOW(), 1, 1
          )
 ON DUPLICATE KEY UPDATE number = VALUES(number);

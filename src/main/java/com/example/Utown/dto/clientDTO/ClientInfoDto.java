@@ -2,8 +2,6 @@ package com.example.Utown.dto.clientDTO;
 
 import lombok.Data;
 
-
-
 @Data
 public class ClientInfoDto {
     private String fullName;

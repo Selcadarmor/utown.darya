@@ -8,12 +8,14 @@ import com.example.Utown.dto.dishCategoryDTO.DishCategoryDetailsDto;
 import com.example.Utown.dto.dishDTO.DishCreateDto;
 import com.example.Utown.dto.dishDTO.DishDetailsDto;
 import com.example.Utown.dto.dishDTO.DishInfoDto;
+import com.example.Utown.dto.orderDTO.OrderDetailsDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantCreateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
 import com.example.Utown.service.DishCategoryService;
 import com.example.Utown.service.DishServiceImpl;
+import com.example.Utown.service.OrderService;
 import com.example.Utown.service.UserType.client.ClientServiceImpl;
 import com.example.Utown.service.RestaurantServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,6 +31,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -61,6 +64,7 @@ public class AdminController {
     private final RestaurantServiceImpl restaurantService;
     private final DishServiceImpl dishService;
     private final DishCategoryService dishCategoryService;
+    private final OrderService orderService;
 
     // --- Клиенты ---
 
@@ -88,7 +92,7 @@ public class AdminController {
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "404", description = "Client not found")
     })
-    @PutMapping("/clients/{id}/active")
+    @PatchMapping("/clients/{id}/status")
     public ResponseEntity<Void> updateClientActiveStatus(@PathVariable Long id, @Valid @RequestBody ClientUpdateDto clientUpdateDto) {
         clientService.updateClientActiveStatus(id, clientUpdateDto.getActive());
         return ResponseEntity.ok().build();
@@ -159,8 +163,9 @@ public class AdminController {
             @ApiResponse(responseCode = "404", description = "Restaurant not found")
     })
     @DeleteMapping("/restaurants/{id}")
-    public void deactivateRestaurant(@PathVariable Long id) {
+    public ResponseEntity<Void> deactivateRestaurant(@PathVariable Long id) {
         restaurantService.deactivateRestaurant(id);
+        return ResponseEntity.noContent().build();
     }
 
     // --- Блюда ---
@@ -235,5 +240,22 @@ public class AdminController {
             @Valid @RequestBody DishCategoryCreateDto dto) {
         DishCategoryDetailsDto created = dishCategoryService.createDishCategoryForRestaurant(restaurantId, dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    //история заказов
+    @Operation(
+            summary = "View restaurant order history",
+            description = "Endpoint to get all orders related to a specific restaurant."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Orders retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Orders not found")
+    })
+    @GetMapping("/clients/{clientId}/orders")
+    public ResponseEntity<Page<OrderDetailsDto>> getOrderDetailsByClient(@PathVariable Long clientId,
+                                                                         Pageable pageable) {
+        Page<OrderDetailsDto> orders = orderService.getOrderDetailsByClient(clientId, pageable);
+        return ResponseEntity.ok(orders);
+
     }
 }
