@@ -32,4 +32,6 @@ public interface OperatingModeRepository extends JpaRepository<OperatingMode, Lo
             "ORDER BY o.dayOfWeek")
     List<OperatingModeRestaurantProfileDto> findRawOperatingModesByRestaurantId(@Param("restaurantId") Long restaurantId);
 
+    Optional<OperatingMode> findByRestaurantIdAndDayOfWeek(Long restaurantId, int dayOfWeek);
+
 }

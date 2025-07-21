@@ -31,6 +31,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -91,7 +92,7 @@ public class AdminController {
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "404", description = "Client not found")
     })
-    @PutMapping("/clients/{id}/active")
+    @PatchMapping("/clients/{id}/status")
     public ResponseEntity<Void> updateClientActiveStatus(@PathVariable Long id, @Valid @RequestBody ClientUpdateDto clientUpdateDto) {
         clientService.updateClientActiveStatus(id, clientUpdateDto.getActive());
         return ResponseEntity.ok().build();
@@ -162,8 +163,9 @@ public class AdminController {
             @ApiResponse(responseCode = "404", description = "Restaurant not found")
     })
     @DeleteMapping("/restaurants/{id}")
-    public void deactivateRestaurant(@PathVariable Long id) {
+    public ResponseEntity<Void> deactivateRestaurant(@PathVariable Long id) {
         restaurantService.deactivateRestaurant(id);
+        return ResponseEntity.noContent().build();
     }
 
     // --- Блюда ---

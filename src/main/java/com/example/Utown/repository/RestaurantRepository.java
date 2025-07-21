@@ -29,20 +29,18 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
             "GROUP BY r.id, r.title, r.description, r.phone, r.minOrderAmount, r.fileInfo.id")
     Optional<RestaurantDetailsDto> findRestaurantSummaryById(@Param("id") Long id);
 
-    @Query("""
-    SELECT new com.example.Utown.dto.restaurantDTO.RestaurantInfoDto(
-        r.id,
-        r.title,
-        a.city,
-        r.phone,
-        COUNT(DISTINCT o.id)
-    )
-    FROM Restaurant r
-    LEFT JOIN r.address a
-    LEFT JOIN Order o ON o.restaurant.id = r.id
-    GROUP BY r.id, r.title, a.city, r.phone
-""")
+    @Query("SELECT new com.example.Utown.dto.restaurantDTO.RestaurantInfoDto(" +
+            "r.id, " +
+            "r.title, " +
+            "a.city, " +
+            "r.phone, " +
+            "COUNT(DISTINCT o.id)) " +
+            "FROM Restaurant r " +
+            "LEFT JOIN r.address a " +
+            "LEFT JOIN Order o ON o.restaurant.id = r.id " +
+            "GROUP BY r.id, r.title, a.city, r.phone")
     Page<RestaurantInfoDto> findAllRestaurantsWithOrderCount(Pageable pageable);
+
 
     @Query("SELECT new com.example.Utown.dto.restaurantDTO.RestaurantForClientDto(" +
             "r.id, r.title, f.path, r.description, d.price, r.deliveryTime, " +
@@ -135,10 +133,5 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
             @Param("area") String area,
             Pageable pageable
     );
-
-
-    @Modifying
-    @Query("UPDATE Restaurant r SET r.isActive = false WHERE r.id = :id")
-    void deactivateById(@Param("id") Long id);
 
 }

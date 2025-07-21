@@ -13,6 +13,4 @@ public interface OptionRepository extends JpaRepository<Option, Long> {
     @Query("SELECT o FROM Option o LEFT JOIN FETCH o.elements WHERE o.id IN :ids")
     List<Option> findAllWithElementsByIds(@Param("ids") List<Long> ids);
 
-
-    void deleteByDishId(Long dishId);
 }
