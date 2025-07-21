@@ -90,39 +90,6 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public Dish updateDish(Long id, DishDto dto) {
-        Dish dish = dishRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Dish", id));
-
-        Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId())
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found", dto.getRestaurantId()));
-
-        DishCategory dishCategory = dishCategoryRepository.findById(dto.getDishCategoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("DishCategory not found", dto.getDishCategoryId()));
-
-        FileInfo fileInfo = fileInfoRepository.findById(dto.getFileId())
-                .orElseThrow(() -> new ResourceNotFoundException("FileInfo not found", dto.getFileId()));
-
-        dish.setDescription(dto.getDescription());
-        dish.setIsActive(dto.getIsActive());
-        dish.setIsDeleted(dto.getIsDeleted());
-        dish.setPrice(dto.getPrice());
-        dish.setSort(dto.getSort());
-        dish.setTitle(dto.getTitle());
-        dish.setRestaurant(restaurant);
-        dish.setDishCategory(dishCategory);
-        dish.setFile(fileInfo);
-
-        if (dto.getOptions() != null) {
-            dish.getOptions().clear();
-            dto.getOptions().forEach(option -> option.setDish(dish));
-            dish.getOptions().addAll(dto.getOptions());
-        }
-
-        return dishRepository.save(dish);
-    }
-
-    @Override
     public void deleteDish(Long id) {
         Dish dish = dishRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Dish not found", id));
@@ -332,6 +299,9 @@ public class DishServiceImpl implements DishService {
             );
         }).toList();
 
+        Long dishCategoryId = dish.getDishCategory() != null ? dish.getDishCategory().getId() : null;
+        String filePath = dish.getFile() != null ? dish.getFile().getPath() : null;
+
         return new DishForClientDto(
                 dish.getId(),
                 dish.getTitle(),
@@ -341,8 +311,8 @@ public class DishServiceImpl implements DishService {
                 dish.getPrice(),
                 dish.getSort(),
                 dish.getRestaurant().getId(),
-                dish.getDishCategory().getId(),
-                dish.getFile() != null ? dish.getFile().getPath() : null,
+                dishCategoryId,
+                filePath,
                 optionDto
         );
     }

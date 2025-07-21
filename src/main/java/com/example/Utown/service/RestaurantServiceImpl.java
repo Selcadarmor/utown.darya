@@ -5,7 +5,6 @@ import com.example.Utown.dto.deliveryDTO.DeliveryInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeCreateDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeRestaurantProfileDto;
-import com.example.Utown.dto.restaurantAdminDTO.RestaurantAdminCreateDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryInfoDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantCreateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
@@ -217,11 +216,6 @@ public class RestaurantServiceImpl  implements RestaurantService {
         restaurantRepository.save(restaurant);
     }
 
-    public Restaurant findRestaurantById(Long restaurantId) {
-        return restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
-    }
-
     @Override //For Client
     public Page<RestaurantForClientDto> getRecommendedRestaurantsForClient(Pageable pageable) {
         Client client = clientService.getCurrentClient();
@@ -287,8 +281,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
     @Override
     @Transactional(readOnly = true)
     public RestaurantProfileDto getRestaurantProfile(Long restaurantId) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
+        Restaurant restaurant = findRestaurantById(restaurantId);
         List<OperatingModeRestaurantProfileDto> operatingModes = operatingModeRepository.findRawOperatingModesByRestaurantId(restaurantId);
         return RestaurantProfileDto.builder()
                 .id(restaurant.getId())
@@ -301,6 +294,12 @@ public class RestaurantServiceImpl  implements RestaurantService {
                 .minOrderAmount(restaurant.getMinOrderAmount())
                 .operatingModes(operatingModes)
                 .build();
+    }
+
+    @Override
+    public Restaurant findRestaurantById(Long restaurantId) {
+        return restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
     }
 
 }

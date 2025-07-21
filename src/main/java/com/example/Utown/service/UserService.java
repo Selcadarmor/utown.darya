@@ -6,6 +6,6 @@ import java.util.Optional;
 
 public interface UserService {
     Optional<User> findByUsername(String username);
-    void changePassword(String username, String newPassword);
+    boolean changePassword(String username, String newPassword);
 }
 
