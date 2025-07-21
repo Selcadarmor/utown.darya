@@ -54,11 +54,6 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public List<DishDto> getAllDishes() {
-        return dishRepository.findAllDishes();
-    }
-
-    @Override
     public Page<DishDetailsDto> getDishesByRestaurantId(Long restaurantId, int page, int size) {
         Page<Dish> dishPage = dishRepository.findByRestaurantId(restaurantId, PageRequest.of(page, size));
 
@@ -329,6 +324,9 @@ public class DishServiceImpl implements DishService {
             );
         }).toList();
 
+        Long dishCategoryId = dish.getDishCategory() != null ? dish.getDishCategory().getId() : null;
+        String filePath = dish.getFile() != null ? dish.getFile().getPath() : null;
+
         return new DishForClientDto(
                 dish.getId(),
                 dish.getTitle(),
@@ -338,8 +336,8 @@ public class DishServiceImpl implements DishService {
                 dish.getPrice(),
                 dish.getSort(),
                 dish.getRestaurant().getId(),
-                dish.getDishCategory().getId(),
-                dish.getFile() != null ? dish.getFile().getPath() : null,
+                dishCategoryId,
+                filePath,
                 optionDto
         );
     }

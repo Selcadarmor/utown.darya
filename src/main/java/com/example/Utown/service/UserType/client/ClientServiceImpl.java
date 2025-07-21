@@ -7,8 +7,11 @@ import com.example.Utown.dto.clientDTO.ClientInfoDto;
 import com.example.Utown.dto.clientDTO.ClientProfileUpdateDto;
 import com.example.Utown.dto.clientDTO.ClientRegistrationDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
+import com.example.Utown.exception.DefaultAddressNotSetException;
 import com.example.Utown.exception.ResourceNotFoundException;
+import com.example.Utown.exception.RestaurantAlreadyFavoritedException;
 import com.example.Utown.exception.RestaurantNotFoundException;
+import com.example.Utown.exception.RestaurantNotInFavoritesException;
 import com.example.Utown.exception.UserAlreadyExistsException;
 import com.example.Utown.mapper.AddressMapper;
 import com.example.Utown.model.Address;
@@ -57,8 +60,9 @@ public class ClientServiceImpl implements ClientService {
     // ========================= GET =========================
 
     @Override
-    public Optional<Client> findByUsername(String username) {
-        return clientRepository.findByUsername(username);
+    public Client findByUsername(String username) {
+        return clientRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(username));
     }
 
     @Override
@@ -111,8 +115,9 @@ public class ClientServiceImpl implements ClientService {
 
     // ========================= POST =========================
 
-    @Override
+    @Override // For Client
     public void save(ClientRegistrationDto dto, Roles roleName) {
+
         if (clientRepository.findByUsername(dto.getUsername()).isPresent()) {
             throw new UserAlreadyExistsException(dto.getUsername());
         }
@@ -139,7 +144,7 @@ public class ClientServiceImpl implements ClientService {
         clientRepository.save(client);
     }
 
-    @Transactional
+    @Transactional //For Client
     @Override
     public Address saveAddressForClient(AddressDto dto) {
         Client client = getCurrentClient();
@@ -155,13 +160,17 @@ public class ClientServiceImpl implements ClientService {
         return address;
     }
 
-    @Transactional
+    @Transactional //For client
     @Override
     public void addFavoriteRestaurant(Long restaurantId) {
         Client client = getCurrentClient();
 
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
+
+        if (client.getFavoriteRestaurants().contains(restaurant)) {
+            throw new RestaurantAlreadyFavoritedException(restaurant.getTitle());
+        }
 
         client.getFavoriteRestaurants().add(restaurant);
         clientRepository.save(client);
@@ -187,7 +196,7 @@ public class ClientServiceImpl implements ClientService {
 
         Long defaultAddressId = client.getDefaultAddress();
         if (defaultAddressId == null) {
-            throw new IllegalStateException("Client has no default address set");
+            throw new DefaultAddressNotSetException();
         }
 
         boolean hasDefaultAddress = client.getAddresses().stream()
@@ -205,17 +214,6 @@ public class ClientServiceImpl implements ClientService {
         return new ClientProfileUpdateDto(client.getFullName(), updatedAddressDto);
     }
 
-    @Transactional
-    @Override
-    public void removeFavoriteRestaurant(Long restaurantId) {
-        Client client = getCurrentClient();
-
-        Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
-
-        client.getFavoriteRestaurants().remove(restaurant);
-        clientRepository.save(client);
-    }
 
     // ========================= DELETE =========================
 
@@ -234,6 +232,23 @@ public class ClientServiceImpl implements ClientService {
         addressRepository.delete(address);
     }
 
+
+    @Transactional // For Client
+    @Override
+    public void removeFavoriteRestaurant(Long restaurantId) {
+        Client client = getCurrentClient();
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
+
+        if (!client.getFavoriteRestaurants().contains(restaurant)) {
+            throw new RestaurantNotInFavoritesException(restaurant.getTitle());
+        }
+
+        client.getFavoriteRestaurants().remove(restaurant);
+        clientRepository.save(client);
+    }
+
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteClient(Long id) {
@@ -241,6 +256,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     // ========================= PRIVATE =========================
+
 
     private Set<AddressInfoDto> mapAddressDtos(Set<Address> addresses) {
         if (addresses == null) return Collections.emptySet();

@@ -2,6 +2,7 @@ package com.example.Utown.service;
 
 import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.dto.addressDTO.AddressInfoDto;
+import com.example.Utown.exception.AddressNotFoundException;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.model.Address;
 import com.example.Utown.repository.AddressRepository;
@@ -37,18 +38,17 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public Address getAddressById(Long id) {
         return addressRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Address not found", id));
+                .orElseThrow(() -> new AddressNotFoundException(id));
     }
 
-    @Override
+    @Override //Можно удалить позже
     public List<AddressDto> getAllAddresses() {
         return addressRepository.getAllAddresses();
     }
 
     @Override
     public Address updateAddress(Long id, AddressDto dto) {
-        Address address = addressRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Address", id));
+        Address address = getAddressById(id);
 
         address.setArea(dto.getArea());
         address.setCity(dto.getCity());
@@ -65,7 +65,7 @@ public class AddressServiceImpl implements AddressService {
         return addressRepository.save(address);
     }
 
-    @Override
+    @Override //Можно позже удалить
     public void deleteAddress(Long id) {
         Address address = addressRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Address not found", id));

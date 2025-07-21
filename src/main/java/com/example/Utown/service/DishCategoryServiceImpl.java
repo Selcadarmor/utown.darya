@@ -27,9 +27,10 @@ public class DishCategoryServiceImpl implements DishCategoryService {
 
     private final DishCategoryRepository dishCategoryRepository;
     private final DishCategoryMapper dishCategoryMapper;
-    private final RestaurantRepository restaurantRepository;
+    private final RestaurantService restaurantService;
     private final FileInfoRepository fileInfoRepository;
     private final FileInfoService fileInfoService;
+    private final RestaurantRepository restaurantRepository;
 
     // ===== GET =====
 
@@ -58,22 +59,7 @@ public class DishCategoryServiceImpl implements DishCategoryService {
 
     @Override
     public List<DishCategoryRestaurantProfileDto> getDishCategoriesByRestaurantForClient(Long restaurantId) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
-
-        return restaurant.getDishCategories().stream()
-                .map(category -> {
-                    Long dishCount = dishCategoryRepository.countDishesByDishCategoryId(category.getId());
-                    return new DishCategoryRestaurantProfileDto(
-                            category.getId(),
-                            category.getName(),
-                            category.getSort(),
-                            category.getIsActive(),
-                            category.getFile() != null ? category.getFile().getPath() : null,
-                            dishCount
-                    );
-                })
-                .toList();
+        return dishCategoryRepository.findDishCategoriesWithDishCountByRestaurantId(restaurantId);
     }
 
     // ===== POST =====
@@ -148,5 +134,4 @@ public class DishCategoryServiceImpl implements DishCategoryService {
         DishCategory saved = dishCategoryRepository.save(entity);
         return dishCategoryMapper.dishCategoryToDto(saved);
     }
-
 }

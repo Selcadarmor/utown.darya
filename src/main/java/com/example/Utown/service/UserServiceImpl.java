@@ -22,13 +22,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override //For Client
-    public void changePassword(String username, String newPassword) {
-
+    public boolean changePassword(String username, String newPassword) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
 
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+        return true;
     }
+
+
 
 }
