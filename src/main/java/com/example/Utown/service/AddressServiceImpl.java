@@ -11,7 +11,7 @@ import com.example.Utown.model.Address;
 import com.example.Utown.model.UserType.Client;
 import com.example.Utown.repository.AddressRepository;
 import com.example.Utown.repository.UserType.ClientRepository;
-import com.example.Utown.service.UserType.client.ClientService;
+import com.example.Utown.service.UserType.client.CurrentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -26,8 +26,8 @@ public class AddressServiceImpl implements AddressService {
 
     private final AddressRepository addressRepository;
     private final AddressMapper addressMapper;
-    private final ClientService clientService;
     private final ClientRepository clientRepository;
+    private final CurrentService currentService;
 
     @Override
     public Address createAddress(AddressDto dto) {
@@ -88,14 +88,14 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public List<AddressDto> getAddressesByClient() {
-        Client client = clientService.getCurrentClient();
+        Client client = currentService.getCurrentClient();
         return clientRepository.getAddressesByClient(client.getUsername());
     }
 
     @Transactional //For Client
     @Override
     public Address saveAddressForClient(AddressDto dto) {
-        Client client = clientService.getCurrentClient();
+        Client client = currentService.getCurrentClient();
 
         Address address = createAddress(dto);
 
@@ -112,7 +112,7 @@ public class AddressServiceImpl implements AddressService {
     @Transactional
     @Override
     public ClientProfileUpdateDto updateClientProfile(ClientProfileUpdateDto dto) {
-        Client client = clientService.getCurrentClient();
+        Client client = currentService.getCurrentClient();
 
         client.setFullName(dto.getFullName());
 
@@ -138,7 +138,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public void deleteAddressForCLient(Long addressId) {
-        Client client = clientService.getCurrentClient();
+        Client client = currentService.getCurrentClient();
 
         Address address = getAddressById(addressId);
 
