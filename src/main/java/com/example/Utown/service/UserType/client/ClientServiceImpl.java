@@ -49,8 +49,6 @@ import java.util.stream.Collectors;
 public class ClientServiceImpl implements ClientService {
 
     private final AddressService addressService;
-    private final AddressRepository addressRepository;
-    private final AddressMapper addressMapper;
     private final ClientRepository clientRepository;
     private final CartRepository cartRepository;
     private final PasswordEncoder passwordEncoder;
