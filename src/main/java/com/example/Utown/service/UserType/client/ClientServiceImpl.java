@@ -70,17 +70,10 @@ public class ClientServiceImpl implements ClientService {
         return clientRepository.findAllClientDetails(pageable);
     }
 
-
     @Override
     public ClientInfoDto getClientById(Long clientId) {
         return clientRepository.findClientInfoById(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found", clientId));
-    }
-
-    @Override
-    public List<AddressDto> getAddressesByClient() {
-        Client client = getCurrentClient();
-        return clientRepository.getAddressesByClient(client.getUsername());
     }
 
     @Transactional(readOnly = true)
@@ -144,22 +137,6 @@ public class ClientServiceImpl implements ClientService {
         clientRepository.save(client);
     }
 
-    @Transactional //For Client
-    @Override
-    public Address saveAddressForClient(AddressDto dto) {
-        Client client = getCurrentClient();
-
-        Address address = addressService.createAddress(dto);
-
-        if (client.getAddresses() == null) {
-            client.setAddresses(new HashSet<>());
-        }
-        client.getAddresses().add(address);
-        clientRepository.save(client);
-
-        return address;
-    }
-
     @Transactional //For client
     @Override
     public void addFavoriteRestaurant(Long restaurantId) {
@@ -187,51 +164,7 @@ public class ClientServiceImpl implements ClientService {
         clientRepository.save(client);
     }
 
-    @Transactional
-    @Override
-    public ClientProfileUpdateDto updateClientProfile(ClientProfileUpdateDto dto) {
-        Client client = getCurrentClient();
-
-        client.setFullName(dto.getFullName());
-
-        Long defaultAddressId = client.getDefaultAddress();
-        if (defaultAddressId == null) {
-            throw new DefaultAddressNotSetException();
-        }
-
-        boolean hasDefaultAddress = client.getAddresses().stream()
-                .anyMatch(a -> a.getId().equals(defaultAddressId));
-
-        if (!hasDefaultAddress) {
-            throw new ResourceNotFoundException("Default address not found for client", defaultAddressId);
-        }
-
-        Address updatedAddress = addressService.updateAddress(defaultAddressId, dto.getAddressDto());
-
-        clientRepository.save(client);
-
-        AddressDto updatedAddressDto = addressMapper.addressToDto(updatedAddress);
-        return new ClientProfileUpdateDto(client.getFullName(), updatedAddressDto);
-    }
-
-
     // ========================= DELETE =========================
-
-    @Override
-    public void deleteAddressForCLient(Long addressId) {
-        Client client = getCurrentClient();
-
-        Address address = addressService.getAddressById(addressId);
-
-        if (!client.getAddresses().contains(address)) {
-            throw new AccessDeniedException("You are not allowed to delete this address");
-        }
-
-        client.getAddresses().remove(address);
-        clientRepository.save(client);
-        addressRepository.delete(address);
-    }
-
 
     @Transactional // For Client
     @Override

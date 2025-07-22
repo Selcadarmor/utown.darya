@@ -14,6 +14,7 @@ import com.example.Utown.dto.restaurantDTO.RestaurantProfileDto;
 import com.example.Utown.mapper.OrderMapper;
 import com.example.Utown.model.Order;
 import com.example.Utown.model.UserType.Client;
+import com.example.Utown.service.AddressService;
 import com.example.Utown.service.DishCategoryService;
 import com.example.Utown.service.DishService;
 import com.example.Utown.service.DishToOrderService;
@@ -60,6 +61,7 @@ public class ClientController {
     private final DishToOrderService dishToOrderService;
     private final OrderService orderService;
     private final OrderMapper orderMapper;
+    private final AddressService addressService;
 
     @GetMapping("/restaurant/categories") //Passed
     @Operation(
@@ -214,7 +216,7 @@ public class ClientController {
             }
     )
     public ResponseEntity<List<AddressDto>> getClientAddresses() {
-        List<AddressDto> addresses = clientService.getAddressesByClient();
+        List<AddressDto> addresses = addressService.getAddressesByClient();
         return ResponseEntity.ok(addresses);
     }
 
@@ -230,7 +232,7 @@ public class ClientController {
             }
     )
     public ResponseEntity<Void> addAddressForCurrentUser(@RequestBody AddressDto addressDto) {
-        clientService.saveAddressForClient(addressDto);
+        addressService.saveAddressForClient(addressDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -247,7 +249,7 @@ public class ClientController {
             }
     )
     public ResponseEntity<ClientProfileUpdateDto> updateClientProfile(@RequestBody ClientProfileUpdateDto dto) {
-        ClientProfileUpdateDto updatedProfile = clientService.updateClientProfile(dto);
+        ClientProfileUpdateDto updatedProfile = addressService.updateClientProfile(dto);
         return ResponseEntity.ok(updatedProfile);
     }
 
@@ -279,7 +281,7 @@ public class ClientController {
             }
     )
     public ResponseEntity<Void> deleteAddressForClient(@PathVariable("id") Long addressId) {
-        clientService.deleteAddressForCLient(addressId);
+        addressService.deleteAddressForCLient(addressId);
         return ResponseEntity.noContent().build();
     }
 

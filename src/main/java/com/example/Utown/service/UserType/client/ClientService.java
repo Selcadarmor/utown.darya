@@ -21,15 +21,11 @@ public interface ClientService {
         void updateClientActiveStatus(Long id, Boolean active);
         void deleteClient(Long id);
         void save(ClientRegistrationDto dto, Roles roleName);
-        ClientProfileUpdateDto updateClientProfile(ClientProfileUpdateDto dto);
         void addFavoriteRestaurant(Long restaurantId);
         List<RestaurantForClientDto> getFavoriteRestaurants();
         void removeFavoriteRestaurant(Long restaurantId);
-        Address saveAddressForClient(AddressDto dto);
         Client getCurrentClient();
         Address getAddressByDefaultAddress();
-        List<AddressDto> getAddressesByClient();
-        void deleteAddressForCLient(Long addressId);
 }
 
 
