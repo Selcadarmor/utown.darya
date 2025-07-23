@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -22,6 +23,6 @@ public class OptionDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Dish dish;
-    private List<Element> elements;
+    private Set<Element> elements;
 }
 

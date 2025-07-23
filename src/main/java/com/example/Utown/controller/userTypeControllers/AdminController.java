@@ -14,10 +14,11 @@ import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
 import com.example.Utown.service.DishCategoryService;
+import com.example.Utown.service.DishService;
 import com.example.Utown.service.DishServiceImpl;
 import com.example.Utown.service.OrderService;
-import com.example.Utown.service.UserType.client.ClientServiceImpl;
-import com.example.Utown.service.RestaurantServiceImpl;
+import com.example.Utown.service.RestaurantService;
+import com.example.Utown.service.UserType.client.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -60,9 +61,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/admin")
 public class AdminController {
 
-    private final ClientServiceImpl clientService;
-    private final RestaurantServiceImpl restaurantService;
-    private final DishServiceImpl dishService;
+    private final ClientService clientService;
+    private final RestaurantService restaurantService;
+    private final DishService dishService;
     private final DishCategoryService dishCategoryService;
     private final OrderService orderService;
 
@@ -70,7 +71,7 @@ public class AdminController {
 
     @Operation(summary = "Get all clients", description = "Returns a list of all registered clients.")
     @ApiResponses(@ApiResponse(responseCode = "200", description = "List of clients retrieved successfully"))
-    @GetMapping("/clients")
+    @GetMapping("/clients") //Passed
     public ResponseEntity<Page<ClientDetailsDto>> getAllClients(Pageable pageable) {
         Page<ClientDetailsDto> clients = clientService.getAllClients(pageable);
         return ResponseEntity.ok(clients);
@@ -81,7 +82,7 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "Client retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Client not found")
     })
-    @GetMapping("/clients/{id}")
+    @GetMapping("/clients/{id}") //Passed
     public ResponseEntity<ClientInfoDto> getClientById(@PathVariable Long id) {
         return ResponseEntity.ok(clientService.getClientById(id));
     }
@@ -92,7 +93,7 @@ public class AdminController {
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "404", description = "Client not found")
     })
-    @PatchMapping("/clients/{id}/status")
+    @PatchMapping("/clients/{id}/status") //Passed
     public ResponseEntity<Void> updateClientActiveStatus(@PathVariable Long id, @Valid @RequestBody ClientUpdateDto clientUpdateDto) {
         clientService.updateClientActiveStatus(id, clientUpdateDto.getActive());
         return ResponseEntity.ok().build();
@@ -104,7 +105,7 @@ public class AdminController {
             @ApiResponse(responseCode = "204", description = "Client deleted successfully."),
             @ApiResponse(responseCode = "404", description = "Client not found")
     })
-    @DeleteMapping("/clients/{id}")
+    @DeleteMapping("/clients/{id}") //Passed
     public ResponseEntity<Void> deleteClient(@PathVariable Long id) {
         clientService.deleteClient(id);
         return ResponseEntity.noContent().build();
@@ -114,7 +115,7 @@ public class AdminController {
 
     @Operation(summary = "Get all restaurants", description = "Returns a list of all restaurants.")
     @ApiResponses(@ApiResponse(responseCode = "200", description = "List of restaurants retrieved successfully"))
-    @GetMapping("/restaurants")
+    @GetMapping("/restaurants") //Passed
     public ResponseEntity<Page<RestaurantInfoDto>> getAllRestaurants(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -127,7 +128,7 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "Restaurant retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Restaurant not found")
     })
-    @GetMapping("/restaurants/{id}")
+    @GetMapping("/restaurants/{id}") //Passed
     public ResponseEntity<RestaurantDetailsDto> getRestaurantById(@PathVariable Long id) {
         return ResponseEntity.ok(restaurantService.getRestaurantDetails(id));
     }
@@ -138,7 +139,7 @@ public class AdminController {
             @ApiResponse(responseCode = "400", description = "Invalid request body"),
             @ApiResponse(responseCode = "409", description = "Duplicate restaurant")
     })
-    @PostMapping("/restaurants")
+    @PostMapping("/restaurants") //Passed (but we need to reconsider the AddressDto)
     public ResponseEntity<RestaurantDetailsDto> createRestaurant(
             @Valid @RequestBody RestaurantCreateDto restaurantCreateDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -150,7 +151,7 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "Restaurant updated successfully."),
             @ApiResponse(responseCode = "404", description = "Restaurant not found")
     })
-    @PutMapping("/restaurants/{id}")
+    @PutMapping("/restaurants/{id}") //Passsed
     public ResponseEntity<RestaurantDetailsDto> updateRestaurant(
             @PathVariable Long id,
             @Valid @RequestBody RestaurantUpdateDto restaurantUpdateDto) {
@@ -162,7 +163,7 @@ public class AdminController {
             @ApiResponse(responseCode = "204", description = "Restaurant deactivated successfully."),
             @ApiResponse(responseCode = "404", description = "Restaurant not found")
     })
-    @DeleteMapping("/restaurants/{id}")
+    @DeleteMapping("/restaurants/{id}") //Passed
     public ResponseEntity<Void> deactivateRestaurant(@PathVariable Long id) {
         restaurantService.deactivateRestaurant(id);
         return ResponseEntity.noContent().build();
@@ -175,7 +176,7 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "Dishes retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Restaurant not found")
     })
-    @GetMapping("restaurants/{restaurantId}/dishes")
+    @GetMapping("restaurants/{restaurantId}/dishes") //Passed
     public ResponseEntity<Page<DishDetailsDto>> getDishesByRestaurant(
             @PathVariable Long restaurantId,
             @RequestParam(defaultValue = "0") int page,
@@ -190,7 +191,7 @@ public class AdminController {
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "404", description = "Restaurant or category not found")
     })
-    @PostMapping("/restaurants/{restaurantId}/dishes")
+    @PostMapping("/restaurants/{restaurantId}/dishes") //Passed
     public ResponseEntity<DishInfoDto> createDishForRestaurant(
             @PathVariable Long restaurantId,
             @Valid @RequestBody DishCreateDto dishCreateDto) {
@@ -203,7 +204,7 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "Dish updated successfully."),
             @ApiResponse(responseCode = "404", description = "Dish or restaurant not found")
     })
-    @PutMapping("/restaurants/{restaurantId}/dishes/{dishId}")
+    @PatchMapping("/restaurants/{restaurantId}/dishes/{dishId}") //
     public ResponseEntity<DishInfoDto> updateDishForRestaurant(
             @PathVariable Long restaurantId,
             @PathVariable Long dishId,

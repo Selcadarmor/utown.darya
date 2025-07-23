@@ -7,6 +7,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.util.List;
+import java.util.Set;
 
 @Mapper(componentModel = "spring")
 public interface ElementMapper {
@@ -20,6 +21,8 @@ public interface ElementMapper {
     @Mapping(source = "element.price", target = "price")
     ElementInfoDto mapElement(Element element);
 
-    List<ElementDto> toElementDtoList(List<Element> elements);
+    Set<ElementDto> toElementDtoList(Set<Element> elements);
+
+    Set<ElementDto> toElementDtoSet(Set<Element> elements);
 }
 

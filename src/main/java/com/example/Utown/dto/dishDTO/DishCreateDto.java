@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -21,7 +23,6 @@ public class DishCreateDto {
     private String description;
     private Boolean isActive;
     private BigDecimal price;
-    @JsonSetter(nulls = Nulls.SKIP)
-    private List<OptionInfoDto> options = new ArrayList<>();
+    private Set<OptionInfoDto> options = new HashSet<>();
     private String title;
 }
