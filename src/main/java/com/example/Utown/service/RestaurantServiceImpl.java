@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class RestaurantServiceImpl implements RestaurantService {
+public class RestaurantServiceImpl  implements RestaurantService {
 
     private final ClientService clientService;
     private final RestaurantCategoryService restaurantCategoryService;
@@ -87,48 +87,38 @@ public class RestaurantServiceImpl implements RestaurantService {
         return restaurant;
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public RestaurantProfileDto getRestaurantProfile(Long restaurantId) {
-        Restaurant restaurant = findRestaurantById(restaurantId);
-        List<OperatingModeRestaurantProfileDto> operatingModes = operatingModeRepository.findRawOperatingModesByRestaurantId(restaurantId);
-
-        return RestaurantProfileDto.builder()
-                .id(restaurant.getId())
-                .title(restaurant.getTitle())
-                .phone(restaurant.getPhone())
-                .filePath(restaurant.getFileInfo() != null ? restaurant.getFileInfo().getPath() : null)
-                .description(restaurant.getDescription())
-                .deliveryTime(restaurant.getDeliveryTime())
-                .totalRating(restaurant.getTotalRatings())
-                .minOrderAmount(restaurant.getMinOrderAmount())
-                .operatingModes(operatingModes)
-                .build();
-    }
-
-    @Override
+    @Override //For Client
     public Page<RestaurantForClientDto> getRecommendedRestaurantsForClient(Pageable pageable) {
         Client client = clientService.getCurrentClient();
         Address address = addressService.getAddressById(client.getDefaultAddress());
+
         return restaurantRepository.findRecommendedRestaurants(address.getState(), address.getCity(), address.getArea(), pageable);
     }
 
-    @Override
+    @Override //For Client
     public Page<RestaurantForClientDto> getFastestDeliveryRestaurantsForClient(Pageable pageable) {
         Client client = clientService.getCurrentClient();
         Address address = addressService.getAddressById(client.getDefaultAddress());
+
         return restaurantRepository.findFastestDeliveryRestaurants(address.getState(), address.getCity(), address.getArea(), pageable);
     }
 
-    @Override
+    @Override //For Client
     public Page<RestaurantForClientDto> getRestaurantsByCategory(Long categoryId, Pageable pageable) {
         Client client = clientService.getCurrentClient();
         Address address = addressService.getAddressById(client.getDefaultAddress());
+
         return restaurantRepository.findRestaurantsByCategory(address.getState(), address.getCity(), address.getArea(), categoryId, pageable);
     }
 
     @Override
-    public Page<RestaurantForClientDto> searchRestaurants(String query, int page, int size, String sortBy, String direction) {
+    public Page<RestaurantForClientDto> searchRestaurants(
+            String query,
+            int page,
+            int size,
+            String sortBy,
+            String direction) {
+
         Client client = clientService.getCurrentClient();
         Address address = addressService.getAddressById(client.getDefaultAddress());
 
@@ -158,6 +148,25 @@ public class RestaurantServiceImpl implements RestaurantService {
                 pageable
         );
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public RestaurantProfileDto getRestaurantProfile(Long restaurantId) {
+        Restaurant restaurant = findRestaurantById(restaurantId);
+        List<OperatingModeRestaurantProfileDto> operatingModes = operatingModeRepository.findRawOperatingModesByRestaurantId(restaurantId);
+        return RestaurantProfileDto.builder()
+                .id(restaurant.getId())
+                .title(restaurant.getTitle())
+                .phone(restaurant.getPhone())
+                .filePath(restaurant.getFileInfo() != null ? restaurant.getFileInfo().getPath() : null)
+                .description(restaurant.getDescription())
+                .deliveryTime(restaurant.getDeliveryTime())
+                .totalRating(restaurant.getTotalRatings())
+                .minOrderAmount(restaurant.getMinOrderAmount())
+                .operatingModes(operatingModes)
+                .build();
+    }
+
 
     // ===== CREATE =====
 
@@ -276,4 +285,5 @@ public class RestaurantServiceImpl implements RestaurantService {
         return restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
     }
+
 }

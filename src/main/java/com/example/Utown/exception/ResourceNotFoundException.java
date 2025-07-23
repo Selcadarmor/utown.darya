@@ -2,7 +2,6 @@ package com.example.Utown.exception;
 
 import lombok.Getter;
 
-
 @Getter
 
 public class ResourceNotFoundException extends RuntimeException {

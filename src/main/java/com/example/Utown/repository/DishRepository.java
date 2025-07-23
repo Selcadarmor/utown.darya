@@ -20,10 +20,6 @@ public interface DishRepository extends JpaRepository<Dish, Long> {
             "FROM Dish d WHERE d.id = :id")
     Optional<DishDto> findDishById(Long id);
 
-    @Query("SELECT new com.example.Utown.dto.dishDTO.DishDto(d.id, d.description, d.isActive, d.isDeleted, d.price, d.sort, d.title, d.createdAt, d.updatedAt, d.restaurant.id, d.dishCategory.id, d.file.id) " +
-            "FROM Dish d")
-    List<DishDto> findAllDishes();
-
     @EntityGraph(attributePaths = {"dishCategory", "options"})
     Page<Dish> findByRestaurantId(Long restaurantId, Pageable pageable);
 
