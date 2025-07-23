@@ -156,7 +156,11 @@ public class AddressServiceImpl implements AddressService {
     @Transactional(rollbackFor = RuntimeException.class)
     public Address updateAddressByRestaurant(Long id, AddressInfoDto dto) {
         Address address = getAddressById(id);
-        addressRepository.delete(address);
+        address.setFullAddress(dto.getFullAddress());
+        address.getCity();
+        return addressRepository.save(address);
+
     }
+
 
 }
