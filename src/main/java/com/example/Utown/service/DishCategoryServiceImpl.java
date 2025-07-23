@@ -27,7 +27,6 @@ public class DishCategoryServiceImpl implements DishCategoryService {
 
     private final DishCategoryRepository dishCategoryRepository;
     private final DishCategoryMapper dishCategoryMapper;
-    private final RestaurantService restaurantService;
     private final FileInfoRepository fileInfoRepository;
     private final FileInfoService fileInfoService;
     private final RestaurantRepository restaurantRepository;

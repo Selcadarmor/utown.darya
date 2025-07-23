@@ -9,7 +9,6 @@ import com.example.Utown.dto.optionDTO.OptionInfoDto;
 import com.example.Utown.dto.dishDTO.DishForClientDto;
 import com.example.Utown.dto.elementDTO.ElementForClientDto;
 import com.example.Utown.dto.optionDTO.OptionForClientDto;
-import com.example.Utown.exception.DishNotFoundException;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.DishMapper;
 import com.example.Utown.model.Dish;
@@ -32,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
@@ -104,7 +104,7 @@ public class DishServiceImpl implements DishService {
     @Override
     public DishForClientDto getDishByIdForClient(Long dishId) {
         Dish dish = dishRepository.findDishByIdForClient(dishId)
-                .orElseThrow(() -> new DishNotFoundException(dishId));
+                .orElseThrow(() -> new ResourceNotFoundException("Dish", dishId));
         return mapToDishForClientDto(dish);
     }
 
@@ -301,8 +301,8 @@ public class DishServiceImpl implements DishService {
     // ===== PRIVATE =====
 
     private DishForClientDto mapToDishForClientDto(Dish dish) {
-        List<OptionForClientDto> optionDto = dish.getOptions().stream().map(option -> {
-            List<ElementForClientDto> elementDto = option.getElements().stream().map(element ->
+        Set<OptionForClientDto> optionDto = dish.getOptions().stream().map(option -> {
+            Set<ElementForClientDto> elementDto = option.getElements().stream().map(element ->
                     new ElementForClientDto(
                             element.getId(),
                             element.getName(),
@@ -311,7 +311,7 @@ public class DishServiceImpl implements DishService {
                             element.getIsActive(),
                             element.getIsDeleted()
                     )
-            ).toList();
+            ).collect(Collectors.toSet());
 
             return new OptionForClientDto(
                     option.getId(),
@@ -322,7 +322,7 @@ public class DishServiceImpl implements DishService {
                     option.getIsActive(),
                     elementDto
             );
-        }).toList();
+        }).collect(Collectors.toSet());
 
         Long dishCategoryId = dish.getDishCategory() != null ? dish.getDishCategory().getId() : null;
         String filePath = dish.getFile() != null ? dish.getFile().getPath() : null;

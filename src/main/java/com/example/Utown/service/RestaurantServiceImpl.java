@@ -11,7 +11,6 @@ import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantProfileDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.exception.ResourceNotFoundException;
-import com.example.Utown.exception.RestaurantNotFoundException;
 import com.example.Utown.mapper.RestaurantCategoryInfoMapper;
 import com.example.Utown.mapper.RestaurantInfoMapper;
 import com.example.Utown.model.Address;
@@ -277,6 +276,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
     public Restaurant findRestaurantById(Long restaurantId) {
         return restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
     }
+
 }

@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -21,5 +21,5 @@ public class DishForClientDto {
     private Long restaurantId;
     private Long dishCategoryId;
     private String filePath;
-    private List<OptionForClientDto> options;
+    private Set<OptionForClientDto> options;
 }
