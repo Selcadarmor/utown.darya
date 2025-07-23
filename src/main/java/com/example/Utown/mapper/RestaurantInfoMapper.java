@@ -92,30 +92,4 @@ public interface RestaurantInfoMapper {
     Restaurant toEntity(RestaurantDetailsDto dto);
 
 
-
-    default List<Long> mapCategories(Set<RestaurantCategory> categories) {
-        if (categories == null) return List.of();
-        return categories.stream()
-                .map(RestaurantCategory::getId)
-                .toList();
-    }
-
-
-    default List<Long> mapDeliveriesToIds(List<Delivery> deliveries) {
-        if (deliveries == null) {
-            return null;
-        }
-        return deliveries.stream()
-                .map(Delivery::getId)
-                .collect(Collectors.toList());
-    }
-
-    default List<Long> mapOperatingModes(List<OperatingMode> operatingModes) {
-        if (operatingModes == null) return List.of();
-        return operatingModes.stream()
-                .map(OperatingMode::getId)
-                .toList();
-    }
-
-
 }

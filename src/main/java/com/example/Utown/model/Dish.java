@@ -80,6 +80,6 @@ public class Dish {
     private Restaurant restaurant;
 
     @OneToMany(mappedBy = "dish",fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Option> options;
+    private Set<Option> options;
 
 }

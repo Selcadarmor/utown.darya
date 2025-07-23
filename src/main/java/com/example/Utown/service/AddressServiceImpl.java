@@ -46,9 +46,9 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
+    @Transactional(rollbackFor = RuntimeException.class)
     public Address updateAddress(Long id, AddressDto dto) {
-        Address address = addressRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Address", id));
+        Address address = getAddressById(id);
 
         address.setArea(dto.getArea());
         address.setCity(dto.getCity());
@@ -67,19 +67,8 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public void deleteAddress(Long id) {
-        Address address = addressRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Address not found", id));
-        addressRepository.delete(address);
-    }
-
-    @Override
-    @Transactional(rollbackFor = RuntimeException.class)
-    public Address updateAddressByRestaurant(Long id, AddressInfoDto dto) {
         Address address = getAddressById(id);
-        address.setFullAddress(dto.getFullAddress());
-        address.getCity();
-        return addressRepository.save(address);
-
+        addressRepository.delete(address);
     }
 
 }

@@ -27,7 +27,7 @@ public class DishDto {
     private Long restaurantId;
     private Long dishCategoryId;
     private Long fileId;
-    private List<Option> options; //Не знаю что вам понадобиться если нужно меняйте
+    private Set<Option> options; //Не знаю что вам понадобиться если нужно меняйте
 
     public DishDto(Long id, String description, Boolean isActive, Boolean isDeleted,
                    BigDecimal price, Integer sort, String title,

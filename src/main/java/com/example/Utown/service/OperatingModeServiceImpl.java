@@ -4,6 +4,7 @@ import com.example.Utown.dto.operatingModeDTO.OperatingModeCreateDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeUpdateDto;
 import com.example.Utown.exception.ElementNotFoundException;
+import com.example.Utown.exception.InvalidArgumentException;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.OperatingModeInfoMapper;
 import com.example.Utown.model.OperatingMode;
@@ -48,40 +49,35 @@ public class OperatingModeServiceImpl implements OperatingModeService {
 
     @Override
     @Transactional
-    public OperatingModeInfoDto create(OperatingModeCreateDto dto) {
-        Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId())
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found", dto.getRestaurantId()));
+    public OperatingModeInfoDto createOperatingMode(OperatingModeCreateDto dto) {
+        // Проверяем, существует ли режим с таким рестораном и днём недели
+        boolean exists = operatingModeRepository.existsByRestaurantIdAndDayOfWeek(dto.getRestaurantId(), dto.getDayOfWeek());
 
-        Optional<OperatingMode> existingMode = operatingModeRepository
-                .findByRestaurantIdAndDayOfWeek(dto.getRestaurantId(), dto.getDayOfWeek());
-
-        OperatingMode operatingMode;
-        if (existingMode.isPresent()) {
-            // обновляем существующий режим
-            operatingMode = existingMode.get();
-        } else {
-            // создаём новый
-            operatingMode = new OperatingMode();
-            operatingMode.setRestaurant(restaurant);
+        if (exists) {
+            throw new IllegalStateException("Operating mode for this restaurant and dayOfWeek already exists");
         }
 
-        operatingMode.setDayOff(dto.isDayOff());
-        operatingMode.setDayOfWeek(dto.getDayOfWeek());
-        operatingMode.setStartTime(dto.getStartTime());
-        operatingMode.setEndTime(dto.getEndTime());
+        // Получаем ресторан
+        Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId())
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", dto.getRestaurantId()));
 
-        OperatingMode saved = operatingModeRepository.save(operatingMode);
+        // Создаём новый OperatingMode
+        OperatingMode mode = new OperatingMode();
+        mode.setRestaurant(restaurant);
+        mode.setDayOfWeek(dto.getDayOfWeek());
+        mode.setStartTime(dto.getStartTime());
+        mode.setEndTime(dto.getEndTime());
+        mode.setDayOff(dto.isDayOff());
 
+        // Сохраняем в базу
+        OperatingMode saved = operatingModeRepository.save(mode);
+
+        // Возвращаем DTO через JPQL-конструктор
         return operatingModeRepository.findProjectedById(saved.getId())
-                .orElseThrow(() -> new ElementNotFoundException("OperatingMode"));
+                .orElseThrow(() -> new ResourceNotFoundException("OperatingMode", saved.getId()));
     }
 
-    @Override
-    public List<OperatingModeInfoDto> createAll(List<OperatingModeCreateDto> dtos) {
-        return dtos.stream()
-                .map(this::create)
-                .collect(Collectors.toList());
-    }
+
 
     // ===== PUT =====
 
@@ -91,31 +87,31 @@ public class OperatingModeServiceImpl implements OperatingModeService {
         OperatingMode updated = operatingModeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("OperatingMode", id));
 
-        updated.setDayOff(dto.isDayOff());
+        // Частичное обновление полей
+        updated.setDayOff(dto.isDayOff());  // boolean, всегда обновляем
         if (dto.getStartTime() != null) updated.setStartTime(dto.getStartTime());
         if (dto.getEndTime() != null) updated.setEndTime(dto.getEndTime());
-        updated.setDayOfWeek(dto.getDayOfWeek());
+        updated.setDayOfWeek(dto.getDayOfWeek()); // если нужно, можно добавить проверку
 
+        // Возвращаем проекцию (DTO) обновленного режима работы
         return operatingModeRepository.findProjectedById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("OperatingMode", id));
     }
 
-    @Override
-    @Transactional(rollbackFor = RuntimeException.class)
-    public void updateOperatingModes(Restaurant restaurant, List<OperatingModeUpdateDto> dtos) {
-        List<OperatingMode> newModes = dtos.stream()
-                .map(dto -> {
-                    OperatingMode mode = new OperatingMode();
-                    mode.setRestaurant(restaurant);
-                    mode.setDayOfWeek(dto.getDayOfWeek());
-                    mode.setStartTime(dto.getStartTime());
-                    mode.setEndTime(dto.getEndTime());
-                    return mode;
-                })
-                .collect(Collectors.toList());
 
-        operatingModeRepository.saveAll(newModes);
+    @Override
+    @Transactional
+    public void updateOperatingModes(List<OperatingModeUpdateDto> dtos) {
+        for (OperatingModeUpdateDto dto : dtos) {
+            if (dto.getId() != null) {
+                update(dto.getId(), dto);
+            } else {
+                throw new InvalidArgumentException("operatingMode.id", null);
+            }
+        }
     }
+
+
 
     // ===== DELETE =====
     // Если понадобится метод удаления, например:

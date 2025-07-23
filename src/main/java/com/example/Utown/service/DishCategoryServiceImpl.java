@@ -37,7 +37,7 @@ public class DishCategoryServiceImpl implements DishCategoryService {
     @Transactional
     public DishCategoryDto getDishCategoryById(Long id) {
         DishCategory entity = dishCategoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("DishCategory not found", id));
+                .orElseThrow(() -> new ResourceNotFoundException("DishCategory", id));
         return dishCategoryMapper.dishCategoryToDto(entity);
     }
 

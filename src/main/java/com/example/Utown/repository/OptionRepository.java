@@ -7,10 +7,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface OptionRepository extends JpaRepository<Option, Long> {
     @Query("SELECT o FROM Option o LEFT JOIN FETCH o.elements WHERE o.id IN :ids")
-    List<Option> findAllWithElementsByIds(@Param("ids") List<Long> ids);
+    Set<Option> findAllWithElementsByIds(@Param("ids") Set<Long> ids);
 
 }

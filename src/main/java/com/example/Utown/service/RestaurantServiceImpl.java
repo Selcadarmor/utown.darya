@@ -1,6 +1,7 @@
 package com.example.Utown.service;
 
 import com.example.Utown.dto.deliveryDTO.DeliveryInfoDto;
+import com.example.Utown.dto.operatingModeDTO.OperatingModeCreateDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeRestaurantProfileDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryInfoDto;
@@ -11,13 +12,11 @@ import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantProfileDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.exception.ResourceNotFoundException;
-import com.example.Utown.exception.RestaurantNotFoundException;
 import com.example.Utown.mapper.RestaurantCategoryInfoMapper;
 import com.example.Utown.mapper.RestaurantInfoMapper;
 import com.example.Utown.model.Address;
 import com.example.Utown.model.Dish;
 import com.example.Utown.model.FileInfo;
-import com.example.Utown.model.OperatingMode;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.RestaurantCategory;
 import com.example.Utown.model.UserType.Client;
@@ -37,9 +36,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class RestaurantServiceImpl implements RestaurantService {
@@ -74,8 +75,8 @@ public class RestaurantServiceImpl implements RestaurantService {
         RestaurantDetailsDto restaurant = restaurantRepository.findRestaurantSummaryById(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
 
-        List<RestaurantCategoryInfoDto> categoryDtos = restaurantCategoryInfoMapper
-                .toDtoList(new ArrayList<>(restaurantEntity.getCategories()));
+        Set<RestaurantCategoryInfoDto> categoryDtos = restaurantCategoryInfoMapper
+                .toDtoSet(new HashSet<>(restaurantEntity.getCategories()));
         List<OperatingModeInfoDto> operatingModeDtos = operatingModeService.getOperatingModesByRestaurantId(restaurantId);
         List<DeliveryInfoDto> deliveryDtos = deliveryService.getDeliveriesByRestaurantId(restaurantId);
 
@@ -168,11 +169,21 @@ public class RestaurantServiceImpl implements RestaurantService {
         if (dto.getFileId() != null) {
             FileInfo file = fileInfoRepository.findById(dto.getFileId()).orElse(null);
             restaurant.setFileInfo(file);
+        }//изменить
+
+        if (dto.getNewCategories() != null && !dto.getNewCategories().isEmpty()) {
+            Set<RestaurantCategory> createdCategories = restaurantCategoryService.createRestaurantCategories(dto.getNewCategories());
+            restaurant.getCategories().addAll(createdCategories);
         }
 
-        List<RestaurantCategory> categories = restaurantCategoryService.findCategoriesByIds(dto.getCategories());
-        restaurant.setCategories(new HashSet<>(categories));
-
+        // Если пришли id уже существующих категорий (например, dto.getCategoryIds())
+        if (dto.getCategoryIds() != null && !dto.getCategoryIds().isEmpty()) {
+            Set<RestaurantCategory> existingCategories = dto.getCategoryIds().stream()
+                    .map(id -> restaurantCategoryRepository.findById(id)
+                            .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory", id)))
+                    .collect(Collectors.toSet());
+            restaurant.getCategories().addAll(existingCategories);
+        }
         if (dto.getAddress() != null) {
             Address address = addressService.createAddress(dto.getAddress());
             restaurant.setAddress(address);
@@ -186,14 +197,9 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurantRepository.save(savedRestaurant);
 
         if (dto.getOperatingModes() != null) {
-            dto.getOperatingModes().forEach(modeDto -> {
-                OperatingMode mode = new OperatingMode();
-                mode.setStartTime(modeDto.getStartTime());
-                mode.setEndTime(modeDto.getEndTime());
-                mode.setDayOff(modeDto.isDayOff());
-                mode.setDayOfWeek(modeDto.getDayOfWeek());
-                savedRestaurant.addOperatingMode(mode);
-            });
+            for (OperatingModeCreateDto modeDto : dto.getOperatingModes()) {
+                operatingModeService.createOperatingMode(modeDto);
+            }
         }
 
         return restaurantInfoMapper.toDto(savedRestaurant);
@@ -214,11 +220,11 @@ public class RestaurantServiceImpl implements RestaurantService {
         }
 
         if (dto.getAddress() != null) {
-            addressService.updateAddressByRestaurant(id, dto.getAddress());
+            addressService.updateAddress(id, dto.getAddress());
         }
 
         if (dto.getOperatingModes() != null && !dto.getOperatingModes().isEmpty()) {
-            operatingModeService.updateOperatingModes(restaurant, dto.getOperatingModes());
+            operatingModeService.updateOperatingModes(dto.getOperatingModes());
         }
 
         if (dto.getDeliveries() != null && !dto.getDeliveries().isEmpty()) {
@@ -226,14 +232,14 @@ public class RestaurantServiceImpl implements RestaurantService {
         }
 
         if (dto.getCategoryIds() != null) {
-            if (!dto.getCategoryIds().isEmpty()) {
-                List<RestaurantCategory> categories = dto.getCategoryIds().stream()
-                        .map(categoryId -> restaurantCategoryRepository.findById(categoryId)
-                                .orElseThrow(() -> new ResourceNotFoundException("Category", categoryId)))
-                        .toList();
-                restaurant.setCategories(new HashSet<>(categories));
-            } else {
+            if (dto.getCategoryIds().isEmpty()) {
                 restaurant.getCategories().clear();
+            } else {
+                Set<RestaurantCategory> updatedCategories = dto.getCategoryIds().stream()
+                        .map(categoryId -> restaurantCategoryRepository.findById(categoryId)
+                                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory", categoryId)))
+                        .collect(Collectors.toSet());
+                restaurant.setCategories(updatedCategories);
             }
         }
 
@@ -268,6 +274,6 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     public Restaurant findRestaurantById(Long restaurantId) {
         return restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
     }
 }
