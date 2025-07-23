@@ -14,6 +14,7 @@ import com.example.Utown.dto.restaurantDTO.RestaurantProfileDto;
 import com.example.Utown.mapper.OrderMapper;
 import com.example.Utown.model.Order;
 import com.example.Utown.model.UserType.Client;
+import com.example.Utown.service.AddressService;
 import com.example.Utown.service.DishCategoryService;
 import com.example.Utown.service.DishService;
 import com.example.Utown.service.DishToOrderService;
@@ -60,6 +61,7 @@ public class ClientController {
     private final DishToOrderService dishToOrderService;
     private final OrderService orderService;
     private final OrderMapper orderMapper;
+    private final AddressService addressService;
 
     @GetMapping("/restaurant/categories") //Passed
     @Operation(
@@ -118,7 +120,7 @@ public class ClientController {
         return ResponseEntity.ok(restaurants);
     }
 
-    @GetMapping("/favorites") //Unpassed
+    @GetMapping("/favourites") //Passed
     @Operation(summary = "Get favorite restaurants", description = "Returns the list of restaurants added to client's favorites")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of favorite restaurants returned"),
@@ -164,6 +166,21 @@ public class ClientController {
         return ResponseEntity.ok(profile);
     }
 
+    @GetMapping("restaurant/{restaurantId}/dish_categories") //Passed
+    @Operation(
+            summary = "Get dish categories for restaurant",
+            description = "Returns all dish categories for a specific restaurant with dish count",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successfully retrieved dish categories"),
+                    @ApiResponse(responseCode = "404", description = "Restaurant not found"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            }
+    )
+    public ResponseEntity<List<DishCategoryRestaurantProfileDto>> getDishCategoriesByRestaurant(@PathVariable Long restaurantId) {
+        List<DishCategoryRestaurantProfileDto> categories = dishCategoryService.getDishCategoriesByRestaurantForClient(restaurantId);
+        return ResponseEntity.ok(categories);
+    }
+
     @GetMapping("dish/category/{categoryId}")
     @Operation(summary = "Get dishes by category", description = "Returns all dishes for a given category, each with options and elements")
     @ApiResponses(value = {
@@ -199,23 +216,8 @@ public class ClientController {
             }
     )
     public ResponseEntity<List<AddressDto>> getClientAddresses() {
-        List<AddressDto> addresses = clientService.getAddressesByClient();
+        List<AddressDto> addresses = addressService.getAddressesByClient();
         return ResponseEntity.ok(addresses);
-    }
-
-    @GetMapping("restaurant/{restaurantId}/dish_categories") //Passed
-    @Operation(
-            summary = "Get dish categories for restaurant",
-            description = "Returns all dish categories for a specific restaurant with dish count",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Successfully retrieved dish categories"),
-                    @ApiResponse(responseCode = "404", description = "Restaurant not found"),
-                    @ApiResponse(responseCode = "500", description = "Internal server error")
-            }
-    )
-    public ResponseEntity<List<DishCategoryRestaurantProfileDto>> getDishCategoriesByRestaurant(@PathVariable Long restaurantId) {
-        List<DishCategoryRestaurantProfileDto> categories = dishCategoryService.getDishCategoriesByRestaurantForClient(restaurantId);
-        return ResponseEntity.ok(categories);
     }
 
     @PostMapping("/address/create") //Passed
@@ -230,27 +232,28 @@ public class ClientController {
             }
     )
     public ResponseEntity<Void> addAddressForCurrentUser(@RequestBody AddressDto addressDto) {
-        clientService.saveAddressForClient(addressDto);
+        addressService.saveAddressForClient(addressDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PutMapping("/profile/update") //Passed
+    @PutMapping("/profile/update") // Passed
     @Operation(
-            summary = "Update",
-            description = "Update fullName and default address for current client",
+            summary = "Update client profile",
+            description = "Update full name and default address for the current client. " ,
             responses = {
                     @ApiResponse(responseCode = "200", description = "Profile updated successfully"),
-                    @ApiResponse(responseCode = "400", description = "Invalid input"),
+                    @ApiResponse(responseCode = "400", description = "Default address not set or invalid data"),
                     @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "404", description = "Default address not found"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )
     public ResponseEntity<ClientProfileUpdateDto> updateClientProfile(@RequestBody ClientProfileUpdateDto dto) {
-        ClientProfileUpdateDto updatedProfile = clientService.updateClientProfile(dto);
+        ClientProfileUpdateDto updatedProfile = addressService.updateClientProfile(dto);
         return ResponseEntity.ok(updatedProfile);
     }
 
-    @PutMapping("/favorites/{restaurantId}") //Passed (but restaurant Status need to change)
+    @PutMapping("/favorites/{restaurantId}") //Passed
     @Operation(
             summary = "Add restaurant to favorites",
             description = "Add a restaurant to the client's favorite list",
@@ -265,7 +268,7 @@ public class ClientController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/address/{id}") // For Client
+    @DeleteMapping("/address/{id}") //Passed
     @Operation(
             summary = "Delete address for current client",
             description = "Deletes an address belonging to the authenticated client",
@@ -278,11 +281,11 @@ public class ClientController {
             }
     )
     public ResponseEntity<Void> deleteAddressForClient(@PathVariable("id") Long addressId) {
-        clientService.deleteAddressForCLient(addressId);
+        addressService.deleteAddressForCLient(addressId);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/favorites/{restaurantId}")
+    @DeleteMapping("/favorites/{restaurantId}") //Passed
     @Operation(summary = "Remove restaurant from favorites", description = "Removes a restaurant from the client's favorite list")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Restaurant removed from favorites"),

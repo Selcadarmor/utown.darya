@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -248,7 +249,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         order.setStatus(OrderStatus.PROCESSING);
-        order.setTimeOfAccepted(LocalDateTime.now());
+        order.setTimeOfAccepted(LocalTime.now());
         orderRepository.save(order);
     }
 

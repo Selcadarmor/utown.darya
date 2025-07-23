@@ -13,9 +13,8 @@ import java.util.List;
 public interface DishService {
     Dish createDish(DishDto dto);
     DishDto getDishById(Long id);
-    List<DishDto> getAllDishes();
-    Dish updateDish(Long id, DishDto dto);
     void deleteDish(Long id);
+    Dish updateDish(Long id, DishDto dto);
     Page<DishDetailsDto> getDishesByRestaurantId(Long restaurantId, int page, int size);
     DishInfoDto updateDishForRestaurant(Long RestaurantId, Long DishId, DishCreateDto dto);
     DishInfoDto createDishForRestaurant(Long RestaurantId, DishCreateDto dto);

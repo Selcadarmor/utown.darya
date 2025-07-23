@@ -13,24 +13,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ClientService {
-        Optional<Client> findByUsername(String username);
+        Client findByUsername(String username);
         Page<ClientDetailsDto> getAllClients(Pageable pageable);
         ClientInfoDto getClientById(Long clientId);
         void updateClientActiveStatus(Long id, Boolean active);
         void deleteClient(Long id);
         void save(ClientRegistrationDto dto, Roles roleName);
-        ClientProfileUpdateDto updateClientProfile(ClientProfileUpdateDto dto);
         void addFavoriteRestaurant(Long restaurantId);
         List<RestaurantForClientDto> getFavoriteRestaurants();
         void removeFavoriteRestaurant(Long restaurantId);
-        Address saveAddressForClient(AddressDto dto);
         Client getCurrentClient();
         Address getAddressByDefaultAddress();
-        List<AddressDto> getAddressesByClient();
-        void deleteAddressForCLient(Long addressId);
 }
 
 
