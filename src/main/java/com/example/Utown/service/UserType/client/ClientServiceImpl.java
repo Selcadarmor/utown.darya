@@ -180,13 +180,12 @@ public class ClientServiceImpl implements ClientService {
     }
 
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = RuntimeException.class)
     @Override
     public void deleteClient(Long id) {
         updateClientActiveStatus(id, false);
     }
 
-    // ========================= PRIVATE =========================
 
 
     private Set<AddressInfoDto> mapAddressDtos(Set<Address> addresses) {

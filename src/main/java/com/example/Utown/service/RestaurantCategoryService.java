@@ -5,9 +5,10 @@ import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryForClient;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryInfoDto;
 import com.example.Utown.model.RestaurantCategory;
 import java.util.List;
+import java.util.Set;
 
 public interface RestaurantCategoryService {
-    List<RestaurantCategory> createRestaurantCategories(List<RestaurantCategoryDto> dtos);
+    Set<RestaurantCategory> createRestaurantCategories(Set<RestaurantCategoryDto> dtos);
 
     RestaurantCategoryDto getRestaurantCategoryById(Long id);
 
@@ -21,6 +22,6 @@ public interface RestaurantCategoryService {
 
     RestaurantCategory updateRestaurantCategoryForRestaurant(Long id, RestaurantCategoryInfoDto categoriesDto);
 
-    List<RestaurantCategory> findCategoriesByIds(List<RestaurantCategoryDto> dtos);
+    Set<RestaurantCategory> findCategoriesByIds(Set<RestaurantCategoryDto> dtos);
 
 }

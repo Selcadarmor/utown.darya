@@ -58,6 +58,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
+    @Transactional(rollbackFor = RuntimeException.class)
     public Address updateAddress(Long id, AddressDto dto) {
         Address address = getAddressById(id);
 
@@ -160,5 +161,6 @@ public class AddressServiceImpl implements AddressService {
         return addressRepository.save(address);
 
     }
+
 
 }

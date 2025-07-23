@@ -18,13 +18,13 @@ public class RestaurantDetailsDto {
     private BigDecimal minOrderAmount;
     private Long orderCount;
     private Long fileId;
-    private List<RestaurantCategoryInfoDto> categories;//выбрать нужное поле
+    private Set<RestaurantCategoryInfoDto> categories;//выбрать нужное поле
     private List<OperatingModeInfoDto> operatingModes;
     private List<DeliveryInfoDto> deliveries;
 
     public RestaurantDetailsDto(String title, String description, String phone,
                                 BigDecimal minOrderAmount, Long orderCount, Long fileId,
-                                List<RestaurantCategoryInfoDto> categories,
+                                Set<RestaurantCategoryInfoDto> categories,
                                 List<OperatingModeInfoDto> operatingModes,
                                 List<DeliveryInfoDto> deliveries) {
         this.title = title;

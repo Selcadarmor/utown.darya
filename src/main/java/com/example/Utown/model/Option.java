@@ -67,6 +67,6 @@ public class Option {
     private Dish dish;
 
     @OneToMany(mappedBy = "option", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Element> elements = new HashSet<>();
+    private Set<Element> elements;
 
 }

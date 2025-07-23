@@ -19,6 +19,6 @@ public class DishDetailsDto {
     private Integer sort;
     private String title;
     private Long dishCategoryId;
-    private List<OptionInfoDto> options;
+    private Set<OptionInfoDto> options;
 
 }
