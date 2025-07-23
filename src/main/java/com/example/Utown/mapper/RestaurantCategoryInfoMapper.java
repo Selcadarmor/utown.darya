@@ -9,6 +9,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
+import java.util.Set;
 
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
@@ -20,7 +21,7 @@ public interface RestaurantCategoryInfoMapper {
 
     RestaurantCategoryDto toDto(RestaurantCategory entity);
 
-    List<RestaurantCategoryInfoDto> toDtoList(List<RestaurantCategory> entities);
+    Set<RestaurantCategoryInfoDto> toDtoSet(Set<RestaurantCategory> entities);
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     RestaurantCategory toEntity(RestaurantCategoryDto restaurantCategoryDto);

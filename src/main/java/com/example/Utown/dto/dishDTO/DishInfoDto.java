@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -18,6 +19,6 @@ public class DishInfoDto {
     private Integer sort;
     private String title;
     private Long dishCategoryId;
-    private List<OptionInfoDto> options;
+    private Set<OptionInfoDto> options;
     private Long fileId;
 }

@@ -69,7 +69,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public ClientInfoDto getClientById(Long clientId) {
         return clientRepository.findClientInfoById(clientId)
-                .orElseThrow(() -> new ResourceNotFoundException("Client not found", clientId));
+                .orElseThrow(() -> new ResourceNotFoundException("Client", clientId));
     }
 
     @Override
@@ -233,22 +233,11 @@ public class ClientServiceImpl implements ClientService {
         addressRepository.delete(address);
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = RuntimeException.class)
     @Override
     public void deleteClient(Long id) {
         updateClientActiveStatus(id, false);
     }
 
-    // ========================= PRIVATE =========================
 
-    private Set<AddressInfoDto> mapAddressDtos(Set<Address> addresses) {
-        if (addresses == null) return Collections.emptySet();
-        return addresses.stream()
-                .map(address -> new AddressInfoDto(
-                        address.getId(),
-                        address.getCity(),
-                        address.getFullAddress()
-                ))
-                .collect(Collectors.toSet());
-    }
 }

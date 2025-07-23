@@ -3,6 +3,7 @@ package com.example.Utown.service;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryForClient;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryInfoDto;
+import com.example.Utown.exception.InvalidArgumentException;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.RestaurantCategoryInfoMapper;
 import com.example.Utown.mapper.RestaurantCategoryMapper;
@@ -14,12 +15,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import com.example.Utown.model.FileInfo;
 import com.example.Utown.repository.FileInfoRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
@@ -74,50 +77,46 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
 
     @Override
     @Transactional(readOnly = true)
-    public List<RestaurantCategory> findCategoriesByIds(List<RestaurantCategoryDto> dtos) {
-        List<Long> ids = dtos.stream()
+    public Set<RestaurantCategory> findCategoriesByIds(Set<RestaurantCategoryDto> dtos) {
+        Set<Long> ids = dtos.stream()
                 .map(RestaurantCategoryDto::getId)
                 .filter(Objects::nonNull)
-                .toList();
+                .collect(Collectors.toSet());
 
         if (ids.isEmpty()) {
-            return Collections.emptyList();
+            return Collections.emptySet();
         }
-        return restaurantCategoryRepository.findAllById(ids);
+        return new HashSet<>(restaurantCategoryRepository.findAllById(ids));
     }
 
     // ===== POST =====
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public List<RestaurantCategory> createRestaurantCategories(List<RestaurantCategoryDto> dtos) {
+    public Set<RestaurantCategory> createRestaurantCategories(Set<RestaurantCategoryDto> dtos) {
         if (dtos == null || dtos.isEmpty()) {
-            return Collections.emptyList();
+            return Collections.emptySet();
         }
 
-        List<RestaurantCategory> categories = new ArrayList<>();
+        Set<RestaurantCategory> categories = new HashSet<>();
 
         for (RestaurantCategoryDto dto : dtos) {
-            RestaurantCategory entity;
             if (dto.getId() != null) {
-                entity = restaurantCategoryRepository.findById(dto.getId())
-                        .orElseThrow(() -> new ResourceNotFoundException("Category not found", dto.getId()));
-                restaurantCategoryInfoMapper.updateEntityFromDto(dto, entity);
-            } else {
-                entity = restaurantCategoryMapper.restaurantCategoryDtoToEntity(dto);
+                throw new InvalidArgumentException("restaurantCategory.id", dto.getId());
             }
+            RestaurantCategory entity = restaurantCategoryMapper.restaurantCategoryDtoToEntity(dto);
 
             if (dto.getFile() != null) {
                 Long fileId = dto.getFile().getId();
                 FileInfo file = fileInfoRepository.findById(fileId)
-                        .orElseThrow(() -> new ResourceNotFoundException("File not found", fileId));
+                        .orElseThrow(() -> new ResourceNotFoundException("File", fileId));
                 entity.setFile(file);
             }
 
             categories.add(entity);
         }
 
-        return restaurantCategoryRepository.saveAll(categories);
+        return new HashSet<>(restaurantCategoryRepository.saveAll(categories));
     }
 
     // ===== PUT =====

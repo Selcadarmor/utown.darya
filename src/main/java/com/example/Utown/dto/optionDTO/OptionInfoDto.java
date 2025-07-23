@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -15,7 +16,7 @@ import java.util.List;
 public class OptionInfoDto {
     private Long id;
     private String name;
-    private List<ElementInfoDto> elements;
+    private Set<ElementInfoDto> elements;
 
 }
 
