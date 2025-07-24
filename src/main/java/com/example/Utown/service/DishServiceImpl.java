@@ -4,6 +4,7 @@ import com.example.Utown.dto.dishDTO.DishCreateDto;
 import com.example.Utown.dto.dishDTO.DishDetailsDto;
 import com.example.Utown.dto.dishDTO.DishDto;
 import com.example.Utown.dto.dishDTO.DishInfoDto;
+import com.example.Utown.dto.dishDTO.DishSearchDto;
 import com.example.Utown.dto.elementDTO.ElementInfoDto;
 import com.example.Utown.dto.optionDTO.OptionInfoDto;
 import com.example.Utown.dto.dishDTO.DishForClientDto;
@@ -19,20 +20,19 @@ import com.example.Utown.model.Option;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.repository.DishRepository;
 import com.example.Utown.repository.DishCategoryRepository;
+import com.example.Utown.repository.ElementRepository;
 import com.example.Utown.repository.FileInfoRepository;
 import com.example.Utown.repository.OptionRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
 import java.util.Set;
 import java.util.stream.Collectors;
 @Service
@@ -46,6 +46,7 @@ public class DishServiceImpl implements DishService {
     private final DishMapper dishMapper;
     private final OptionRepository optionRepository;
     private final OptionService optionService;
+    private final ElementRepository elementRepository;
 
     // ===== GET =====
 
@@ -103,18 +104,31 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public DishForClientDto getDishByIdForClient(Long dishId) {
-        Dish dish = dishRepository.findDishByIdForClient(dishId)
+        Dish dish = dishRepository.findById(dishId)
                 .orElseThrow(() -> new ResourceNotFoundException("Dish", dishId));
-        return mapToDishForClientDto(dish);
+
+        Set<Option> activeOptions = optionRepository.findByDishIdAndIsActiveTrue(dishId);
+
+        for (Option option : activeOptions) {
+            Set<Element> activeElements = elementRepository.findByOptionIdAndIsActiveTrueAndIsDeletedFalse(option.getId());
+            option.setElements(activeElements);
+        }
+
+        dish.setOptions(activeOptions);
+
+        return dishMapper.dishToClientDto(dish);
     }
 
     @Override
-    public List<DishForClientDto> getDishesByCategoryForClient(Long categoryId) {
-        List<Dish> dishes = dishRepository.findDishByCategoryForClient(categoryId);
-        return dishes.stream()
-                .map(this::mapToDishForClientDto)
-                .toList();
+    public List<DishSearchDto> getDishesByCategoryForClient(Long categoryId) {
+        return dishRepository.findDishDtoByCategoryForClient(categoryId);
+    }
+
+    @Override
+    public Page<DishSearchDto> searchDishesByRestaurant(Long restaurantId, String keyword, Pageable pageable) {
+        return dishRepository.searchDishesByRestaurantAndKeyword(restaurantId, keyword, pageable);
     }
 
     // ===== POST =====
