@@ -1,6 +1,7 @@
 package com.example.Utown.service;
 
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryCreateDto;
+import com.example.Utown.dto.dishCategoryDTO.DishCategoryCreateResponseDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryDetailsDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryRestaurantProfileDto;
@@ -15,7 +16,7 @@ public interface DishCategoryService {
     DishCategoryDto updateDishCategory(Long id, DishCategoryDto dto);
     void deleteDishCategory(Long id);
     Page<DishCategoryDetailsDto> getDishCategoriesByRestaurantId(Long restaurantId, int page, int size);
-    DishCategoryDetailsDto createDishCategoryForRestaurant(Long restaurantId, DishCategoryCreateDto dto);
+    DishCategoryCreateResponseDto createDishCategoryForRestaurant(Long restaurantId, DishCategoryCreateDto dto);
     List<DishCategoryRestaurantProfileDto> getDishCategoriesByRestaurantForClient(Long restaurantId);
 }
 

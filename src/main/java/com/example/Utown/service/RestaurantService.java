@@ -6,6 +6,7 @@ import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantProfileDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantsCreateResponseDto;
 import com.example.Utown.model.Restaurant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +14,7 @@ import org.springframework.data.domain.Pageable;
 public interface RestaurantService {
     Page<RestaurantInfoDto> getAllRestaurants(int page, int size);
     RestaurantDetailsDto getRestaurantDetails(Long restaurantId);
-    RestaurantDetailsDto createRestaurant(RestaurantCreateDto dto);
+    RestaurantsCreateResponseDto createRestaurant(RestaurantCreateDto dto);
     RestaurantDetailsDto updateRestaurant(Long id, RestaurantUpdateDto dto);
     Page<RestaurantForClientDto> getRecommendedRestaurantsForClient(Pageable pageable);
     Page<RestaurantForClientDto> getFastestDeliveryRestaurantsForClient(Pageable pageable);

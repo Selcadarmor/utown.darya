@@ -28,11 +28,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
 import java.util.Set;
 import java.util.stream.Collectors;
 @Service
@@ -257,7 +254,10 @@ public class DishServiceImpl implements DishService {
         }
 
         Set<Option> updatedOptions = optionService.updateOptionsForDish(dish, dto.getOptions());
-        dish.setOptions(updatedOptions);
+        Set<Option> existingOptions = dish.getOptions();
+
+        existingOptions.clear();
+        existingOptions.addAll(updatedOptions);
 
         Dish savedDish = dishRepository.save(dish);
         return dishMapper.dishUpdateInfoToDto(savedDish);
@@ -291,7 +291,7 @@ public class DishServiceImpl implements DishService {
             return new OptionForClientDto(
                     option.getId(),
                     option.getName(),
-                    option.isRequired(),
+                    option.getRequired(),
                     option.getMin(),
                     option.getMax(),
                     option.getIsActive(),

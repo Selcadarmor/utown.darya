@@ -1,6 +1,7 @@
 package com.example.Utown.service;
 
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryCreateDto;
+import com.example.Utown.dto.dishCategoryDTO.DishCategoryCreateResponseDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryDetailsDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryRestaurantProfileDto;
@@ -71,7 +72,7 @@ public class DishCategoryServiceImpl implements DishCategoryService {
 
     @Override
     @Transactional
-    public DishCategoryDetailsDto createDishCategoryForRestaurant(Long restaurantId, DishCategoryCreateDto dto) {
+    public DishCategoryCreateResponseDto createDishCategoryForRestaurant(Long restaurantId, DishCategoryCreateDto dto) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
 

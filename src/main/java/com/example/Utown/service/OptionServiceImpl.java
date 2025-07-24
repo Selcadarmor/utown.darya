@@ -94,6 +94,8 @@ public class OptionServiceImpl implements OptionService {
 
             updatedOptions.add(option);
         }
+        dish.getOptions().clear();
+        dish.getOptions().addAll(updatedOptions);
 
         return updatedOptions;
     }
