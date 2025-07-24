@@ -73,8 +73,10 @@ public class AdminController {
     @Operation(summary = "Get all clients", description = "Returns a list of all registered clients.")
     @ApiResponses(@ApiResponse(responseCode = "200", description = "List of clients retrieved successfully"))
     @GetMapping("/clients") //Passed
-    public ResponseEntity<Page<ClientDetailsDto>> getAllClients(Pageable pageable) {
-        Page<ClientDetailsDto> clients = clientService.getAllClients(pageable);
+    public ResponseEntity<Page<ClientDetailsDto>> getAllClients(@RequestParam(required = false) String query,
+                                                                @RequestParam(required = false) Boolean isActive,
+                                                                Pageable pageable) {
+        Page<ClientDetailsDto> clients = clientService.getAllClients(query, isActive, pageable);
         return ResponseEntity.ok(clients);
     }
 

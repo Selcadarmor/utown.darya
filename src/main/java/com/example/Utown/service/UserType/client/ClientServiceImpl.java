@@ -64,8 +64,8 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Page<ClientDetailsDto> getAllClients(Pageable pageable) {
-        return clientRepository.findAllClientDetails(pageable);
+    public Page<ClientDetailsDto> getAllClients(String query, Boolean isActive, Pageable pageable) {
+        return clientRepository.findAllClientDetails(query, isActive, pageable);
     }
 
     @Override
@@ -186,16 +186,4 @@ public class ClientServiceImpl implements ClientService {
         updateClientActiveStatus(id, false);
     }
 
-
-
-    private Set<AddressInfoDto> mapAddressDtos(Set<Address> addresses) {
-        if (addresses == null) return Collections.emptySet();
-        return addresses.stream()
-                .map(address -> new AddressInfoDto(
-                        address.getId(),
-                        address.getCity(),
-                        address.getFullAddress()
-                ))
-                .collect(Collectors.toSet());
-    }
 }
