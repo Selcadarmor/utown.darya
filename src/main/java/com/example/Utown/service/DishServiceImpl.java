@@ -4,7 +4,6 @@ import com.example.Utown.dto.dishDTO.DishCreateDto;
 import com.example.Utown.dto.dishDTO.DishDetailsDto;
 import com.example.Utown.dto.dishDTO.DishDto;
 import com.example.Utown.dto.dishDTO.DishInfoDto;
-import com.example.Utown.dto.elementDTO.ElementInfoDto;
 import com.example.Utown.dto.optionDTO.OptionInfoDto;
 import com.example.Utown.dto.dishDTO.DishForClientDto;
 import com.example.Utown.dto.elementDTO.ElementForClientDto;
@@ -13,7 +12,6 @@ import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.DishMapper;
 import com.example.Utown.model.Dish;
 import com.example.Utown.model.DishCategory;
-import com.example.Utown.model.Element;
 import com.example.Utown.model.FileInfo;
 import com.example.Utown.model.Option;
 import com.example.Utown.model.Restaurant;
@@ -29,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 @Service
@@ -53,39 +50,19 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public Page<DishDetailsDto> getDishesByRestaurantId(Long restaurantId, int page, int size) {
-        Page<Dish> dishPage = dishRepository.findByRestaurantId(restaurantId, PageRequest.of(page, size));
-
-        Set<Long> optionIds = dishPage.stream()
-                .flatMap(dish -> dish.getOptions().stream())
-                .map(Option::getId)
-                .collect(Collectors.toSet());
-
-        Set<Option> optionsWithElements = optionRepository.findAllWithElementsByIds(optionIds);
-
-        Map<Long, Set<Element>> elementsMap = optionsWithElements.stream()
-                .collect(Collectors.toMap(
-                        Option::getId,
-                        Option::getElements
-                ));
+    public Page<DishDetailsDto> getDishesByRestaurantId(Long restaurantId, String title,
+                                                        Integer sort, Long dishCategoryId,
+                                                        Boolean isActive, int page, int size) {
+        Page<Dish> dishPage = dishRepository.searchDishesByFilter(
+                restaurantId,
+                title,
+                sort,
+                dishCategoryId,
+                isActive,
+                PageRequest.of(page, size));
 
         return dishPage.map(dish -> {
-            Set<OptionInfoDto> optionDtos = dish.getOptions().stream().map(option -> {
-                Set<ElementInfoDto> elementDtos = elementsMap.getOrDefault(option.getId(), Set.of())
-                        .stream()
-                        .map(element -> new ElementInfoDto(
-                                element.getId(),
-                                element.getName(),
-                                element.getPrice()
-                        ))
-                        .collect(Collectors.toSet());
-
-                return new OptionInfoDto(
-                        option.getId(),
-                        option.getName(),
-                        elementDtos
-                );
-            }).collect(Collectors.toSet());
+            Set<OptionInfoDto> optionDtos = optionService.getOptionsWithElementsByDish(dish.getOptions());
 
             return new DishDetailsDto(
                     dish.getDescription(),

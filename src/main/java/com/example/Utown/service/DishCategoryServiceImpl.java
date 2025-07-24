@@ -51,9 +51,10 @@ public class DishCategoryServiceImpl implements DishCategoryService {
     }
 
     @Override
-    public Page<DishCategoryDetailsDto> getDishCategoriesByRestaurantId(Long restaurantId, int page, int size) {
+    public Page<DishCategoryDetailsDto> getDishCategoriesByRestaurantId(
+            Long restaurantId, String query, Integer sort, Boolean isActive, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("sort").ascending());
-        return dishCategoryRepository.findByRestaurantId(restaurantId, pageable)
+        return dishCategoryRepository.findAllWithFilter(restaurantId, query, sort, isActive, pageable)
                 .map(dishCategoryMapper::toDetailsDto);
     }
 

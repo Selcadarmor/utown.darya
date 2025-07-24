@@ -14,18 +14,11 @@ import java.util.Set;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface RestaurantCategoryInfoMapper {
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "id", ignore = true)
-    RestaurantCategory updateFromDto(RestaurantCategoryDto restaurantCategoryDto, @MappingTarget RestaurantCategory entity);
-
     RestaurantCategoryDto toDto(RestaurantCategory entity);
 
     Set<RestaurantCategoryInfoDto> toDtoSet(Set<RestaurantCategory> entities);
+
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     RestaurantCategory toEntity(RestaurantCategoryDto restaurantCategoryDto);
-    @Mapping(target = "id", ignore = true) // id не меняем
-    @Mapping(target = "file", ignore = true) // файл обновляем отдельно
-    void updateEntityFromDto(RestaurantCategoryDto dto, @MappingTarget RestaurantCategory entity);
 }

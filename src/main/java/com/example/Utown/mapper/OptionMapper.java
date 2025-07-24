@@ -15,10 +15,5 @@ public interface OptionMapper {
 
     Option optionDtoToEntity(OptionDto dto);
 
-    List<OptionInfoDto> mapOptions(List<Option> options);
-
-    @Mapping(source = "elements", target = "elements")
-    OptionInfoDto mapToOption(Option option);
-
 }
 

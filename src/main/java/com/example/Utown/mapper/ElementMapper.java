@@ -13,16 +13,12 @@ import java.util.Set;
 public interface ElementMapper {
 
     ElementDto toDto(Element element);
-    
+
     Element toEntity(ElementDto dto);
 
     @Mapping(source = "element.id", target = "id")
     @Mapping(source = "element.name", target = "name")
     @Mapping(source = "element.price", target = "price")
     ElementInfoDto mapElement(Element element);
-
-    Set<ElementDto> toElementDtoList(Set<Element> elements);
-
-    Set<ElementDto> toElementDtoSet(Set<Element> elements);
 }
 
