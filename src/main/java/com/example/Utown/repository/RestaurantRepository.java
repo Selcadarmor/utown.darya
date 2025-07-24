@@ -7,6 +7,7 @@ import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.RestaurantCategory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -125,7 +126,6 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
             "  AND (LOWER(r.title) LIKE LOWER(CONCAT('%', :query, '%')) " +
             "       OR LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%')))"
     )
-
     Page<RestaurantForClientDto> searchClient(
             @Param("query") String query,
             @Param("state") String state,

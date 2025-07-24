@@ -3,6 +3,7 @@ package com.example.Utown.mapper;
 import com.example.Utown.dto.restaurantDTO.RestaurantCreateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantsCreateResponseDto;
 import com.example.Utown.model.Delivery;
 import com.example.Utown.model.OperatingMode;
 import com.example.Utown.model.Restaurant;
@@ -29,6 +30,11 @@ public interface RestaurantInfoMapper {
     @Mapping(source = "deliveries", target = "deliveries")
     RestaurantDetailsDto toDto(Restaurant restaurant);
 
+    @Mapping(source = "fileInfo.id", target = "fileId")
+    @Mapping(source = "categories", target = "categories")
+    @Mapping(source = "operatingModes", target = "operatingModes")
+    @Mapping(source = "deliveries", target = "deliveries")
+    RestaurantsCreateResponseDto toCreateDto(Restaurant restaurant);
 
     @Mappings({
             @Mapping(target = "id", ignore = true),

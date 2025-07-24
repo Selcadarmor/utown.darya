@@ -16,8 +16,6 @@ public class RestaurantCategoryDto {
     private String name;
     private Integer sort;
     private Boolean isActive;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
     private FileInfoDetailsDto file;
 }
 

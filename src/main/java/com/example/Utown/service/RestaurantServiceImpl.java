@@ -1,5 +1,6 @@
 package com.example.Utown.service;
 
+import com.example.Utown.dto.deliveryDTO.DeliveryDto;
 import com.example.Utown.dto.deliveryDTO.DeliveryInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeCreateDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
@@ -11,16 +12,20 @@ import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantProfileDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantsCreateResponseDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.RestaurantCategoryInfoMapper;
 import com.example.Utown.mapper.RestaurantInfoMapper;
 import com.example.Utown.model.Address;
+import com.example.Utown.model.Delivery;
 import com.example.Utown.model.Dish;
 import com.example.Utown.model.FileInfo;
+import com.example.Utown.model.OperatingMode;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.RestaurantCategory;
 import com.example.Utown.model.UserType.Client;
 import com.example.Utown.model.UserType.RestaurantAdmin;
+import com.example.Utown.repository.DeliveryRepository;
 import com.example.Utown.repository.DishRepository;
 import com.example.Utown.repository.FileInfoRepository;
 import com.example.Utown.repository.OperatingModeRepository;
@@ -36,6 +41,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -59,6 +65,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
     private final DishRepository dishRepository;
     private final FileInfoService fileInfoService;
     private final FileInfoRepository fileInfoRepository;
+    private final DeliveryRepository deliveryRepository;
 
     // ===== GET =====
 
@@ -172,7 +179,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
     @Transactional
     @Override
-    public RestaurantDetailsDto createRestaurant(RestaurantCreateDto dto) {
+    public RestaurantsCreateResponseDto createRestaurant(RestaurantCreateDto dto) {
         Restaurant restaurant = restaurantInfoMapper.toEntity(dto);
 
         if (dto.getFileId() != null) {
@@ -180,19 +187,12 @@ public class RestaurantServiceImpl  implements RestaurantService {
             restaurant.setFileInfo(file);
         }//изменить
 
-        if (dto.getNewCategories() != null && !dto.getNewCategories().isEmpty()) {
-            Set<RestaurantCategory> createdCategories = restaurantCategoryService.createRestaurantCategories(dto.getNewCategories());
-            restaurant.getCategories().addAll(createdCategories);
+
+        if (dto.getCategories() != null && !dto.getCategories().isEmpty()) {
+            Set<RestaurantCategory> categories = restaurantCategoryService.resolveCategories(dto.getCategories());
+            restaurant.setCategories(categories);
         }
 
-        // Если пришли id уже существующих категорий (например, dto.getCategoryIds())
-        if (dto.getCategoryIds() != null && !dto.getCategoryIds().isEmpty()) {
-            Set<RestaurantCategory> existingCategories = dto.getCategoryIds().stream()
-                    .map(id -> restaurantCategoryRepository.findById(id)
-                            .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory", id)))
-                    .collect(Collectors.toSet());
-            restaurant.getCategories().addAll(existingCategories);
-        }
         if (dto.getAddress() != null) {
             Address address = addressService.createAddress(dto.getAddress());
             restaurant.setAddress(address);
@@ -200,18 +200,34 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
         Restaurant savedRestaurant = restaurantRepository.save(restaurant);
 
-        RestaurantAdmin admin = restaurantAdminService.createAdmin(dto.getRestaurantAdmin(), savedRestaurant);
-        savedRestaurant.setRestaurantAdmin(admin);
+        RestaurantAdmin admin = null;
+        if (dto.getRestaurantAdmin() != null) {
+            admin = restaurantAdminService.createAdmin(dto.getRestaurantAdmin(), savedRestaurant);
+            savedRestaurant.setRestaurantAdmin(admin);
+        }
 
         restaurantRepository.save(savedRestaurant);
 
         if (dto.getOperatingModes() != null) {
             for (OperatingModeCreateDto modeDto : dto.getOperatingModes()) {
+                modeDto.setRestaurantId(savedRestaurant.getId());
                 operatingModeService.createOperatingMode(modeDto);
             }
         }
+        if (dto.getDeliveries() != null) {
+            for (DeliveryDto deliveryDto : dto.getDeliveries()) {
+                deliveryDto.setRestaurantId(savedRestaurant.getId());
+                deliveryService.createDelivery(deliveryDto);
+            }
+        }
+        List<OperatingMode> operatingModes = operatingModeRepository.findByRestaurantId(savedRestaurant.getId());
+        savedRestaurant.setOperatingModes(new ArrayList<>(operatingModes));
 
-        return restaurantInfoMapper.toDto(savedRestaurant);
+        List<Delivery> deliveries = deliveryRepository.findByRestaurantId(savedRestaurant.getId());
+        savedRestaurant.setDeliveries(new ArrayList<>(deliveries));
+
+        // Возвращаем DTO с уже подгруженными связями
+        return restaurantInfoMapper.toCreateDto(savedRestaurant);
     }
 
     // ===== UPDATE =====
@@ -228,9 +244,20 @@ public class RestaurantServiceImpl  implements RestaurantService {
             restaurant.setFileInfo(fileInfo);
         }
 
-        if (dto.getAddress() != null) {
-            addressService.updateAddress(id, dto.getAddress());
+        Address currentAddress = restaurant.getAddress();
+        if (currentAddress == null) {
+            Address newAddress = addressService.createAddress(dto.getAddress());
+            restaurant.setAddress(newAddress);
+        } else {
+            if (currentAddress.getId() == null) {
+                // Создаем новый адрес, потому что id нет
+                Address newAddress = addressService.createAddress(dto.getAddress());
+                restaurant.setAddress(newAddress);
+            } else {
+                addressService.updateAddress(currentAddress.getId(), dto.getAddress());
+            }
         }
+
 
         if (dto.getOperatingModes() != null && !dto.getOperatingModes().isEmpty()) {
             operatingModeService.updateOperatingModes(dto.getOperatingModes());
