@@ -49,7 +49,6 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
                                                              @Param("isActive") Boolean isActive,
                                                              Pageable pageable);
 
-
     @Query("SELECT new com.example.Utown.dto.restaurantDTO.RestaurantForClientDto(" +
             "r.id, r.title, f.path, r.description, d.price, r.deliveryTime, " +
             "r.isRecommended, r.isActive, d.isDeleted, " +

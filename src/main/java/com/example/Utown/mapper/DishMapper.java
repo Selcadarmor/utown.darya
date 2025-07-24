@@ -1,6 +1,7 @@
 package com.example.Utown.mapper;
 
 import com.example.Utown.dto.dishDTO.DishDto;
+import com.example.Utown.dto.dishDTO.DishForClientDto;
 import com.example.Utown.dto.dishDTO.DishInfoDto;
 import com.example.Utown.model.Dish;
 import org.mapstruct.Mapper;
@@ -32,6 +33,16 @@ public interface DishMapper {
     @Mapping(source = "options", target = "options")
     Dish toEntity(DishInfoDto dto);
 
+
+    @Mapping(target = "dishCategoryId", source = "dishCategory.id")
+    @Mapping(target = "filePath", source = "file.path")
+    @Mapping(target = "restaurantId", source = "restaurant.id")
+    DishForClientDto dishToClientDto(Dish dish);
+
+    @Mapping(target = "dishCategoryId", source = "dishCategory.id")
+    @Mapping(target = "filePath", source = "file.path")
+    @Mapping(target = "restaurantId", source = "restaurant.id")
+    DishForClientDto dishToSearchDto(Dish dish);
 
 }
 
