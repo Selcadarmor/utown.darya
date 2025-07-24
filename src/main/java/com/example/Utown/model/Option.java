@@ -43,7 +43,7 @@ public class Option {
     private String name;
 
     @Column(name = "is_required")
-    private boolean required;
+    private Boolean required;
 
     @Column(name = "min_value")
     private Integer min;
@@ -67,6 +67,6 @@ public class Option {
     private Dish dish;
 
     @OneToMany(mappedBy = "option", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Element> elements;
+    private Set<Element> elements = new HashSet<>();
 
 }

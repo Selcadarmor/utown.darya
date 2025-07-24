@@ -3,7 +3,6 @@ package com.example.Utown.service;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeCreateDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeUpdateDto;
-import com.example.Utown.exception.ElementNotFoundException;
 import com.example.Utown.exception.InvalidArgumentException;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.OperatingModeInfoMapper;
@@ -16,8 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class OperatingModeServiceImpl implements OperatingModeService {
@@ -87,13 +85,12 @@ public class OperatingModeServiceImpl implements OperatingModeService {
         OperatingMode updated = operatingModeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("OperatingMode", id));
 
-        // Частичное обновление полей
-        updated.setDayOff(dto.isDayOff());  // boolean, всегда обновляем
+        updated.setDayOff(dto.isDayOff());
         if (dto.getStartTime() != null) updated.setStartTime(dto.getStartTime());
         if (dto.getEndTime() != null) updated.setEndTime(dto.getEndTime());
-        updated.setDayOfWeek(dto.getDayOfWeek()); // если нужно, можно добавить проверку
+        updated.setDayOfWeek(dto.getDayOfWeek());
 
-        // Возвращаем проекцию (DTO) обновленного режима работы
+        operatingModeRepository.save(updated);
         return operatingModeRepository.findProjectedById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("OperatingMode", id));
     }
@@ -111,12 +108,4 @@ public class OperatingModeServiceImpl implements OperatingModeService {
         }
     }
 
-
-
-    // ===== DELETE =====
-    // Если понадобится метод удаления, например:
-    // @Override
-    // public void deleteById(Long id) {
-    //    operatingModeRepository.deleteById(id);
-    // }
 }

@@ -23,15 +23,28 @@ public class RestaurantAdminServiceImpl  implements RestaurantAdminService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final RestaurantAdminInfoMapper restaurantAdminInfoMapper;
+
     @Transactional
     @Override
     public RestaurantAdmin createAdmin(RestaurantAdminCreateDto dto, Restaurant restaurant) {
+        if (dto == null) {
+            throw new IllegalArgumentException("RestaurantAdminCreateDto must not be null");
+        }
+
         RestaurantAdmin admin = restaurantAdminInfoMapper.toEntity(dto);
-        admin.setPassword(passwordEncoder.encode(dto.getPassword()));
+
+        // Защита от null в password
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            System.out.println("Received password: " + dto.getPassword());
+            admin.setPassword(passwordEncoder.encode(dto.getPassword()));
+        } else {
+            throw new IllegalArgumentException("Password must not be null or blank");
+        }
 
         Role role = roleRepository.findByName(Roles.ROLE_RESTAURANT_ADMIN)
                 .orElseThrow(() -> new RoleNotFoundException(Roles.ROLE_RESTAURANT_ADMIN.name()));
-        admin.setRestaurant(restaurant); // Владелец связи
+
+        admin.setRestaurant(restaurant);
 
         if (admin.getRoles() == null) {
             admin.setRoles(new HashSet<>());
@@ -40,7 +53,4 @@ public class RestaurantAdminServiceImpl  implements RestaurantAdminService {
 
         return restaurantAdminRepository.save(admin);
     }
-
-
-
 }

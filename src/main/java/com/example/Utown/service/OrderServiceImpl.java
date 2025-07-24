@@ -47,8 +47,8 @@ public class OrderServiceImpl implements OrderService {
     private final RestaurantAdminRepository restaurantAdminRepository;
 
     @Override
-    public Page<OrderDetailsDto> getOrderDetailsByClient(Long clientId, Pageable pageable) {
-        Page<Order> orders = orderRepository.findAllByClientId(clientId, pageable);
+    public Page<OrderDetailsDto> getOrderDetailsByClient(Long clientId, String query, Pageable pageable) {
+        Page<Order> orders = orderRepository.findAllWithFilter(query, clientId, pageable);
 
         List<OrderDetailsDto> dtos = orders.getContent().stream()
                 .map(order -> {
@@ -103,7 +103,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order update(Long id, OrderDto dto) {
-        Order order = orderRepository.findById(id)
+        orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found", id));
 
         Restaurant restaurant = restaurantRepository.findById(dto.getRestaurant().getId())

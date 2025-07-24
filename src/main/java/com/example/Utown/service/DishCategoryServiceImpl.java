@@ -1,6 +1,7 @@
 package com.example.Utown.service;
 
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryCreateDto;
+import com.example.Utown.dto.dishCategoryDTO.DishCategoryCreateResponseDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryDetailsDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryRestaurantProfileDto;
@@ -50,9 +51,10 @@ public class DishCategoryServiceImpl implements DishCategoryService {
     }
 
     @Override
-    public Page<DishCategoryDetailsDto> getDishCategoriesByRestaurantId(Long restaurantId, int page, int size) {
+    public Page<DishCategoryDetailsDto> getDishCategoriesByRestaurantId(
+            Long restaurantId, String query, Integer sort, Boolean isActive, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("sort").ascending());
-        return dishCategoryRepository.findByRestaurantId(restaurantId, pageable)
+        return dishCategoryRepository.findAllWithFilter(restaurantId, query, sort, isActive, pageable)
                 .map(dishCategoryMapper::toDetailsDto);
     }
 
@@ -71,7 +73,7 @@ public class DishCategoryServiceImpl implements DishCategoryService {
 
     @Override
     @Transactional
-    public DishCategoryDetailsDto createDishCategoryForRestaurant(Long restaurantId, DishCategoryCreateDto dto) {
+    public DishCategoryCreateResponseDto createDishCategoryForRestaurant(Long restaurantId, DishCategoryCreateDto dto) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
 

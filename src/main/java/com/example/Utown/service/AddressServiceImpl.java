@@ -1,9 +1,7 @@
 package com.example.Utown.service;
 
 import com.example.Utown.dto.addressDTO.AddressDto;
-import com.example.Utown.dto.addressDTO.AddressInfoDto;
 import com.example.Utown.dto.clientDTO.ClientProfileUpdateDto;
-import com.example.Utown.exception.AddressNotFoundException;
 import com.example.Utown.exception.DefaultAddressNotSetException;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.AddressMapper;
@@ -85,8 +83,6 @@ public class AddressServiceImpl implements AddressService {
     }
 
 
-
-
     @Override
     public List<AddressDto> getAddressesByClient() {
         Client client = currentService.getCurrentClient();
@@ -126,7 +122,7 @@ public class AddressServiceImpl implements AddressService {
                 .anyMatch(a -> a.getId().equals(defaultAddressId));
 
         if (!hasDefaultAddress) {
-            throw new ResourceNotFoundException("Default address not found for client", defaultAddressId);
+            throw new ResourceNotFoundException("Default", defaultAddressId);
         }
 
         Address updatedAddress = updateAddress(defaultAddressId, dto.getAddressDto());
@@ -151,16 +147,5 @@ public class AddressServiceImpl implements AddressService {
         clientRepository.save(client);
         addressRepository.delete(address);
     }
-
-    @Override
-    @Transactional(rollbackFor = RuntimeException.class)
-    public Address updateAddressByRestaurant(Long id, AddressInfoDto dto) {
-        Address address = getAddressById(id);
-        address.setFullAddress(dto.getFullAddress());
-        address.getCity();
-        return addressRepository.save(address);
-
-    }
-
 
 }

@@ -3,6 +3,8 @@ package com.example.Utown.mapper;
 import com.example.Utown.dto.restaurantDTO.RestaurantCreateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantUpdateResponseDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantsCreateResponseDto;
 import com.example.Utown.model.Delivery;
 import com.example.Utown.model.OperatingMode;
 import com.example.Utown.model.Restaurant;
@@ -11,6 +13,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
@@ -18,9 +21,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 
-@Mapper(componentModel = "spring", uses = {AddressInfoMapper.class, RestaurantCategoryInfoMapper.class, OrderInfoMapper.class,
+@Mapper(componentModel = "spring", uses = { RestaurantCategoryInfoMapper.class,
         RestaurantAdminInfoMapper.class, DishCategoryMapper.class, DeliveryMapper.class, OperatingModeInfoMapper.class},
-        unmappedTargetPolicy = ReportingPolicy.IGNORE)
+        unmappedTargetPolicy = ReportingPolicy.IGNORE, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface RestaurantInfoMapper {
     @Mapping(source = "fileInfo.id", target = "fileId")
     @Mapping(target = "orderCount", ignore = true)
@@ -29,6 +32,11 @@ public interface RestaurantInfoMapper {
     @Mapping(source = "deliveries", target = "deliveries")
     RestaurantDetailsDto toDto(Restaurant restaurant);
 
+    @Mapping(source = "fileInfo.id", target = "fileId")
+    @Mapping(source = "categories", target = "categories")
+    @Mapping(source = "operatingModes", target = "operatingModes")
+    @Mapping(source = "deliveries", target = "deliveries")
+    RestaurantsCreateResponseDto toCreateDto(Restaurant restaurant);
 
     @Mappings({
             @Mapping(target = "id", ignore = true),
@@ -91,5 +99,10 @@ public interface RestaurantInfoMapper {
     })
     Restaurant toEntity(RestaurantDetailsDto dto);
 
+    @Mapping(source = "fileInfo.id", target = "fileId")
+    @Mapping(source = "categories", target = "categories")
+    @Mapping(source = "operatingModes", target = "operatingModes")
+    @Mapping(source = "deliveries", target = "deliveries")
+    RestaurantUpdateResponseDto toUpdateDto(Restaurant restaurant);
 
 }
