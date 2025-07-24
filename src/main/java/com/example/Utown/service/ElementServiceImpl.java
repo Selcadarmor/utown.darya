@@ -7,7 +7,6 @@ import com.example.Utown.mapper.ElementMapper;
 import com.example.Utown.model.Element;
 import com.example.Utown.model.Option;
 import com.example.Utown.repository.ElementRepository;
-import com.example.Utown.repository.FileInfoRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,6 @@ import java.util.stream.Collectors;
 public class ElementServiceImpl implements ElementService {
 
     private final ElementRepository elementRepository;
-    private final FileInfoRepository fileInfoRepository;
     private final ElementMapper elementMapper;
 
     @Override
@@ -109,6 +107,5 @@ public class ElementServiceImpl implements ElementService {
                 .build()
         ).collect(Collectors.toSet());
     }
-
 }
 

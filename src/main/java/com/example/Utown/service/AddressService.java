@@ -1,7 +1,6 @@
 package com.example.Utown.service;
 
 import com.example.Utown.dto.addressDTO.AddressDto;
-import com.example.Utown.dto.addressDTO.AddressInfoDto;
 import com.example.Utown.dto.clientDTO.ClientProfileUpdateDto;
 import com.example.Utown.model.Address;
 
@@ -16,6 +15,5 @@ public interface AddressService {
     List<AddressDto> getAddressesByClient();
     Address saveAddressForClient(AddressDto dto);
     ClientProfileUpdateDto updateClientProfile(ClientProfileUpdateDto dto);
-    Address updateAddressByRestaurant(Long id, AddressInfoDto dto);
     void deleteAddressForCLient(Long addressId);
 }

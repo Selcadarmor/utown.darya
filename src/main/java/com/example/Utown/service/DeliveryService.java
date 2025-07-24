@@ -14,7 +14,7 @@ public interface DeliveryService {
     Delivery updateDelivery(Long id, DeliveryDto dto);
     void deleteDelivery(Long id);
     List<DeliveryInfoDto> getDeliveriesByRestaurantId(Long restaurantId);
-    void updateDeliveriesByRestaurant(Restaurant restaurant, List<DeliveryInfoDto> dtos);
+    void updateDeliveriesByRestaurant(Restaurant restaurant, List<DeliveryDto> dtos);
 }
 
 

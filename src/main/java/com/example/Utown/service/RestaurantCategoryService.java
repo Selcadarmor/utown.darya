@@ -24,4 +24,5 @@ public interface RestaurantCategoryService {
 
     Set<RestaurantCategory> findCategoriesByIds(Set<RestaurantCategoryDto> dtos);
 
+    Set<RestaurantCategory> resolveCategories(Set<RestaurantCategoryDto> categoryDtos);
 }

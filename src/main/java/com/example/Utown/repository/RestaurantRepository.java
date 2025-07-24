@@ -7,6 +7,7 @@ import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.RestaurantCategory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -38,8 +39,15 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
             "FROM Restaurant r " +
             "LEFT JOIN r.address a " +
             "LEFT JOIN Order o ON o.restaurant.id = r.id " +
-            "GROUP BY r.id, r.title, a.city, r.phone")
-    Page<RestaurantInfoDto> findAllRestaurantsWithOrderCount(Pageable pageable);
+            "WHERE (:query IS NULL OR LOWER(r.title) LIKE LOWER(CONCAT('%', :query, '%')) " +
+            "OR LOWER(r.phone) LIKE LOWER(CONCAT('%', :query, '%')) " +
+            "OR LOWER(a.city) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+            "AND (:isActive IS NULL OR r.isActive = :isActive) " +
+            "GROUP BY r.id, r.title, a.city, r.phone "
+            )
+    Page<RestaurantInfoDto> findAllRestaurantsWithOrderCount(@Param("query") String query,
+                                                             @Param("isActive") Boolean isActive,
+                                                             Pageable pageable);
 
     @Query("SELECT new com.example.Utown.dto.restaurantDTO.RestaurantForClientDto(" +
             "r.id, r.title, f.path, r.description, d.price, r.deliveryTime, " +
@@ -124,7 +132,6 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
             "  AND (LOWER(r.title) LIKE LOWER(CONCAT('%', :query, '%')) " +
             "       OR LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%')))"
     )
-
     Page<RestaurantForClientDto> searchClient(
             @Param("query") String query,
             @Param("state") String state,

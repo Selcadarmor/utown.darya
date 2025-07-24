@@ -13,7 +13,7 @@ import java.util.Set;
 public interface ElementMapper {
 
     ElementDto toDto(Element element);
-    
+
     Element toEntity(ElementDto dto);
 
     @Mapping(source = "element.id", target = "id")
