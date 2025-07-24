@@ -39,8 +39,15 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
             "FROM Restaurant r " +
             "LEFT JOIN r.address a " +
             "LEFT JOIN Order o ON o.restaurant.id = r.id " +
-            "GROUP BY r.id, r.title, a.city, r.phone")
-    Page<RestaurantInfoDto> findAllRestaurantsWithOrderCount(Pageable pageable);
+            "WHERE (:query IS NULL OR LOWER(r.title) LIKE LOWER(CONCAT('%', :query, '%')) " +
+            "OR LOWER(r.phone) LIKE LOWER(CONCAT('%', :query, '%')) " +
+            "OR LOWER(a.city) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+            "AND (:isActive IS NULL OR r.isActive = :isActive) " +
+            "GROUP BY r.id, r.title, a.city, r.phone "
+            )
+    Page<RestaurantInfoDto> findAllRestaurantsWithOrderCount(@Param("query") String query,
+                                                             @Param("isActive") Boolean isActive,
+                                                             Pageable pageable);
 
 
     @Query("SELECT new com.example.Utown.dto.restaurantDTO.RestaurantForClientDto(" +

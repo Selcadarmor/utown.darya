@@ -1,26 +1,20 @@
 package com.example.Utown.service.UserType.client;
 
-import com.example.Utown.dto.addressDTO.AddressDto;
-import com.example.Utown.dto.addressDTO.AddressInfoDto;
 import com.example.Utown.dto.clientDTO.ClientDetailsDto;
 import com.example.Utown.dto.clientDTO.ClientInfoDto;
-import com.example.Utown.dto.clientDTO.ClientProfileUpdateDto;
 import com.example.Utown.dto.clientDTO.ClientRegistrationDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
-import com.example.Utown.exception.DefaultAddressNotSetException;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.exception.RestaurantAlreadyFavoritedException;
 import com.example.Utown.exception.RestaurantNotFoundException;
 import com.example.Utown.exception.RestaurantNotInFavoritesException;
 import com.example.Utown.exception.UserAlreadyExistsException;
-import com.example.Utown.mapper.AddressMapper;
 import com.example.Utown.model.Address;
 import com.example.Utown.model.Cart;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.Role;
 import com.example.Utown.model.UserType.Client;
 import com.example.Utown.model.enumFiles.Roles;
-import com.example.Utown.repository.AddressRepository;
 import com.example.Utown.repository.CartRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.repository.UserType.ClientRepository;
@@ -29,7 +23,6 @@ import com.example.Utown.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -38,12 +31,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class ClientServiceImpl implements ClientService {

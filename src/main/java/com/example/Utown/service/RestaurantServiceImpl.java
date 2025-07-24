@@ -12,6 +12,7 @@ import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantProfileDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantUpdateResponseDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantsCreateResponseDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.RestaurantCategoryInfoMapper;
@@ -70,9 +71,9 @@ public class RestaurantServiceImpl  implements RestaurantService {
     // ===== GET =====
 
     @Override
-    public Page<RestaurantInfoDto> getAllRestaurants(int page, int size) {
+    public Page<RestaurantInfoDto> getAllRestaurants(String query, Boolean isActive,int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
-        return restaurantRepository.findAllRestaurantsWithOrderCount(pageable);
+        return restaurantRepository.findAllRestaurantsWithOrderCount(query, isActive,pageable);
     }
 
     @Override
@@ -200,7 +201,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
         Restaurant savedRestaurant = restaurantRepository.save(restaurant);
 
-        RestaurantAdmin admin = null;
+        RestaurantAdmin admin;
         if (dto.getRestaurantAdmin() != null) {
             admin = restaurantAdminService.createAdmin(dto.getRestaurantAdmin(), savedRestaurant);
             savedRestaurant.setRestaurantAdmin(admin);
@@ -234,7 +235,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
-    public RestaurantDetailsDto updateRestaurant(Long id, RestaurantUpdateDto dto) {
+    public RestaurantUpdateResponseDto updateRestaurant(Long id, RestaurantUpdateDto dto) {
         Restaurant restaurant = findRestaurantById(id);
 
         restaurantInfoMapper.updateFromDto(dto, restaurant);
@@ -280,7 +281,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
         }
 
         Restaurant saved = restaurantRepository.save(restaurant);
-        return restaurantInfoMapper.toDto(saved);
+        return restaurantInfoMapper.toUpdateDto(saved);
     }
 
     // ===== DELETE / DEACTIVATE =====

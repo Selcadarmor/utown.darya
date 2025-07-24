@@ -15,7 +15,9 @@ public interface DishService {
     DishDto getDishById(Long id);
     void deleteDish(Long id);
     Dish updateDish(Long id, DishDto dto);
-    Page<DishDetailsDto> getDishesByRestaurantId(Long restaurantId, int page, int size);
+    Page<DishDetailsDto> getDishesByRestaurantId(Long restaurantId, String title,
+                                                 Integer sort, Long dishCategoryId,
+                                                 Boolean isActive, int page, int size);
     DishInfoDto updateDishForRestaurant(Long RestaurantId, Long DishId, DishCreateDto dto);
     DishInfoDto createDishForRestaurant(Long RestaurantId, DishCreateDto dto);
     DishForClientDto getDishByIdForClient(Long dishId);

@@ -32,8 +32,6 @@ public interface DishMapper {
     @Mapping(source = "options", target = "options")
     Dish toEntity(DishInfoDto dto);
 
-    @Mapping(target = "dishes", qualifiedByName = "toSavedDishDto")
-    List<DishInfoDto> toDtoList(List<Dish> dishes);
 
 }
 

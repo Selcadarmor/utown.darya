@@ -14,6 +14,7 @@ import com.example.Utown.dto.restaurantDTO.RestaurantCreateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantUpdateResponseDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantsCreateResponseDto;
 import com.example.Utown.service.DishCategoryService;
 import com.example.Utown.service.DishService;
@@ -36,7 +37,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -120,9 +120,11 @@ public class AdminController {
     @ApiResponses(@ApiResponse(responseCode = "200", description = "List of restaurants retrieved successfully"))
     @GetMapping("/restaurants") //Passed
     public ResponseEntity<Page<RestaurantInfoDto>> getAllRestaurants(
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) Boolean isActive,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Page<RestaurantInfoDto> restaurants = restaurantService.getAllRestaurants(page, size);
+        Page<RestaurantInfoDto> restaurants = restaurantService.getAllRestaurants(query, isActive, page, size);
         return ResponseEntity.ok(restaurants);
     }
 
@@ -154,8 +156,8 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "Restaurant updated successfully."),
             @ApiResponse(responseCode = "404", description = "Restaurant not found")
     })
-    @PutMapping("/restaurants/{id}")
-    public ResponseEntity<RestaurantDetailsDto> updateRestaurant(
+    @PatchMapping("/restaurants/{id}") //Passed
+    public ResponseEntity<RestaurantUpdateResponseDto> updateRestaurant(
             @PathVariable Long id,
             @Valid @RequestBody RestaurantUpdateDto restaurantUpdateDto) {
         return ResponseEntity.ok(restaurantService.updateRestaurant(id, restaurantUpdateDto));
@@ -180,11 +182,17 @@ public class AdminController {
             @ApiResponse(responseCode = "404", description = "Restaurant not found")
     })
     @GetMapping("restaurants/{restaurantId}/dishes") //Passed
-    public ResponseEntity<Page<DishDetailsDto>> getDishesByRestaurant(
+    public ResponseEntity<Page<DishDetailsDto>> getDishesByRestaurantId(
             @PathVariable Long restaurantId,
+            @RequestParam(required = false) Boolean isActive,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) Integer sort,
+            @RequestParam(required = false) Long dishCategoryId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Page<DishDetailsDto> dishes = dishService.getDishesByRestaurantId(restaurantId, page, size);
+        Page<DishDetailsDto> dishes = dishService.getDishesByRestaurantId(
+                restaurantId, title, sort, dishCategoryId, isActive,
+                page, size);
         return ResponseEntity.ok(dishes);
     }
 
@@ -226,9 +234,12 @@ public class AdminController {
     @GetMapping("/restaurants/{restaurantId}/dish-categories")//Passed
     public ResponseEntity<Page<DishCategoryDetailsDto>> getDishCategoriesByRestaurantId(
             @PathVariable Long restaurantId,
+            @RequestParam(required = false) Boolean isActive,
+            @RequestParam(required = false) String  query,
+            @RequestParam(required = false) Integer sort,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Page<DishCategoryDetailsDto> result = dishCategoryService.getDishCategoriesByRestaurantId(restaurantId, page, size);
+        Page<DishCategoryDetailsDto> result = dishCategoryService.getDishCategoriesByRestaurantId(restaurantId, query, sort, isActive, page, size);
         return ResponseEntity.ok(result);
     }
 
@@ -257,8 +268,9 @@ public class AdminController {
     })
     @GetMapping("/clients/{clientId}/orders")//Passed
     public ResponseEntity<Page<OrderDetailsDto>> getOrderDetailsByClient(@PathVariable Long clientId,
+                                                                         @RequestParam(required = false) String query,
                                                                          Pageable pageable) {
-        Page<OrderDetailsDto> orders = orderService.getOrderDetailsByClient(clientId, pageable);
+        Page<OrderDetailsDto> orders = orderService.getOrderDetailsByClient(clientId, query, pageable);
         return ResponseEntity.ok(orders);
 
     }
