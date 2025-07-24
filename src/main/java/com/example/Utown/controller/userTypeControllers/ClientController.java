@@ -5,6 +5,7 @@ import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.dto.clientDTO.ClientProfileUpdateDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryRestaurantProfileDto;
 import com.example.Utown.dto.dishDTO.DishForClientDto;
+import com.example.Utown.dto.dishDTO.DishSearchDto;
 import com.example.Utown.dto.dishToOrderDTO.DishToOrderRequestDto;
 import com.example.Utown.dto.dishToOrderDTO.DishToOrderResponseDto;
 import com.example.Utown.dto.orderDTO.OrderDto;
@@ -23,12 +24,16 @@ import com.example.Utown.service.RestaurantCategoryService;
 import com.example.Utown.service.RestaurantService;
 import com.example.Utown.service.UserType.client.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -105,7 +110,7 @@ public class ClientController {
         return ResponseEntity.ok(restaurants);
     }
 
-    @GetMapping("/restaurants/category/{categoryId}") //Passed
+    @GetMapping("/restaurants/categories/{categoryId}") //Passed
     @Operation(
             summary = "Get all restaurants by Restaurant Category",
             description = "Get all restaurants by Restaurant Category",
@@ -131,7 +136,7 @@ public class ClientController {
         return ResponseEntity.ok(favorites);
     }
 
-    @GetMapping("/restaurants/search") //Passed but not found yet
+    @GetMapping("/restaurants/search") //Passed
     @Operation(
             summary = "Search restaurants",
             description = "Search restaurants by query with sorting and pagination",
@@ -144,7 +149,7 @@ public class ClientController {
             @RequestParam String query,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String sortBy,
+            @RequestParam String sortBy,
             @RequestParam(defaultValue = "desc") String direction
     ) {
         Page<RestaurantForClientDto> restaurants = restaurantService.searchRestaurants(query, page, size, sortBy, direction);
@@ -166,7 +171,26 @@ public class ClientController {
         return ResponseEntity.ok(profile);
     }
 
-    @GetMapping("restaurant/{restaurantId}/dish_categories") //Passed
+    @GetMapping("/restaurant/profile/{restaurantId}/search/dishes") //Passed
+    @Operation(
+            summary = "Search dishes by keyword in a specific restaurant",
+            description = "Returns a paginated list of dishes filtered by keyword and restaurant ID. Search is case-insensitive and matches title or description."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dishes found and returned successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid parameters"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<Page<DishSearchDto>> searchDishes(
+            @RequestParam Long restaurantId,
+            @RequestParam String keyword,
+            @PageableDefault(size = 10, sort = "sort", direction = Sort.Direction.ASC) Pageable pageable
+    ) {
+        Page<DishSearchDto> dishes = dishService.searchDishesByRestaurant(restaurantId, keyword, pageable);
+        return ResponseEntity.ok(dishes);
+    }
+
+    @GetMapping("restaurant/profile/{restaurantId}/dish_categories") //Passed
     @Operation(
             summary = "Get dish categories for restaurant",
             description = "Returns all dish categories for a specific restaurant with dish count",
@@ -181,19 +205,19 @@ public class ClientController {
         return ResponseEntity.ok(categories);
     }
 
-    @GetMapping("dish/category/{categoryId}")
+    @GetMapping("dish/category/{categoryId}") //Passed
     @Operation(summary = "Get dishes by category", description = "Returns all dishes for a given category, each with options and elements")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of dishes returned successfully"),
             @ApiResponse(responseCode = "404", description = "Category not found or no dishes"),
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
-    public ResponseEntity<List<DishForClientDto>> getDishesByCategory(@PathVariable Long categoryId) {
-        List<DishForClientDto> dishes = dishService.getDishesByCategoryForClient(categoryId);
+    public ResponseEntity<List<DishSearchDto>> getDishesByCategory(@PathVariable Long categoryId) {
+        List<DishSearchDto> dishes = dishService.getDishesByCategoryForClient(categoryId);
         return ResponseEntity.ok(dishes);
     }
 
-    @GetMapping("dish/{dishId}")
+    @GetMapping("dish/{dishId}") //Passed
     @Operation(summary = "Get dish by ID", description = "Returns a single dish with options and elements by its ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Dish returned successfully"),
