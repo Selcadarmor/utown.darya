@@ -109,14 +109,9 @@ public class ClientServiceImpl implements ClientService {
     @Override // For Client
     public void save(ClientRegistrationDto dto, Roles roleName) {
 
-        if (clientRepository.findByUsername(dto.getUsername()).isPresent()) {
-            throw new UserAlreadyExistsException(dto.getUsername());
-        }
-
         Role role = roleService.findByName(roleName);
 
-        Cart cart = new Cart(); // создаём пустую корзину
-        cartRepository.save(cart);
+        Cart cart = new Cart();
 
         Client client = new Client();
         client.setUsername(dto.getUsername());
@@ -125,12 +120,14 @@ public class ClientServiceImpl implements ClientService {
         client.setActive(true);
         client.setFullName(null);
         client.setDefaultAddress(null);
-        client.setCart(cart);
         client.setFavoriteRestaurants(new HashSet<>());
         client.setAddresses(new HashSet<>());
         client.setOrders(new ArrayList<>());
         client.setNotifications(new HashSet<>());
         client.setFileInfo(null);
+
+        client.setCart(cart);
+        cart.setClient(client);
 
         clientRepository.save(client);
     }
