@@ -9,15 +9,15 @@ public class ClientInfoDto {
     private String city;
     private String fullAddress;
     private Integer orderCount;
-    private Long fileInfoId;
+    private Long fileId;
 
-    public ClientInfoDto(String fullName, String username, String city, String fullAddress, Integer orderCount, Long fileInfoId) {
+    public ClientInfoDto(String fullName, String username, String city, String fullAddress, Integer orderCount, Long fileId) {
         this.fullName = fullName;
         this.username = username;
         this.city = city;
         this.fullAddress = fullAddress;
         this.orderCount = orderCount;
-        this.fileInfoId = fileInfoId;
+        this.fileId = fileId;
     }
 
 }

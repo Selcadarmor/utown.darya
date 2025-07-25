@@ -13,7 +13,6 @@ import com.example.Utown.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -118,6 +117,31 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
 
         return new HashSet<>(restaurantCategoryRepository.saveAll(categories));
     }
+
+    @Transactional
+    public Set<RestaurantCategory> resolveCategories(Set<RestaurantCategoryDto> categoryDtos) {
+        Set<RestaurantCategory> result = new HashSet<>();
+        Set<RestaurantCategory> toCreate = new HashSet<>();
+
+        for (RestaurantCategoryDto dto : categoryDtos) {
+            if (dto.getId() != null) {
+                RestaurantCategory existing = restaurantCategoryRepository.findById(dto.getId())
+                        .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory", dto.getId()));
+                result.add(existing);
+            } else {
+
+                RestaurantCategory newCategory = restaurantCategoryMapper.restaurantCategoryDtoToEntity(dto);
+                toCreate.add(newCategory);
+            }
+        }
+
+        if (!toCreate.isEmpty()) {
+            result.addAll(restaurantCategoryRepository.saveAll(toCreate));
+        }
+
+        return result;
+    }
+
 
     // ===== PUT =====
 

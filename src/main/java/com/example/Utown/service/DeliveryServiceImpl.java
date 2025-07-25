@@ -2,6 +2,7 @@ package com.example.Utown.service;
 
 import com.example.Utown.dto.deliveryDTO.DeliveryDto;
 import com.example.Utown.dto.deliveryDTO.DeliveryInfoDto;
+import com.example.Utown.exception.InvalidArgumentException;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.DeliveryMapper;
 import com.example.Utown.model.Delivery;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -84,16 +87,31 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public void updateDeliveriesByRestaurant(Restaurant restaurant, List<DeliveryInfoDto> dtos) {
-        List<Delivery> deliveries = dtos.stream()
-                .map(dto -> {
-                    Delivery delivery = new Delivery();
-                    delivery.setRestaurant(restaurant);
-                    delivery.setArea(dto.getArea());
-                    delivery.getDistrict();
-                    return  delivery;
-                }).collect(Collectors.toList());
-        deliveryRepository.saveAll(deliveries);
+    public void updateDeliveriesByRestaurant(Restaurant restaurant, List<DeliveryDto> dtos) {
+        Map<Long, Delivery> existingDeliveriesById = restaurant.getDeliveries().stream()
+                .filter(d -> d.getId() != null)
+                .collect(Collectors.toMap(Delivery::getId, Function.identity()));
+
+        for (DeliveryDto dto : dtos) {
+            Long id = dto.getId();
+            if (id == null) {
+                throw new InvalidArgumentException( "deliveryId", null);
+            }
+            Delivery delivery = existingDeliveriesById.get(id);
+            if (delivery == null) {
+                throw new ResourceNotFoundException("Delivery", id);
+            }
+
+            // Обновляем поля
+            delivery.setArea(dto.getArea());
+            delivery.setDistrict(dto.getDistrict());
+            delivery.setPrice(dto.getPrice());
+            delivery.setIsActive(dto.getIsActive());
+            delivery.setIsDeleted(dto.getIsDeleted());
+        }
+
+        deliveryRepository.saveAll(existingDeliveriesById.values());
     }
+
 }
 

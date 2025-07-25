@@ -52,7 +52,4 @@ public abstract class RestaurantAdminInfoMapper {
 
         return dto;
     }
-
-    public  abstract RestaurantAdminInfoDto toDtos(RestaurantAdmin restaurantAdmin);
-
 }

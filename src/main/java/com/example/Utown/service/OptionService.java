@@ -16,5 +16,6 @@ public interface OptionService {
     void delete(Long id);
     Set<Option> createOptionsForDish(Dish dish, Set<OptionInfoDto> optionDtos);
     Set<Option> updateOptionsForDish(Dish dish, Set<OptionInfoDto> optionDtos);
+    Set<OptionInfoDto> getOptionsWithElementsByDish(Set<Option> options);
 }
 

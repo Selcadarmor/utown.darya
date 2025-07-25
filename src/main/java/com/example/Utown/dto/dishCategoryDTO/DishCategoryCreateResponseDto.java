@@ -5,9 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class DishCategoryCreateDto {
+@AllArgsConstructor
+public class DishCategoryCreateResponseDto {
     private String name;
     private Integer sort;
     private Long fileId;

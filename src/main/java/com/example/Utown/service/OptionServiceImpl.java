@@ -1,5 +1,6 @@
 package com.example.Utown.service;
 
+import com.example.Utown.dto.elementDTO.ElementInfoDto;
 import com.example.Utown.dto.optionDTO.OptionDto;
 import com.example.Utown.dto.optionDTO.OptionInfoDto;
 import com.example.Utown.exception.ResourceNotFoundException;
@@ -56,6 +57,36 @@ public class OptionServiceImpl implements OptionService {
     }
 
     @Override
+    public Set<OptionInfoDto> getOptionsWithElementsByDish(Set<Option> options) {
+        Set<Long> optionIds = options.stream()
+                .map(Option::getId)
+                .collect(Collectors.toSet());
+
+        Set<Option> optionsWithElements = optionRepository.findAllWithElementsByIds(optionIds);
+
+        Map<Long, Set<Element>> elementsMap = optionsWithElements.stream()
+                .collect(Collectors.toMap(Option::getId, Option::getElements));
+
+        return options.stream().map(option -> {
+            Set<ElementInfoDto> elementDtos = elementsMap.getOrDefault(option.getId(), Set.of())
+                    .stream()
+                    .map(element -> new ElementInfoDto(
+                            element.getId(),
+                            element.getName(),
+                            element.getPrice()
+                    ))
+                    .collect(Collectors.toSet());
+
+            return new OptionInfoDto(
+                    option.getId(),
+                    option.getName(),
+                    elementDtos
+            );
+        }).collect(Collectors.toSet());
+    }
+
+
+    @Override
     public Option update(Long id, OptionDto dto) {
         Option option = optionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Option not found", id));
@@ -94,6 +125,8 @@ public class OptionServiceImpl implements OptionService {
 
             updatedOptions.add(option);
         }
+        dish.getOptions().clear();
+        dish.getOptions().addAll(updatedOptions);
 
         return updatedOptions;
     }

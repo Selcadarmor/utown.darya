@@ -1,6 +1,7 @@
 package com.example.Utown.mapper;
 
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryCreateDto;
+import com.example.Utown.dto.dishCategoryDTO.DishCategoryCreateResponseDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryDetailsDto;
 import com.example.Utown.model.DishCategory;
@@ -22,9 +23,8 @@ public interface DishCategoryMapper {
     @Mapping(source = "restaurant.id", target = "restaurantId")
     DishCategoryDetailsDto toDetailsDto(DishCategory category);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(source = "restaurant.id", target = "restaurantId")
-    DishCategoryDetailsDto toCreateDto(DishCategory category);
+
+    DishCategoryCreateResponseDto toCreateDto(DishCategory category);
 
     @Mappings({
             @Mapping(target = "isActive", constant = "true"),
