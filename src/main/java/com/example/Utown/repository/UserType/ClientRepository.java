@@ -22,8 +22,14 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     @Query("SELECT new com.example.Utown.dto.clientDTO.ClientDetailsDto(" +
             "c.fullName, c.username, a.city, a.fullAddress, SIZE(c.orders)) " +
             "FROM Client c " +
-            "INNER JOIN Address a ON a.id = c.defaultAddress")
-    Page<ClientDetailsDto> findAllClientDetails(Pageable pageable);
+            "LEFT JOIN Address a ON a.id = c.defaultAddress " +
+            "WHERE " +
+            "(:query IS NULL OR LOWER(c.fullName) LIKE LOWER(CONCAT('%', :query, '%'))  " +
+            "OR LOWER(c.username) LIKE LOWER(CONCAT('%', :query, '%'))) AND " +
+            "(:isActive IS NULL OR c.isActive = :isActive)")
+    Page<ClientDetailsDto> findAllClientDetails( @Param("query") String query,
+                                                 @Param("isActive") Boolean isActive,
+                                                 Pageable pageable);
 
     @Query("SELECT c FROM Client c LEFT JOIN FETCH c.addresses WHERE c.username = :username")
     Optional<Client> findByUsernameWithAddresses(@Param("username") String username);

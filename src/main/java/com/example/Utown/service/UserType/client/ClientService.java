@@ -16,7 +16,7 @@ import java.util.List;
 
 public interface ClientService {
         Client findByUsername(String username);
-        Page<ClientDetailsDto> getAllClients(Pageable pageable);
+        Page<ClientDetailsDto> getAllClients(String query, Boolean isActive, Pageable pageable);
         ClientInfoDto getClientById(Long clientId);
         List<AddressDto> getAddressesByClient();
         void updateClientActiveStatus(Long id, Boolean active);

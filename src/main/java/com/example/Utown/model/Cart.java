@@ -53,6 +53,4 @@ public class Cart {
 
     @OneToOne(mappedBy = "cart")
     private Client client;
-
-
 }

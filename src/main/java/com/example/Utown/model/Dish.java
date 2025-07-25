@@ -24,6 +24,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -79,6 +80,6 @@ public class Dish {
     private Restaurant restaurant;
 
     @OneToMany(mappedBy = "dish",fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Option> options;
+    private Set<Option> options = new HashSet<>();
 
 }

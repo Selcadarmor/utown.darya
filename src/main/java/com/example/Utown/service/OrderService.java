@@ -22,6 +22,6 @@ public interface OrderService {
     void cancelOrderByAdmin(Long orderId);
     List<OrderDto> getAllOrdersForRestaurantAdmin(String username);
     List<OrderDto> getOrdersByStatusForRestaurantAdmin(String username, String statusStr);
-    Page<OrderDetailsDto> getOrderDetailsByClient(Long clientId, Pageable pageable);
+    Page<OrderDetailsDto> getOrderDetailsByClient(Long clientId, String query, Pageable pageable);
 }
 

@@ -32,7 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 @Service
@@ -47,6 +47,7 @@ public class DishServiceImpl implements DishService {
     private final OptionRepository optionRepository;
     private final OptionService optionService;
     private final ElementRepository elementRepository;
+    private final FileInfoService fileInfoService;
 
     // ===== GET =====
 
@@ -57,39 +58,19 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public Page<DishDetailsDto> getDishesByRestaurantId(Long restaurantId, int page, int size) {
-        Page<Dish> dishPage = dishRepository.findByRestaurantId(restaurantId, PageRequest.of(page, size));
-
-        Set<Long> optionIds = dishPage.stream()
-                .flatMap(dish -> dish.getOptions().stream())
-                .map(Option::getId)
-                .collect(Collectors.toSet());
-
-        Set<Option> optionsWithElements = optionRepository.findAllWithElementsByIds(optionIds);
-
-        Map<Long, Set<Element>> elementsMap = optionsWithElements.stream()
-                .collect(Collectors.toMap(
-                        Option::getId,
-                        Option::getElements
-                ));
+    public Page<DishDetailsDto> getDishesByRestaurantId(Long restaurantId, String title,
+                                                        Integer sort, Long dishCategoryId,
+                                                        Boolean isActive, int page, int size) {
+        Page<Dish> dishPage = dishRepository.searchDishesByFilter(
+                restaurantId,
+                title,
+                sort,
+                dishCategoryId,
+                isActive,
+                PageRequest.of(page, size));
 
         return dishPage.map(dish -> {
-            Set<OptionInfoDto> optionDtos = dish.getOptions().stream().map(option -> {
-                Set<ElementInfoDto> elementDtos = elementsMap.getOrDefault(option.getId(), Set.of())
-                        .stream()
-                        .map(element -> new ElementInfoDto(
-                                element.getId(),
-                                element.getName(),
-                                element.getPrice()
-                        ))
-                        .collect(Collectors.toSet());
-
-                return new OptionInfoDto(
-                        option.getId(),
-                        option.getName(),
-                        elementDtos
-                );
-            }).collect(Collectors.toSet());
+            Set<OptionInfoDto> optionDtos = optionService.getOptionsWithElementsByDish(dish.getOptions());
 
             return new DishDetailsDto(
                     dish.getDescription(),
@@ -178,7 +159,8 @@ public class DishServiceImpl implements DishService {
 
         FileInfo file = null;
         if (dto.getFileId() != null) {
-            file = fileInfoRepository.findById(dto.getFileId()).orElse(null);
+            Optional<FileInfo> fileOpt = fileInfoRepository.findById(dto.getFileId());
+            fileOpt.ifPresent(restaurant::setFileInfo);
         }
 
         Dish dish = Dish.builder()
@@ -216,9 +198,7 @@ public class DishServiceImpl implements DishService {
         DishCategory dishCategory = dishCategoryRepository.findById(dto.getDishCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("DishCategory", dto.getDishCategoryId()));
 
-        FileInfo fileInfo = fileInfoRepository.findById(dto.getFileId())
-                .orElseThrow(() -> new ResourceNotFoundException("FileInfo", dto.getFileId()));
-
+        FileInfo fileInfo = fileInfoService.getFileInfoById(dto.getFileId());
         dish.setDescription(dto.getDescription());
         dish.setIsActive(dto.getIsActive());
         dish.setIsDeleted(dto.getIsDeleted());
@@ -270,8 +250,18 @@ public class DishServiceImpl implements DishService {
             dish.setDishCategory(category);
         }
 
+        if (dto.getFileId() != null) {
+            FileInfo file = fileInfoService.getFileInfoById(dto.getFileId());
+            dish.setFile(file);
+        } else {
+            dish.setFile(null); // или оставить текущий файл
+        }
+
         Set<Option> updatedOptions = optionService.updateOptionsForDish(dish, dto.getOptions());
-        dish.setOptions(updatedOptions);
+        Set<Option> existingOptions = dish.getOptions();
+
+        existingOptions.clear();
+        existingOptions.addAll(updatedOptions);
 
         Dish savedDish = dishRepository.save(dish);
         return dishMapper.dishUpdateInfoToDto(savedDish);
@@ -305,7 +295,7 @@ public class DishServiceImpl implements DishService {
             return new OptionForClientDto(
                     option.getId(),
                     option.getName(),
-                    option.isRequired(),
+                    option.getRequired(),
                     option.getMin(),
                     option.getMax(),
                     option.getIsActive(),

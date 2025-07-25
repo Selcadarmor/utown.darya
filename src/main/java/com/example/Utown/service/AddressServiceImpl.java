@@ -1,20 +1,13 @@
 package com.example.Utown.service;
 
 import com.example.Utown.dto.addressDTO.AddressDto;
-import com.example.Utown.dto.addressDTO.AddressInfoDto;
-import com.example.Utown.dto.clientDTO.ClientProfileUpdateDto;
-import com.example.Utown.exception.DefaultAddressNotSetException;
 import com.example.Utown.exception.ResourceNotFoundException;
-import com.example.Utown.mapper.AddressMapper;
 import com.example.Utown.model.Address;
-import com.example.Utown.model.UserType.Client;
 import com.example.Utown.repository.AddressRepository;
-import com.example.Utown.repository.UserType.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -71,20 +64,11 @@ public class AddressServiceImpl implements AddressService {
         return addressRepository.save(address);
     }
 
-    @Override
+    @Override //Можно позже удалить
     public void deleteAddress(Long id) {
-        Address address = getAddressById(id);
+        Address address = addressRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Address not found", id));
         addressRepository.delete(address);
-    }
-
-    @Override
-    @Transactional(rollbackFor = RuntimeException.class)
-    public Address updateAddressByRestaurant(Long id, AddressInfoDto dto) {
-        Address address = getAddressById(id);
-        address.setFullAddress(dto.getFullAddress());
-        address.getCity();
-        return addressRepository.save(address);
-
     }
 
 

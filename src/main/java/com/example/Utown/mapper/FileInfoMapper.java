@@ -15,6 +15,7 @@ public interface FileInfoMapper {
     @Mapping(target = "updatedAt", ignore = true)
     FileInfo updateFromDto(FileInfoDto fileInfoDto, @MappingTarget FileInfo fileInfo);
     FileInfoDto toDto(FileInfo entity);
-    FileInfo toDetailsEntity(FileInfoDetailsDto fileInfo);
+
+    FileInfoDetailsDto toDtoFile(FileInfo entity);
 }
 

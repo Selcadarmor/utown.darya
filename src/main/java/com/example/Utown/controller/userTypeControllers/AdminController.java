@@ -4,6 +4,7 @@ import com.example.Utown.dto.clientDTO.ClientDetailsDto;
 import com.example.Utown.dto.clientDTO.ClientInfoDto;
 import com.example.Utown.dto.clientDTO.ClientUpdateDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryCreateDto;
+import com.example.Utown.dto.dishCategoryDTO.DishCategoryCreateResponseDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryDetailsDto;
 import com.example.Utown.dto.dishDTO.DishCreateDto;
 import com.example.Utown.dto.dishDTO.DishDetailsDto;
@@ -13,9 +14,10 @@ import com.example.Utown.dto.restaurantDTO.RestaurantCreateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantUpdateResponseDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantsCreateResponseDto;
 import com.example.Utown.service.DishCategoryService;
 import com.example.Utown.service.DishService;
-import com.example.Utown.service.DishServiceImpl;
 import com.example.Utown.service.OrderService;
 import com.example.Utown.service.RestaurantService;
 import com.example.Utown.service.UserType.client.ClientService;
@@ -35,7 +37,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -72,8 +73,10 @@ public class AdminController {
     @Operation(summary = "Get all clients", description = "Returns a list of all registered clients.")
     @ApiResponses(@ApiResponse(responseCode = "200", description = "List of clients retrieved successfully"))
     @GetMapping("/clients") //Passed
-    public ResponseEntity<Page<ClientDetailsDto>> getAllClients(Pageable pageable) {
-        Page<ClientDetailsDto> clients = clientService.getAllClients(pageable);
+    public ResponseEntity<Page<ClientDetailsDto>> getAllClients(@RequestParam(required = false) String query,
+                                                                @RequestParam(required = false) Boolean isActive,
+                                                                Pageable pageable) {
+        Page<ClientDetailsDto> clients = clientService.getAllClients(query, isActive, pageable);
         return ResponseEntity.ok(clients);
     }
 
@@ -117,9 +120,11 @@ public class AdminController {
     @ApiResponses(@ApiResponse(responseCode = "200", description = "List of restaurants retrieved successfully"))
     @GetMapping("/restaurants") //Passed
     public ResponseEntity<Page<RestaurantInfoDto>> getAllRestaurants(
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) Boolean isActive,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Page<RestaurantInfoDto> restaurants = restaurantService.getAllRestaurants(page, size);
+        Page<RestaurantInfoDto> restaurants = restaurantService.getAllRestaurants(query, isActive, page, size);
         return ResponseEntity.ok(restaurants);
     }
 
@@ -139,8 +144,8 @@ public class AdminController {
             @ApiResponse(responseCode = "400", description = "Invalid request body"),
             @ApiResponse(responseCode = "409", description = "Duplicate restaurant")
     })
-    @PostMapping("/restaurants") //Passed (but we need to reconsider the AddressDto)
-    public ResponseEntity<RestaurantDetailsDto> createRestaurant(
+    @PostMapping("/restaurants") //Passed
+    public ResponseEntity<RestaurantsCreateResponseDto> createRestaurant(
             @Valid @RequestBody RestaurantCreateDto restaurantCreateDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(restaurantService.createRestaurant(restaurantCreateDto));
@@ -151,8 +156,8 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "Restaurant updated successfully."),
             @ApiResponse(responseCode = "404", description = "Restaurant not found")
     })
-    @PutMapping("/restaurants/{id}") //Passsed
-    public ResponseEntity<RestaurantDetailsDto> updateRestaurant(
+    @PatchMapping("/restaurants/{id}") //Passed
+    public ResponseEntity<RestaurantUpdateResponseDto> updateRestaurant(
             @PathVariable Long id,
             @Valid @RequestBody RestaurantUpdateDto restaurantUpdateDto) {
         return ResponseEntity.ok(restaurantService.updateRestaurant(id, restaurantUpdateDto));
@@ -177,11 +182,17 @@ public class AdminController {
             @ApiResponse(responseCode = "404", description = "Restaurant not found")
     })
     @GetMapping("restaurants/{restaurantId}/dishes") //Passed
-    public ResponseEntity<Page<DishDetailsDto>> getDishesByRestaurant(
+    public ResponseEntity<Page<DishDetailsDto>> getDishesByRestaurantId(
             @PathVariable Long restaurantId,
+            @RequestParam(required = false) Boolean isActive,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) Integer sort,
+            @RequestParam(required = false) Long dishCategoryId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Page<DishDetailsDto> dishes = dishService.getDishesByRestaurantId(restaurantId, page, size);
+        Page<DishDetailsDto> dishes = dishService.getDishesByRestaurantId(
+                restaurantId, title, sort, dishCategoryId, isActive,
+                page, size);
         return ResponseEntity.ok(dishes);
     }
 
@@ -204,7 +215,7 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "Dish updated successfully."),
             @ApiResponse(responseCode = "404", description = "Dish or restaurant not found")
     })
-    @PatchMapping("/restaurants/{restaurantId}/dishes/{dishId}") //
+    @PatchMapping("/restaurants/{restaurantId}/dishes/{dishId}") //Passed
     public ResponseEntity<DishInfoDto> updateDishForRestaurant(
             @PathVariable Long restaurantId,
             @PathVariable Long dishId,
@@ -220,12 +231,15 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "Categories retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Restaurant not found")
     })
-    @GetMapping("/restaurants/{restaurantId}/dish-categories")
+    @GetMapping("/restaurants/{restaurantId}/dish-categories")//Passed
     public ResponseEntity<Page<DishCategoryDetailsDto>> getDishCategoriesByRestaurantId(
             @PathVariable Long restaurantId,
+            @RequestParam(required = false) Boolean isActive,
+            @RequestParam(required = false) String  query,
+            @RequestParam(required = false) Integer sort,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Page<DishCategoryDetailsDto> result = dishCategoryService.getDishCategoriesByRestaurantId(restaurantId, page, size);
+        Page<DishCategoryDetailsDto> result = dishCategoryService.getDishCategoriesByRestaurantId(restaurantId, query, sort, isActive, page, size);
         return ResponseEntity.ok(result);
     }
 
@@ -235,11 +249,11 @@ public class AdminController {
             @ApiResponse(responseCode = "400", description = "Invalid input"),
             @ApiResponse(responseCode = "404", description = "Restaurant not found")
     })
-    @PostMapping("/restaurants/{restaurantId}/dish-categories")
-    public ResponseEntity<DishCategoryDetailsDto> createDishCategoryForRestaurant(
+    @PostMapping("/restaurants/{restaurantId}/dish-categories")//Passed
+    public ResponseEntity<DishCategoryCreateResponseDto> createDishCategoryForRestaurant(
             @PathVariable Long restaurantId,
             @Valid @RequestBody DishCategoryCreateDto dto) {
-        DishCategoryDetailsDto created = dishCategoryService.createDishCategoryForRestaurant(restaurantId, dto);
+        DishCategoryCreateResponseDto created = dishCategoryService.createDishCategoryForRestaurant(restaurantId, dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
@@ -252,10 +266,11 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "Orders retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Orders not found")
     })
-    @GetMapping("/clients/{clientId}/orders")
+    @GetMapping("/clients/{clientId}/orders")//Passed
     public ResponseEntity<Page<OrderDetailsDto>> getOrderDetailsByClient(@PathVariable Long clientId,
+                                                                         @RequestParam(required = false) String query,
                                                                          Pageable pageable) {
-        Page<OrderDetailsDto> orders = orderService.getOrderDetailsByClient(clientId, pageable);
+        Page<OrderDetailsDto> orders = orderService.getOrderDetailsByClient(clientId, query, pageable);
         return ResponseEntity.ok(orders);
 
     }
