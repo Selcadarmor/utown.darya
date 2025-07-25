@@ -21,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
@@ -78,8 +79,9 @@ public class DishCategoryServiceImpl implements DishCategoryService {
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
 
         FileInfo file = null;
-        if (dto.getFileInfoId() != null) {
-            file = fileInfoService.getFileInfoById(dto.getFileInfoId());
+        if (dto.getFileId() != null) {
+            Optional<FileInfo> fileOpt = fileInfoRepository.findById(dto.getFileId());
+            fileOpt.ifPresent(restaurant::setFileInfo);
         }
 
         DishCategory dishCategory = DishCategory.builder()

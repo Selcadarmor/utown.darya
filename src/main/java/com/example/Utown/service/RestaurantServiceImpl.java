@@ -45,6 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -178,16 +179,15 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
     // ===== CREATE =====
 
-    @Transactional
+    @Transactional(rollbackFor = RuntimeException.class)
     @Override
     public RestaurantsCreateResponseDto createRestaurant(RestaurantCreateDto dto) {
         Restaurant restaurant = restaurantInfoMapper.toEntity(dto);
 
         if (dto.getFileId() != null) {
-            FileInfo file = fileInfoRepository.findById(dto.getFileId()).orElse(null);
-            restaurant.setFileInfo(file);
-        }//изменить
-
+            Optional<FileInfo> fileOpt = fileInfoRepository.findById(dto.getFileId());
+            fileOpt.ifPresent(restaurant::setFileInfo);
+        }
 
         if (dto.getCategories() != null && !dto.getCategories().isEmpty()) {
             Set<RestaurantCategory> categories = restaurantCategoryService.resolveCategories(dto.getCategories());
@@ -240,10 +240,13 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
         restaurantInfoMapper.updateFromDto(dto, restaurant);
 
-        if (dto.getFileInfoId() != null) {
-            FileInfo fileInfo = fileInfoService.getFileInfoById(dto.getFileInfoId());
-            restaurant.setFileInfo(fileInfo);
+        if (dto.getFileId() != null) {
+            fileInfoRepository.findById(dto.getFileId())
+                    .ifPresent(restaurant::setFileInfo);
+        } else {
+            restaurant.setFileInfo(null); // очистить файл, если fileId == null
         }
+
 
         Address currentAddress = restaurant.getAddress();
         if (currentAddress == null) {

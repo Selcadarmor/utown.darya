@@ -32,7 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 @Service
@@ -47,6 +47,7 @@ public class DishServiceImpl implements DishService {
     private final OptionRepository optionRepository;
     private final OptionService optionService;
     private final ElementRepository elementRepository;
+    private final FileInfoService fileInfoService;
 
     // ===== GET =====
 
@@ -158,7 +159,8 @@ public class DishServiceImpl implements DishService {
 
         FileInfo file = null;
         if (dto.getFileId() != null) {
-            file = fileInfoRepository.findById(dto.getFileId()).orElse(null);
+            Optional<FileInfo> fileOpt = fileInfoRepository.findById(dto.getFileId());
+            fileOpt.ifPresent(restaurant::setFileInfo);
         }
 
         Dish dish = Dish.builder()
@@ -196,9 +198,7 @@ public class DishServiceImpl implements DishService {
         DishCategory dishCategory = dishCategoryRepository.findById(dto.getDishCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("DishCategory", dto.getDishCategoryId()));
 
-        FileInfo fileInfo = fileInfoRepository.findById(dto.getFileId())
-                .orElseThrow(() -> new ResourceNotFoundException("FileInfo", dto.getFileId()));
-
+        FileInfo fileInfo = fileInfoService.getFileInfoById(dto.getFileId());
         dish.setDescription(dto.getDescription());
         dish.setIsActive(dto.getIsActive());
         dish.setIsDeleted(dto.getIsDeleted());
@@ -248,6 +248,13 @@ public class DishServiceImpl implements DishService {
             DishCategory category = dishCategoryRepository.findById(dto.getDishCategoryId())
                     .orElseThrow(() -> new ResourceNotFoundException("DishCategory", dto.getDishCategoryId()));
             dish.setDishCategory(category);
+        }
+
+        if (dto.getFileId() != null) {
+            FileInfo file = fileInfoService.getFileInfoById(dto.getFileId());
+            dish.setFile(file);
+        } else {
+            dish.setFile(null); // или оставить текущий файл
         }
 
         Set<Option> updatedOptions = optionService.updateOptionsForDish(dish, dto.getOptions());
