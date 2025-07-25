@@ -18,11 +18,14 @@ public interface ClientService {
         Client findByUsername(String username);
         Page<ClientDetailsDto> getAllClients(Pageable pageable);
         ClientInfoDto getClientById(Long clientId);
+        List<AddressDto> getAddressesByClient();
         void updateClientActiveStatus(Long id, Boolean active);
         void deleteClient(Long id);
         void save(ClientRegistrationDto dto, Roles roleName);
+        Address saveAddressForClient(AddressDto dto);
         void addFavoriteRestaurant(Long restaurantId);
         List<RestaurantForClientDto> getFavoriteRestaurants();
+        ClientProfileUpdateDto updateClientProfile(ClientProfileUpdateDto dto);
         void removeFavoriteRestaurant(Long restaurantId);
         Client getCurrentClient();
         Address getAddressByDefaultAddress();

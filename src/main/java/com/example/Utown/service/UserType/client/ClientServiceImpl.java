@@ -48,9 +48,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ClientServiceImpl implements ClientService {
 
-    private final AddressService addressService;
     private final ClientRepository clientRepository;
-    private final CartRepository cartRepository;
+    private final AddressService addressService;
+    private final AddressMapper addressMapper;
     private final PasswordEncoder passwordEncoder;
     private final RoleService roleService;
     private final RestaurantRepository restaurantRepository;
@@ -72,6 +72,12 @@ public class ClientServiceImpl implements ClientService {
     public ClientInfoDto getClientById(Long clientId) {
         return clientRepository.findClientInfoById(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found", clientId));
+    }
+
+    @Override //For Client
+    public List<AddressDto> getAddressesByClient() {
+        Client client = getCurrentClient();
+        return clientRepository.getAddressesByClient(client.getUsername());
     }
 
     @Transactional(readOnly = true)
@@ -132,6 +138,23 @@ public class ClientServiceImpl implements ClientService {
         clientRepository.save(client);
     }
 
+    @Transactional //For Client
+    @Override
+    public Address saveAddressForClient(AddressDto dto) {
+        Client client = getCurrentClient();
+
+        Address address = addressService.createAddress(dto);
+
+        if (client.getAddresses() == null) {
+            client.setAddresses(new HashSet<>());
+        }
+        client.getAddresses().add(address);
+
+        clientRepository.save(client);
+
+        return address;
+    }
+
     @Transactional //For client
     @Override
     public void addFavoriteRestaurant(Long restaurantId) {
@@ -149,6 +172,33 @@ public class ClientServiceImpl implements ClientService {
     }
 
     // ========================= PUT =========================
+
+    @Transactional
+    @Override
+    public ClientProfileUpdateDto updateClientProfile(ClientProfileUpdateDto dto) {
+        Client client = getCurrentClient();
+
+        client.setFullName(dto.getFullName());
+
+        Long defaultAddressId = client.getDefaultAddress();
+        if (defaultAddressId == null) {
+            throw new DefaultAddressNotSetException();
+        }
+
+        boolean hasDefaultAddress = client.getAddresses().stream()
+                .anyMatch(a -> a.getId().equals(defaultAddressId));
+
+        if (!hasDefaultAddress) {
+            throw new ResourceNotFoundException("Default address not found for client", defaultAddressId);
+        }
+
+        Address updatedAddress = addressService.updateAddress(defaultAddressId, dto.getAddressDto());
+
+        clientRepository.save(client);
+
+        AddressDto updatedAddressDto = addressMapper.addressToDto(updatedAddress);
+        return new ClientProfileUpdateDto(client.getFullName(), updatedAddressDto);
+    }
 
     @Transactional(rollbackFor = RuntimeException.class)
     @Override

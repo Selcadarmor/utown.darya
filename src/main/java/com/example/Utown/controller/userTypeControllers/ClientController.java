@@ -24,8 +24,6 @@ import com.example.Utown.service.RestaurantCategoryService;
 import com.example.Utown.service.RestaurantService;
 import com.example.Utown.service.UserType.client.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -240,7 +238,7 @@ public class ClientController {
             }
     )
     public ResponseEntity<List<AddressDto>> getClientAddresses() {
-        List<AddressDto> addresses = addressService.getAddressesByClient();
+        List<AddressDto> addresses = clientService.getAddressesByClient();
         return ResponseEntity.ok(addresses);
     }
 
@@ -256,7 +254,7 @@ public class ClientController {
             }
     )
     public ResponseEntity<Void> addAddressForCurrentUser(@RequestBody AddressDto addressDto) {
-        addressService.saveAddressForClient(addressDto);
+        clientService.saveAddressForClient(addressDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -273,7 +271,7 @@ public class ClientController {
             }
     )
     public ResponseEntity<ClientProfileUpdateDto> updateClientProfile(@RequestBody ClientProfileUpdateDto dto) {
-        ClientProfileUpdateDto updatedProfile = addressService.updateClientProfile(dto);
+        ClientProfileUpdateDto updatedProfile = clientService.updateClientProfile(dto);
         return ResponseEntity.ok(updatedProfile);
     }
 
@@ -292,21 +290,17 @@ public class ClientController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/address/{id}") //Passed
+    @DeleteMapping("/addresses/delete/{id}") //Passed
     @Operation(
             summary = "Delete address for current client",
             description = "Deletes an address belonging to the authenticated client",
             responses = {
-                    @ApiResponse(responseCode = "204", description = "Address deleted successfully"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden - client is not allowed to delete this address"),
+                    @ApiResponse(responseCode = "200", description = "Address deleted successfully"),
                     @ApiResponse(responseCode = "404", description = "Address not found"),
-                    @ApiResponse(responseCode = "500", description = "Internal server error")
-            }
-    )
-    public ResponseEntity<Void> deleteAddressForClient(@PathVariable("id") Long addressId) {
-        addressService.deleteAddressForCLient(addressId);
-        return ResponseEntity.noContent().build();
+            })
+    public ResponseEntity<Void> deleteAddress(@PathVariable Long id) {
+        addressService.deleteAddress(id);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/favorites/{restaurantId}") //Passed
