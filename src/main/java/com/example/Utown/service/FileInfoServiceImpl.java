@@ -1,5 +1,6 @@
 package com.example.Utown.service;
 
+import com.example.Utown.dto.fileInfoDTO.FileInfoDetailsDto;
 import com.example.Utown.dto.fileInfoDTO.FileInfoDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.FileInfoMapper;
@@ -8,8 +9,10 @@ import com.example.Utown.repository.FileInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,6 +21,34 @@ public class FileInfoServiceImpl implements FileInfoService {
 
     private final FileInfoRepository fileInfoRepository;
     private final FileInfoMapper fileInfoMapper;
+    private S3Service s3Service;
+
+    @Override
+    public FileInfoDetailsDto saveFile(MultipartFile file) {
+        String key = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        s3Service.uploadFile(file, key);
+
+        FileInfo fileInfo = FileInfo.builder()
+                .originalTitle(file.getOriginalFilename())
+                .path(key)
+                .type(file.getContentType())
+                .build();
+        FileInfo saved = fileInfoRepository.save(fileInfo);
+        return fileInfoMapper.toDtoFile(saved);
+
+    }
+
+    @Override
+    public byte[] getFileBytes(Long id) {
+        FileInfo fileInfo = getFileInfoEntity(id);
+        return s3Service.downloadFile(fileInfo.getPath());
+    }
+
+    @Override
+    public  FileInfoDetailsDto getFileInfo(Long id) {
+        FileInfo fileInfo = getFileInfoEntity(id);
+        return fileInfoMapper.toDtoFile(fileInfo);
+    }
 
     @Override
     public FileInfo create(FileInfoDto dto) {
@@ -27,8 +58,7 @@ public class FileInfoServiceImpl implements FileInfoService {
 
     @Override
     public FileInfoDto getById(Long id) {
-        FileInfo file = fileInfoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("FileInfo not found", id));
+        FileInfo file = getFileInfoEntity(id);
         return fileInfoMapper.toDto(file);
     }
 
@@ -41,9 +71,7 @@ public class FileInfoServiceImpl implements FileInfoService {
 
     @Override
     public FileInfo update(Long id, FileInfoDto dto) {
-        FileInfo file = fileInfoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("FileInfo not found", id));
-
+        FileInfo file = getFileInfoEntity(id);
         file.setOriginalTitle(dto.getOriginalTitle());
         file.setPath(dto.getPath());
         file.setType(dto.getType());
@@ -53,8 +81,7 @@ public class FileInfoServiceImpl implements FileInfoService {
 
     @Override
     public void delete(Long id) {
-        FileInfo file = fileInfoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("FileInfo not found", id));
+        FileInfo file = getFileInfoEntity(id);
         fileInfoRepository.delete(file);
     }
 
@@ -63,6 +90,11 @@ public class FileInfoServiceImpl implements FileInfoService {
     public FileInfo getFileInfoById(Long id) {
         return fileInfoRepository.findById(id)
                 .orElse( null);
+    }
+    @Override
+    public FileInfo getFileInfoEntity(Long id) {
+        return fileInfoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("File not found", id));
     }
 
 }
