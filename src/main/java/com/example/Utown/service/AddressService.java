@@ -13,9 +13,5 @@ public interface AddressService {
     List<AddressDto> getAllAddresses();
     Address updateAddress(Long id, AddressDto dto);
     void deleteAddress(Long id);
-    List<AddressDto> getAddressesByClient();
-    Address saveAddressForClient(AddressDto dto);
-    ClientProfileUpdateDto updateClientProfile(ClientProfileUpdateDto dto);
     Address updateAddressByRestaurant(Long id, AddressInfoDto dto);
-    void deleteAddressForCLient(Long addressId);
 }
