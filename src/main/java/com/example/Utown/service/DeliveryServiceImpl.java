@@ -6,6 +6,7 @@ import com.example.Utown.exception.InvalidArgumentException;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.DeliveryMapper;
 import com.example.Utown.model.Delivery;
+import com.example.Utown.model.DishCategory;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.repository.DeliveryRepository;
 import com.example.Utown.repository.RestaurantRepository;
@@ -29,7 +30,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     public Delivery createDelivery(DeliveryDto dto) {
         Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId())
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found", dto.getRestaurantId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", dto.getRestaurantId()));
 
         Delivery delivery = Delivery.builder()
                 .area(dto.getArea())
@@ -44,9 +45,10 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     @Override
-    public DeliveryDto getDeliveryById(Long id) {
-        return deliveryRepository.findDeliveryById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Delivery not found", id));
+    public Delivery getDeliveryById(Long id) {
+        Delivery delivery = deliveryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Delivery", id));
+        return delivery;
     }
 
     @Override
@@ -77,7 +79,10 @@ public class DeliveryServiceImpl implements DeliveryService {
         Delivery delivery = deliveryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Delivery not found", id));
         deliveryRepository.delete(delivery);
-    }
+    } //поменять на isDeleted = True
+
+    //Добавить метод для изменения isActive = True ... False
+
     @Override
     public List<DeliveryInfoDto> getDeliveriesByRestaurantId(Long restaurantId) {
         List<Delivery> deliveries = deliveryRepository.findByRestaurantId(restaurantId);
