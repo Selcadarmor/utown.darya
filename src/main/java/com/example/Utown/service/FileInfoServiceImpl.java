@@ -94,7 +94,7 @@ public class FileInfoServiceImpl implements FileInfoService {
     @Override
     public FileInfo getFileInfoEntity(Long id) {
         return fileInfoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("File not found", id));
+                .orElseThrow(() -> new ResourceNotFoundException("File", id));
     }
 
 }

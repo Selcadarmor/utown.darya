@@ -31,7 +31,6 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
     private final RestaurantCategoryMapper restaurantCategoryMapper;
     private final FileInfoRepository fileInfoRepository;
     private final RestaurantRepository restaurantRepository;
-    private final RestaurantCategoryInfoMapper restaurantCategoryInfoMapper;
 
     // ===== GET =====
 
@@ -144,12 +143,11 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
 
 
     // ===== PUT =====
-
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public RestaurantCategory updateRestaurantCategory(Long id, RestaurantCategoryDto dto) {
         RestaurantCategory category = restaurantCategoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory not found", id));
+                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory", id));
 
         category.setName(dto.getName());
         category.setSort(dto.getSort());
@@ -158,20 +156,11 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
         if (dto.getFile() != null) {
             Long fileId = dto.getFile().getId();
             FileInfo file = fileInfoRepository.findById(fileId)
-                    .orElseThrow(() -> new ResourceNotFoundException("File not found", fileId));
+                    .orElseThrow(() -> new ResourceNotFoundException("File", fileId));
             category.setFile(file);
         }
 
         return restaurantCategoryRepository.save(category);
-    }
-
-    @Override
-    @Transactional(rollbackFor = RuntimeException.class)
-    public RestaurantCategory updateRestaurantCategoryForRestaurant(Long id, RestaurantCategoryInfoDto dto) {
-        RestaurantCategory restaurantCategory = restaurantCategoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory not found", id));
-        restaurantCategory.setName(dto.getName());
-        return restaurantCategoryRepository.save(restaurantCategory);
     }
 
     // ===== DELETE =====
@@ -180,7 +169,7 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
     @Transactional(rollbackFor = RuntimeException.class)
     public void deleteRestaurantCategory(Long id) {
         RestaurantCategory category = restaurantCategoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory not found", id));
+                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory", id));
         restaurantCategoryRepository.delete(category);
     }
 }
