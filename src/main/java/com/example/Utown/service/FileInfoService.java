@@ -9,14 +9,12 @@ import java.util.List;
 
 public interface FileInfoService {
     FileInfo create(FileInfoDto dto);
-    FileInfoDto getById(Long id);
-    List<FileInfoDto> getAll();
+    FileInfo findById(Long id);
     FileInfo update(Long id, FileInfoDto dto);
     void delete(Long id);
     FileInfo getFileInfoById(Long id);
     FileInfoDetailsDto saveFile(MultipartFile file);
     byte[] getFileBytes(Long id);
     FileInfoDetailsDto getFileInfo(Long id);
-    FileInfo getFileInfoEntity(Long id);
 }
 

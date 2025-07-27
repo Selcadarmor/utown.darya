@@ -1,6 +1,6 @@
 package com.example.Utown.service;
 
-import com.example.Utown.config.AwsProperties;
+import com.example.Utown.config.S3.AwsProperties;
 import com.example.Utown.exception.S3UploadException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

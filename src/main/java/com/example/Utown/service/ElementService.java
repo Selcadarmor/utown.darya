@@ -10,8 +10,7 @@ import java.util.Set;
 
 public interface ElementService {
     Element create(ElementDto dto);
-    ElementDto getById(Long id);
-    List<ElementDto> getAll();
+    Element getById(Long id);
     Element update(Long id, ElementDto dto);
     void delete(Long id);
     Set<Element> createElementsForOption(Option option, Set<ElementInfoDto> elementDtos);
