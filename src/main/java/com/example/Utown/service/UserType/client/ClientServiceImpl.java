@@ -14,6 +14,7 @@ import com.example.Utown.exception.RestaurantNotInFavoritesException;
 import com.example.Utown.mapper.AddressMapper;
 import com.example.Utown.model.Address;
 import com.example.Utown.model.Cart;
+import com.example.Utown.model.FileInfo;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.Role;
 import com.example.Utown.model.UserType.Client;
@@ -21,6 +22,7 @@ import com.example.Utown.model.enumFiles.Roles;
 import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.repository.UserType.ClientRepository;
 import com.example.Utown.service.AddressService;
+import com.example.Utown.service.FileInfoService;
 import com.example.Utown.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -47,6 +49,7 @@ public class ClientServiceImpl implements ClientService {
     private final PasswordEncoder passwordEncoder;
     private final RoleService roleService;
     private final RestaurantRepository restaurantRepository;
+    private final FileInfoService fileInfoService;
 
     // ========================= GET =========================
 
@@ -173,6 +176,11 @@ public class ClientServiceImpl implements ClientService {
 
         client.setFullName(dto.getFullName());
 
+        if (dto.getFileId() != null) {
+            FileInfo fileInfo = fileInfoService.findById(dto.getFileId());
+            client.setFileInfo(fileInfo);
+        }
+
         Long defaultAddressId = client.getDefaultAddress();
         if (defaultAddressId == null) {
             throw new DefaultAddressNotSetException();
@@ -180,7 +188,6 @@ public class ClientServiceImpl implements ClientService {
 
         boolean hasDefaultAddress = client.getAddresses().stream()
                 .anyMatch(a -> a.getId().equals(defaultAddressId));
-
         if (!hasDefaultAddress) {
             throw new ResourceNotFoundException("Default address not found for client", defaultAddressId);
         }
@@ -190,8 +197,9 @@ public class ClientServiceImpl implements ClientService {
         clientRepository.save(client);
 
         AddressDto updatedAddressDto = addressMapper.addressToDto(updatedAddress);
-        return new ClientProfileUpdateDto(client.getFullName(), updatedAddressDto);
+        return new ClientProfileUpdateDto(client.getFullName(), updatedAddressDto, client.getFileInfo().getId());
     }
+
 
     @Transactional(rollbackFor = RuntimeException.class)
     @Override

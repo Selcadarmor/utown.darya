@@ -1,4 +1,4 @@
-package com.example.Utown.config;
+package com.example.Utown.config.S3;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

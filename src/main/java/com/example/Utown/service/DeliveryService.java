@@ -9,7 +9,7 @@ import com.example.Utown.model.Restaurant;
 
 public interface DeliveryService {
     Delivery createDelivery(DeliveryDto dto);
-    DeliveryDto getDeliveryById(Long id);
+    Delivery getDeliveryById(Long id);
     List<DeliveryDto> getAllDeliveries();
     Delivery updateDelivery(Long id, DeliveryDto dto);
     void deleteDelivery(Long id);

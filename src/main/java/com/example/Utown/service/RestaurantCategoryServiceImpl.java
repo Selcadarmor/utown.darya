@@ -37,19 +37,15 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
 
     @Override
     @Transactional(readOnly = true)
-    public RestaurantCategoryDto getRestaurantCategoryById(Long id) {
+    public RestaurantCategory getRestaurantCategoryById(Long id) {
         return restaurantCategoryRepository.findById(id)
-                .map(restaurantCategoryMapper::restaurantCategoryToDto)
-                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory not found", id));
+                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory", id));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<RestaurantCategoryDto> getAllRestaurantCategories() {
-        return restaurantCategoryRepository.findAll()
-                .stream()
-                .map(restaurantCategoryMapper::restaurantCategoryToDto)
-                .collect(Collectors.toList());
+    public List<RestaurantCategory> getAllRestaurantCategories() {
+        return restaurantCategoryRepository.findAll();
     }
 
     @Override
@@ -172,7 +168,7 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
                 .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory not found", id));
         restaurantCategory.setName(dto.getName());
         return restaurantCategoryRepository.save(restaurantCategory);
-    }
+    } //Добавить поля и сделать отдельный эндпоинт
 
     // ===== DELETE =====
 

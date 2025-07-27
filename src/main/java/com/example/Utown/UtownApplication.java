@@ -1,6 +1,6 @@
 package com.example.Utown;
 
-import com.example.Utown.config.AwsProperties;
+import com.example.Utown.config.S3.AwsProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

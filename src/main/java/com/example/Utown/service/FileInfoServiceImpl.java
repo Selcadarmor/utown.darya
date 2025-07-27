@@ -40,13 +40,13 @@ public class FileInfoServiceImpl implements FileInfoService {
 
     @Override
     public byte[] getFileBytes(Long id) {
-        FileInfo fileInfo = getFileInfoEntity(id);
+        FileInfo fileInfo = findById(id);
         return s3Service.downloadFile(fileInfo.getPath());
     }
 
     @Override
     public  FileInfoDetailsDto getFileInfo(Long id) {
-        FileInfo fileInfo = getFileInfoEntity(id);
+        FileInfo fileInfo = findById(id);
         return fileInfoMapper.toDtoFile(fileInfo);
     }
 
@@ -57,21 +57,8 @@ public class FileInfoServiceImpl implements FileInfoService {
     }
 
     @Override
-    public FileInfoDto getById(Long id) {
-        FileInfo file = getFileInfoEntity(id);
-        return fileInfoMapper.toDto(file);
-    }
-
-    @Override
-    public List<FileInfoDto> getAll() {
-        return fileInfoRepository.findAll().stream()
-                .map(fileInfoMapper::toDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public FileInfo update(Long id, FileInfoDto dto) {
-        FileInfo file = getFileInfoEntity(id);
+        FileInfo file = findById(id);
         file.setOriginalTitle(dto.getOriginalTitle());
         file.setPath(dto.getPath());
         file.setType(dto.getType());
@@ -81,7 +68,7 @@ public class FileInfoServiceImpl implements FileInfoService {
 
     @Override
     public void delete(Long id) {
-        FileInfo file = getFileInfoEntity(id);
+        FileInfo file = findById(id);
         fileInfoRepository.delete(file);
     }
 
@@ -92,9 +79,9 @@ public class FileInfoServiceImpl implements FileInfoService {
                 .orElse( null);
     }
     @Override
-    public FileInfo getFileInfoEntity(Long id) {
+    public FileInfo findById(Long id) {
         return fileInfoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("File not found", id));
+                .orElseThrow(() -> new ResourceNotFoundException("File", id));
     }
 
 }

@@ -10,9 +10,9 @@ import java.util.Set;
 public interface RestaurantCategoryService {
     Set<RestaurantCategory> createRestaurantCategories(Set<RestaurantCategoryDto> dtos);
 
-    RestaurantCategoryDto getRestaurantCategoryById(Long id);
+    RestaurantCategory getRestaurantCategoryById(Long id);
 
-    List<RestaurantCategoryDto> getAllRestaurantCategories();
+    List<RestaurantCategory> getAllRestaurantCategories();
 
     RestaurantCategory updateRestaurantCategory(Long id, RestaurantCategoryDto dto);
 
