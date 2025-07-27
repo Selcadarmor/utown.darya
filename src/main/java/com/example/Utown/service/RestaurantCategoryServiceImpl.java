@@ -31,24 +31,21 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
     private final RestaurantCategoryMapper restaurantCategoryMapper;
     private final FileInfoRepository fileInfoRepository;
     private final RestaurantRepository restaurantRepository;
+    private final RestaurantCategoryInfoMapper restaurantCategoryInfoMapper;
 
     // ===== GET =====
 
     @Override
     @Transactional(readOnly = true)
-    public RestaurantCategoryDto getRestaurantCategoryById(Long id) {
+    public RestaurantCategory getRestaurantCategoryById(Long id) {
         return restaurantCategoryRepository.findById(id)
-                .map(restaurantCategoryMapper::restaurantCategoryToDto)
-                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory not found", id));
+                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory", id));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<RestaurantCategoryDto> getAllRestaurantCategories() {
-        return restaurantCategoryRepository.findAll()
-                .stream()
-                .map(restaurantCategoryMapper::restaurantCategoryToDto)
-                .collect(Collectors.toList());
+    public List<RestaurantCategory> getAllRestaurantCategories() {
+        return restaurantCategoryRepository.findAll();
     }
 
     @Override
@@ -162,6 +159,15 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
 
         return restaurantCategoryRepository.save(category);
     }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
+    public RestaurantCategory updateRestaurantCategoryForRestaurant(Long id, RestaurantCategoryInfoDto dto) {
+        RestaurantCategory restaurantCategory = restaurantCategoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory not found", id));
+        restaurantCategory.setName(dto.getName());
+        return restaurantCategoryRepository.save(restaurantCategory);
+    } //Добавить поля и сделать отдельный эндпоинт
 
     // ===== DELETE =====
 

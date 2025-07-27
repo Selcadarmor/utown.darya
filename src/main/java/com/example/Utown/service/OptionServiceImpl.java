@@ -1,7 +1,6 @@
 package com.example.Utown.service;
 
 import com.example.Utown.dto.elementDTO.ElementInfoDto;
-import com.example.Utown.dto.optionDTO.OptionDto;
 import com.example.Utown.dto.optionDTO.OptionInfoDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.model.Dish;
@@ -33,7 +32,6 @@ public class OptionServiceImpl implements OptionService {
         return option;
     }
 
-
     @Override
     public Set<OptionInfoDto> getOptionsWithElementsByDish(Set<Option> options) {
         Set<Long> optionIds = options.stream()
@@ -62,7 +60,6 @@ public class OptionServiceImpl implements OptionService {
             );
         }).collect(Collectors.toSet());
     }
-
 
     @Override
     @Transactional
@@ -96,7 +93,7 @@ public class OptionServiceImpl implements OptionService {
         Option option = optionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Option not found", id));
         optionRepository.delete(option);
-    }
+    } //поменять на isActive = False
 
     @Override
     @Transactional
@@ -118,5 +115,6 @@ public class OptionServiceImpl implements OptionService {
         }
         return options;
     }
+
 }
 

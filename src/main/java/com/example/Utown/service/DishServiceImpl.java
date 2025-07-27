@@ -33,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class DishServiceImpl implements DishService {
@@ -54,6 +53,24 @@ public class DishServiceImpl implements DishService {
     public DishDto getDishById(Long id) {
         return dishRepository.findDishById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Dish not found", id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public DishForClientDto getDishByIdForClient(Long dishId) {
+        Dish dish = dishRepository.findById(dishId)
+                .orElseThrow(() -> new ResourceNotFoundException("Dish", dishId));
+
+        Set<Option> activeOptions = optionRepository.findByDishIdAndIsActiveTrue(dishId);
+
+        for (Option option : activeOptions) {
+            Set<Element> activeElements = elementRepository.findByOptionIdAndIsActiveTrueAndIsDeletedFalse(option.getId());
+            option.setElements(activeElements);
+        }
+
+        dish.setOptions(activeOptions);
+
+        return dishMapper.dishToClientDto(dish);
     }
 
     @Override
@@ -84,24 +101,6 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public DishForClientDto getDishByIdForClient(Long dishId) {
-        Dish dish = dishRepository.findById(dishId)
-                .orElseThrow(() -> new ResourceNotFoundException("Dish", dishId));
-
-        Set<Option> activeOptions = optionRepository.findByDishIdAndIsActiveTrue(dishId);
-
-        for (Option option : activeOptions) {
-            Set<Element> activeElements = elementRepository.findByOptionIdAndIsActiveTrueAndIsDeletedFalse(option.getId());
-            option.setElements(activeElements);
-        }
-
-        dish.setOptions(activeOptions);
-
-        return dishMapper.dishToClientDto(dish);
-    }
-
-    @Override
     public List<DishSearchDto> getDishesByCategoryForClient(Long categoryId) {
         return dishRepository.findDishDtoByCategoryForClient(categoryId);
     }
@@ -112,7 +111,6 @@ public class DishServiceImpl implements DishService {
     }
 
     // ===== POST =====
-
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -134,7 +132,7 @@ public class DishServiceImpl implements DishService {
 
         Dish dish = Dish.builder()
                 .description(dto.getDescription())
-                .isActive(dto.getIsActive())
+                .isActive(dto.getIsActive()) //isDeleted
                 .price(dto.getPrice())
                 .title(dto.getTitle())
                 .sort(dto.getSort())
@@ -155,7 +153,6 @@ public class DishServiceImpl implements DishService {
 
 
     // ===== PUT =====
-
 
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
@@ -190,7 +187,7 @@ public class DishServiceImpl implements DishService {
         }
 
         if (dto.getFileId() != null) {
-            FileInfo file = fileInfoService.getFileInfoEntity(dto.getFileId());
+            FileInfo file = fileInfoService.getFileInfoById(dto.getFileId());
             dish.setFile(file);
         } else {
             dish.setFile(null); // или оставить текущий файл
@@ -209,54 +206,10 @@ public class DishServiceImpl implements DishService {
 
     // ===== DELETE =====
 
-    @Override
-    public void deleteDish(Long id) {
-        Dish dish = dishRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Dish not found", id));
-        dishRepository.delete(dish);
-    }
-
-    // ===== PRIVATE =====
-
-    private DishForClientDto mapToDishForClientDto(Dish dish) {
-        Set<OptionForClientDto> optionDto = dish.getOptions().stream().map(option -> {
-            Set<ElementForClientDto> elementDto = option.getElements().stream().map(element ->
-                    new ElementForClientDto(
-                            element.getId(),
-                            element.getName(),
-                            element.getDescription(),
-                            element.getPrice(),
-                            element.getIsActive(),
-                            element.getIsDeleted()
-                    )
-            ).collect(Collectors.toSet());
-
-            return new OptionForClientDto(
-                    option.getId(),
-                    option.getName(),
-                    option.getRequired(),
-                    option.getMin(),
-                    option.getMax(),
-                    option.getIsActive(),
-                    elementDto
-            );
-        }).collect(Collectors.toSet());
-
-        Long dishCategoryId = dish.getDishCategory() != null ? dish.getDishCategory().getId() : null;
-        String filePath = dish.getFile() != null ? dish.getFile().getPath() : null;
-
-        return new DishForClientDto(
-                dish.getId(),
-                dish.getTitle(),
-                dish.getDescription(),
-                dish.getIsActive(),
-                dish.getIsDeleted(),
-                dish.getPrice(),
-                dish.getSort(),
-                dish.getRestaurant().getId(),
-                dishCategoryId,
-                filePath,
-                optionDto
-        );
-    }
+//    @Override
+//    public void deleteDish(Long id) {
+//        Dish dish = dishRepository.findById(id)
+//                .orElseThrow(() -> new ResourceNotFoundException("Dish not found", id));
+//        dishRepository.delete(dish);
+//   }  // поменять на isDeleted = TRUE
 }

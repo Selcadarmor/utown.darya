@@ -14,7 +14,6 @@ import java.util.List;
 
 public interface DishService {
     DishDto getDishById(Long id);
-    void deleteDish(Long id);
     Page<DishDetailsDto> getDishesByRestaurantId(Long restaurantId, String title,
                                                  Integer sort, Long dishCategoryId,
                                                  Boolean isActive, int page, int size);

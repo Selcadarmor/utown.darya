@@ -26,31 +26,18 @@ public class ElementServiceImpl implements ElementService {
     private final ElementRepository elementRepository;
     private final ElementMapper elementMapper;
 
-    @Override
-    public Element create(ElementDto dto) {
 
-        Element element = elementMapper.toEntity(dto);
-        return elementRepository.save(element);
-    }
 
     @Override
-    public ElementDto getById(Long id) {
+    public Element getById(Long id) {
         Element element = elementRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Element not found", id));
-        return elementMapper.toDto(element);
-    }
-
-    @Override
-    public List<ElementDto> getAll() {
-        return elementRepository.findAll().stream()
-                .map(elementMapper::toDto)
-                .collect(Collectors.toList());
+                .orElseThrow(() -> new ResourceNotFoundException("Element", id));
+        return element;
     }
 
     @Override
     public Element update(Long id, ElementDto dto) {
-        Element element = elementRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Element not found", id));
+        Element element = getById(id);
 
         element.setName(dto.getName());
         element.setDescription(dto.getDescription());
@@ -59,6 +46,28 @@ public class ElementServiceImpl implements ElementService {
         element.setIsDeleted(dto.getIsDeleted());
 
         return elementRepository.save(element);
+    }
+
+    @Override
+    public Element create(ElementDto dto) {
+
+        Element element = elementMapper.toEntity(dto);
+        return elementRepository.save(element);
+    }
+
+    @Override
+    @Transactional
+    public Set<Element> createElementsForOption(Option option, Set<ElementInfoDto> elementDtos) {
+        if (elementDtos == null || elementDtos.isEmpty()) return Collections.emptySet();
+
+        return elementDtos.stream().map(dto -> Element.builder()
+                .name(dto.getName())
+                .price(dto.getPrice())
+                .isActive(true)
+                .isDeleted(false)
+                .option(option)
+                .build()
+        ).collect(Collectors.toSet());
     }
 
     @Override
@@ -86,26 +95,13 @@ public class ElementServiceImpl implements ElementService {
         return result;
     }
 
-
     @Override
     public void delete(Long id) {
         Element element = elementRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Element not found", id));
         elementRepository.delete(element);
-    }
-    @Override
-    @Transactional
-    public Set<Element> createElementsForOption(Option option, Set<ElementInfoDto> elementDtos) {
-        if (elementDtos == null || elementDtos.isEmpty()) return Collections.emptySet();
+    } //поменять на isDeleted = True
 
-        return elementDtos.stream().map(dto -> Element.builder()
-                .name(dto.getName())
-                .price(dto.getPrice())
-                .isActive(true)
-                .isDeleted(false)
-                .option(option)
-                .build()
-        ).collect(Collectors.toSet());
-    }
+
 }
 

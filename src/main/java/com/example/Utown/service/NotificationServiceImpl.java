@@ -43,15 +43,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Notification not found", id));
 
         entity.setDate(dto.getDate());
-        entity.setTypeNotification(dto.getTypeNotification());
-        entity.setTypeOrder(dto.getTypeOrder());
-        entity.setTypeRestaurant(dto.getTypeRestaurant());
-        entity.setTypeUser(dto.getTypeUser());
         entity.setText(dto.getText());
-        entity.setTimeNotification(dto.getTimeNotification());
-        entity.setTimeOrder(dto.getTimeOrder());
-        entity.setTimeRestaurant(dto.getTimeRestaurant());
-        entity.setTimeUser(dto.getTimeUser());
         entity.setTime(dto.getTime());
         entity.setTitle(dto.getTitle());
         entity.setErrorMessage(dto.getErrorMessage());
