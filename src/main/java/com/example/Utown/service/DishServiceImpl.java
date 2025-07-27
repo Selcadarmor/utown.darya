@@ -5,7 +5,6 @@ import com.example.Utown.dto.dishDTO.DishDetailsDto;
 import com.example.Utown.dto.dishDTO.DishDto;
 import com.example.Utown.dto.dishDTO.DishInfoDto;
 import com.example.Utown.dto.dishDTO.DishSearchDto;
-import com.example.Utown.dto.elementDTO.ElementInfoDto;
 import com.example.Utown.dto.optionDTO.OptionInfoDto;
 import com.example.Utown.dto.dishDTO.DishForClientDto;
 import com.example.Utown.dto.elementDTO.ElementForClientDto;
@@ -114,36 +113,6 @@ public class DishServiceImpl implements DishService {
 
     // ===== POST =====
 
-    @Override
-    public Dish createDish(DishDto dto) {
-        Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId())
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found", dto.getRestaurantId()));
-
-        DishCategory dishCategory = dishCategoryRepository.findById(dto.getDishCategoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("DishCategory not found", dto.getDishCategoryId()));
-
-        FileInfo fileInfo = fileInfoRepository.findById(dto.getFileId())
-                .orElseThrow(() -> new ResourceNotFoundException("FileInfo not found", dto.getFileId()));
-
-        Dish dish = Dish.builder()
-                .description(dto.getDescription())
-                .isActive(dto.getIsActive())
-                .isDeleted(dto.getIsDeleted())
-                .price(dto.getPrice())
-                .sort(dto.getSort())
-                .title(dto.getTitle())
-                .restaurant(restaurant)
-                .dishCategory(dishCategory)
-                .file(fileInfo)
-                .build();
-
-        if (dto.getOptions() != null) {
-            dto.getOptions().forEach(option -> option.setDish(dish));
-            dish.setOptions(dto.getOptions());
-        }
-
-        return dishRepository.save(dish);
-    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -187,36 +156,6 @@ public class DishServiceImpl implements DishService {
 
     // ===== PUT =====
 
-    @Override
-    public Dish updateDish(Long id, DishDto dto) {
-        Dish dish = dishRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Dish", id));
-
-        Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId())
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", dto.getRestaurantId()));
-
-        DishCategory dishCategory = dishCategoryRepository.findById(dto.getDishCategoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("DishCategory", dto.getDishCategoryId()));
-
-        FileInfo fileInfo = fileInfoService.getFileInfoById(dto.getFileId());
-        dish.setDescription(dto.getDescription());
-        dish.setIsActive(dto.getIsActive());
-        dish.setIsDeleted(dto.getIsDeleted());
-        dish.setPrice(dto.getPrice());
-        dish.setSort(dto.getSort());
-        dish.setTitle(dto.getTitle());
-        dish.setRestaurant(restaurant);
-        dish.setDishCategory(dishCategory);
-        dish.setFile(fileInfo);
-
-        if (dto.getOptions() != null) {
-            dish.getOptions().clear();
-            dto.getOptions().forEach(option -> option.setDish(dish));
-            dish.getOptions().addAll(dto.getOptions());
-        }
-
-        return dishRepository.save(dish);
-    }
 
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
@@ -251,7 +190,7 @@ public class DishServiceImpl implements DishService {
         }
 
         if (dto.getFileId() != null) {
-            FileInfo file = fileInfoService.getFileInfoById(dto.getFileId());
+            FileInfo file = fileInfoService.getFileInfoEntity(dto.getFileId());
             dish.setFile(file);
         } else {
             dish.setFile(null); // или оставить текущий файл

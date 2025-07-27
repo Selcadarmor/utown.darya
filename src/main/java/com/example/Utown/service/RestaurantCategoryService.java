@@ -20,8 +20,6 @@ public interface RestaurantCategoryService {
 
     List<RestaurantCategoryForClient> getAllCategoriesWithRestaurantCount();
 
-    RestaurantCategory updateRestaurantCategoryForRestaurant(Long id, RestaurantCategoryInfoDto categoriesDto);
-
     Set<RestaurantCategory> findCategoriesByIds(Set<RestaurantCategoryDto> dtos);
 
     Set<RestaurantCategory> resolveCategories(Set<RestaurantCategoryDto> categoryDtos);
