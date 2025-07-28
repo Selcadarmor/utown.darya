@@ -15,7 +15,6 @@ import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantProfileDto;
 import com.example.Utown.mapper.OrderMapper;
 import com.example.Utown.model.Order;
-import com.example.Utown.model.Rating;
 import com.example.Utown.model.UserType.Client;
 import com.example.Utown.service.AddressService;
 import com.example.Utown.service.DishCategoryService;
@@ -264,18 +263,20 @@ public class ClientController {
 
     @Operation(
             summary = "Create a rating for a restaurant",
-            description = "Allows an authenticated client to rate a specific restaurant. "
-                    + "Client can submit multiple ratings for the same restaurant (e.g., after each order)."
+            description = "Allows an authenticated client to rate a specific restaurant. " +
+                    "Client can submit multiple ratings for the same restaurant (e.g., after each order)."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Rating successfully created"),
             @ApiResponse(responseCode = "404", description = "Restaurant not found"),
             @ApiResponse(responseCode = "401", description = "Unauthorized access")
     })
-    @PostMapping
-    public ResponseEntity<Rating> createRating(@RequestBody RatingDto ratingDto) {
-        Rating createdRating = ratingService.createRating(ratingDto);
-        return ResponseEntity.ok(createdRating);
+    @PostMapping("restaurant/{restaurantId}")
+    public ResponseEntity<Void> createRating(
+            @PathVariable Long restaurantId,
+            @RequestBody RatingDto ratingDto) {
+        ratingService.createRating(restaurantId, ratingDto);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/profile/update") // Passed
@@ -334,6 +335,22 @@ public class ClientController {
         clientService.removeFavoriteRestaurant(restaurantId);
         return ResponseEntity.ok().build();
     }
+
+    @Operation(
+            summary = "Delete a rating by ID",
+            description = "Allows an authenticated client to delete a specific rating by its ID."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Rating successfully deleted"),
+            @ApiResponse(responseCode = "404", description = "Rating not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized access")
+    })
+    @DeleteMapping("rating/{ratingId}")
+    public ResponseEntity<Void> deleteRating(@PathVariable Long ratingId) {
+        ratingService.deleteRating(ratingId);
+        return ResponseEntity.ok().build();  // Или .noContent().build() если хочешь 204
+    }
+
 
 
 
