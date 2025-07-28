@@ -1,7 +1,7 @@
 package com.example.Utown.controller;
 
 import com.example.Utown.dto.fileInfoDTO.FileInfoDetailsDto;
-import com.example.Utown.service.FileInfoService;
+import com.example.Utown.service.S3Service.FileInfoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

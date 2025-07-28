@@ -1,4 +1,4 @@
-package com.example.Utown.service.UserType.client;
+package com.example.Utown.service.UserTypeService;
 
 import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.dto.clientDTO.ClientDetailsDto;
@@ -22,7 +22,7 @@ import com.example.Utown.model.enumFiles.Roles;
 import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.repository.UserType.ClientRepository;
 import com.example.Utown.service.AddressService;
-import com.example.Utown.service.FileInfoService;
+import com.example.Utown.service.S3Service.FileInfoService;
 import com.example.Utown.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -60,26 +60,20 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Page<ClientDetailsDto> getAllClients(String query, Boolean isActive, Pageable pageable) {
-        return clientRepository.findAllClientDetails(query, isActive, pageable);
-    }
-
-    @Override
     public ClientInfoDto getClientById(Long clientId) {
         return clientRepository.findClientInfoById(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found", clientId));
+    }
+
+    @Override
+    public Page<ClientDetailsDto> getAllClients(String query, Boolean isActive, Pageable pageable) {
+        return clientRepository.findAllClientDetails(query, isActive, pageable);
     }
 
     @Override //For Client
     public List<AddressDto> getAddressesByClient() {
         Client client = getCurrentClient();
         return clientRepository.getAddressesByClient(client.getUsername());
-    }
-
-    @Transactional(readOnly = true)
-    public List<RestaurantForClientDto> getFavoriteRestaurants() {
-        Client client = getCurrentClient();
-        return clientRepository.findFavoriteRestaurants(client.getUsername());
     }
 
     @Override
@@ -94,16 +88,10 @@ public class ClientServiceImpl implements ClientService {
                 .orElseThrow(() -> new UsernameNotFoundException("Client not found: " + username));
     }
 
-    @Override
-    public Address getAddressByDefaultAddress() {
+    @Transactional(readOnly = true)
+    public List<RestaurantForClientDto> getFavoriteRestaurants() {
         Client client = getCurrentClient();
-
-        Long defaultAddressId = client.getDefaultAddress();
-        if (defaultAddressId == null) {
-            throw new IllegalStateException("Default address is not set for client");
-        }
-
-        return addressService.getAddressById(defaultAddressId);
+        return clientRepository.findFavoriteRestaurants(client.getUsername());
     }
 
     // ========================= POST =========================

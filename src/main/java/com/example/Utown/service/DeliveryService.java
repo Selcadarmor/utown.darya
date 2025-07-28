@@ -8,13 +8,13 @@ import com.example.Utown.model.Delivery;
 import com.example.Utown.model.Restaurant;
 
 public interface DeliveryService {
-    Delivery createDelivery(DeliveryDto dto);
     Delivery getDeliveryById(Long id);
-    List<DeliveryDto> getAllDeliveries();
+    List<Delivery> getAllDeliveries();
+    List<DeliveryInfoDto> getDeliveriesByRestaurantId(Long restaurantId);
+    Delivery createDelivery(DeliveryDto dto);
+    void updateDeliveriesByRestaurant(Restaurant restaurant, List<DeliveryDto> dtos);
     Delivery updateDelivery(Long id, DeliveryDto dto);
     void deleteDelivery(Long id);
-    List<DeliveryInfoDto> getDeliveriesByRestaurantId(Long restaurantId);
-    void updateDeliveriesByRestaurant(Restaurant restaurant, List<DeliveryDto> dtos);
 }
 
 

@@ -1,4 +1,4 @@
-package com.example.Utown.service;
+package com.example.Utown.service.TokenService;
 
 import com.example.Utown.dto.tokens.JWTResponse;
 import com.example.Utown.dto.tokens.RefreshToken;

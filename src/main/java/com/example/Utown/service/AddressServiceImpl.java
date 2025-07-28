@@ -39,9 +39,9 @@ public class AddressServiceImpl implements AddressService {
                 .orElseThrow(() -> new ResourceNotFoundException("Address", id));
     }
 
-    @Override //Можно удалить позже
-    public List<AddressDto> getAllAddresses() {
-        return addressRepository.getAllAddresses();
+    @Override
+    public List<Address> getAllAddresses() {
+        return addressRepository.findAll();
     }
 
     @Override
@@ -64,10 +64,9 @@ public class AddressServiceImpl implements AddressService {
         return addressRepository.save(address);
     }
 
-    @Override //Можно позже удалить
+    @Override
     public void deleteAddress(Long id) {
-        Address address = addressRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Address not found", id));
+        Address address = getAddressById(id);
         addressRepository.delete(address);
     }
 

@@ -26,26 +26,11 @@ public class ElementServiceImpl implements ElementService {
     private final ElementRepository elementRepository;
     private final ElementMapper elementMapper;
 
-
-
     @Override
     public Element getById(Long id) {
         Element element = elementRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Element", id));
         return element;
-    }
-
-    @Override
-    public Element update(Long id, ElementDto dto) {
-        Element element = getById(id);
-
-        element.setName(dto.getName());
-        element.setDescription(dto.getDescription());
-        element.setPrice(dto.getPrice());
-        element.setIsActive(dto.getIsActive());
-        element.setIsDeleted(dto.getIsDeleted());
-
-        return elementRepository.save(element);
     }
 
     @Override
@@ -68,6 +53,19 @@ public class ElementServiceImpl implements ElementService {
                 .option(option)
                 .build()
         ).collect(Collectors.toSet());
+    }
+
+    @Override
+    public Element update(Long id, ElementDto dto) {
+        Element element = getById(id);
+
+        element.setName(dto.getName());
+        element.setDescription(dto.getDescription());
+        element.setPrice(dto.getPrice());
+        element.setIsActive(dto.getIsActive());
+        element.setIsDeleted(dto.getIsDeleted());
+
+        return elementRepository.save(element);
     }
 
     @Override
@@ -97,8 +95,7 @@ public class ElementServiceImpl implements ElementService {
 
     @Override
     public void delete(Long id) {
-        Element element = elementRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Element not found", id));
+        Element element = getById(id);
         elementRepository.delete(element);
     } //поменять на isDeleted = True
 

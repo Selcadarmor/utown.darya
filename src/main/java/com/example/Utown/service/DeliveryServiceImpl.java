@@ -6,7 +6,6 @@ import com.example.Utown.exception.InvalidArgumentException;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.DeliveryMapper;
 import com.example.Utown.model.Delivery;
-import com.example.Utown.model.DishCategory;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.repository.DeliveryRepository;
 import com.example.Utown.repository.RestaurantRepository;
@@ -28,6 +27,25 @@ public class DeliveryServiceImpl implements DeliveryService {
     private final DeliveryMapper deliveryMapper;
 
     @Override
+    public Delivery getDeliveryById(Long id) {
+        Delivery delivery = deliveryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Delivery", id));
+        return delivery;
+    }
+
+    @Override
+    public List<Delivery> getAllDeliveries() {
+        return deliveryRepository.findAll();
+    }
+
+    @Override
+    public List<DeliveryInfoDto> getDeliveriesByRestaurantId(Long restaurantId) {
+        List<Delivery> deliveries = deliveryRepository.findByRestaurantId(restaurantId);
+        return deliveryMapper.toDtoList(deliveries);
+
+    }
+
+    @Override
     public Delivery createDelivery(DeliveryDto dto) {
         Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId())
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant", dto.getRestaurantId()));
@@ -42,52 +60,6 @@ public class DeliveryServiceImpl implements DeliveryService {
                 .build();
 
         return deliveryRepository.save(delivery);
-    }
-
-    @Override
-    public Delivery getDeliveryById(Long id) {
-        Delivery delivery = deliveryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Delivery", id));
-        return delivery;
-    }
-
-    @Override
-    public List<DeliveryDto> getAllDeliveries() {
-        return deliveryRepository.findAllDeliveries();
-    }
-
-    @Override
-    public Delivery updateDelivery(Long id, DeliveryDto dto) {
-        Delivery delivery = deliveryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Delivery", id));
-
-        Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId())
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found", dto.getRestaurantId()));
-
-        delivery.setArea(dto.getArea());
-        delivery.setPrice(dto.getPrice());
-        delivery.setDistrict(dto.getDistrict());
-        delivery.setIsActive(dto.getIsActive());
-        delivery.setIsDeleted(dto.getIsDeleted());
-        delivery.setRestaurant(restaurant);
-
-        return deliveryRepository.save(delivery);
-    }
-
-    @Override
-    public void deleteDelivery(Long id) {
-        Delivery delivery = deliveryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Delivery not found", id));
-        deliveryRepository.delete(delivery);
-    } //поменять на isDeleted = True
-
-    //Добавить метод для изменения isActive = True ... False
-
-    @Override
-    public List<DeliveryInfoDto> getDeliveriesByRestaurantId(Long restaurantId) {
-        List<Delivery> deliveries = deliveryRepository.findByRestaurantId(restaurantId);
-        return deliveryMapper.toDtoList(deliveries);
-
     }
 
     @Override
@@ -117,6 +89,33 @@ public class DeliveryServiceImpl implements DeliveryService {
 
         deliveryRepository.saveAll(existingDeliveriesById.values());
     }
+
+    @Override
+    public Delivery updateDelivery(Long id, DeliveryDto dto) {
+        Delivery delivery = deliveryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Delivery", id));
+
+        Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId())
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found", dto.getRestaurantId()));
+
+        delivery.setArea(dto.getArea());
+        delivery.setPrice(dto.getPrice());
+        delivery.setDistrict(dto.getDistrict());
+        delivery.setIsActive(dto.getIsActive());
+        delivery.setIsDeleted(dto.getIsDeleted());
+        delivery.setRestaurant(restaurant);
+
+        return deliveryRepository.save(delivery);
+    }
+
+    @Override
+    public void deleteDelivery(Long id) {
+        Delivery delivery = deliveryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Delivery not found", id));
+        deliveryRepository.delete(delivery);
+    } //поменять на isDeleted = True
+
+    //Добавить метод для изменения isActive = True ... False
 
 }
 

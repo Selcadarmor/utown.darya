@@ -1,6 +1,5 @@
 package com.example.Utown.repository;
 
-import com.example.Utown.dto.dishCategoryDTO.DishCategoryDetailsDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryRestaurantProfileDto;
 import com.example.Utown.model.DishCategory;
 import org.springframework.data.domain.Page;
@@ -14,6 +13,7 @@ import java.util.List;
 
 @Repository
 public interface DishCategoryRepository extends JpaRepository<DishCategory, Long> {
+
     @Query("SELECT dc FROM DishCategory dc " +
             "WHERE (:query IS NULL OR LOWER(dc.name) LIKE LOWER(CONCAT('%', :query, '%'))) " +
             "AND (:sort IS NULL OR dc.sort = :sort) "  +
@@ -23,6 +23,7 @@ public interface DishCategoryRepository extends JpaRepository<DishCategory, Long
                                                    @Param("sort") Integer sort,
                                                    @Param("isActive") Boolean isActive,
                                                    Pageable pageable);
+
     @Query(
             "SELECT new com.example.Utown.dto.dishCategoryDTO.DishCategoryRestaurantProfileDto(" +
                     "dc.id, dc.name, dc.sort, dc.isActive, f.path, " +

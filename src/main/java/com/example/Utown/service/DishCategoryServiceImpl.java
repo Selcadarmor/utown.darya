@@ -13,6 +13,7 @@ import com.example.Utown.model.Restaurant;
 import com.example.Utown.repository.DishCategoryRepository;
 import com.example.Utown.repository.FileInfoRepository;
 import com.example.Utown.repository.RestaurantRepository;
+import com.example.Utown.service.S3Service.FileInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class DishCategoryServiceImpl implements DishCategoryService {
@@ -44,11 +44,8 @@ public class DishCategoryServiceImpl implements DishCategoryService {
     }
 
     @Override
-    public List<DishCategoryDto> getAllDishCategories() {
-        return dishCategoryRepository.findAll()
-                .stream()
-                .map(dishCategoryMapper::dishCategoryToDto)
-                .collect(Collectors.toList());
+    public List<DishCategory> getAllDishCategories() {
+        return dishCategoryRepository.findAll();
     }
 
     @Override

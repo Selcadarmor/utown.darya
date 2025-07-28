@@ -1,4 +1,4 @@
-package com.example.Utown.service.UserType.client;
+package com.example.Utown.service.UserTypeService;
 
 import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.dto.clientDTO.ClientDetailsDto;
@@ -16,19 +16,18 @@ import java.util.List;
 
 public interface ClientService {
         Client findByUsername(String username);
-        Page<ClientDetailsDto> getAllClients(String query, Boolean isActive, Pageable pageable);
         ClientInfoDto getClientById(Long clientId);
+        Page<ClientDetailsDto> getAllClients(String query, Boolean isActive, Pageable pageable);
         List<AddressDto> getAddressesByClient();
-        void updateClientActiveStatus(Long id, Boolean active);
-        void deleteClient(Long id);
+        Client getCurrentClient();
+        List<RestaurantForClientDto> getFavoriteRestaurants();
         void save(ClientRegistrationDto dto, Roles roleName);
         Address saveAddressForClient(AddressDto dto);
         void addFavoriteRestaurant(Long restaurantId);
-        List<RestaurantForClientDto> getFavoriteRestaurants();
         ClientProfileUpdateDto updateClientProfile(ClientProfileUpdateDto dto);
+        void updateClientActiveStatus(Long id, Boolean active);
         void removeFavoriteRestaurant(Long restaurantId);
-        Client getCurrentClient();
-        Address getAddressByDefaultAddress();
+        void deleteClient(Long id);
 }
 
 
