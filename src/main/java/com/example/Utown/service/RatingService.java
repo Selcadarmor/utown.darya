@@ -10,6 +10,6 @@ public interface RatingService {
     Rating getRatingById(Long id);
     List<Rating> getAll();
     List<Rating> getAllRatingsByRestaurantId(Long restaurantId);
-    Rating createRating(RatingDto ratingDto);
+    void createRating(Long restaurantId, RatingDto ratingDto);
     void deleteRating(Long id);
 }

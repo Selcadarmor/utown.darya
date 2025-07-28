@@ -41,10 +41,9 @@ public class RatingServiceImpl implements RatingService {
 
     @Override
     @Transactional
-    public Rating createRating(RatingDto ratingDto) {
+    public void createRating(Long restaurantId, RatingDto ratingDto) {
         Client client = clientService.getCurrentClient();
-
-        Restaurant restaurant = restaurantService.findRestaurantById(ratingDto.getRestaurantId());
+        Restaurant restaurant = restaurantService.findRestaurantById(restaurantId);
 
         Rating rating = Rating.builder()
                 .client(client)
@@ -52,9 +51,8 @@ public class RatingServiceImpl implements RatingService {
                 .grade(ratingDto.getGrade())
                 .build();
 
-        return ratingRepository.save(rating);
+        ratingRepository.save(rating);
     }
-
 
     @Override
     @Transactional
