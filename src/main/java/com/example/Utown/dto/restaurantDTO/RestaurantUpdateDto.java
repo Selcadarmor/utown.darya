@@ -2,6 +2,7 @@ package com.example.Utown.dto.restaurantDTO;
 
 import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.dto.deliveryDTO.DeliveryDto;
+import com.example.Utown.dto.fileInfoDTO.FileInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeUpdateDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,7 +22,7 @@ public class RestaurantUpdateDto {
     private String phone;
     private BigDecimal minOrderAmount;
     private AddressDto address;
-    private Long fileId;
+    private FileInfoDto file;
     private List<OperatingModeUpdateDto> operatingModes;
     private Set<Long> categoryIds;
     private List<DeliveryDto> deliveries;

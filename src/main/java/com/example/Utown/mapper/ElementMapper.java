@@ -21,8 +21,4 @@ public interface ElementMapper {
     @Mapping(source = "element.price", target = "price")
     ElementInfoDto mapElement(Element element);
 
-    Set<ElementDto> toElementDtoList(Set<Element> elements);
-    Set<ElementDto> toElementDtoSet(Set<Element> elements);
-
-    ElementForClientDto elementToClientDto(Element element);
 }

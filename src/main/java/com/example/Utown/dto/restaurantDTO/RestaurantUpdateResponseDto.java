@@ -2,7 +2,9 @@ package com.example.Utown.dto.restaurantDTO;
 
 import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.dto.deliveryDTO.DeliveryDto;
+import com.example.Utown.dto.fileInfoDTO.FileInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeCreateDto;
+import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryCreateDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,7 +22,7 @@ public class RestaurantUpdateResponseDto {
     private String description;
     private String phone;
     private BigDecimal minOrderAmount;
-    private Long fileId;
+    private FileInfoDto file;
     private List<OperatingModeCreateDto> operatingModes;
     private AddressDto address;
     private List<DeliveryDto> deliveries;
