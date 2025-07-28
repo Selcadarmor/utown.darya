@@ -1,4 +1,4 @@
-package com.example.Utown.service;
+package com.example.Utown.service.S3Service;
 
 import com.example.Utown.config.S3.AwsProperties;
 import com.example.Utown.exception.S3UploadException;

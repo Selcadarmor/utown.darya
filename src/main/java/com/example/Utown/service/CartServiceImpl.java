@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import com.example.Utown.mapper.CartMapper;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,24 +17,21 @@ public class CartServiceImpl implements CartService {
     private final CartMapper cartMapper;
 
     @Override
+    public Cart getCartById(Long id) {
+        Cart cart = cartRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Cart not found with id " + id));
+        return cart;
+    }
+
+    @Override
+    public List<Cart> getAllCarts() {
+        return cartRepository.findAll();
+    }
+
+    @Override
     public Cart createCart(CartDto dto) {
         Cart cart = cartMapper.cartDtoToEntity(dto);
         return cartRepository.save(cart);
-    }
-
-    @Override
-    public CartDto getCartById(Long id) {
-        Cart cart = cartRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Cart not found with id " + id));
-        return cartMapper.cartToDto(cart);
-    }
-
-    @Override
-    public List<CartDto> getAllCarts() {
-        return cartRepository.findAll()
-                .stream()
-                .map(cartMapper::cartToDto)
-                .collect(Collectors.toList());
     }
 
     @Override
@@ -59,6 +55,6 @@ public class CartServiceImpl implements CartService {
             throw new EntityNotFoundException("Cart not found with id " + id);
         }
         cartRepository.deleteById(id);
-    }
+    } //Поменять на очистку корзины
 }
 
