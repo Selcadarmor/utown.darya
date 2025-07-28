@@ -2,13 +2,10 @@ package com.example.Utown.service;
 
 import com.example.Utown.dto.dishDTO.DishCreateDto;
 import com.example.Utown.dto.dishDTO.DishDetailsDto;
-import com.example.Utown.dto.dishDTO.DishDto;
 import com.example.Utown.dto.dishDTO.DishInfoDto;
 import com.example.Utown.dto.dishDTO.DishSearchDto;
 import com.example.Utown.dto.optionDTO.OptionInfoDto;
 import com.example.Utown.dto.dishDTO.DishForClientDto;
-import com.example.Utown.dto.elementDTO.ElementForClientDto;
-import com.example.Utown.dto.optionDTO.OptionForClientDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.DishMapper;
 import com.example.Utown.model.Dish;
@@ -23,6 +20,7 @@ import com.example.Utown.repository.ElementRepository;
 import com.example.Utown.repository.FileInfoRepository;
 import com.example.Utown.repository.OptionRepository;
 import com.example.Utown.repository.RestaurantRepository;
+import com.example.Utown.service.S3Service.FileInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class DishServiceImpl implements DishService {
@@ -50,14 +49,14 @@ public class DishServiceImpl implements DishService {
     // ===== GET =====
 
     @Override
-    public DishDto getDishById(Long id) {
-        return dishRepository.findDishById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Dish not found", id));
+    public Dish getDishById(Long id) {
+        return dishRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Dish", id));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public DishForClientDto getDishByIdForClient(Long dishId) {
+    public DishForClientDto getDishByIdForOrder(Long dishId) {
         Dish dish = dishRepository.findById(dishId)
                 .orElseThrow(() -> new ResourceNotFoundException("Dish", dishId));
 
@@ -101,7 +100,7 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public List<DishSearchDto> getDishesByCategoryForClient(Long categoryId) {
+    public List<DishSearchDto> getDishesByCategory(Long categoryId) {
         return dishRepository.findDishDtoByCategoryForClient(categoryId);
     }
 

@@ -1,11 +1,9 @@
-package com.example.Utown.service;
+package com.example.Utown.service.S3Service;
 
 import com.example.Utown.dto.fileInfoDTO.FileInfoDetailsDto;
 import com.example.Utown.dto.fileInfoDTO.FileInfoDto;
 import com.example.Utown.model.FileInfo;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 public interface FileInfoService {
     FileInfo create(FileInfoDto dto);

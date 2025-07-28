@@ -10,6 +10,7 @@ import java.util.List;
 
 @Repository
 public interface DishToOrderRepository extends JpaRepository<DishToOrder, Long> {
+
     @Query("SELECT d.title " +
             "FROM DishToOrder dto " +
             "JOIN dto.dish d " +

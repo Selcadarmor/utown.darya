@@ -20,7 +20,7 @@ import com.example.Utown.service.DishCategoryService;
 import com.example.Utown.service.DishService;
 import com.example.Utown.service.OrderService;
 import com.example.Utown.service.RestaurantService;
-import com.example.Utown.service.UserType.client.ClientService;
+import com.example.Utown.service.UserTypeService.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
