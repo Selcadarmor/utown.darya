@@ -240,11 +240,9 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
         restaurantInfoMapper.updateFromDto(dto, restaurant);
 
-        if (dto.getFile() != null && dto.getFile().getId() != null) {
-            FileInfo fileInfo = fileInfoService.getFileInfoById(dto.getFile().getId());
-            restaurant.setFileInfo(fileInfo);
-        } else {
-            restaurant.setFileInfo(null);
+        if (dto.getFileId() != null) {
+            FileInfo file = fileInfoService.getFileInfoById(dto.getFileId());
+            restaurant.setFileInfo(file);
         }
 
         Address currentAddress = restaurant.getAddress();
@@ -292,7 +290,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
         restaurant.setIsActive(false);
 
         if (restaurant.getRestaurantAdmin() != null) {
-            restaurant.getRestaurantAdmin().setActive(false);
+            restaurant.getRestaurantAdmin().setIsActive(false);
         }
 
         if (restaurant.getDeliveries() != null) {

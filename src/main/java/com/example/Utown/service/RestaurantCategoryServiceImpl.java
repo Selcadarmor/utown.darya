@@ -8,6 +8,7 @@ import com.example.Utown.mapper.RestaurantCategoryMapper;
 import com.example.Utown.model.RestaurantCategory;
 import com.example.Utown.repository.RestaurantCategoryRepository;
 import com.example.Utown.repository.RestaurantRepository;
+import com.example.Utown.service.S3Service.FileInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -103,7 +104,8 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
     @Transactional(rollbackFor = RuntimeException.class)
     public void deleteRestaurantCategory(Long id) {
         RestaurantCategory category = getRestaurantCategory(id);
-        restaurantCategoryRepository.delete(category);
+        category.setIsActive(false);
+        restaurantCategoryRepository.save(category);
     }
 
     // ===== PRIVATE =====

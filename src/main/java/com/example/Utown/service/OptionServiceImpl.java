@@ -49,6 +49,7 @@ public class OptionServiceImpl implements OptionService {
                     .map(element -> new ElementInfoDto(
                             element.getId(),
                             element.getName(),
+                            element.getDescription(),
                             element.getPrice()
                     ))
                     .collect(Collectors.toSet());
@@ -56,6 +57,9 @@ public class OptionServiceImpl implements OptionService {
             return new OptionInfoDto(
                     option.getId(),
                     option.getName(),
+                    option.getRequired(),
+                    option.getMin(),
+                    option.getMax(),
                     elementDtos
             );
         }).collect(Collectors.toSet());
@@ -75,6 +79,10 @@ public class OptionServiceImpl implements OptionService {
                     : new Option();
 
             option.setName(optionDto.getName());
+            option.setRequired(optionDto.getRequired());
+            option.setMin(optionDto.getMin());
+            option.setMax(optionDto.getMax());
+            option.setIsActive(true);
             option.setDish(dish);
 
             Set<Element> updatedElements = elementService.updateElementsForOption(option, optionDto.getElements());
@@ -89,13 +97,6 @@ public class OptionServiceImpl implements OptionService {
     }
 
     @Override
-    public void delete(Long id) {
-        Option option = optionRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Option not found", id));
-        optionRepository.delete(option);
-    } //поменять на isActive = False
-
-    @Override
     @Transactional
     public Set<Option> createOptionsForDish(Dish dish, Set<OptionInfoDto> optionDtos) {
         if (optionDtos == null || optionDtos.isEmpty()) return Collections.emptySet();
@@ -104,6 +105,10 @@ public class OptionServiceImpl implements OptionService {
         for (OptionInfoDto dto : optionDtos) {
             Option option = Option.builder()
                     .name(dto.getName())
+                    .max(dto.getMax())
+                    .min(dto.getMin())
+                    .required(dto.getRequired())
+                    .isActive(true)
                     .dish(dish)
                     .build();
 
@@ -115,6 +120,20 @@ public class OptionServiceImpl implements OptionService {
         }
         return options;
     }
+
+    @Override
+    public void delete(Long id) {
+        Option option =getById(id);
+        option.setIsActive(false);
+
+        if(option.getElements() != null) {
+            for(Element element : option.getElements()) {
+                element.setIsActive(false);
+            }
+        }
+        optionRepository.save(option);
+    }
+
 
 }
 
