@@ -5,7 +5,7 @@ import com.example.Utown.dto.deliveryDTO.DeliveryInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeCreateDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeRestaurantProfileDto;
-import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryInfoDto;
+import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantCreateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
@@ -43,18 +43,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class RestaurantServiceImpl  implements RestaurantService {
 
     private final ClientService clientService;
-    private final RestaurantCategoryService restaurantCategoryService;
     private final RestaurantCategoryRepository restaurantCategoryRepository;
     private final RestaurantInfoMapper restaurantInfoMapper;
     private final RestaurantRepository restaurantRepository;
@@ -65,9 +64,9 @@ public class RestaurantServiceImpl  implements RestaurantService {
     private final AddressService addressService;
     private final DeliveryService deliveryService;
     private final DishRepository dishRepository;
-    private final FileInfoService fileInfoService;
     private final FileInfoRepository fileInfoRepository;
     private final DeliveryRepository deliveryRepository;
+    private final FileInfoService fileInfoService;
 
     // ===== GET =====
 
@@ -78,13 +77,13 @@ public class RestaurantServiceImpl  implements RestaurantService {
     }
 
     @Override
-    public RestaurantDetailsDto getRestaurantDetails(Long restaurantId) {
+    public RestaurantDetailsDto getRestaurantDetails(Long restaurantId) {//передать в запросе и в дто поф файла
         Restaurant restaurantEntity = findRestaurantById(restaurantId);
 
         RestaurantDetailsDto restaurant = restaurantRepository.findRestaurantSummaryById(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
 
-        Set<RestaurantCategoryInfoDto> categoryDtos = restaurantCategoryInfoMapper
+        Set<RestaurantCategoryDto> categoryDtos = restaurantCategoryInfoMapper
                 .toDtoSet(new HashSet<>(restaurantEntity.getCategories()));
         List<OperatingModeInfoDto> operatingModeDtos = operatingModeService.getOperatingModesByRestaurantId(restaurantId);
         List<DeliveryInfoDto> deliveryDtos = deliveryService.getDeliveriesByRestaurantId(restaurantId);
@@ -189,10 +188,8 @@ public class RestaurantServiceImpl  implements RestaurantService {
             fileOpt.ifPresent(restaurant::setFileInfo);
         }
 
-        if (dto.getCategories() != null && !dto.getCategories().isEmpty()) {
-            Set<RestaurantCategory> categories = restaurantCategoryService.resolveCategories(dto.getCategories());
-            restaurant.setCategories(categories);
-        }
+        Set<RestaurantCategory> categories = resolveCategoriesByIds(dto.getCategoryIds());
+        restaurant.setCategories(categories);
 
         if (dto.getAddress() != null) {
             Address address = addressService.createAddress(dto.getAddress());
@@ -229,7 +226,9 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
         // Возвращаем DTO с уже подгруженными связями
         return restaurantInfoMapper.toCreateDto(savedRestaurant);
+
     }
+
 
     // ===== UPDATE =====
 
@@ -240,13 +239,12 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
         restaurantInfoMapper.updateFromDto(dto, restaurant);
 
-        if (dto.getFileId() != null) {
-            fileInfoRepository.findById(dto.getFileId())
-                    .ifPresent(restaurant::setFileInfo);
+        if (dto.getFile() != null && dto.getFile().getId() != null) {
+            FileInfo fileInfo = fileInfoService.getFileInfoById(dto.getFile().getId());
+            restaurant.setFileInfo(fileInfo);
         } else {
-            restaurant.setFileInfo(null); // очистить файл, если fileId == null
+            restaurant.setFileInfo(null);
         }
-
 
         Address currentAddress = restaurant.getAddress();
         if (currentAddress == null) {
@@ -275,11 +273,8 @@ public class RestaurantServiceImpl  implements RestaurantService {
             if (dto.getCategoryIds().isEmpty()) {
                 restaurant.getCategories().clear();
             } else {
-                Set<RestaurantCategory> updatedCategories = dto.getCategoryIds().stream()
-                        .map(categoryId -> restaurantCategoryRepository.findById(categoryId)
-                                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory", categoryId)))
-                        .collect(Collectors.toSet());
-                restaurant.setCategories(updatedCategories);
+                Set<RestaurantCategory> categories = resolveCategoriesByIds(dto.getCategoryIds());
+                restaurant.setCategories(categories);
             }
         }
 
@@ -315,6 +310,22 @@ public class RestaurantServiceImpl  implements RestaurantService {
     public Restaurant findRestaurantById(Long restaurantId) {
         return restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
+    }
+
+    private Set<RestaurantCategory> resolveCategoriesByIds(Set<Long> categoryIds) {
+        if (categoryIds == null || categoryIds.isEmpty()) {
+            return Collections.emptySet();
+        }
+
+        Set<RestaurantCategory> categories = new HashSet<>();
+
+        for (Long id : categoryIds) {
+            RestaurantCategory category = restaurantCategoryRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory", id));
+            categories.add(category);
+        }
+
+        return categories;
     }
 
 }
