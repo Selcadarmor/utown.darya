@@ -37,34 +37,10 @@ public class Notification {
     @Column(name = "date")
     private String date;
 
-    @Column(name = "type_notification")
-    private Integer typeNotification;
-
-    @Column(name = "type_order")
-    private Integer typeOrder;
-
-    @Column(name = "type_restaurant")
-    private Integer typeRestaurant;
-
-    @Column(name = "type_user")
-    private Integer typeUser;
-
     @Column(name = "text")
     private String text;
 
     @Column(name = "time_notification")
-    private String timeNotification;
-
-    @Column(name = "time_order")
-    private String timeOrder;
-
-    @Column(name = "time_restaurant")
-    private String timeRestaurant;
-
-    @Column(name = "time_user")
-    private String timeUser;
-
-    @Column(name = "time_order_status")
     private String time;
 
     @Column(name = "type_order_title")

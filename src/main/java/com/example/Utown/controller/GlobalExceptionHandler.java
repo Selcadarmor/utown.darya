@@ -19,6 +19,7 @@ import com.example.Utown.exception.RestaurantAlreadyFavoritedException;
 import com.example.Utown.exception.RestaurantNotFoundException;
 import com.example.Utown.exception.RestaurantNotInFavoritesException;
 import com.example.Utown.exception.RoleNotFoundException;
+import com.example.Utown.exception.S3UploadException;
 import com.example.Utown.exception.UserAlreadyExistsException;
 import com.example.Utown.exception.UserNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -149,6 +150,19 @@ public class GlobalExceptionHandler {
     @Operation(hidden = true)
     public ApiErrorResponse handleRestaurantNotInFavorites(RestaurantNotInFavoritesException ex, HttpServletRequest request) {
         return buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(S3UploadException.class)
+    public ResponseEntity<ApiErrorResponse> handleS3UploadException(S3UploadException ex, HttpServletRequest request) {
+        ApiErrorResponse errorResponse = ApiErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .message(ex.getMessage())
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+                .path(request.getRequestURI())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 

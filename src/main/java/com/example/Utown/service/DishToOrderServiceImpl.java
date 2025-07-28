@@ -31,6 +31,18 @@ public class DishToOrderServiceImpl implements DishToOrderService {
     private final ElementRepository elementRepository;
 
     @Override
+    public DishToOrder getById(Long id) {
+        DishToOrder dishToOrder = dishToOrderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("DishToOrder", id));
+        return dishToOrder;
+    }
+
+    @Override
+    public List<DishToOrder> getAll() {
+        return dishToOrderRepository.findAll();
+    }
+
+    @Override
     public DishToOrder create(Long cartId, DishToOrderRequestDto dto) {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart not found", cartId));
@@ -51,20 +63,6 @@ public class DishToOrderServiceImpl implements DishToOrderService {
                 .build();
 
         return dishToOrderRepository.save(entity);
-    }
-
-    @Override
-    public DishToOrderResponseDto getById(Long id) {
-        DishToOrder entity = dishToOrderRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("DishToOrder not found", id));
-        return mapper.toResponseDto(entity);
-    }
-
-    @Override
-    public List<DishToOrderResponseDto> getAll() {
-        return dishToOrderRepository.findAll().stream()
-                .map(mapper::toResponseDto)
-                .toList();
     }
 
     @Override

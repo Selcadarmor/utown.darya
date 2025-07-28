@@ -1,4 +1,4 @@
-package com.example.Utown.service;
+package com.example.Utown.service.TokenService;
 
 import com.example.Utown.config.Utills.JWTProperties;
 import com.example.Utown.config.Utills.JWTUtils;

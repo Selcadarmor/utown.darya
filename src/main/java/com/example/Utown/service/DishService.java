@@ -13,17 +13,14 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface DishService {
-    Dish createDish(DishDto dto);
-    DishDto getDishById(Long id);
-    void deleteDish(Long id);
-    Dish updateDish(Long id, DishDto dto);
+    Dish getDishById(Long id);
     Page<DishDetailsDto> getDishesByRestaurantId(Long restaurantId, String title,
                                                  Integer sort, Long dishCategoryId,
                                                  Boolean isActive, int page, int size);
     DishInfoDto updateDishForRestaurant(Long RestaurantId, Long DishId, DishCreateDto dto);
     DishInfoDto createDishForRestaurant(Long RestaurantId, DishCreateDto dto);
-    DishForClientDto getDishByIdForClient(Long dishId);
+    DishForClientDto getDishByIdForOrder(Long dishId);
     Page<DishSearchDto> searchDishesByRestaurant(Long restaurantId, String keyword, Pageable pageable);
-    List<DishSearchDto> getDishesByCategoryForClient(Long categoryId);
+    List<DishSearchDto> getDishesByCategory(Long categoryId);
 }
 

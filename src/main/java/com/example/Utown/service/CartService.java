@@ -6,9 +6,9 @@ import com.example.Utown.model.Cart;
 import java.util.List;
 
 public interface CartService {
+    Cart getCartById(Long id);
+    List<Cart> getAllCarts();
     Cart createCart(CartDto dto);
-    CartDto getCartById(Long id);
-    List<CartDto> getAllCarts();
     Cart updateCart(Long id, CartDto dto);
     void deleteCart(Long id);
 

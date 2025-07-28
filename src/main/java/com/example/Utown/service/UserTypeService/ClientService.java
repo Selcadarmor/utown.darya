@@ -1,4 +1,4 @@
-package com.example.Utown.service.UserType.client;
+package com.example.Utown.service.UserTypeService;
 
 import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.dto.clientDTO.ClientDetailsDto;
@@ -16,16 +16,18 @@ import java.util.List;
 
 public interface ClientService {
         Client findByUsername(String username);
-        Page<ClientDetailsDto> getAllClients(String query, Boolean isActive, Pageable pageable);
         ClientInfoDto getClientById(Long clientId);
-        void updateClientActiveStatus(Long id, Boolean active);
-        void deleteClient(Long id);
-        void save(ClientRegistrationDto dto, Roles roleName);
-        void addFavoriteRestaurant(Long restaurantId);
-        List<RestaurantForClientDto> getFavoriteRestaurants();
-        void removeFavoriteRestaurant(Long restaurantId);
+        Page<ClientDetailsDto> getAllClients(String query, Boolean isActive, Pageable pageable);
+        List<AddressDto> getAddressesByClient();
         Client getCurrentClient();
-        Address getAddressByDefaultAddress();
+        List<RestaurantForClientDto> getFavoriteRestaurants();
+        void save(ClientRegistrationDto dto, Roles roleName);
+        Address saveAddressForClient(AddressDto dto);
+        void addFavoriteRestaurant(Long restaurantId);
+        ClientProfileUpdateDto updateClientProfile(ClientProfileUpdateDto dto);
+        void updateClientActiveStatus(Long id, Boolean active);
+        void removeFavoriteRestaurant(Long restaurantId);
+        void deleteClient(Long id);
 }
 
 

@@ -1,4 +1,4 @@
-package com.example.Utown.service.UserType.client;
+package com.example.Utown.service.UserTypeService;
 
 import com.example.Utown.dto.restaurantAdminDTO.RestaurantAdminCreateDto;
 import com.example.Utown.exception.RoleNotFoundException;

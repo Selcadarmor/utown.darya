@@ -64,5 +64,3 @@ public class Client extends User {
     private Cart cart;
 
 }
-
-
