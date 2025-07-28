@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Set;
 
 public interface ElementService {
-    Element create(ElementDto dto);
     Element getById(Long id);
-    Element update(Long id, ElementDto dto);
-    void delete(Long id);
+    Element create(ElementDto dto);
     Set<Element> createElementsForOption(Option option, Set<ElementInfoDto> elementDtos);
+    Element update(Long id, ElementDto dto);
     Set<Element> updateElementsForOption(Option option, Set<ElementInfoDto> elementDtos);
+    void delete(Long id);
 }
 

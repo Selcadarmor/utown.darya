@@ -9,20 +9,23 @@ import com.example.Utown.dto.dishDTO.DishSearchDto;
 import com.example.Utown.dto.dishToOrderDTO.DishToOrderRequestDto;
 import com.example.Utown.dto.dishToOrderDTO.DishToOrderResponseDto;
 import com.example.Utown.dto.orderDTO.OrderDto;
+import com.example.Utown.dto.ratingDTO.RatingDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryForClient;
 import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantProfileDto;
 import com.example.Utown.mapper.OrderMapper;
 import com.example.Utown.model.Order;
+import com.example.Utown.model.Rating;
 import com.example.Utown.model.UserType.Client;
 import com.example.Utown.service.AddressService;
 import com.example.Utown.service.DishCategoryService;
 import com.example.Utown.service.DishService;
 import com.example.Utown.service.DishToOrderService;
 import com.example.Utown.service.OrderService;
+import com.example.Utown.service.RatingService;
 import com.example.Utown.service.RestaurantCategoryService;
 import com.example.Utown.service.RestaurantService;
-import com.example.Utown.service.UserType.client.ClientService;
+import com.example.Utown.service.UserTypeService.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -59,6 +62,7 @@ public class ClientController {
     private final DishCategoryService dishCategoryService;
     private final DishService dishService;
     private final ClientService clientService;
+    private final RatingService ratingService;
     private final RestaurantCategoryService restaurantCategoryService;
     private final RestaurantService restaurantService;
     private final DishToOrderService dishToOrderService;
@@ -211,7 +215,7 @@ public class ClientController {
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
     public ResponseEntity<List<DishSearchDto>> getDishesByCategory(@PathVariable Long categoryId) {
-        List<DishSearchDto> dishes = dishService.getDishesByCategoryForClient(categoryId);
+        List<DishSearchDto> dishes = dishService.getDishesByCategory(categoryId);
         return ResponseEntity.ok(dishes);
     }
 
@@ -223,7 +227,7 @@ public class ClientController {
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
     public ResponseEntity<DishForClientDto> getDishById(@PathVariable Long dishId) {
-        DishForClientDto dish = dishService.getDishByIdForClient(dishId);
+        DishForClientDto dish = dishService.getDishByIdForOrder(dishId);
         return ResponseEntity.ok(dish);
     }
 
@@ -256,6 +260,22 @@ public class ClientController {
     public ResponseEntity<Void> addAddressForCurrentUser(@RequestBody AddressDto addressDto) {
         clientService.saveAddressForClient(addressDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @Operation(
+            summary = "Create a rating for a restaurant",
+            description = "Allows an authenticated client to rate a specific restaurant. "
+                    + "Client can submit multiple ratings for the same restaurant (e.g., after each order)."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Rating successfully created"),
+            @ApiResponse(responseCode = "404", description = "Restaurant not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized access")
+    })
+    @PostMapping
+    public ResponseEntity<Rating> createRating(@RequestBody RatingDto ratingDto) {
+        Rating createdRating = ratingService.createRating(ratingDto);
+        return ResponseEntity.ok(createdRating);
     }
 
     @PutMapping("/profile/update") // Passed
