@@ -10,6 +10,8 @@ import com.example.Utown.dto.dishDTO.DishCreateDto;
 import com.example.Utown.dto.dishDTO.DishDetailsDto;
 import com.example.Utown.dto.dishDTO.DishInfoDto;
 import com.example.Utown.dto.orderDTO.OrderDetailsDto;
+import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryCreateDto;
+import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantCreateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto;
@@ -19,6 +21,7 @@ import com.example.Utown.dto.restaurantDTO.RestaurantsCreateResponseDto;
 import com.example.Utown.service.DishCategoryService;
 import com.example.Utown.service.DishService;
 import com.example.Utown.service.OrderService;
+import com.example.Utown.service.RestaurantCategoryService;
 import com.example.Utown.service.RestaurantService;
 import com.example.Utown.service.UserTypeService.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,6 +40,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -67,6 +71,7 @@ public class AdminController {
     private final DishService dishService;
     private final DishCategoryService dishCategoryService;
     private final OrderService orderService;
+    private final RestaurantCategoryService restaurantCategoryService;
 
     // --- Клиенты ---
 
@@ -266,7 +271,7 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "Orders retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Orders not found")
     })
-    @GetMapping("/clients/{clientId}/orders")//Passed
+    @GetMapping("/clients/{id}/orders")//Passed
     public ResponseEntity<Page<OrderDetailsDto>> getOrderDetailsByClient(@PathVariable Long clientId,
                                                                          @RequestParam(required = false) String query,
                                                                          Pageable pageable) {
@@ -274,4 +279,44 @@ public class AdminController {
         return ResponseEntity.ok(orders);
 
     }
+
+    //Категории ресторанов
+
+    @Operation(summary = "Create a new restaurant category")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Category successfully created"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PostMapping("/restaurant-category")//Passed
+    public ResponseEntity<RestaurantCategoryDto> createCategory(@RequestBody RestaurantCategoryCreateDto dto) {
+        RestaurantCategoryDto created = restaurantCategoryService.createCategory(dto);
+        return ResponseEntity.ok(created);
+    }
+
+    @Operation(summary = "Update an existing restaurant category")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Category successfully updated"),
+            @ApiResponse(responseCode = "404", description = "Category not found"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data")
+    })
+    @PutMapping("/restaurant-category/{id}")//Passed
+    public ResponseEntity<RestaurantCategoryDto> updateCategory(@PathVariable Long id,
+                                                                @RequestBody RestaurantCategoryCreateDto dto) {
+        RestaurantCategoryDto updated = restaurantCategoryService.updateRestaurantCategory(id, dto);
+        return ResponseEntity.ok(updated);
+    }
+
+    @Operation(summary = "Delete a restaurant category by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Category successfully deleted"),
+            @ApiResponse(responseCode = "404", description = "Category not found")
+    })
+    @DeleteMapping("restaurant-category/{id}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+        restaurantCategoryService.deleteRestaurantCategory(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }
+

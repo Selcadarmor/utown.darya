@@ -13,4 +13,5 @@ public interface RestaurantCategoryRepository extends JpaRepository<RestaurantCa
     @Query("SELECT c FROM RestaurantCategory c WHERE c.isActive = true ORDER BY c.sort")
     List<RestaurantCategory> findAllActiveRestaurantCategories();
 
+    boolean existsByName(String name);
 }

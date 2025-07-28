@@ -83,8 +83,8 @@ public class ElementServiceImpl implements ElementService {
 
             element.setName(dto.getName());
             element.setPrice(dto.getPrice());
+            element.setDescription(dto.getDescription());
             element.setIsActive(true);
-            element.setIsDeleted(false);
             element.setOption(option);
 
             result.add(element);
@@ -96,9 +96,8 @@ public class ElementServiceImpl implements ElementService {
     @Override
     public void delete(Long id) {
         Element element = getById(id);
-        elementRepository.delete(element);
-    } //поменять на isDeleted = True
-
-
+         element.setIsDeleted(true);
+         elementRepository.save(element);
+    }
 }
 

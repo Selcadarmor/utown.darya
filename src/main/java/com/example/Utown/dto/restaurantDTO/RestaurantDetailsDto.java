@@ -2,7 +2,7 @@ package com.example.Utown.dto.restaurantDTO;
 
 import com.example.Utown.dto.deliveryDTO.DeliveryInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
-import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryInfoDto;
+import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryDto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
@@ -18,13 +18,14 @@ public class RestaurantDetailsDto {
     private BigDecimal minOrderAmount;
     private Long orderCount;
     private Long fileId;
-    private Set<RestaurantCategoryInfoDto> categories;//выбрать нужное поле
+    private String path;
+    private Set<RestaurantCategoryDto> categories;//выбрать нужное поле
     private List<OperatingModeInfoDto> operatingModes;
     private List<DeliveryInfoDto> deliveries;
 
     public RestaurantDetailsDto(String title, String description, String phone,
                                 BigDecimal minOrderAmount, Long orderCount, Long fileId,
-                                Set<RestaurantCategoryInfoDto> categories,
+                                Set<RestaurantCategoryDto> categories,
                                 List<OperatingModeInfoDto> operatingModes,
                                 List<DeliveryInfoDto> deliveries) {
         this.title = title;
@@ -38,12 +39,13 @@ public class RestaurantDetailsDto {
         this.deliveries = deliveries;
     }
     public RestaurantDetailsDto(String title, String description, String phone,
-                                BigDecimal minOrderAmount, Long orderCount, Long fileId) {
+                                BigDecimal minOrderAmount, Long orderCount, Long fileId, String path) {
         this.title = title;
         this.description = description;
         this.phone = phone;
         this.minOrderAmount = minOrderAmount;
         this.orderCount = orderCount;
         this.fileId = fileId;
+        this.path = path;
     }
 }

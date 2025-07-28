@@ -23,11 +23,11 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     Long countRestaurantsByCategory(@Param("categoryId") Long categoryId);
 
     @Query("SELECT new com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto(" +
-            "r.title, r.description, r.phone, r.minOrderAmount, COUNT(o.id), r.fileInfo.id) " +
+            "r.title, r.description, r.phone, r.minOrderAmount, COUNT(o.id), r.fileInfo.id, r.fileInfo.path) " +
             "FROM Restaurant r " +
             "LEFT JOIN Order o ON o.restaurant.id = r.id " +
             "WHERE r.id = :id " +
-            "GROUP BY r.id, r.title, r.description, r.phone, r.minOrderAmount, r.fileInfo.id")
+            "GROUP BY r.id, r.title, r.description, r.phone, r.minOrderAmount, r.fileInfo.id, r.fileInfo.path")
     Optional<RestaurantDetailsDto> findRestaurantSummaryById(@Param("id") Long id);
 
     @Query("SELECT new com.example.Utown.dto.restaurantDTO.RestaurantInfoDto(" +

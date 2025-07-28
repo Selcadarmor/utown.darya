@@ -2,6 +2,7 @@ package com.example.Utown.dto.restaurantDTO;
 
 import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.dto.deliveryDTO.DeliveryDto;
+import com.example.Utown.dto.fileInfoDTO.FileInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeUpdateDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
