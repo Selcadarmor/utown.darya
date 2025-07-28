@@ -9,6 +9,7 @@ import com.example.Utown.dto.dishDTO.DishSearchDto;
 import com.example.Utown.dto.dishToOrderDTO.DishToOrderRequestDto;
 import com.example.Utown.dto.dishToOrderDTO.DishToOrderResponseDto;
 import com.example.Utown.dto.orderDTO.OrderDto;
+import com.example.Utown.dto.ratingDTO.RatingDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryForClient;
 import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantProfileDto;
@@ -20,12 +21,11 @@ import com.example.Utown.service.DishCategoryService;
 import com.example.Utown.service.DishService;
 import com.example.Utown.service.DishToOrderService;
 import com.example.Utown.service.OrderService;
+import com.example.Utown.service.RatingService;
 import com.example.Utown.service.RestaurantCategoryService;
 import com.example.Utown.service.RestaurantService;
-import com.example.Utown.service.UserType.client.ClientService;
+import com.example.Utown.service.UserTypeService.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -61,6 +61,7 @@ public class ClientController {
     private final DishCategoryService dishCategoryService;
     private final DishService dishService;
     private final ClientService clientService;
+    private final RatingService ratingService;
     private final RestaurantCategoryService restaurantCategoryService;
     private final RestaurantService restaurantService;
     private final DishToOrderService dishToOrderService;
@@ -213,7 +214,7 @@ public class ClientController {
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
     public ResponseEntity<List<DishSearchDto>> getDishesByCategory(@PathVariable Long categoryId) {
-        List<DishSearchDto> dishes = dishService.getDishesByCategoryForClient(categoryId);
+        List<DishSearchDto> dishes = dishService.getDishesByCategory(categoryId);
         return ResponseEntity.ok(dishes);
     }
 
@@ -225,7 +226,7 @@ public class ClientController {
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
     public ResponseEntity<DishForClientDto> getDishById(@PathVariable Long dishId) {
-        DishForClientDto dish = dishService.getDishByIdForClient(dishId);
+        DishForClientDto dish = dishService.getDishByIdForOrder(dishId);
         return ResponseEntity.ok(dish);
     }
 
@@ -240,7 +241,7 @@ public class ClientController {
             }
     )
     public ResponseEntity<List<AddressDto>> getClientAddresses() {
-        List<AddressDto> addresses = addressService.getAddressesByClient();
+        List<AddressDto> addresses = clientService.getAddressesByClient();
         return ResponseEntity.ok(addresses);
     }
 
@@ -256,8 +257,26 @@ public class ClientController {
             }
     )
     public ResponseEntity<Void> addAddressForCurrentUser(@RequestBody AddressDto addressDto) {
-        addressService.saveAddressForClient(addressDto);
+        clientService.saveAddressForClient(addressDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @Operation(
+            summary = "Create a rating for a restaurant",
+            description = "Allows an authenticated client to rate a specific restaurant. " +
+                    "Client can submit multiple ratings for the same restaurant (e.g., after each order)."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Rating successfully created"),
+            @ApiResponse(responseCode = "404", description = "Restaurant not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized access")
+    })
+    @PostMapping("restaurant/{restaurantId}")
+    public ResponseEntity<Void> createRating(
+            @PathVariable Long restaurantId,
+            @RequestBody RatingDto ratingDto) {
+        ratingService.createRating(restaurantId, ratingDto);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/profile/update") // Passed
@@ -273,7 +292,7 @@ public class ClientController {
             }
     )
     public ResponseEntity<ClientProfileUpdateDto> updateClientProfile(@RequestBody ClientProfileUpdateDto dto) {
-        ClientProfileUpdateDto updatedProfile = addressService.updateClientProfile(dto);
+        ClientProfileUpdateDto updatedProfile = clientService.updateClientProfile(dto);
         return ResponseEntity.ok(updatedProfile);
     }
 
@@ -292,21 +311,17 @@ public class ClientController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/address/{id}") //Passed
+    @DeleteMapping("/addresses/delete/{id}") //Passed
     @Operation(
             summary = "Delete address for current client",
             description = "Deletes an address belonging to the authenticated client",
             responses = {
-                    @ApiResponse(responseCode = "204", description = "Address deleted successfully"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden - client is not allowed to delete this address"),
+                    @ApiResponse(responseCode = "200", description = "Address deleted successfully"),
                     @ApiResponse(responseCode = "404", description = "Address not found"),
-                    @ApiResponse(responseCode = "500", description = "Internal server error")
-            }
-    )
-    public ResponseEntity<Void> deleteAddressForClient(@PathVariable("id") Long addressId) {
-        addressService.deleteAddressForCLient(addressId);
-        return ResponseEntity.noContent().build();
+            })
+    public ResponseEntity<Void> deleteAddress(@PathVariable Long id) {
+        addressService.deleteAddress(id);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/favorites/{restaurantId}") //Passed
@@ -320,6 +335,22 @@ public class ClientController {
         clientService.removeFavoriteRestaurant(restaurantId);
         return ResponseEntity.ok().build();
     }
+
+    @Operation(
+            summary = "Delete a rating by ID",
+            description = "Allows an authenticated client to delete a specific rating by its ID."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Rating successfully deleted"),
+            @ApiResponse(responseCode = "404", description = "Rating not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized access")
+    })
+    @DeleteMapping("rating/{ratingId}")
+    public ResponseEntity<Void> deleteRating(@PathVariable Long ratingId) {
+        ratingService.deleteRating(ratingId);
+        return ResponseEntity.ok().build();  // Или .noContent().build() если хочешь 204
+    }
+
 
 
 

@@ -1,4 +1,4 @@
-package com.example.Utown.service;
+package com.example.Utown.service.TokenService;
 
 import com.example.Utown.config.Utills.JWTUtils;
 import com.example.Utown.dto.tokens.JWTRequest;
@@ -7,7 +7,7 @@ import com.example.Utown.dto.clientDTO.ClientRegistrationDto;
 import com.example.Utown.exception.UserAlreadyExistsException;
 import com.example.Utown.model.enumFiles.Roles;
 import com.example.Utown.repository.UserType.ClientRepository;
-import com.example.Utown.service.UserType.client.ClientService;
+import com.example.Utown.service.UserTypeService.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

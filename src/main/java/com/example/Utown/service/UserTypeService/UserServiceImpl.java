@@ -1,4 +1,4 @@
-package com.example.Utown.service;
+package com.example.Utown.service.UserTypeService;
 
 import com.example.Utown.exception.UserNotFoundException;
 import com.example.Utown.model.User;

@@ -32,7 +32,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,6 +44,18 @@ public class OrderServiceImpl implements OrderService {
     private final DishToOrderRepository dishToOrderRepository;
     private final CartRepository cartRepository;
     private final RestaurantAdminRepository restaurantAdminRepository;
+
+    @Override
+    public Order getById(Long id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", id));
+        return order;
+    }
+
+    @Override
+    public List<Order> getAll() {
+        return orderRepository.findAll();
+    }
 
     @Override
     public Page<OrderDetailsDto> getOrderDetailsByClient(Long clientId, String query, Pageable pageable) {
@@ -85,20 +96,6 @@ public class OrderServiceImpl implements OrderService {
         order.setClient(client);
 
         return orderRepository.save(order);
-    }
-
-    @Override
-    public OrderDto getById(Long id) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found", id));
-        return orderMapper.orderToDto(order);
-    }
-
-    @Override
-    public List<OrderDto> getAll() {
-        return orderRepository.findAll().stream()
-                .map(orderMapper::orderToDto)
-                .collect(Collectors.toList());
     }
 
     @Override

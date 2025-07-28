@@ -11,6 +11,7 @@ import lombok.Setter;
 public class ClientProfileUpdateDto {
     private String fullName;
     private AddressDto addressDto;
+    private Long fileId;
 }
 
 

@@ -11,10 +11,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class FileInfoDetailsDto {
     private  Long id;
-
     private String originalTitle;
-
-    private String path;
-
     private String type;
 }

@@ -1,24 +1,28 @@
-package com.example.Utown.service.UserType.client;
+package com.example.Utown.service.UserTypeService;
 
+import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.dto.clientDTO.ClientDetailsDto;
 import com.example.Utown.dto.clientDTO.ClientInfoDto;
+import com.example.Utown.dto.clientDTO.ClientProfileUpdateDto;
 import com.example.Utown.dto.clientDTO.ClientRegistrationDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
+import com.example.Utown.exception.DefaultAddressNotSetException;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.exception.RestaurantAlreadyFavoritedException;
 import com.example.Utown.exception.RestaurantNotFoundException;
 import com.example.Utown.exception.RestaurantNotInFavoritesException;
-import com.example.Utown.exception.UserAlreadyExistsException;
+import com.example.Utown.mapper.AddressMapper;
 import com.example.Utown.model.Address;
 import com.example.Utown.model.Cart;
+import com.example.Utown.model.FileInfo;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.Role;
 import com.example.Utown.model.UserType.Client;
 import com.example.Utown.model.enumFiles.Roles;
-import com.example.Utown.repository.CartRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.repository.UserType.ClientRepository;
 import com.example.Utown.service.AddressService;
+import com.example.Utown.service.S3Service.FileInfoService;
 import com.example.Utown.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -39,12 +43,13 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ClientServiceImpl implements ClientService {
 
-    private final AddressService addressService;
     private final ClientRepository clientRepository;
-    private final CartRepository cartRepository;
+    private final AddressService addressService;
+    private final AddressMapper addressMapper;
     private final PasswordEncoder passwordEncoder;
     private final RoleService roleService;
     private final RestaurantRepository restaurantRepository;
+    private final FileInfoService fileInfoService;
 
     // ========================= GET =========================
 
@@ -55,20 +60,20 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Page<ClientDetailsDto> getAllClients(String query, Boolean isActive, Pageable pageable) {
-        return clientRepository.findAllClientDetails(query, isActive, pageable);
-    }
-
-    @Override
     public ClientInfoDto getClientById(Long clientId) {
         return clientRepository.findClientInfoById(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found", clientId));
     }
 
-    @Transactional(readOnly = true)
-    public List<RestaurantForClientDto> getFavoriteRestaurants() {
+    @Override
+    public Page<ClientDetailsDto> getAllClients(String query, Boolean isActive, Pageable pageable) {
+        return clientRepository.findAllClientDetails(query, isActive, pageable);
+    }
+
+    @Override //For Client
+    public List<AddressDto> getAddressesByClient() {
         Client client = getCurrentClient();
-        return clientRepository.findFavoriteRestaurants(client.getUsername());
+        return clientRepository.getAddressesByClient(client.getUsername());
     }
 
     @Override
@@ -83,16 +88,10 @@ public class ClientServiceImpl implements ClientService {
                 .orElseThrow(() -> new UsernameNotFoundException("Client not found: " + username));
     }
 
-    @Override
-    public Address getAddressByDefaultAddress() {
+    @Transactional(readOnly = true)
+    public List<RestaurantForClientDto> getFavoriteRestaurants() {
         Client client = getCurrentClient();
-
-        Long defaultAddressId = client.getDefaultAddress();
-        if (defaultAddressId == null) {
-            throw new IllegalStateException("Default address is not set for client");
-        }
-
-        return addressService.getAddressById(defaultAddressId);
+        return clientRepository.findFavoriteRestaurants(client.getUsername());
     }
 
     // ========================= POST =========================
@@ -100,14 +99,9 @@ public class ClientServiceImpl implements ClientService {
     @Override // For Client
     public void save(ClientRegistrationDto dto, Roles roleName) {
 
-        if (clientRepository.findByUsername(dto.getUsername()).isPresent()) {
-            throw new UserAlreadyExistsException(dto.getUsername());
-        }
-
         Role role = roleService.findByName(roleName);
 
-        Cart cart = new Cart(); // создаём пустую корзину
-        cartRepository.save(cart);
+        Cart cart = new Cart();
 
         Client client = new Client();
         client.setUsername(dto.getUsername());
@@ -116,14 +110,33 @@ public class ClientServiceImpl implements ClientService {
         client.setActive(true);
         client.setFullName(null);
         client.setDefaultAddress(null);
-        client.setCart(cart);
         client.setFavoriteRestaurants(new HashSet<>());
         client.setAddresses(new HashSet<>());
         client.setOrders(new ArrayList<>());
         client.setNotifications(new HashSet<>());
         client.setFileInfo(null);
 
+        client.setCart(cart);
+        cart.setClient(client);
+
         clientRepository.save(client);
+    }
+
+    @Transactional //For Client
+    @Override
+    public Address saveAddressForClient(AddressDto dto) {
+        Client client = getCurrentClient();
+
+        Address address = addressService.createAddress(dto);
+
+        if (client.getAddresses() == null) {
+            client.setAddresses(new HashSet<>());
+        }
+        client.getAddresses().add(address);
+
+        clientRepository.save(client);
+
+        return address;
     }
 
     @Transactional //For client
@@ -143,6 +156,38 @@ public class ClientServiceImpl implements ClientService {
     }
 
     // ========================= PUT =========================
+
+    @Transactional
+    @Override
+    public ClientProfileUpdateDto updateClientProfile(ClientProfileUpdateDto dto) {
+        Client client = getCurrentClient();
+
+        client.setFullName(dto.getFullName());
+
+        if (dto.getFileId() != null) {
+            FileInfo fileInfo = fileInfoService.findById(dto.getFileId());
+            client.setFileInfo(fileInfo);
+        }
+
+        Long defaultAddressId = client.getDefaultAddress();
+        if (defaultAddressId == null) {
+            throw new DefaultAddressNotSetException();
+        }
+
+        boolean hasDefaultAddress = client.getAddresses().stream()
+                .anyMatch(a -> a.getId().equals(defaultAddressId));
+        if (!hasDefaultAddress) {
+            throw new ResourceNotFoundException("Default address not found for client", defaultAddressId);
+        }
+
+        Address updatedAddress = addressService.updateAddress(defaultAddressId, dto.getAddressDto());
+
+        clientRepository.save(client);
+
+        AddressDto updatedAddressDto = addressMapper.addressToDto(updatedAddress);
+        return new ClientProfileUpdateDto(client.getFullName(), updatedAddressDto, client.getFileInfo().getId());
+    }
+
 
     @Transactional(rollbackFor = RuntimeException.class)
     @Override

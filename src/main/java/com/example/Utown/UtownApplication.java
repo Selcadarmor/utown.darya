@@ -1,6 +1,6 @@
 package com.example.Utown;
 
-import com.example.Utown.config.Utills.JWTProperties;
+import com.example.Utown.config.S3.AwsProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -9,6 +9,7 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
 @SpringBootApplication
 @EnableJpaAuditing
+@EnableConfigurationProperties(AwsProperties.class)
 @EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
 public class UtownApplication {
 
