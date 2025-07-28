@@ -1,6 +1,6 @@
 package com.example.Utown.controller;
 
-import com.example.Utown.dto.fileInfoDTO.FileInfoDetailsDto;
+import com.example.Utown.dto.fileInfoDTO.FileInfoDto;
 import com.example.Utown.service.S3Service.FileInfoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -32,15 +32,15 @@ public class FileController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "File metadata retrieved",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = FileInfoDetailsDto.class))),
+                            schema = @Schema(implementation = FileInfoDto.class))),
             @ApiResponse(responseCode = "404", description = "File not found")
     })
     //получение метаданных по айди
     @GetMapping("/{id}")
-    public ResponseEntity<FileInfoDetailsDto> getFileInfo(
+    public ResponseEntity<FileInfoDto> getFileInfo(
             @Parameter(description = "File ID", required = true)
             @PathVariable Long id){
-        FileInfoDetailsDto file = fileInfoService.getFileInfo(id);
+        FileInfoDto file = fileInfoService.getFileInfo(id);
         return ResponseEntity.ok(file);
     }
 
@@ -55,7 +55,7 @@ public class FileController {
     public ResponseEntity<byte[]> downloadFile(
             @Parameter(description = "File ID", required = true)
             @PathVariable Long id) {
-        FileInfoDetailsDto file = fileInfoService.getFileInfo(id);
+        FileInfoDto file = fileInfoService.getFileInfo(id);
         byte[] data = fileInfoService.getFileBytes(id);
 
         return ResponseEntity.ok()
@@ -68,14 +68,14 @@ public class FileController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "File uploaded successfully",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = FileInfoDetailsDto.class)))
+                            schema = @Schema(implementation = FileInfoDto.class)))
     })
     //загрузка файла
     @PostMapping
-    public  ResponseEntity<FileInfoDetailsDto> uploadFile(
+    public  ResponseEntity<FileInfoDto> uploadFile(
             @Parameter(description = "File to upload", required = true)
             @RequestParam("file")MultipartFile file){
-        FileInfoDetailsDto savedFile = fileInfoService.saveFile(file);
+        FileInfoDto savedFile = fileInfoService.saveFile(file);
         return ResponseEntity.ok(savedFile);
     }
 }

@@ -14,9 +14,9 @@ public interface RestaurantCategoryService {
 
     List<RestaurantCategoryForClient> getAllCategoriesWithRestaurantCount();
 
-    RestaurantCategoryDto createCategory(RestaurantCategoryCreateDto dto); //cделать контроллер
+    RestaurantCategoryDto createCategory(RestaurantCategoryCreateDto dto);
 
-    RestaurantCategoryDto updateRestaurantCategory(Long id, RestaurantCategoryCreateDto dto); //сделать контроллер
+    RestaurantCategoryDto updateRestaurantCategory(Long id, RestaurantCategoryCreateDto dto);
 
-    void deleteRestaurantCategory(Long id); // сделать энпоинт
+    void deleteRestaurantCategory(Long id);
 }

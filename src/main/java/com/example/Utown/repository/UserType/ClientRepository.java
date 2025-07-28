@@ -35,7 +35,7 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     Optional<Client> findByUsernameWithAddresses(@Param("username") String username);
 
     @Query("SELECT new com.example.Utown.dto.clientDTO.ClientInfoDto(" +
-            "c.fullName, c.username, a.city, a.fullAddress, SIZE(c.orders), c.fileInfo.id) " +
+            "c.fullName, c.username, a.city, a.fullAddress, SIZE(c.orders), c.fileInfo.id, c.fileInfo.path) " +
             "FROM Client c " +
             "LEFT JOIN Address a ON a.id = c.defaultAddress " +
             "WHERE c.id = :id")
@@ -59,7 +59,5 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
             "LEFT JOIN r.deliveries d " +
             "WHERE c.username = :username")
     List<RestaurantForClientDto> findFavoriteRestaurants(String username);
-
-
 }
 

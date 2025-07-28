@@ -9,7 +9,6 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 
-import java.util.List;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface DishMapper {
@@ -20,16 +19,13 @@ public interface DishMapper {
 
     @Named("dishUpdateInfoDto")
     @Mapping(source = "dishCategory.id", target = "dishCategoryId")
-    @Mapping(source = "file.id", target = "fileId")
     DishInfoDto dishUpdateInfoToDto(Dish dish);
 
     @Named("toSavedDishDto")
     @Mapping(source = "dishCategory.id", target = "dishCategoryId")
-    @Mapping(source = "file.id", target = "fileId")
     DishInfoDto toSavedDishDto(Dish dish);
 
     @Mapping(source = "dishCategoryId", target = "dishCategory.id")
-    //@Mapping(source = "fileId", target = "file.id")
     @Mapping(source = "options", target = "options")
     Dish toEntity(DishInfoDto dto);
 

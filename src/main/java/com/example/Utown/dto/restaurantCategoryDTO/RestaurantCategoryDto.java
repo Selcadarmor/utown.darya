@@ -1,6 +1,5 @@
 package com.example.Utown.dto.restaurantCategoryDTO;
 
-import com.example.Utown.dto.fileInfoDTO.FileInfoDetailsDto;
 import com.example.Utown.dto.fileInfoDTO.FileInfoDto;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

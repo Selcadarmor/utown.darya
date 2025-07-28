@@ -17,7 +17,6 @@ import com.example.Utown.model.Restaurant;
 import com.example.Utown.repository.DishRepository;
 import com.example.Utown.repository.DishCategoryRepository;
 import com.example.Utown.repository.ElementRepository;
-import com.example.Utown.repository.FileInfoRepository;
 import com.example.Utown.repository.OptionRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.service.S3Service.FileInfoService;
@@ -29,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -39,7 +37,6 @@ public class DishServiceImpl implements DishService {
     private final DishRepository dishRepository;
     private final RestaurantRepository restaurantRepository;
     private final DishCategoryRepository dishCategoryRepository;
-    private final FileInfoRepository fileInfoRepository;
     private final DishMapper dishMapper;
     private final OptionRepository optionRepository;
     private final OptionService optionService;
@@ -50,15 +47,13 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public Dish getDishById(Long id) {
-        return dishRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Dish", id));
+        return getOrElseThrow(id);
     }
 
     @Override
     @Transactional(readOnly = true)
     public DishForClientDto getDishByIdForOrder(Long dishId) {
-        Dish dish = dishRepository.findById(dishId)
-                .orElseThrow(() -> new ResourceNotFoundException("Dish", dishId));
+        Dish dish = getOrElseThrow(dishId);
 
         Set<Option> activeOptions = optionRepository.findByDishIdAndIsActiveTrue(dishId);
 
@@ -125,13 +120,12 @@ public class DishServiceImpl implements DishService {
 
         FileInfo file = null;
         if (dto.getFileId() != null) {
-            Optional<FileInfo> fileOpt = fileInfoRepository.findById(dto.getFileId());
-            fileOpt.ifPresent(restaurant::setFileInfo);
+            file = fileInfoService.getFileInfoById(dto.getFileId());
         }
 
         Dish dish = Dish.builder()
                 .description(dto.getDescription())
-                .isActive(dto.getIsActive()) //isDeleted
+                .isActive(dto.getIsActive())
                 .price(dto.getPrice())
                 .title(dto.getTitle())
                 .sort(dto.getSort())
@@ -156,8 +150,7 @@ public class DishServiceImpl implements DishService {
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
     public DishInfoDto updateDishForRestaurant(Long restaurantId, Long dishId, DishCreateDto dto) {
-        Dish dish = dishRepository.findById(dishId)
-                .orElseThrow(() -> new ResourceNotFoundException("Dish", dishId));
+        Dish dish = getOrElseThrow(dishId);
 
         if (!dish.getRestaurant().getId().equals(restaurantId)) {
             throw new ResourceNotFoundException("Dish", dishId);
@@ -188,8 +181,6 @@ public class DishServiceImpl implements DishService {
         if (dto.getFileId() != null) {
             FileInfo file = fileInfoService.getFileInfoById(dto.getFileId());
             dish.setFile(file);
-        } else {
-            dish.setFile(null); // или оставить текущий файл
         }
 
         Set<Option> updatedOptions = optionService.updateOptionsForDish(dish, dto.getOptions());
@@ -202,13 +193,18 @@ public class DishServiceImpl implements DishService {
         return dishMapper.dishUpdateInfoToDto(savedDish);
     }
 
+    private Dish getOrElseThrow(Long dishId) {
+        return dishRepository.findById(dishId)
+                .orElseThrow(() -> new ResourceNotFoundException("Dish", dishId));
+    }
+
 
     // ===== DELETE =====
 
-//    @Override
-//    public void deleteDish(Long id) {
-//        Dish dish = dishRepository.findById(id)
-//                .orElseThrow(() -> new ResourceNotFoundException("Dish not found", id));
-//        dishRepository.delete(dish);
-//   }  // поменять на isDeleted = TRUE
+    @Override
+    public void deleteDish(Long id) {
+        Dish dish = getOrElseThrow(id);
+        dish.setIsDeleted(true);
+        dishRepository.save(dish);
+    }
 }

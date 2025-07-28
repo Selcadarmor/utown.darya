@@ -18,6 +18,7 @@ public class RestaurantDetailsDto {
     private BigDecimal minOrderAmount;
     private Long orderCount;
     private Long fileId;
+    private String path;
     private Set<RestaurantCategoryDto> categories;//выбрать нужное поле
     private List<OperatingModeInfoDto> operatingModes;
     private List<DeliveryInfoDto> deliveries;
@@ -38,12 +39,13 @@ public class RestaurantDetailsDto {
         this.deliveries = deliveries;
     }
     public RestaurantDetailsDto(String title, String description, String phone,
-                                BigDecimal minOrderAmount, Long orderCount, Long fileId) {
+                                BigDecimal minOrderAmount, Long orderCount, Long fileId, String path) {
         this.title = title;
         this.description = description;
         this.phone = phone;
         this.minOrderAmount = minOrderAmount;
         this.orderCount = orderCount;
         this.fileId = fileId;
+        this.path = path;
     }
 }

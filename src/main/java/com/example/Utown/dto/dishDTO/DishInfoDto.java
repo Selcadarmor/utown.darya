@@ -1,5 +1,6 @@
 package com.example.Utown.dto.dishDTO;
 
+import com.example.Utown.dto.fileInfoDTO.FileInfoDto;
 import com.example.Utown.dto.optionDTO.OptionInfoDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,5 +21,5 @@ public class DishInfoDto {
     private String title;
     private Long dishCategoryId;
     private Set<OptionInfoDto> options;
-    private Long fileId;
+    private FileInfoDto file;
 }

@@ -1,6 +1,5 @@
 package com.example.Utown.mapper;
 
-import com.example.Utown.dto.fileInfoDTO.FileInfoDetailsDto;
 import com.example.Utown.dto.fileInfoDTO.FileInfoDto;
 import com.example.Utown.model.FileInfo;
 import org.mapstruct.Mapper;
@@ -16,6 +15,6 @@ public interface FileInfoMapper {
     FileInfo updateFromDto(FileInfoDto fileInfoDto, @MappingTarget FileInfo fileInfo);
     FileInfoDto toDto(FileInfo entity);
 
-    FileInfoDetailsDto toDtoFile(FileInfo entity);
+    FileInfoDto toDtoFile(FileInfo entity);
 }
 
