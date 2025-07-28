@@ -1,6 +1,5 @@
 package com.example.Utown.service.S3Service;
 
-import com.example.Utown.dto.fileInfoDTO.FileInfoDetailsDto;
 import com.example.Utown.dto.fileInfoDTO.FileInfoDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.FileInfoMapper;
@@ -19,10 +18,10 @@ public class FileInfoServiceImpl implements FileInfoService {
 
     private final FileInfoRepository fileInfoRepository;
     private final FileInfoMapper fileInfoMapper;
-    private S3Service s3Service;
+    protected S3Service s3Service;
 
     @Override
-    public FileInfoDetailsDto saveFile(MultipartFile file) {
+    public FileInfoDto saveFile(MultipartFile file) {
         String key = UUID.randomUUID() + "_" + file.getOriginalFilename();
         s3Service.uploadFile(file, key);
 
@@ -43,7 +42,7 @@ public class FileInfoServiceImpl implements FileInfoService {
     }
 
     @Override
-    public  FileInfoDetailsDto getFileInfo(Long id) {
+    public FileInfoDto getFileInfo(Long id) {
         FileInfo fileInfo = findById(id);
         return fileInfoMapper.toDtoFile(fileInfo);
     }

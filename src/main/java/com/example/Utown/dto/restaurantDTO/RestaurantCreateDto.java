@@ -2,10 +2,10 @@ package com.example.Utown.dto.restaurantDTO;
 
 import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.dto.deliveryDTO.DeliveryDto;
+import com.example.Utown.dto.fileInfoDTO.FileInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeCreateDto;
 import com.example.Utown.dto.restaurantAdminDTO.RestaurantAdminCreateDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryDto;
-import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryInfoDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,6 +26,5 @@ public class RestaurantCreateDto {
     private AddressDto address;
     private RestaurantAdminCreateDto restaurantAdmin;
     private List<DeliveryDto> deliveries;
-    private Set<RestaurantCategoryDto> categories;
-
+    private Set<Long> categoryIds;
 }

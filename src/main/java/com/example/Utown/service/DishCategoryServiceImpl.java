@@ -22,7 +22,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class DishCategoryServiceImpl implements DishCategoryService {
@@ -32,14 +31,14 @@ public class DishCategoryServiceImpl implements DishCategoryService {
     private final FileInfoRepository fileInfoRepository;
     private final FileInfoService fileInfoService;
     private final RestaurantRepository restaurantRepository;
+    private final RestaurantService restaurantService;
 
     // ===== GET =====
 
     @Override
     @Transactional
     public DishCategory getDishCategoryById(Long id) {
-        DishCategory dishCategory = dishCategoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("DishCategory", id));
+        DishCategory dishCategory = getDishCategory(id);
         return dishCategory;
     }
 
@@ -64,20 +63,19 @@ public class DishCategoryServiceImpl implements DishCategoryService {
     // ===== POST =====
 
     @Override
-    @Transactional //void????
+    @Transactional
     public DishCategoryCreateResponseDto createDishCategoryForRestaurant(Long restaurantId, DishCategoryCreateDto dto) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
+        Restaurant restaurant = restaurantService.findRestaurantById(restaurantId);
 
         FileInfo file = null;
         if (dto.getFileId() != null) {
-            Optional<FileInfo> fileOpt = fileInfoRepository.findById(dto.getFileId());
-            fileOpt.ifPresent(restaurant::setFileInfo);
+            file = fileInfoService.getFileInfoById(dto.getFileId());
         }
 
         DishCategory dishCategory = DishCategory.builder()
                 .name(dto.getName())
                 .sort(dto.getSort())
+                .isActive(true)
                 .restaurant(restaurant)
                 .file(file)
                 .build();
@@ -87,10 +85,9 @@ public class DishCategoryServiceImpl implements DishCategoryService {
 
     // ===== PUT =====
 
-    @Override //void??
+    @Override
     public DishCategoryDto updateDishCategory(Long id, DishCategoryDto dto) {
-        DishCategory entity = dishCategoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("DishCategory", id));
+        DishCategory entity = getDishCategory(id);
 
         entity.setName(dto.getName());
         entity.setSort(dto.getSort());
@@ -105,10 +102,14 @@ public class DishCategoryServiceImpl implements DishCategoryService {
     @Override
     @Transactional
     public void deleteDishCategory(Long id) {
-        DishCategory entity = dishCategoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("DishCategory", id));
+        DishCategory entity = getDishCategory(id);
         dishCategoryRepository.delete(entity);
     } //поменять на isActive = False
+
+    private DishCategory getDishCategory(Long id) {
+        return dishCategoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("DishCategory", id));
+    }
 
     // ===== PRIVATE =====
 

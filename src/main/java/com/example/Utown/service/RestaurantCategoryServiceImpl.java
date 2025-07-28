@@ -1,45 +1,37 @@
 package com.example.Utown.service;
 
+import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryCreateDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryForClient;
-import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryInfoDto;
-import com.example.Utown.exception.InvalidArgumentException;
 import com.example.Utown.exception.ResourceNotFoundException;
-import com.example.Utown.mapper.RestaurantCategoryInfoMapper;
 import com.example.Utown.mapper.RestaurantCategoryMapper;
 import com.example.Utown.model.RestaurantCategory;
 import com.example.Utown.repository.RestaurantCategoryRepository;
 import com.example.Utown.repository.RestaurantRepository;
+import com.example.Utown.service.S3Service.FileInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import com.example.Utown.model.FileInfo;
-import com.example.Utown.repository.FileInfoRepository;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class RestaurantCategoryServiceImpl implements RestaurantCategoryService {
 
     private final RestaurantCategoryRepository restaurantCategoryRepository;
     private final RestaurantCategoryMapper restaurantCategoryMapper;
-    private final FileInfoRepository fileInfoRepository;
     private final RestaurantRepository restaurantRepository;
-    private final RestaurantCategoryInfoMapper restaurantCategoryInfoMapper;
+    private final FileInfoService fileInfoService;
 
     // ===== GET =====
 
     @Override
     @Transactional(readOnly = true)
     public RestaurantCategory getRestaurantCategoryById(Long id) {
-        return restaurantCategoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory", id));
+        return getRestaurantCategory(id);
     }
 
     @Override
@@ -70,113 +62,55 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
                 .collect(Collectors.toList());
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Set<RestaurantCategory> findCategoriesByIds(Set<RestaurantCategoryDto> dtos) {
-        Set<Long> ids = dtos.stream()
-                .map(RestaurantCategoryDto::getId)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
-
-        if (ids.isEmpty()) {
-            return Collections.emptySet();
-        }
-        return new HashSet<>(restaurantCategoryRepository.findAllById(ids));
-    }
 
     // ===== POST =====
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public Set<RestaurantCategory> createRestaurantCategories(Set<RestaurantCategoryDto> dtos) {
-        if (dtos == null || dtos.isEmpty()) {
-            return Collections.emptySet();
+    public RestaurantCategoryDto createCategory(RestaurantCategoryCreateDto dto) {
+        RestaurantCategory category = restaurantCategoryMapper.toEntity(dto);
+
+        if (dto.getFileId() != null) {
+            FileInfo fileInfo = fileInfoService.getFileInfoById(dto.getFileId());
+            category.setFile(fileInfo);
         }
 
-        Set<RestaurantCategory> categories = new HashSet<>();
-
-        for (RestaurantCategoryDto dto : dtos) {
-            if (dto.getId() != null) {
-                throw new InvalidArgumentException("restaurantCategory.id", dto.getId());
-            }
-            RestaurantCategory entity = restaurantCategoryMapper.restaurantCategoryDtoToEntity(dto);
-
-            if (dto.getFile() != null) {
-                Long fileId = dto.getFile().getId();
-                FileInfo file = fileInfoRepository.findById(fileId)
-                        .orElseThrow(() -> new ResourceNotFoundException("File", fileId));
-                entity.setFile(file);
-            }
-
-            categories.add(entity);
-        }
-
-        return new HashSet<>(restaurantCategoryRepository.saveAll(categories));
-    }
-
-    @Transactional
-    public Set<RestaurantCategory> resolveCategories(Set<RestaurantCategoryDto> categoryDtos) {
-        Set<RestaurantCategory> result = new HashSet<>();
-        Set<RestaurantCategory> toCreate = new HashSet<>();
-
-        for (RestaurantCategoryDto dto : categoryDtos) {
-            if (dto.getId() != null) {
-                RestaurantCategory existing = restaurantCategoryRepository.findById(dto.getId())
-                        .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory", dto.getId()));
-                result.add(existing);
-            } else {
-
-                RestaurantCategory newCategory = restaurantCategoryMapper.restaurantCategoryDtoToEntity(dto);
-                toCreate.add(newCategory);
-            }
-        }
-
-        if (!toCreate.isEmpty()) {
-            result.addAll(restaurantCategoryRepository.saveAll(toCreate));
-        }
-
-        return result;
+        RestaurantCategory saved = restaurantCategoryRepository.save(category);
+        return restaurantCategoryMapper.toDto(saved);
     }
 
 
     // ===== PUT =====
-
-    @Override
+    @Override//обнавление для категорий ресторана
     @Transactional(rollbackFor = RuntimeException.class)
-    public RestaurantCategory updateRestaurantCategory(Long id, RestaurantCategoryDto dto) {
-        RestaurantCategory category = restaurantCategoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory not found", id));
+    public RestaurantCategoryDto updateRestaurantCategory(Long id, RestaurantCategoryCreateDto dto) {
+        RestaurantCategory category = getRestaurantCategory(id);
+        restaurantCategoryMapper.updateFromDto(dto, category);
 
-        category.setName(dto.getName());
-        category.setSort(dto.getSort());
-        category.setIsActive(dto.getIsActive());
-
-        if (dto.getFile() != null) {
-            Long fileId = dto.getFile().getId();
-            FileInfo file = fileInfoRepository.findById(fileId)
-                    .orElseThrow(() -> new ResourceNotFoundException("File not found", fileId));
-            category.setFile(file);
+        if (dto.getFileId() != null) {
+            FileInfo fileInfo = fileInfoService.getFileInfoById(dto.getFileId());
+            category.setFile(fileInfo);
+        } else {
+            category.setFile(null);
         }
 
-        return restaurantCategoryRepository.save(category);
+        RestaurantCategory updated = restaurantCategoryRepository.save(category);
+        return restaurantCategoryMapper.toDto(updated);
     }
-
-    @Override
-    @Transactional(rollbackFor = RuntimeException.class)
-    public RestaurantCategory updateRestaurantCategoryForRestaurant(Long id, RestaurantCategoryInfoDto dto) {
-        RestaurantCategory restaurantCategory = restaurantCategoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory not found", id));
-        restaurantCategory.setName(dto.getName());
-        return restaurantCategoryRepository.save(restaurantCategory);
-    } //Добавить поля и сделать отдельный эндпоинт
 
     // ===== DELETE =====
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public void deleteRestaurantCategory(Long id) {
-        RestaurantCategory category = restaurantCategoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory not found", id));
-        restaurantCategoryRepository.delete(category);
+        RestaurantCategory category = getRestaurantCategory(id);
+        category.setIsActive(false);
+        restaurantCategoryRepository.save(category);
+    }
+
+    // ===== PRIVATE =====
+    private RestaurantCategory getRestaurantCategory(Long id) {
+        return restaurantCategoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory", id));
     }
 }

@@ -42,7 +42,7 @@ public class User implements UserDetails {
     private Long id;
 
     @Column(name = "is_active")
-    private boolean isActive;
+    private Boolean isActive;
 
     @Column(name = "password", length = 255, nullable = false)
     @NotBlank
