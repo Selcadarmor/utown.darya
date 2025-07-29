@@ -297,7 +297,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
         restaurant.setIsActive(false);
 
         if (restaurant.getRestaurantAdmin() != null) {
-            restaurant.getRestaurantAdmin().setActive(false);
+            restaurant.getRestaurantAdmin().setIsActive(false);
         }
 
         if (restaurant.getDeliveries() != null) {
