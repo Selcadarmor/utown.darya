@@ -107,7 +107,7 @@ public class ClientServiceImpl implements ClientService {
         client.setUsername(dto.getUsername());
         client.setPassword(passwordEncoder.encode(dto.getPassword()));
         client.setRoles(Set.of(role));
-        client.setActive(true);
+        client.setIsActive(true);
         client.setFullName(null);
         client.setDefaultAddress(null);
         client.setFavoriteRestaurants(new HashSet<>());
@@ -194,7 +194,7 @@ public class ClientServiceImpl implements ClientService {
     public void updateClientActiveStatus(Long id, Boolean active) {
         Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Client", id));
-        client.setActive(active);
+        client.setIsActive(active);
         clientRepository.save(client);
     }
 
