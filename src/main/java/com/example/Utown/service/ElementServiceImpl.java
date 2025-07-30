@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +35,16 @@ public class ElementServiceImpl implements ElementService {
     }
 
     @Override
+    public List<Element> getElementsByIds(List<Long> ids) {
+        List<Element> elements = elementRepository.findAllById(ids);
+
+        if (elements.size() != ids.size()) {
+            throw new ResourceNotFoundException("Element", ids);
+        }
+        return elements;
+    }
+
+    @Override
     public Element create(ElementDto dto) {
 
         Element element = elementMapper.toEntity(dto);
@@ -53,6 +64,19 @@ public class ElementServiceImpl implements ElementService {
                 .option(option)
                 .build()
         ).collect(Collectors.toSet());
+    }
+
+    @Override
+    public BigDecimal calculateElementsPrice(List<Long> elementIds) {
+        List<Element> elements = elementRepository.findAllById(elementIds);
+
+        if (elements.size() != elementIds.size()) {
+            throw new ResourceNotFoundException("Element", elementIds);
+        }
+
+        return elements.stream()
+                .map(Element::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     @Override

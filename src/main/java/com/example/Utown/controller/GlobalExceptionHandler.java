@@ -1,22 +1,17 @@
 package com.example.Utown.controller;
 
 import com.example.Utown.dto.ApiErrorResponse;
-import com.example.Utown.exception.AddressNotFoundException;
 import com.example.Utown.exception.CartIsEmptyException;
 import com.example.Utown.exception.CartNotFoundException;
 import com.example.Utown.exception.DefaultAddressNotSetException;
-import com.example.Utown.exception.DishNotFoundException;
 import com.example.Utown.exception.DishNotInCartException;
 import com.example.Utown.exception.ExpireJwtTokenException;
 import com.example.Utown.exception.InvalidArgumentException;
 import com.example.Utown.exception.InvalidJwtTokenException;
-import com.example.Utown.exception.NotificationNotFoundException;
-import com.example.Utown.exception.OrderNotFoundException;
 import com.example.Utown.exception.RatingOutOfRangeException;
 import com.example.Utown.exception.RefreshTokenNotFoundException;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.exception.RestaurantAlreadyFavoritedException;
-import com.example.Utown.exception.RestaurantNotFoundException;
 import com.example.Utown.exception.RestaurantNotInFavoritesException;
 import com.example.Utown.exception.RoleNotFoundException;
 import com.example.Utown.exception.S3UploadException;
@@ -39,11 +34,6 @@ import java.util.Map;
 public class GlobalExceptionHandler {
     @ExceptionHandler({
             UserNotFoundException.class,
-            AddressNotFoundException.class,
-            DishNotFoundException.class,
-            NotificationNotFoundException.class,
-            OrderNotFoundException.class,
-            RestaurantNotFoundException.class,
             RoleNotFoundException.class,
             ResourceNotFoundException.class,
     })

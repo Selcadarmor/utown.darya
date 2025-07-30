@@ -17,6 +17,4 @@ public class CartDto {
     private Integer totalDish;
     private BigDecimal totalSum;
     private List<DishToOrder> dishToOrders;
-
-
 }
