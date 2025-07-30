@@ -2,7 +2,7 @@ package com.example.Utown.service.TokenService;
 
 import com.example.Utown.dto.tokens.JWTResponse;
 import com.example.Utown.dto.tokens.RefreshToken;
-import com.example.Utown.model.User;
+import com.example.Utown.model.UserType.User;
 
 import java.util.Optional;
 

@@ -2,7 +2,6 @@ package com.example.Utown.service;
 import com.example.Utown.dto.dishDTO.DishCreateDto;
 
 import com.example.Utown.dto.dishDTO.DishDetailsDto;
-import com.example.Utown.dto.dishDTO.DishDto;
 import com.example.Utown.dto.dishDTO.DishInfoDto;
 import com.example.Utown.dto.dishDTO.DishForClientDto;
 import com.example.Utown.dto.dishDTO.DishSearchDto;
