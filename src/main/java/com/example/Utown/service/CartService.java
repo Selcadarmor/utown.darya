@@ -7,10 +7,12 @@ import com.example.Utown.model.DishToOrder;
 
 public interface CartService {
     Cart getCartById(Long id);
+    CartDto getCart();
     Cart createCart();
-    Cart updateCart(Long id, CartDto dto);
+    CartDto updateCart( Long dishToOrderId, DishToOrderRequestDto dto);
     DishToOrder addDishToCart(Long dishId,DishToOrderRequestDto dto);
-    void clearCart(Long cartId);
+    CartDto removeDishFromCart(Long dishToOrderId);
+    CartDto clearCart(Long cartId);
 
 }
 

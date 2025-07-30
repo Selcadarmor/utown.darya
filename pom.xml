@@ -161,12 +161,6 @@
 			<artifactId>s3</artifactId>
 		</dependency>
 
-		<!-- WEB SOCKET io -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-websocket</artifactId>
-		</dependency>
-
 		<!-- AWS SDK Auth -->
 		<dependency>
 			<groupId>software.amazon.awssdk</groupId>

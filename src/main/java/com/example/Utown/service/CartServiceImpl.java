@@ -1,6 +1,7 @@
 package com.example.Utown.service;
 
 import com.example.Utown.dto.cartDTO.CartDto;
+import com.example.Utown.dto.dishToOrderDTO.DishInCartDto;
 import com.example.Utown.dto.dishToOrderDTO.DishToOrderRequestDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.model.Cart;
@@ -39,7 +40,19 @@ public class CartServiceImpl implements CartService {
         return cart;
     }
 
+    @Override
+    public CartDto getCart() {
+        Client client = getCurrentClient();
+        Cart cart = client.getCart();
 
+        List<DishInCartDto> dishes = dishToOrderService.getDishesInCart(cart.getId());
+
+        return new CartDto(
+                dishes,
+                cart.getDeliveryPrice(),
+                cart.getTotalSum()
+        );
+    }
 
     // ========================= POST =========================
 
@@ -60,21 +73,6 @@ public class CartServiceImpl implements CartService {
     // ========================= PUT =========================
 
     @Override
-    public Cart updateCart(Long id, CartDto dto) {
-        Cart existingCart = cartRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Cart not found with id " + id));
-
-        // Обновляем поля (примерно, можно заменить на маппинг из DTO)
-        existingCart.setDeliveryPrice(dto.getDeliveryPrice());
-        existingCart.setSumOrder(dto.getSumOrder());
-        existingCart.setTotalDish(dto.getTotalDish());
-        existingCart.setTotalSum(dto.getTotalSum());
-        existingCart.setDishToOrders(dto.getDishToOrders());
-
-        return cartRepository.save(existingCart);
-    }
-
-    @Override
     @Transactional
     public DishToOrder addDishToCart(Long dishId,DishToOrderRequestDto dto) {
         Client client = getCurrentClient();
@@ -86,22 +84,43 @@ public class CartServiceImpl implements CartService {
 
         return dishToOrder;
     }
-    // ========================= DELETE =========================
-
-    private final DishToOrderRepository dishToOrderRepository;
 
     @Override
-    public void clearCart(Long cartId) {
-        Cart cart = getCartById(cartId);
+    public CartDto updateCart( Long dishToOrderId, DishToOrderRequestDto dto) {
+        Client client = getCurrentClient();
+        Cart cart = getCartById(client.getCart().getId());
 
-        List<DishToOrder> items = cart.getDishToOrders();
-
-        dishToOrderRepository.deleteAll(items);
-        items.clear(); // очищаем список в памяти
-
-        recalculateCart(cart); // чтобы обнулить totalDish и totalSum
+        dishToOrderService.update(dishToOrderId, dto);
+        recalculateCart(cart);
+        return getCart();
     }
 
+    // ========================= DELETE =========================
+
+    @Override
+    @Transactional
+    public CartDto removeDishFromCart(Long dishToOrderId) {
+        dishToOrderService.delete(dishToOrderId);
+
+        Client client = getCurrentClient();
+        Cart cart = getCartById(client.getCart().getId());
+
+        recalculateCart(cart);
+        return getCart();
+    }
+
+    @Override
+    @Transactional
+    public CartDto clearCart(Long cartId) {
+        Cart cart = getCartById(cartId);
+
+        List<DishToOrder> dishes = cart.getDishToOrders();
+        dishToOrderService.deleteAll(dishes);
+
+        recalculateCart(cart);
+
+        return getCart();
+    }
 
     // ========================= PRIVATE =========================
 
