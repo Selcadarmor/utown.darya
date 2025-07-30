@@ -1,22 +1,17 @@
 
 package com.example.Utown.dto.cartDTO;
 
-import com.example.Utown.model.DishToOrder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.example.Utown.dto.dishToOrderDTO.DishInCartDto;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-@Data
-@NoArgsConstructor
+@Getter
+@AllArgsConstructor
 public class CartDto {
-    private Long id;
+    private List<DishInCartDto> dishes;
     private BigDecimal deliveryPrice;
-    private BigDecimal sumOrder;
-    private Integer totalDish;
     private BigDecimal totalSum;
-    private List<DishToOrder> dishToOrders;
-
-
 }

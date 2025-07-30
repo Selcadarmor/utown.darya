@@ -1,6 +1,6 @@
 package com.example.Utown.config;
 
-import com.example.Utown.model.User;
+import com.example.Utown.model.UserType.User;
 import com.example.Utown.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

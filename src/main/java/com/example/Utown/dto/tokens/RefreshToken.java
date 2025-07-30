@@ -1,6 +1,6 @@
 package com.example.Utown.dto.tokens;
 
-import com.example.Utown.model.User;
+import com.example.Utown.model.UserType.User;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -9,7 +9,6 @@ import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
 import com.example.Utown.exception.DefaultAddressNotSetException;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.exception.RestaurantAlreadyFavoritedException;
-import com.example.Utown.exception.RestaurantNotFoundException;
 import com.example.Utown.exception.RestaurantNotInFavoritesException;
 import com.example.Utown.mapper.AddressMapper;
 import com.example.Utown.model.Address;
@@ -22,6 +21,7 @@ import com.example.Utown.model.enumFiles.Roles;
 import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.repository.UserType.ClientRepository;
 import com.example.Utown.service.AddressService;
+import com.example.Utown.service.CartService;
 import com.example.Utown.service.S3Service.FileInfoService;
 import com.example.Utown.service.RoleService;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +46,7 @@ public class ClientServiceImpl implements ClientService {
     private final ClientRepository clientRepository;
     private final AddressService addressService;
     private final AddressMapper addressMapper;
+    private final CartService cartService;
     private final PasswordEncoder passwordEncoder;
     private final RoleService roleService;
     private final RestaurantRepository restaurantRepository;
@@ -97,11 +98,12 @@ public class ClientServiceImpl implements ClientService {
     // ========================= POST =========================
 
     @Override // For Client
+    @Transactional
     public void save(ClientRegistrationDto dto, Roles roleName) {
 
         Role role = roleService.findByName(roleName);
 
-        Cart cart = new Cart();
+        Cart cart = cartService.createCart();
 
         Client client = new Client();
         client.setUsername(dto.getUsername());
@@ -145,7 +147,7 @@ public class ClientServiceImpl implements ClientService {
         Client client = getCurrentClient();
 
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
 
         if (client.getFavoriteRestaurants().contains(restaurant)) {
             throw new RestaurantAlreadyFavoritedException(restaurant.getTitle());
@@ -205,7 +207,7 @@ public class ClientServiceImpl implements ClientService {
     public void removeFavoriteRestaurant(Long restaurantId) {
         Client client = getCurrentClient();
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
 
         if (!client.getFavoriteRestaurants().contains(restaurant)) {
             throw new RestaurantNotInFavoritesException(restaurant.getTitle());

@@ -1,5 +1,6 @@
 package com.example.Utown.model;
 
+import com.example.Utown.model.UserType.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
