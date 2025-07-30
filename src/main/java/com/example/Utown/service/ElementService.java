@@ -14,6 +14,6 @@ public interface ElementService {
     Set<Element> createElementsForOption(Option option, Set<ElementInfoDto> elementDtos);
     Element update(Long id, ElementDto dto);
     Set<Element> updateElementsForOption(Option option, Set<ElementInfoDto> elementDtos);
-    void delete(Long id);
+    void deleteElement(Long id);
 }
 
