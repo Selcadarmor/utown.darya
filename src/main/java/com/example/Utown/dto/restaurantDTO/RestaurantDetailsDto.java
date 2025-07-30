@@ -22,6 +22,7 @@ public class RestaurantDetailsDto {
     private Set<RestaurantCategoryDto> categories;//выбрать нужное поле
     private List<OperatingModeInfoDto> operatingModes;
     private List<DeliveryInfoDto> deliveries;
+    private String fileUrl;
 
     public RestaurantDetailsDto(String title, String description, String phone,
                                 BigDecimal minOrderAmount, Long orderCount, Long fileId,

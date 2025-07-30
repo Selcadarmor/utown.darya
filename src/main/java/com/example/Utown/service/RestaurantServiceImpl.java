@@ -1,5 +1,6 @@
 package com.example.Utown.service;
 
+import com.example.Utown.config.S3.AwsProperties;
 import com.example.Utown.dto.deliveryDTO.DeliveryDto;
 import com.example.Utown.dto.deliveryDTO.DeliveryInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeCreateDto;
@@ -14,6 +15,7 @@ import com.example.Utown.dto.restaurantDTO.RestaurantProfileDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateResponseDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantsCreateResponseDto;
+import com.example.Utown.exception.InvalidArgumentException;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.RestaurantCategoryInfoMapper;
 import com.example.Utown.mapper.RestaurantInfoMapper;
@@ -26,6 +28,7 @@ import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.RestaurantCategory;
 import com.example.Utown.model.UserType.Client;
 import com.example.Utown.model.UserType.RestaurantAdmin;
+import com.example.Utown.model.enumFiles.RestaurantStatus;
 import com.example.Utown.repository.DeliveryRepository;
 import com.example.Utown.repository.DishRepository;
 import com.example.Utown.repository.FileInfoRepository;
@@ -68,6 +71,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
     private final FileInfoRepository fileInfoRepository;
     private final DeliveryRepository deliveryRepository;
     private final FileInfoService fileInfoService;
+    private final AwsProperties awsProperties;
 
     // ===== GET =====
 
@@ -83,6 +87,11 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
         RestaurantDetailsDto restaurant = restaurantRepository.findRestaurantSummaryById(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
+
+        if (restaurant.getPath() != null && !restaurant.getPath().isEmpty()) {
+            String url = awsProperties.getPublicBaseUrl() + "/" + restaurant.getPath();
+            restaurant.setFileUrl(url);
+        }
 
         Set<RestaurantCategoryDto> categoryDtos = restaurantCategoryInfoMapper
                 .toDtoSet(new HashSet<>(restaurantEntity.getCategories()));
@@ -280,6 +289,47 @@ public class RestaurantServiceImpl  implements RestaurantService {
         Restaurant saved = restaurantRepository.save(restaurant);
         return restaurantInfoMapper.toUpdateDto(saved);
     }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
+    public void updateStatusForRestaurantAdmin(RestaurantStatus newStatus, Long restaurantAdminId) {
+        Restaurant restaurant = restaurantRepository.findByRestaurantAdminId(restaurantAdminId)
+                .orElseThrow(() -> new ResourceNotFoundException("RestaurantAdmin", restaurantAdminId));
+
+        validationStatusChange(restaurant.getStatus(), newStatus);
+
+        restaurant.setStatus(newStatus);
+        restaurantRepository.save(restaurant);
+    }
+
+    private void validationStatusChange(RestaurantStatus currentStatus, RestaurantStatus newStatus) {
+        if (currentStatus == newStatus) {
+            throw new InvalidArgumentException("Restaurant", newStatus.toString());
+        }
+
+        switch (currentStatus) {
+            case NOT_ACTIVE:
+                if (newStatus != RestaurantStatus.CLOSE) {
+                    throw new InvalidArgumentException("Restaurant", newStatus.toString());
+                }
+                break;
+
+            case CLOSE:
+                if (newStatus != RestaurantStatus.OPEN && newStatus != RestaurantStatus.NOT_ACTIVE) {
+                    throw new InvalidArgumentException("Restaurant", newStatus.toString());
+                }
+                break;
+            case OPEN:
+                if (newStatus != RestaurantStatus.CLOSE) {
+                    throw new InvalidArgumentException("Restaurant", newStatus.toString());
+                }
+                break;
+            default:
+                throw new InvalidArgumentException("Restaurant", currentStatus.toString());
+        }
+    }
+
+
 
     // ===== DELETE / DEACTIVATE =====
 

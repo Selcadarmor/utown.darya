@@ -2,6 +2,7 @@ package com.example.Utown.service.UserTypeService;
 
 import com.example.Utown.dto.restaurantAdminDTO.RestaurantAdminCreateDto;
 import com.example.Utown.exception.RoleNotFoundException;
+import com.example.Utown.exception.UserNotFoundException;
 import com.example.Utown.mapper.RestaurantAdminInfoMapper;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.Role;
@@ -10,6 +11,7 @@ import com.example.Utown.model.enumFiles.Roles;
 import com.example.Utown.repository.RoleRepository;
 import com.example.Utown.repository.UserType.RestaurantAdminRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,5 +54,11 @@ public class RestaurantAdminServiceImpl  implements RestaurantAdminService {
         admin.getRoles().add(role);
 
         return restaurantAdminRepository.save(admin);
+    }
+
+    public RestaurantAdmin getCurrentAdmin() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return restaurantAdminRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + username));
     }
 }

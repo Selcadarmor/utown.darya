@@ -11,7 +11,6 @@ public interface FileInfoService {
     void delete(Long id);
     FileInfo getFileInfoById(Long id);
     FileInfoDto saveFile(MultipartFile file);
-    byte[] getFileBytes(Long id);
     FileInfoDto getFileInfo(Long id);
 }
 

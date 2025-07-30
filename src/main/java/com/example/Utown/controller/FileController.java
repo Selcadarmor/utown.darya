@@ -50,26 +50,6 @@ public class FileController {
                     content = @Content(mediaType = "application/octet-stream")),
             @ApiResponse(responseCode = "404", description = "File not found")
     })
-    //скачивание по ID возвращение сырых байтов
-    @GetMapping("/{id}/download")
-    public ResponseEntity<byte[]> downloadFile(
-            @Parameter(description = "File ID", required = true)
-            @PathVariable Long id) {
-        FileInfoDto file = fileInfoService.getFileInfo(id);
-        byte[] data = fileInfoService.getFileBytes(id);
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" +file.getOriginalTitle() + "\"")
-                .contentType(MediaType.parseMediaType(file.getType()))
-                .body(data);
-    }
-
-    @Operation(summary = "Upload a file", description = "Uploads a file to S3 and stores metadata in the database.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "File uploaded successfully",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = FileInfoDto.class)))
-    })
     //загрузка файла
     @PostMapping
     public  ResponseEntity<FileInfoDto> uploadFile(

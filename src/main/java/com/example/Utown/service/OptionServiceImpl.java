@@ -122,8 +122,8 @@ public class OptionServiceImpl implements OptionService {
     }
 
     @Override
-    public void delete(Long id) {
-        Option option =getById(id);
+    public void deleteOption(Long id) {
+        Option option = getById(id);
         option.setIsActive(false);
 
         if(option.getElements() != null) {
@@ -133,7 +133,5 @@ public class OptionServiceImpl implements OptionService {
         }
         optionRepository.save(option);
     }
-
-
 }
 

@@ -17,6 +17,6 @@ public interface ElementService {
     BigDecimal calculateElementsPrice(List<Long> elementIds);
     Element update(Long id, ElementDto dto);
     Set<Element> updateElementsForOption(Option option, Set<ElementInfoDto> elementDtos);
-    void delete(Long id);
+    void deleteElement(Long id);
 }
 
