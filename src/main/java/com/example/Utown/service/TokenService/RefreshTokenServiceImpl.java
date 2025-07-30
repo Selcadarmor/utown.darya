@@ -7,7 +7,7 @@ import com.example.Utown.dto.tokens.RefreshToken;
 import com.example.Utown.exception.ExpireJwtTokenException;
 import com.example.Utown.exception.RefreshTokenNotFoundException;
 import com.example.Utown.exception.UserNotFoundException;
-import com.example.Utown.model.User;
+import com.example.Utown.model.UserType.User;
 import com.example.Utown.repository.RefreshTokenRepository;
 import com.example.Utown.repository.UserRepository;
 import jakarta.transaction.Transactional;

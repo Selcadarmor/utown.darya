@@ -1,6 +1,6 @@
 package com.example.Utown.service.UserTypeService;
 
-import com.example.Utown.model.User;
+import com.example.Utown.model.UserType.User;
 
 import java.util.Optional;
 
