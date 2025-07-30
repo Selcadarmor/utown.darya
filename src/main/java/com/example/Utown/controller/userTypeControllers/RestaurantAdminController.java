@@ -2,11 +2,11 @@ package com.example.Utown.controller.userTypeControllers;
 
 import com.example.Utown.dto.orderDTO.OrderDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantStatusUpdateRequest;
-import com.example.Utown.model.User;
 import com.example.Utown.model.UserType.RestaurantAdmin;
 import com.example.Utown.service.DishService;
 import com.example.Utown.service.ElementService;
 import com.example.Utown.service.OptionService;
+import com.example.Utown.model.UserType.User;
 import com.example.Utown.service.OrderService;
 import com.example.Utown.service.RestaurantService;
 import com.example.Utown.service.UserTypeService.RestaurantAdminService;

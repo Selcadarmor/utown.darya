@@ -3,7 +3,7 @@ package com.example.Utown.service.UserTypeService;
 import com.example.Utown.dto.AdminDTO.AdminRegistrationDto;
 import com.example.Utown.exception.UserNotFoundException;
 import com.example.Utown.model.Role;
-import com.example.Utown.model.User;
+import com.example.Utown.model.UserType.User;
 import com.example.Utown.model.enumFiles.Roles;
 import com.example.Utown.repository.UserRepository;
 import com.example.Utown.service.RoleService;
@@ -12,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;

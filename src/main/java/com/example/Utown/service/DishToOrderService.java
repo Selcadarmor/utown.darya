@@ -1,5 +1,6 @@
 package com.example.Utown.service;
 
+import com.example.Utown.dto.dishToOrderDTO.DishInCartDto;
 import com.example.Utown.dto.dishToOrderDTO.DishToOrderRequestDto;
 import com.example.Utown.dto.dishToOrderDTO.DishToOrderResponseDto;
 import com.example.Utown.model.DishToOrder;
@@ -8,14 +9,11 @@ import java.util.List;
 
 public interface DishToOrderService {
     DishToOrder getById(Long id);
+    List<DishInCartDto> getDishesInCart(Long cartId);
     List<DishToOrder> getAll();
-    DishToOrder create(Long cartId, DishToOrderRequestDto dto);
-    DishToOrderResponseDto update(Long id, DishToOrderRequestDto dto);
+    DishToOrder create(Long cartId, Long dishId, DishToOrderRequestDto dto);
+    void update(Long dishToOrderId, DishToOrderRequestDto dto);
     void delete(Long id);
-
-    //Переместить в CartService -->
-    void addToCart(Long cartId, DishToOrderRequestDto dto);
-    List<DishToOrderResponseDto> getAllByCartId(Long cartId);
-    void clearCart(Long cartId);
+    void deleteAll(List<DishToOrder> dishes);
 }
 

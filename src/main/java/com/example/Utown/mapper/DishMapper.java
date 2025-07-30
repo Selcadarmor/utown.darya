@@ -1,6 +1,5 @@
 package com.example.Utown.mapper;
 
-import com.example.Utown.dto.dishDTO.DishDto;
 import com.example.Utown.dto.dishDTO.DishForClientDto;
 import com.example.Utown.dto.dishDTO.DishInfoDto;
 import com.example.Utown.model.Dish;
@@ -12,10 +11,6 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface DishMapper {
-
-    @Mapping(source = "dishCategory.id", target = "dishCategoryId")
-    @Mapping(source = "file.id", target = "fileId")
-    DishDto dishToDto(Dish dish);
 
     @Named("dishUpdateInfoDto")
     @Mapping(source = "dishCategory.id", target = "dishCategoryId")
@@ -34,11 +29,6 @@ public interface DishMapper {
     @Mapping(target = "filePath", source = "file.path")
     @Mapping(target = "restaurantId", source = "restaurant.id")
     DishForClientDto dishToClientDto(Dish dish);
-
-    @Mapping(target = "dishCategoryId", source = "dishCategory.id")
-    @Mapping(target = "filePath", source = "file.path")
-    @Mapping(target = "restaurantId", source = "restaurant.id")
-    DishForClientDto dishToSearchDto(Dish dish);
 
 }
 
