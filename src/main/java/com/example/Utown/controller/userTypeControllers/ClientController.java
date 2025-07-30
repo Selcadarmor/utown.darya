@@ -2,6 +2,7 @@ package com.example.Utown.controller.userTypeControllers;
 
 
 import com.example.Utown.dto.addressDTO.AddressDto;
+import com.example.Utown.dto.cartDTO.CartDto;
 import com.example.Utown.dto.clientDTO.ClientProfileUpdateDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryRestaurantProfileDto;
 import com.example.Utown.dto.dishDTO.DishForClientDto;
@@ -248,6 +249,16 @@ public class ClientController {
         return ResponseEntity.ok(addresses);
     }
 
+    @GetMapping
+    @Operation(summary = "Get current client's cart details",
+            description = "Returns the cart with dishes, delivery price, and total sum")
+    @ApiResponse(responseCode = "200", description = "Cart returned successfully")
+    @ApiResponse(responseCode = "401", description = "Unauthorized")
+    public ResponseEntity<CartDto> getCart() {
+        CartDto cartDto = cartService.getCart();
+        return ResponseEntity.ok(cartDto);
+    }
+
     @PostMapping("/address/create") //Passed
     @Operation(
             summary = "Add address for current user",
@@ -320,6 +331,19 @@ public class ClientController {
         return ResponseEntity.ok(updatedProfile);
     }
 
+    @PutMapping("/dish-to-order/{dishToOrderId}")
+    @Operation(
+            summary = "Update dish position in the cart",
+            description = "Updates the selected dish in the cart and returns the updated cart"
+    )
+    @ApiResponse(responseCode = "200", description = "Cart updated successfully")
+    public ResponseEntity<CartDto> updateDishInCart(
+            @PathVariable Long dishToOrderId,
+            @RequestBody DishToOrderRequestDto dto) {
+        CartDto updatedCart = cartService.updateCart(dishToOrderId, dto);
+        return ResponseEntity.ok(updatedCart);
+    }
+
     @PutMapping("/favorites/{restaurantId}") //Passed
     @Operation(
             summary = "Add restaurant to favorites",
@@ -346,6 +370,32 @@ public class ClientController {
     public ResponseEntity<Void> deleteAddress(@PathVariable Long id) {
         addressService.deleteAddress(id);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/dish-to-order/{dishToOrderId}")
+    @Operation(
+            summary = "Remove dish from cart",
+            description = "Deletes the specified dish from the cart and returns the updated cart"
+    )
+    @ApiResponse(responseCode = "200", description = "Dish removed and cart updated successfully")
+    public ResponseEntity<CartDto> removeDishFromCart(@PathVariable Long dishToOrderId) {
+        CartDto updatedCart = cartService.removeDishFromCart(dishToOrderId);
+        return ResponseEntity.ok(updatedCart);
+    }
+
+    @Operation(
+            summary = "Clear the cart",
+            description = "Removes all dishes from the current user's cart and recalculates the cart totals."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Cart successfully cleared"
+    )
+    @DeleteMapping("/client/cart/clear")
+    public ResponseEntity<CartDto> clearCart() {
+        Client client = clientService.getCurrentClient();
+        CartDto cartDto = cartService.clearCart(client.getCart().getId());
+        return ResponseEntity.ok(cartDto);
     }
 
     @DeleteMapping("/favorites/{restaurantId}") //Passed
@@ -380,22 +430,7 @@ public class ClientController {
 
 
 
-    @GetMapping("/cart")
-    @Operation(summary = "Get all dishes in cart", description = "Returns all dish items in current client's cart")
-    public ResponseEntity<List<DishToOrderResponseDto>> getCartItems(@AuthenticationPrincipal User user) {
-        Long cartId = clientService.getCurrentClient().getCart().getId();
-        List<DishToOrderResponseDto> items = dishToOrderService.getAllByCartId(cartId);
-        return ResponseEntity.ok(items);
-    }
 
-    @PutMapping("/cart/update/{id}")
-    @Operation(summary = "Update dish in cart", description = "Updates count and elements for a dish in cart")
-    public ResponseEntity<DishToOrderResponseDto> updateCartItem(
-            @PathVariable Long id,
-            @RequestBody DishToOrderRequestDto dto
-    ) {
-        return ResponseEntity.ok(dishToOrderService.update(id, dto));
-    }
 
     @DeleteMapping("/cart/delete/{id}")
     @Operation(summary = "Delete dish from cart", description = "Removes a dish from cart")

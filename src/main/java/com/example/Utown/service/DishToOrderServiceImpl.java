@@ -1,5 +1,6 @@
 package com.example.Utown.service;
 
+import com.example.Utown.dto.dishToOrderDTO.DishInCartDto;
 import com.example.Utown.dto.dishToOrderDTO.DishToOrderRequestDto;
 import com.example.Utown.dto.dishToOrderDTO.DishToOrderResponseDto;
 import com.example.Utown.exception.ResourceNotFoundException;
@@ -26,12 +27,9 @@ import java.util.List;
 public class DishToOrderServiceImpl implements DishToOrderService {
 
     private final DishToOrderRepository dishToOrderRepository;
-    private final DishRepository dishRepository;
     private final DishService dishService;
-    private final DishToOrderMapper mapper;
     private final CartRepository cartRepository;
     private final ElementService elementService;
-    private final ElementRepository elementRepository;
 
     // ========================= GET =========================
 
@@ -40,6 +38,11 @@ public class DishToOrderServiceImpl implements DishToOrderService {
         DishToOrder dishToOrder = dishToOrderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("DishToOrder", id));
         return dishToOrder;
+    }
+
+    @Override
+    public List<DishInCartDto> getDishesInCart(Long cartId) {
+        return dishToOrderRepository.findDishesInCartByCartId(cartId);
     }
 
     @Override
@@ -76,80 +79,40 @@ public class DishToOrderServiceImpl implements DishToOrderService {
     // ========================= PUT =========================
 
     @Override
-    public DishToOrderResponseDto update(Long id, DishToOrderRequestDto dto) {
-        DishToOrder entity = dishToOrderRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("DishToOrder not found", id));
+    @Transactional
+    public void update(Long dishToOrderId, DishToOrderRequestDto dto) {
+        DishToOrder dishToOrder = getById(dishToOrderId);
 
-        Dish dish = dishService.getDishById(entity.getDish().getId());
+        Dish dish = dishToOrder.getDish();
 
-        List<Element> selectedElements = elementRepository.findAllById(dto.getSelectedElementIds());
+        BigDecimal elementsPriceSum = elementService.calculateElementsPrice(dto.getSelectedElementIds());
+        BigDecimal totalOneItemPrice = dish.getPrice().add(elementsPriceSum);
+        BigDecimal totalSum = totalOneItemPrice.multiply(BigDecimal.valueOf(dto.getCount()));
 
-        entity.setDish(dish);
-        entity.setCount(dto.getCount());
-        entity.setSelectedElements(selectedElements);
-        entity.setSum(dish.getPrice().multiply(BigDecimal.valueOf(dto.getCount())));
+        List<Element> selectedElements = elementService.getElementsByIds(dto.getSelectedElementIds());
 
-        DishToOrder updated = dishToOrderRepository.save(entity);
+        dishToOrder.setCount(dto.getCount());
+        dishToOrder.setSelectedElements(selectedElements);
+        dishToOrder.setSum(totalSum);
 
-        // ✅ Пересчёт корзины
-        Cart cart = entity.getCart();
-        recalculateCart(cart);
-
-        return mapper.toResponseDto(updated);
+        dishToOrderRepository.save(dishToOrder);
     }
+
 
     // ========================= DELETE =========================
 
     @Override
-    public void delete(Long id) {
-        DishToOrder entity = dishToOrderRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("DishToOrder not found", id));
-
-        Cart cart = entity.getCart(); // получаем корзину ДО удаления
-
-        dishToOrderRepository.delete(entity);
-
-        recalculateCart(cart); // пересчёт корзины после удаления
+    @Transactional
+    public void delete(Long dishToOrderId) {
+        DishToOrder dishToOrder = getById(dishToOrderId);
+        dishToOrderRepository.delete(dishToOrder);
     }
 
     @Override
-    public List<DishToOrderResponseDto> getAllByCartId(Long cartId) {
-        Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new ResourceNotFoundException("Cart not found", cartId));
-
-        return cart.getDishToOrders().stream()
-                .map(mapper::toResponseDto)
-                .toList();
+    @Transactional
+    public void deleteAll(List<DishToOrder> dishes) {
+        dishToOrderRepository.deleteAll(dishes);
     }
 
-    private boolean elementsEqual(List<Element> a, List<Element> b) {
-        if (a.size() != b.size()) return false;
-
-        List<Long> aIds = a.stream().map(Element::getId).sorted().toList();
-        List<Long> bIds = b.stream().map(Element::getId).sorted().toList();
-
-        return aIds.equals(bIds);
-    }
-
-    private void recalculateCart(Cart cart) {
-        List<DishToOrder> items = cart.getDishToOrders();
-
-        BigDecimal sumOrder = items.stream()
-                .map(DishToOrder::getSum)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        int totalDish = items.stream()
-                .mapToInt(DishToOrder::getCount)
-                .sum();
-
-        BigDecimal deliveryPrice = cart.getDeliveryPrice() != null ? cart.getDeliveryPrice() : BigDecimal.ZERO;
-        BigDecimal totalSum = sumOrder.add(deliveryPrice);
-
-        cart.setSumOrder(sumOrder);
-        cart.setTotalDish(totalDish);
-        cart.setTotalSum(totalSum);
-
-        cartRepository.save(cart);
-    }
 
 }
