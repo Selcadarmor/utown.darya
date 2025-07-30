@@ -1,5 +1,6 @@
 package com.example.Utown.service.S3Service;
 
+import com.example.Utown.config.S3.AwsProperties;
 import com.example.Utown.dto.fileInfoDTO.FileInfoDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.FileInfoMapper;
@@ -19,6 +20,7 @@ public class FileInfoServiceImpl implements FileInfoService {
     private final FileInfoRepository fileInfoRepository;
     private final FileInfoMapper fileInfoMapper;
     protected S3Service s3Service;
+    private final AwsProperties awsProperties;
 
     @Override
     public FileInfoDto saveFile(MultipartFile file) {
@@ -31,20 +33,14 @@ public class FileInfoServiceImpl implements FileInfoService {
                 .type(file.getContentType())
                 .build();
         FileInfo saved = fileInfoRepository.save(fileInfo);
-        return fileInfoMapper.toDtoFile(saved);
+        return fileInfoMapper.toDtoFile(saved, awsProperties);
 
-    }
-
-    @Override
-    public byte[] getFileBytes(Long id) {
-        FileInfo fileInfo = findById(id);
-        return s3Service.downloadFile(fileInfo.getPath());
     }
 
     @Override
     public FileInfoDto getFileInfo(Long id) {
         FileInfo fileInfo = findById(id);
-        return fileInfoMapper.toDtoFile(fileInfo);
+        return fileInfoMapper.toDtoFile(fileInfo, awsProperties);
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantInfoDto;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.RestaurantCategory;
+import com.example.Utown.model.UserType.RestaurantAdmin;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -139,5 +140,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
             @Param("area") String area,
             Pageable pageable
     );
+
+    Optional<Restaurant> findByRestaurantAdminId(Long restaurantAdminId);
 
 }

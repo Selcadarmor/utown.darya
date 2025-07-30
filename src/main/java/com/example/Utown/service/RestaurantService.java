@@ -9,6 +9,7 @@ import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateResponseDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantsCreateResponseDto;
 import com.example.Utown.model.Restaurant;
+import com.example.Utown.model.enumFiles.RestaurantStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -29,5 +30,6 @@ public interface RestaurantService {
     RestaurantProfileDto getRestaurantProfile(Long restaurantId);
     void deactivateRestaurant(Long restaurantId);
     Restaurant findRestaurantById(Long restaurantId);
+    void updateStatusForRestaurantAdmin(RestaurantStatus newStatus, Long restaurantAdminId);
 
 }
