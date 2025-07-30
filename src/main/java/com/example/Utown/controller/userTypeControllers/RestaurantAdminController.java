@@ -1,7 +1,7 @@
 package com.example.Utown.controller.userTypeControllers;
 
 import com.example.Utown.dto.orderDTO.OrderDto;
-import com.example.Utown.model.User;
+import com.example.Utown.model.UserType.User;
 import com.example.Utown.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;

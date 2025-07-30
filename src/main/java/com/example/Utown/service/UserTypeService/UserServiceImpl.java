@@ -1,7 +1,7 @@
 package com.example.Utown.service.UserTypeService;
 
 import com.example.Utown.exception.UserNotFoundException;
-import com.example.Utown.model.User;
+import com.example.Utown.model.UserType.User;
 import com.example.Utown.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

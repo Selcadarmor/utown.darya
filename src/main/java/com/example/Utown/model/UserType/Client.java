@@ -5,7 +5,6 @@ import com.example.Utown.model.Cart;
 import com.example.Utown.model.FileInfo;
 import com.example.Utown.model.Order;
 import com.example.Utown.model.Restaurant;
-import com.example.Utown.model.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
@@ -59,7 +58,7 @@ public class Client extends User {
     @JoinColumn(name = "client_id")
     private List<Order> orders;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "cart_id")
     private Cart cart;
 

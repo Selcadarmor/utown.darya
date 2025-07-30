@@ -1,16 +1,16 @@
 package com.example.Utown.service;
 
 import com.example.Utown.dto.cartDTO.CartDto;
+import com.example.Utown.dto.dishToOrderDTO.DishToOrderRequestDto;
 import com.example.Utown.model.Cart;
-
-import java.util.List;
+import com.example.Utown.model.DishToOrder;
 
 public interface CartService {
     Cart getCartById(Long id);
-    List<Cart> getAllCarts();
-    Cart createCart(CartDto dto);
+    Cart createCart();
     Cart updateCart(Long id, CartDto dto);
-    void deleteCart(Long id);
+    DishToOrder addDishToCart(Long dishId,DishToOrderRequestDto dto);
+    void clearCart(Long cartId);
 
 }
 
