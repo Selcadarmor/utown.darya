@@ -1,5 +1,6 @@
 package com.example.Utown.service.UserTypeService;
 
+import com.example.Utown.config.S3.AwsProperties;
 import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.dto.clientDTO.ClientDetailsDto;
 import com.example.Utown.dto.clientDTO.ClientInfoDto;
@@ -50,6 +51,7 @@ public class ClientServiceImpl implements ClientService {
     private final RoleService roleService;
     private final RestaurantRepository restaurantRepository;
     private final FileInfoService fileInfoService;
+    private final AwsProperties awsProperties;
 
     // ========================= GET =========================
 
@@ -61,8 +63,14 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public ClientInfoDto getClientById(Long clientId) {
-        return clientRepository.findClientInfoById(clientId)
-                .orElseThrow(() -> new ResourceNotFoundException("Client not found", clientId));
+        ClientInfoDto dto = clientRepository.findClientInfoById(clientId)
+                .orElseThrow(() -> new ResourceNotFoundException("Client", clientId));
+
+        if (dto.getPath() != null && !dto.getPath().isEmpty()) {
+            String url = awsProperties.getPublicBaseUrl() + "/" + dto.getPath();
+            dto.setFileUrl(url);
+        }
+        return dto;
     }
 
     @Override

@@ -1,13 +1,16 @@
 package com.example.Utown.service.TokenService;
 
 import com.example.Utown.config.Utills.JWTUtils;
+import com.example.Utown.dto.AdminDTO.AdminRegistrationDto;
 import com.example.Utown.dto.tokens.JWTRequest;
 import com.example.Utown.dto.tokens.JWTResponse;
 import com.example.Utown.dto.clientDTO.ClientRegistrationDto;
 import com.example.Utown.exception.UserAlreadyExistsException;
 import com.example.Utown.model.enumFiles.Roles;
+import com.example.Utown.repository.UserRepository;
 import com.example.Utown.repository.UserType.ClientRepository;
 import com.example.Utown.service.UserTypeService.ClientService;
+import com.example.Utown.service.UserTypeService.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,6 +27,8 @@ public class AuthServiceImpl implements AuthService {
     private final RefreshTokenService refreshTokenService;
     private final ClientRepository clientRepository;
     private final ClientService clientService;
+    private final UserService userService;
+    private final UserRepository userRepository;
   
 
     @Override
@@ -51,6 +56,13 @@ public class AuthServiceImpl implements AuthService {
             throw new UserAlreadyExistsException(dto.getUsername());
         }
         clientService.save(dto, Roles.ROLE_CLIENT);
+    }
+    @Override
+    public void adminRegistration(AdminRegistrationDto dto) {
+        if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
+            throw new UserAlreadyExistsException(dto.getUsername());
+        }
+        userService.createAdmin(dto, Roles.ROLE_ADMIN);
     }
 }
 

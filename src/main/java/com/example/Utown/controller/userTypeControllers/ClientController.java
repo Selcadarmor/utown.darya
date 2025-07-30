@@ -338,7 +338,7 @@ public class ClientController {
 
     @Operation(
             summary = "Delete a rating by ID",
-            description = "Allows an authenticated client to delete a specific rating by its ID."
+            description = "Allows an authenticated client to deleteOption a specific rating by its ID."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Rating successfully deleted"),
