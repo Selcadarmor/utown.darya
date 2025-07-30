@@ -118,7 +118,7 @@ public class ElementServiceImpl implements ElementService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteElement(Long id) {
         Element element = getById(id);
          element.setIsDeleted(true);
          elementRepository.save(element);

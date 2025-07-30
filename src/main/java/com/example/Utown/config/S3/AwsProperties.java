@@ -8,6 +8,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class AwsProperties {
     private String region;
     private String s3Bucket;
+    private String endpoint;
+    private String publicBaseUrl;
     private Credentials credentials;
 
     @Data

@@ -6,4 +6,5 @@ import com.example.Utown.model.UserType.RestaurantAdmin;
 
 public interface RestaurantAdminService {
     RestaurantAdmin createAdmin(RestaurantAdminCreateDto dto, Restaurant restaurant);
+    RestaurantAdmin getCurrentAdmin();
 }
