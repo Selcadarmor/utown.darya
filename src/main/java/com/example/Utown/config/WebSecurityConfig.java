@@ -30,11 +30,15 @@ public class WebSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/client/registration_client").permitAll() // 👈 разрешаем регистрацию
                         .requestMatchers("/client/**").hasAuthority(Roles.ROLE_CLIENT.name()) // 👈 разрешаем остальное клиентам
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers("/api/admin/**").hasAuthority(Roles.ROLE_ADMIN.name())
+                        .requestMatchers("/admin/**").hasAuthority(Roles.ROLE_ADMIN.name())
                         .requestMatchers("/client/**").hasAuthority(Roles.ROLE_CLIENT.name())
                         .requestMatchers("/restaurant/**").hasAuthority(Roles.ROLE_RESTAURANT_ADMIN.name())
                         .requestMatchers("/restaurant-admin/**").hasAuthority(Roles.ROLE_RESTAURANT_ADMIN.name())

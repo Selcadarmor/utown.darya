@@ -18,4 +18,6 @@ public class FileInfoDto {
 
     private String type;
 
+    private String url;
+
 }

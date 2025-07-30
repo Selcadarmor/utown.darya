@@ -34,16 +34,5 @@ public class S3Service {
             throw  new S3UploadException("Failed to upload file to S3 storage.", e);
         }
     }
-
-    public byte[] downloadFile(String key) {
-        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                .bucket(awsProperties.getS3Bucket())
-                .key(key)
-                .build();
-        try (ResponseInputStream<GetObjectResponse> response = s3Client.getObject(getObjectRequest)) {
-            return  response.readAllBytes();
-        } catch (IOException e) {
-            throw  new S3UploadException("Failed to download file from S3 storage.", e);
-        }
-    }
 }
+
