@@ -1,5 +1,6 @@
 package com.example.Utown.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -68,7 +69,7 @@ public class DishToOrder {
     )
     private List<Element> selectedElements;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "order_id_in_dish")
     private Order order;
 }

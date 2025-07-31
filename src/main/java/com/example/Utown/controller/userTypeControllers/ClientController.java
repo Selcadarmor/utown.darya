@@ -8,13 +8,11 @@ import com.example.Utown.dto.dishCategoryDTO.DishCategoryRestaurantProfileDto;
 import com.example.Utown.dto.dishDTO.DishForClientDto;
 import com.example.Utown.dto.dishDTO.DishSearchDto;
 import com.example.Utown.dto.dishToOrderDTO.DishToOrderRequestDto;
-import com.example.Utown.dto.orderDTO.OrderDto;
 import com.example.Utown.dto.ratingDTO.RatingDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryForClient;
 import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantProfileDto;
 import com.example.Utown.mapper.OrderMapper;
-import com.example.Utown.model.Order;
 import com.example.Utown.model.UserType.Client;
 import com.example.Utown.service.AddressService;
 import com.example.Utown.service.CartService;
@@ -294,6 +292,20 @@ public class ClientController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/order")
+    @Operation(
+            summary = "Create order from current client's cart",
+            description = "Creates an order from the client's current cart, moving all DishToOrder entries into the order without deletion."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Order created successfully"),
+            @ApiResponse(responseCode = "400", description = "Cart is empty or invalid"),
+            @ApiResponse(responseCode = "401", description = "User not authenticated"),
+    })
+    public void createOrderFromCart() {
+        orderService.createOrderFromCart();
+    }
+
     @PostMapping("restaurant/{restaurantId}")
     @Operation(
             summary = "Create a rating for a restaurant",
@@ -431,18 +443,6 @@ public class ClientController {
 
 
 
-
-
-    @PostMapping("/order/confirm")
-    @Operation(summary = "Confirm order", description = "Creates an order from the current cart and clears the cart")
-    public ResponseEntity<OrderDto> confirmOrder(
-            @AuthenticationPrincipal User user
-    ) {
-        Client client = clientService.getCurrentClient();
-        Order order = orderService.createOrderFromCart(client);
-        OrderDto dto = orderMapper.orderToDto(order);
-        return ResponseEntity.ok(dto);
-    }
 
     @PatchMapping("/orders/{orderId}/cancel")
     @Operation(summary = "Отмена заказа клиентом", description = "Позволяет клиенту отменить свой заказ, если он еще не завершен")

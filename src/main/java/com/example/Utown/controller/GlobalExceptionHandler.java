@@ -2,8 +2,8 @@ package com.example.Utown.controller;
 
 import com.example.Utown.dto.ApiErrorResponse;
 import com.example.Utown.exception.CartIsEmptyException;
-import com.example.Utown.exception.CartNotFoundException;
 import com.example.Utown.exception.DefaultAddressNotSetException;
+import com.example.Utown.exception.DifferentRestaurantException;
 import com.example.Utown.exception.DishNotInCartException;
 import com.example.Utown.exception.ExpireJwtTokenException;
 import com.example.Utown.exception.InvalidArgumentException;
@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -112,15 +111,6 @@ public class GlobalExceptionHandler {
         return buildError(HttpStatus.BAD_REQUEST, message, request.getRequestURI());
     }
 
-    @ExceptionHandler(CartNotFoundException.class)
-    public ResponseEntity<?> handleCartNotFound(CartNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
-                "message", ex.getMessage(),
-                "status", 400,
-                "error", "Bad Request"
-        ));
-    }
-
     @ExceptionHandler(DefaultAddressNotSetException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @Operation(hidden = true)
@@ -136,9 +126,16 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(RestaurantNotInFavoritesException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @Operation(hidden = true)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiErrorResponse handleRestaurantNotInFavorites(RestaurantNotInFavoritesException ex, HttpServletRequest request) {
+        return buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(DifferentRestaurantException.class)
+    @Operation(hidden = true)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiErrorResponse handleDifferentRestaurantException(DifferentRestaurantException ex, HttpServletRequest request) {
         return buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
     }
 
