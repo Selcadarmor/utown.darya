@@ -1,6 +1,7 @@
 package com.example.Utown.model;
 
 import com.example.Utown.model.UserType.Client;
+import com.example.Utown.model.enumFiles.DeliveryStatus;
 import com.example.Utown.model.enumFiles.OrderStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -26,6 +27,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -52,13 +54,11 @@ public class Order {
     @Column(name = "client_phone")
     private String clientPhone;
 
-    private String date;
+    @Column(name = "date")
+    private LocalDate date;
 
     @Column(name = "delivery_price")
     private BigDecimal deliveryPrice;
-
-    @Column(name = "delivery_time")
-    private String deliveryTime;
 
     private String details;
 
@@ -98,8 +98,6 @@ public class Order {
 
     private String street;
 
-    private String time;
-
     @Column(name = "time_of_accepted")
     private LocalTime timeOfAccepted;
 
@@ -119,7 +117,7 @@ public class Order {
     private Integer cookingTime;
 
     @Column(name = "delivery_status")
-    private String deliveryStatus;
+    private DeliveryStatus deliveryStatus;
 
     @Column(name = "end_time_of_cooking")
     private String endTimeOfCooking;

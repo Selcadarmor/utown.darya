@@ -5,6 +5,7 @@ import com.example.Utown.dto.dishToOrderDTO.DishInCartDto;
 import com.example.Utown.dto.dishToOrderDTO.DishToOrderRequestDto;
 import com.example.Utown.exception.DefaultAddressNotSetException;
 import com.example.Utown.exception.DeliveryNotAvailableException;
+import com.example.Utown.exception.DifferentRestaurantException;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.model.Address;
 import com.example.Utown.model.Cart;
@@ -35,6 +36,7 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final ClientRepository clientRepository;
     private final DishToOrderService dishToOrderService;
+    private final DishService dishService;
     private final AddressService addressService;
 
     // ========================= GET =========================
@@ -78,16 +80,20 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public DishToOrder addDishToCart(Long dishId,DishToOrderRequestDto dto) {
+    public DishToOrder addDishToCart(Long dishId, DishToOrderRequestDto dto) {
         Client client = getCurrentClient();
         Cart cart = getCartById(client.getCart().getId());
-        DishToOrder dishToOrder = dishToOrderService.create(cart.getId(),dishId, dto);
+        Dish dish = dishService.getDishById(dishId);
 
+        validateDishBelongsToSameRestaurant(cart, dish);
+
+        DishToOrder dishToOrder = dishToOrderService.createByCart(cart.getId(), dishId, dto);
         cart.getDishToOrders().add(dishToOrder);
         recalculateCart(cart);
 
         return dishToOrder;
     }
+
 
     // ========================= PUT =========================
 
@@ -116,6 +122,15 @@ public class CartServiceImpl implements CartService {
 
         recalculateCart(cart);
         return getCart();
+    }
+
+    @Override
+    public void clearCartWithoutDeletion(Cart cart) {
+        cart.setTotalDish(0);
+        cart.setTotalSum(BigDecimal.ZERO);
+        cart.setSumOrder(BigDecimal.ZERO);
+
+        cartRepository.save(cart);
     }
 
 
@@ -181,7 +196,7 @@ public class CartServiceImpl implements CartService {
             return BigDecimal.ZERO;
         }
 
-        Dish anyDish = dishToOrders.get(0).getDish(); //Cart can has dishes from the same restaurant
+        Dish anyDish = dishToOrders.get(0).getDish(); //Cart can have dishes from the same restaurant
         Restaurant restaurant = anyDish.getRestaurant();
         Address restaurantAddress = restaurant.getAddress();
 
@@ -206,6 +221,19 @@ public class CartServiceImpl implements CartService {
 
         return prices.get(0);
 
+    }
+
+    private void validateDishBelongsToSameRestaurant(Cart cart, Dish newDish) {
+        List<DishToOrder> existingDishToOrders = cart.getDishToOrders();
+
+        if (!existingDishToOrders.isEmpty()) {
+            Restaurant existingRestaurant = existingDishToOrders.get(0).getDish().getRestaurant();
+            Restaurant newDishRestaurant = newDish.getRestaurant();
+
+            if (!existingRestaurant.getId().equals(newDishRestaurant.getId())) {
+                throw new DifferentRestaurantException();
+            }
+        }
     }
 
 

@@ -11,10 +11,16 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
+
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.createdAt >= :start AND o.createdAt < :end")
+    long countByDate(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+
     List<Order> findByRestaurant(Restaurant restaurant);
 
     List<Order> findByRestaurantAndStatus(Restaurant restaurant, OrderStatus status);

@@ -2,22 +2,22 @@ package com.example.Utown.service;
 
 import com.example.Utown.dto.orderDTO.OrderDetailsDto;
 import com.example.Utown.dto.orderDTO.OrderDto;
+import com.example.Utown.exception.CartIsEmptyException;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.OrderMapper;
+import com.example.Utown.model.Address;
 import com.example.Utown.model.Cart;
-import com.example.Utown.model.Dish;
 import com.example.Utown.model.DishToOrder;
 import com.example.Utown.model.Order;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.UserType.Client;
 import com.example.Utown.model.UserType.RestaurantAdmin;
+import com.example.Utown.model.enumFiles.DeliveryStatus;
 import com.example.Utown.model.enumFiles.OrderStatus;
-import com.example.Utown.repository.CartRepository;
 import com.example.Utown.repository.DishToOrderRepository;
 import com.example.Utown.repository.OrderRepository;
-import com.example.Utown.repository.RestaurantRepository;
-import com.example.Utown.repository.UserType.ClientRepository;
 import com.example.Utown.repository.UserType.RestaurantAdminRepository;
+import com.example.Utown.service.UserTypeService.ClientService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,22 +28,25 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
-    private final RestaurantRepository restaurantRepository;
-    private final ClientRepository clientRepository;
-    private final OrderMapper orderMapper;
+    private final ClientService clientService;
+    private final CartService cartService;
     private final DishToOrderRepository dishToOrderRepository;
-    private final CartRepository cartRepository;
+    private final OrderMapper orderMapper;
     private final RestaurantAdminRepository restaurantAdminRepository;
+    private final AddressService addressService;
+
+    // ========================= GET =========================
 
     @Override
     public Order getById(Long id) {
@@ -84,38 +87,69 @@ public class OrderServiceImpl implements OrderService {
         return  new PageImpl<>(dtos, pageable, orders.getTotalElements());
     }
 
-    @Override
-    public Order create(OrderDto dto) {
-        Restaurant restaurant = restaurantRepository.findById(dto.getRestaurant().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found", dto.getRestaurant().getId()));
-        Client client = clientRepository.findById(dto.getClient().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Client not found", dto.getClient().getId()));
-
-        Order order = orderMapper.orderDtoToEntity(dto);
-        order.setRestaurant(restaurant);
-        order.setClient(client);
-
-        return orderRepository.save(order);
-    }
+    // ========================= POST =========================
 
     @Override
-    public Order update(Long id, OrderDto dto) {
-        orderRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found", id));
+    @Transactional
+    public Order createOrderFromCart() {
+        Client client = clientService.getCurrentClient();
+        Cart cart = cartService.getCartById(client.getCart().getId());
+        Address clientAddress = addressService.getAddressById(client.getDefaultAddress());
 
-        Restaurant restaurant = restaurantRepository.findById(dto.getRestaurant().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found", dto.getRestaurant().getId()));
-        Client client = clientRepository.findById(dto.getClient().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Client not found", dto.getClient().getId()));
+        if (cart.getDishToOrders().isEmpty()) {
+            throw new CartIsEmptyException();
+        }
 
-        // Маппим вручную только обновляемые поля
-        Order updated = orderMapper.orderDtoToEntity(dto);
-        updated.setId(id);
-        updated.setRestaurant(restaurant);
-        updated.setClient(client);
+        List<DishToOrder> cartItems = cart.getDishToOrders();
+        Restaurant restaurant = cartItems.get(0).getDish().getRestaurant();
 
-        return orderRepository.save(updated);
+        Order order = Order.builder()
+                .area(clientAddress.getArea())
+                .city(clientAddress.getCity())
+                .clientPhone(client.getUsername())
+                .date(LocalDate.now())
+                .deliveryPrice(cart.getDeliveryPrice())
+                .details(clientAddress.getDetails())
+                .fullAddress(clientAddress.getFullAddress())
+                .isPaid(true) //Позже доработать оплату
+                .payment(null)
+                .latitude(clientAddress.getLatitude())
+                .longitude(clientAddress.getLongitude())
+                .noteForCourier(null) //какие еще note???
+                .number(generateOrderNumber())
+                .orderPrice(cart.getSumOrder())
+                .postcode(clientAddress.getPostCode())
+                .restaurantPhone(restaurant.getPhone())
+                .state(clientAddress.getState())
+                .status(OrderStatus.PENDING)
+                .street(clientAddress.getStreet())
+                .timeOfAccepted(null)
+                .timeOfDelivery(restaurant.getDeliveryTime())
+                .timeOfSending(null)
+                .totalSum(cart.getTotalSum())
+                .typeAddress(clientAddress.getTypeAddress())
+                .cookingTime(null)
+                .deliveryStatus(DeliveryStatus.WAITING_FOR_ORDER_ACCEPTED)
+                .endTimeOfCooking(null)
+                .intercomCode(clientAddress.getIntercomCode())
+                .restaurant(restaurant)
+                .client(client)
+                .build();
+
+        List<DishToOrder> dishToOrders = moveDishToOrdersFromCartToOrder(cart, order); //неправильно ошибка связей и элементов
+        order.setDishesToOrder(dishToOrders);
+
+        orderRepository.save(order);
+
+        cartService.clearCartWithoutDeletion(cart);
+
+        return order;
     }
+
+    // ========================= PUT ==========================
+
+
+    // ========================= DELETE =========================
 
     @Override
     public void delete(Long id) {
@@ -124,57 +158,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.delete(order);
     }
 
-    @Transactional
-    public Order createOrderFromCart(Client client) {
-        Cart cart = client.getCart();
-        if (cart == null || cart.getDishToOrders().isEmpty()) {
-            throw new IllegalStateException("Корзина пуста");
-        }
-
-        List<DishToOrder> cartItems = cart.getDishToOrders();
-        Dish sampleDish = cartItems.stream()
-                .map(DishToOrder::getDish)
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Корзина пуста"));
-
-        Restaurant restaurant = sampleDish.getRestaurant();
-
-        Order order = Order.builder()
-                .client(client)
-                .restaurant(restaurant)
-                .status(OrderStatus.PENDING)
-                .totalSum(cart.getTotalSum())
-                .deliveryPrice(cart.getDeliveryPrice())
-                .orderPrice(cart.getSumOrder())
-                .createdAt(LocalDateTime.now())
-                .isPaid(false)
-                .build();
-
-        List<DishToOrder> copiedItems = cartItems.stream().map(item -> {
-            DishToOrder copy = new DishToOrder();
-            copy.setDish(item.getDish());
-            copy.setCount(item.getCount());
-            copy.setSum(item.getSum());
-            copy.setSelectedElements(item.getSelectedElements());
-            copy.setOrder(order);
-            copy.setCart(null);
-            return copy;
-        }).toList();
-
-        order.setDishesToOrder(copiedItems);
-        orderRepository.save(order); // каскадно сохранит и блюда
-
-        // Очистка корзины
-        dishToOrderRepository.deleteAll(cartItems);
-        cart.getDishToOrders().clear();
-        cart.setTotalDish(0);
-        cart.setTotalSum(BigDecimal.ZERO);
-        cart.setSumOrder(BigDecimal.ZERO);
-        cartRepository.save(cart);
-
-        return order;
-    }
-
+    @Override
     public void cancelOrderByClient(Long orderId, Long clientId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found"));
@@ -263,5 +247,27 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(OrderStatus.REJECTED);
         orderRepository.save(order);
     }
+
+    // ========================= PRIVATE =========================
+
+    private String generateOrderNumber() {
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = today.plusDays(1).atStartOfDay();
+
+        long countToday = orderRepository.countByDate(startOfDay, endOfDay);
+        return String.format("%03d", countToday + 1);
+    }
+
+    private List<DishToOrder> moveDishToOrdersFromCartToOrder(Cart cart, Order order) {
+        return cart.getDishToOrders()
+                .stream()
+                .peek(dishToOrder -> {
+                    dishToOrder.setCart(null);
+                    dishToOrder.setOrder(order);
+                })
+                .collect(Collectors.toList());
+    }
+
 
 }
