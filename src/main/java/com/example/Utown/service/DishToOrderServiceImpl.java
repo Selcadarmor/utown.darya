@@ -2,22 +2,16 @@ package com.example.Utown.service;
 
 import com.example.Utown.dto.dishToOrderDTO.DishInCartDto;
 import com.example.Utown.dto.dishToOrderDTO.DishToOrderRequestDto;
-import com.example.Utown.dto.dishToOrderDTO.DishToOrderResponseDto;
 import com.example.Utown.exception.ResourceNotFoundException;
-import com.example.Utown.mapper.DishToOrderMapper;
 import com.example.Utown.model.Cart;
 import com.example.Utown.model.Dish;
 import com.example.Utown.model.DishToOrder;
 import com.example.Utown.model.Element;
 import com.example.Utown.repository.CartRepository;
-import com.example.Utown.repository.DishRepository;
 import com.example.Utown.repository.DishToOrderRepository;
-import com.example.Utown.repository.ElementRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.List;
