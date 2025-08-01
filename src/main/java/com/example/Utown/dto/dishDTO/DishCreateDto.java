@@ -3,6 +3,7 @@ package com.example.Utown.dto.dishDTO;
 import com.example.Utown.dto.optionDTO.OptionInfoDto;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +23,9 @@ public class DishCreateDto {
     private Long fileId;
     private String description;
     private Boolean isActive;
+    @NotBlank
     private BigDecimal price;
     private Set<OptionInfoDto> options = new HashSet<>();
+    @NotBlank
     private String title;
 }

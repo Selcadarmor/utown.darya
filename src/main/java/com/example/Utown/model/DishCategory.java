@@ -55,7 +55,7 @@ public class DishCategory {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 

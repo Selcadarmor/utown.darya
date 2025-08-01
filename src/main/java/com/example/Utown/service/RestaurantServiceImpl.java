@@ -303,6 +303,12 @@ public class RestaurantServiceImpl  implements RestaurantService {
     }
 
     private void validationStatusChange(RestaurantStatus currentStatus, RestaurantStatus newStatus) {
+
+        if (currentStatus == null) {
+            // Например, считаем, что если статус отсутствует — смена возможна на любой статус
+            return;
+        }
+
         if (currentStatus == newStatus) {
             throw new InvalidArgumentException("Restaurant", newStatus.toString());
         }

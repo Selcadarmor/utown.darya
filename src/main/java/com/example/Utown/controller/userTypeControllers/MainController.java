@@ -1,5 +1,6 @@
 package com.example.Utown.controller.userTypeControllers;
 
+import com.example.Utown.dto.AdminDTO.AdminRegistrationDto;
 import com.example.Utown.dto.clientDTO.ClientRegistrationDto;
 import com.example.Utown.dto.tokens.JWTRequest;
 import com.example.Utown.dto.tokens.JWTResponse;
@@ -39,6 +40,14 @@ public class MainController {
         authService.registration(dto);
         return ResponseEntity.ok("Client registered successfully");
     }
+
+    @PostMapping("/registration-admin")//Passed
+    @Operation(summary = "Register Admin Utown", description = "Registration for admin users")
+    public ResponseEntity<String> registerAdmin(@RequestBody AdminRegistrationDto dto) {
+        authService.adminRegistration(dto);
+        return ResponseEntity.ok("Admin registered successfully");
+    }
+
 
     @PostMapping("/login") //Passed
     public ResponseEntity<JWTResponse> login(@RequestBody JWTRequest authRequest) {
