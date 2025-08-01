@@ -1,34 +1,41 @@
 package com.example.Utown.service;
 
+import com.example.Utown.config.S3.AwsProperties;
 import com.example.Utown.dto.dishDTO.DishCreateDto;
 import com.example.Utown.dto.dishDTO.DishDetailsDto;
 import com.example.Utown.dto.dishDTO.DishInfoDto;
+import com.example.Utown.dto.dishDTO.DishMenuDto;
 import com.example.Utown.dto.dishDTO.DishSearchDto;
 import com.example.Utown.dto.optionDTO.OptionInfoDto;
 import com.example.Utown.dto.dishDTO.DishForClientDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.DishMapper;
+import com.example.Utown.mapper.FileInfoMapper;
 import com.example.Utown.model.Dish;
 import com.example.Utown.model.DishCategory;
 import com.example.Utown.model.Element;
 import com.example.Utown.model.FileInfo;
 import com.example.Utown.model.Option;
 import com.example.Utown.model.Restaurant;
+import com.example.Utown.model.UserType.RestaurantAdmin;
 import com.example.Utown.repository.DishRepository;
 import com.example.Utown.repository.DishCategoryRepository;
 import com.example.Utown.repository.ElementRepository;
 import com.example.Utown.repository.OptionRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.service.S3Service.FileInfoService;
+import com.example.Utown.service.UserTypeService.RestaurantAdminServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +49,9 @@ public class DishServiceImpl implements DishService {
     private final OptionService optionService;
     private final ElementRepository elementRepository;
     private final FileInfoService fileInfoService;
+    private final FileInfoMapper fileInfoMapper;
+    private final AwsProperties awsProperties;
+    private final RestaurantAdminServiceImpl restaurantAdminService;
 
     // ===== GET =====
 
@@ -104,6 +114,47 @@ public class DishServiceImpl implements DishService {
         return dishRepository.searchDishesByRestaurantAndKeyword(restaurantId, keyword, pageable);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<DishMenuDto> getDishesByRestaurantWithFile(String categoryName) {
+        Long restaurantId = restaurantAdminService.getCurrentAdmin().getRestaurant().getId();
+
+        List<DishMenuDto> dishes = dishRepository.findActiveDishesByRestaurantIdAndCategoryName(restaurantId, categoryName);
+
+        for (DishMenuDto dish : dishes) {
+            if (dish.getFilePath() != null) {
+                dish.setFileUrl(awsProperties.getPublicBaseUrl() + "/" + dish.getFilePath());
+            }
+        }
+        return dishes;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<DishMenuDto> getInactiveDishesForRestaurant(String categoryName) {
+        Long restaurantId = restaurantAdminService.getCurrentAdmin().getRestaurant().getId();
+        List<DishMenuDto> dishes = dishRepository.findInactiveDishesByRestaurantIdAndCategoryName(restaurantId, categoryName);
+        for (DishMenuDto dish : dishes) {
+            if (dish.getFilePath() != null) {
+                dish.setFileUrl(awsProperties.getPublicBaseUrl() + "/" + dish.getFilePath());
+            }
+        }
+        return dishes;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<DishMenuDto> getDeletedDishesForRestaurant(String categoryName) {
+        Long restaurantId = restaurantAdminService.getCurrentAdmin().getRestaurant().getId();
+        List<DishMenuDto> dishes = dishRepository.findDeletedDishesByRestaurantId(restaurantId, categoryName);
+        for (DishMenuDto dish : dishes) {
+            if (dish.getFilePath() != null) {
+                dish.setFileUrl(awsProperties.getPublicBaseUrl() + "/" + dish.getFilePath());
+            }
+        }
+        return dishes;
+    }
+
     // ===== POST =====
 
     @Override
@@ -143,6 +194,14 @@ public class DishServiceImpl implements DishService {
 
         return dishMapper.toSavedDishDto(dish);
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public DishInfoDto createDishAsRestaurantAdmin(DishCreateDto dto) {
+        Long restaurantId = restaurantAdminService.getCurrentAdmin().getId();
+        return createDishForRestaurant(restaurantId, dto);
+    }
+
 
 
     // ===== PUT =====
@@ -192,6 +251,21 @@ public class DishServiceImpl implements DishService {
         Dish savedDish = dishRepository.save(dish);
         return dishMapper.dishUpdateInfoToDto(savedDish);
     }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
+    public DishInfoDto updateDishAsRestaurantAdmin(Long dishId, DishCreateDto dto) {
+        RestaurantAdmin admin = restaurantAdminService.getCurrentAdmin();
+        Long restaurantId = admin.getRestaurant().getId();
+
+        Dish dish = getOrElseThrow(dishId);
+        if (!dish.getRestaurant().getId().equals(restaurantId)) {
+            throw new AccessDeniedException("You do not have permission to update this dish.");
+        }
+
+        return updateDishForRestaurant(restaurantId, dishId, dto);
+    }
+
 
     private Dish getOrElseThrow(Long dishId) {
         return dishRepository.findById(dishId)
