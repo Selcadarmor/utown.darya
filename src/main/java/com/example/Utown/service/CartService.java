@@ -13,6 +13,7 @@ public interface CartService {
     DishToOrder addDishToCart(Long dishId,DishToOrderRequestDto dto);
     CartDto removeDishFromCart(Long dishToOrderId);
     CartDto clearCart(Long cartId);
+    void clearCartWithoutDeletion(Cart cart);
 
 }
 

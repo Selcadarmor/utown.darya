@@ -12,10 +12,8 @@ import java.util.List;
 public interface OrderService {
     Order getById(Long id);
     List<Order> getAll();
-    Order create(OrderDto dto);
-    Order update(Long id, OrderDto dto);
     void delete(Long id);
-    Order createOrderFromCart(Client client);
+    Order createOrderFromCart();
     void acceptOrder(Long orderId);
     void rejectOrder(Long orderId);
     void cancelOrderByClient(Long orderId, Long clientId);
