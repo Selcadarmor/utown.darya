@@ -16,7 +16,7 @@ public interface OrderService {
     Order createOrderFromCart();
     void acceptOrder(Long orderId);
     void rejectOrder(Long orderId);
-    void cancelOrderByClient(Long orderId, Long clientId);
+    void cancelOrderByClient(Long orderId);
     void cancelOrderByAdmin(Long orderId);
     List<OrderDto> getAllOrdersForRestaurantAdmin(String username);
     List<OrderDto> getOrdersByStatusForRestaurantAdmin(String username, String statusStr);

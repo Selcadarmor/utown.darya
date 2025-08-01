@@ -444,15 +444,4 @@ public class ClientController {
 
 
 
-    @PatchMapping("/orders/{orderId}/cancel")
-    @Operation(summary = "Отмена заказа клиентом", description = "Позволяет клиенту отменить свой заказ, если он еще не завершен")
-    public ResponseEntity<?> cancelOrder(
-            @PathVariable Long orderId,
-            @AuthenticationPrincipal User user
-    ) {
-        Client client = clientService.getCurrentClient();
-        orderService.cancelOrderByClient(orderId, client.getId());
-        return ResponseEntity.ok().build();
-    }
-
 }
