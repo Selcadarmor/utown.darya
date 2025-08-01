@@ -16,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -71,6 +71,19 @@ public class DishToOrderServiceImpl implements DishToOrderService {
                 .build();
 
         return dishToOrderRepository.save(dishToOrder);
+    }
+
+    @Override
+    public List<DishToOrder> createByOrder(List<DishToOrder> cartDishToOrders, Order order) {
+        return cartDishToOrders.stream()
+                .map(oldItem -> DishToOrder.builder()
+                        .dish(oldItem.getDish())
+                        .count(oldItem.getCount())
+                        .sum(oldItem.getSum())
+                        .selectedElements(new ArrayList<>(oldItem.getSelectedElements()))
+                        .order(order)
+                        .build())
+                .collect(Collectors.toList());
     }
 
 

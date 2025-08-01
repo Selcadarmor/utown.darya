@@ -7,6 +7,5 @@ public enum OrderStatus {
     DELIVERY,
     COMPLETED, // order is completed
     CANCELED,
-    REJECTED// order canceled and refunded
 
 }

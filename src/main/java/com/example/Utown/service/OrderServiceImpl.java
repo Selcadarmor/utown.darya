@@ -1,7 +1,9 @@
 package com.example.Utown.service;
 
+import com.example.Utown.dto.dishToOrderDTO.DishInOrderHistoryDto;
 import com.example.Utown.dto.orderDTO.OrderDetailsDto;
 import com.example.Utown.dto.orderDTO.OrderDto;
+import com.example.Utown.dto.orderDTO.OrderHistoryDto;
 import com.example.Utown.exception.AccessDeniedToOrderException;
 import com.example.Utown.exception.CartIsEmptyException;
 import com.example.Utown.exception.OrderCancelNotAllowedException;
@@ -10,6 +12,7 @@ import com.example.Utown.mapper.OrderMapper;
 import com.example.Utown.model.Address;
 import com.example.Utown.model.Cart;
 import com.example.Utown.model.DishToOrder;
+import com.example.Utown.model.Element;
 import com.example.Utown.model.Order;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.UserType.Client;
@@ -20,7 +23,6 @@ import com.example.Utown.repository.DishToOrderRepository;
 import com.example.Utown.repository.OrderRepository;
 import com.example.Utown.repository.UserType.RestaurantAdminRepository;
 import com.example.Utown.service.UserTypeService.ClientService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,8 +34,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +48,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
     private final RestaurantAdminRepository restaurantAdminRepository;
     private final AddressService addressService;
+    private final DishToOrderService dishToOrderService;
 
     // ========================= GET =========================
 
@@ -86,6 +89,40 @@ public class OrderServiceImpl implements OrderService {
                 })
                 .toList();
         return  new PageImpl<>(dtos, pageable, orders.getTotalElements());
+    }
+
+    @Override //доработать этот метод (ошибка + 1)
+    public Page<OrderHistoryDto> getOrderHistoryByClient(Pageable pageable) {
+        Client client = clientService.getCurrentClient();
+
+        Page<Order> orders = orderRepository.findAllByClientId(client.getId(), pageable);
+
+        return orders.map(order -> {
+            List<DishInOrderHistoryDto> dishes = order.getDishesToOrder().stream().map(dishToOrder -> {
+                List<String> elementNames = dishToOrder.getSelectedElements().stream()
+                        .map(Element::getName)
+                        .toList();
+
+                return new DishInOrderHistoryDto(
+                        dishToOrder.getDish().getTitle(),
+                        dishToOrder.getCount(),
+                        dishToOrder.getSum(),
+                        elementNames
+                );
+            }).toList();
+
+            return new OrderHistoryDto(
+                    order.getClient().getUsername(),
+                    order.getClient().getFullName(),
+                    order.getFullAddress(),
+                    order.getRestaurant().getTitle(),
+                    order.getRestaurant().getPhone(),
+                    order.getStatus(),
+                    order.getNumber(),
+                    order.getTotalSum(),
+                    dishes
+            );
+        });
     }
 
     // ========================= POST =========================
@@ -137,25 +174,13 @@ public class OrderServiceImpl implements OrderService {
                 .client(client)
                 .build();
 
-        List<DishToOrder> dishToOrders = moveDishToOrdersFromCartToOrder(cart, order); //неправильно ошибка связей и элементов
-        order.setDishesToOrder(dishToOrders);
+        dishToOrderService.createByOrder(cart.getDishToOrders(), order);
 
         orderRepository.save(order);
 
-        cartService.clearCartWithoutDeletion(cart);
+        cartService.clearCart(cart.getId());
 
         return order;
-    }
-
-    // ========================= PUT ==========================
-
-
-    // ========================= DELETE =========================
-
-    @Override
-    public void delete(Long orderId) {
-        Order order = getById(orderId);
-        orderRepository.delete(order);
     }
 
     @Override
@@ -170,7 +195,6 @@ public class OrderServiceImpl implements OrderService {
 
         if (order.getStatus() == OrderStatus.COMPLETED ||
                 order.getStatus() == OrderStatus.READY_FOR_PICKUP ||
-                order.getStatus() == OrderStatus.REJECTED ||
                 order.getStatus() == OrderStatus.CANCELED ||
                 order.getStatus() == OrderStatus.DELIVERY ) {
             throw new OrderCancelNotAllowedException(order.getStatus());
@@ -182,21 +206,73 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
     }
 
-    public void cancelOrderByAdmin(Long orderId) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new EntityNotFoundException("Order not found"));
 
-        // Защита от повторной отмены
-        if (order.getStatus() == OrderStatus.COMPLETED ||
-                order.getStatus() == OrderStatus.CANCELED) {
-            throw new IllegalStateException("Order cannot be canceled at this stage");
+
+    // ========================= PUT ==========================
+
+    @Override
+    @Transactional
+    public void acceptOrder(Long orderId, Integer cookingTime) {
+        Order order = getById(orderId);
+
+        if (order.getStatus() != OrderStatus.PENDING) {
+            throw new IllegalStateException("Only pending orders can be accepted");
         }
+
+        order.setStatus(OrderStatus.PROCESSING);
+        order.setDeliveryStatus(DeliveryStatus.ACCEPTED);
+        order.setTimeOfAccepted(LocalTime.now());
+        order.setCookingTime(cookingTime);
+        orderRepository.save(order);
+    }
+
+    @Override
+    @Transactional
+    public void readyOrder(Long orderId) {
+        Order order = getById(orderId);
+
+        if (order.getStatus() != OrderStatus.PROCESSING) {
+            throw new IllegalStateException("Only pending orders can be accepted");
+        }
+
+        order.setStatus(OrderStatus.READY_FOR_PICKUP);
+        order.setDeliveryStatus(DeliveryStatus.READY_FOR_PICKUP);
+        order.setEndTimeOfCooking(LocalTime.now().toString());
+        orderRepository.save(order);
+    }
+
+    @Override
+    @Transactional
+    public void completedOrder(Long orderId) {
+        Order order = getById(orderId);
+
+        order.setStatus(OrderStatus.COMPLETED);
+        order.setDeliveryStatus(DeliveryStatus.COMPLETED);;
+        order.setTimeOfDelivery(LocalTime.now().toString());
+        orderRepository.save(order);
+    }
+
+    @Override
+    @Transactional
+    public void cancelOrderByAdmin(Long orderId) {
+        Order order = getById(orderId);
 
         order.setStatus(OrderStatus.CANCELED);
         order.setUpdatedAt(LocalDateTime.now());
 
         orderRepository.save(order);
     }
+
+    // ========================= DELETE =========================
+
+    @Override
+    public void delete(Long orderId) {
+        Order order = getById(orderId);
+        orderRepository.delete(order);
+    }
+
+
+
 
     public List<OrderDto> getAllOrdersForRestaurantAdmin(String username) {
         RestaurantAdmin admin = restaurantAdminRepository.findByUsername(username)
@@ -221,34 +297,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    @Override
-    @Transactional
-    public void acceptOrder(Long orderId) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new EntityNotFoundException("Order not found"));
 
-        if (order.getStatus() != OrderStatus.PENDING) {
-            throw new IllegalStateException("Only pending orders can be accepted");
-        }
-
-        order.setStatus(OrderStatus.PROCESSING);
-        order.setTimeOfAccepted(LocalTime.now());
-        orderRepository.save(order);
-    }
-
-    @Override
-    @Transactional
-    public void rejectOrder(Long orderId) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new EntityNotFoundException("Order not found"));
-
-        if (order.getStatus() != OrderStatus.PENDING) {
-            throw new IllegalStateException("Only pending orders can be rejected");
-        }
-
-        order.setStatus(OrderStatus.REJECTED);
-        orderRepository.save(order);
-    }
 
     // ========================= PRIVATE =========================
 
@@ -259,16 +308,6 @@ public class OrderServiceImpl implements OrderService {
 
         long countToday = orderRepository.countByDate(startOfDay, endOfDay);
         return String.format("%03d", countToday + 1);
-    }
-
-    private List<DishToOrder> moveDishToOrdersFromCartToOrder(Cart cart, Order order) {
-        return cart.getDishToOrders()
-                .stream()
-                .peek(dishToOrder -> {
-                    dishToOrder.setCart(null);
-                    dishToOrder.setOrder(order);
-                })
-                .collect(Collectors.toList());
     }
 
 
