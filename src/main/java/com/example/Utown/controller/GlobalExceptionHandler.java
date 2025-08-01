@@ -1,6 +1,7 @@
 package com.example.Utown.controller;
 
 import com.example.Utown.dto.ApiErrorResponse;
+import com.example.Utown.exception.AccessDeniedToOrderException;
 import com.example.Utown.exception.CartIsEmptyException;
 import com.example.Utown.exception.DefaultAddressNotSetException;
 import com.example.Utown.exception.DifferentRestaurantException;
@@ -8,6 +9,7 @@ import com.example.Utown.exception.DishNotInCartException;
 import com.example.Utown.exception.ExpireJwtTokenException;
 import com.example.Utown.exception.InvalidArgumentException;
 import com.example.Utown.exception.InvalidJwtTokenException;
+import com.example.Utown.exception.OrderCancelNotAllowedException;
 import com.example.Utown.exception.RatingOutOfRangeException;
 import com.example.Utown.exception.RefreshTokenNotFoundException;
 import com.example.Utown.exception.ResourceNotFoundException;
@@ -73,6 +75,7 @@ public class GlobalExceptionHandler {
             CartIsEmptyException.class,
             RatingOutOfRangeException.class,
             InvalidArgumentException.class,
+            OrderCancelNotAllowedException.class,
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @Operation(hidden = true)
@@ -88,6 +91,13 @@ public class GlobalExceptionHandler {
                 .message(message)
                 .path(path)
                 .build();
+    }
+
+    @ExceptionHandler(AccessDeniedToOrderException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @Operation(hidden = true)
+    public ApiErrorResponse handleAccessDeniedToOrder(AccessDeniedToOrderException ex, HttpServletRequest request) {
+        return buildError(HttpStatus.FORBIDDEN, ex.getMessage(), request.getRequestURI());
     }
 
     @ExceptionHandler(DishNotInCartException.class)

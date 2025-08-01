@@ -2,7 +2,9 @@ package com.example.Utown.service;
 
 import com.example.Utown.dto.orderDTO.OrderDetailsDto;
 import com.example.Utown.dto.orderDTO.OrderDto;
+import com.example.Utown.exception.AccessDeniedToOrderException;
 import com.example.Utown.exception.CartIsEmptyException;
+import com.example.Utown.exception.OrderCancelNotAllowedException;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.OrderMapper;
 import com.example.Utown.model.Address;
@@ -24,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -152,26 +153,27 @@ public class OrderServiceImpl implements OrderService {
     // ========================= DELETE =========================
 
     @Override
-    public void delete(Long id) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found", id));
+    public void delete(Long orderId) {
+        Order order = getById(orderId);
         orderRepository.delete(order);
     }
 
     @Override
-    public void cancelOrderByClient(Long orderId, Long clientId) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new EntityNotFoundException("Order not found"));
+    @Transactional
+    public void cancelOrderByClient(Long orderId) {
+        Client client = clientService.getCurrentClient();
+        Order order = getById(orderId);
 
-        if (!order.getClient().getId().equals(clientId)) {
-            throw new AccessDeniedException("You can cancel only your orders");
+        if (!order.getClient().getId().equals(client.getId())) {
+            throw new AccessDeniedToOrderException(orderId);
         }
 
         if (order.getStatus() == OrderStatus.COMPLETED ||
+                order.getStatus() == OrderStatus.READY_FOR_PICKUP ||
                 order.getStatus() == OrderStatus.REJECTED ||
                 order.getStatus() == OrderStatus.CANCELED ||
-                order.getStatus() == OrderStatus.DELIVERY) {
-            throw new IllegalStateException("Order cannot be canceled at this stage");
+                order.getStatus() == OrderStatus.DELIVERY ) {
+            throw new OrderCancelNotAllowedException(order.getStatus());
         }
 
         order.setStatus(OrderStatus.CANCELED);
