@@ -8,14 +8,11 @@ import com.example.Utown.dto.dishCategoryDTO.DishCategoryRestaurantProfileDto;
 import com.example.Utown.dto.dishDTO.DishForClientDto;
 import com.example.Utown.dto.dishDTO.DishSearchDto;
 import com.example.Utown.dto.dishToOrderDTO.DishToOrderRequestDto;
-import com.example.Utown.dto.dishToOrderDTO.DishToOrderResponseDto;
-import com.example.Utown.dto.orderDTO.OrderDto;
 import com.example.Utown.dto.ratingDTO.RatingDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryForClient;
 import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantProfileDto;
 import com.example.Utown.mapper.OrderMapper;
-import com.example.Utown.model.Order;
 import com.example.Utown.model.UserType.Client;
 import com.example.Utown.service.AddressService;
 import com.example.Utown.service.CartService;
@@ -51,7 +48,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -249,7 +245,7 @@ public class ClientController {
         return ResponseEntity.ok(addresses);
     }
 
-    @GetMapping
+    @GetMapping("/cart")
     @Operation(summary = "Get current client's cart details",
             description = "Returns the cart with dishes, delivery price, and total sum")
     @ApiResponse(responseCode = "200", description = "Cart returned successfully")
@@ -296,6 +292,20 @@ public class ClientController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/order")
+    @Operation(
+            summary = "Create order from current client's cart",
+            description = "Creates an order from the client's current cart, moving all DishToOrder entries into the order without deletion."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Order created successfully"),
+            @ApiResponse(responseCode = "400", description = "Cart is empty or invalid"),
+            @ApiResponse(responseCode = "401", description = "User not authenticated"),
+    })
+    public void createOrderFromCart() {
+        orderService.createOrderFromCart();
+    }
+
     @PostMapping("restaurant/{restaurantId}")
     @Operation(
             summary = "Create a rating for a restaurant",
@@ -331,7 +341,7 @@ public class ClientController {
         return ResponseEntity.ok(updatedProfile);
     }
 
-    @PutMapping("/dish-to-order/{dishToOrderId}")
+    @PutMapping("/dish-to-order/{dishToOrderId}") //Passed
     @Operation(
             summary = "Update dish position in the cart",
             description = "Updates the selected dish in the cart and returns the updated cart"
@@ -372,7 +382,7 @@ public class ClientController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/dish-to-order/{dishToOrderId}")
+    @DeleteMapping("/dish-to-order/{dishToOrderId}/delete") //Passed
     @Operation(
             summary = "Remove dish from cart",
             description = "Deletes the specified dish from the cart and returns the updated cart"
@@ -383,19 +393,19 @@ public class ClientController {
         return ResponseEntity.ok(updatedCart);
     }
 
+    @DeleteMapping("/{cartId}/clear") //Passed
     @Operation(
-            summary = "Clear the cart",
-            description = "Removes all dishes from the current user's cart and recalculates the cart totals."
+            summary = "Clear cart by ID",
+            description = "Removes all dishes from the specified cart and recalculates totals"
     )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Cart successfully cleared"
-    )
-    @DeleteMapping("/client/cart/clear")
-    public ResponseEntity<CartDto> clearCart() {
-        Client client = clientService.getCurrentClient();
-        CartDto cartDto = cartService.clearCart(client.getCart().getId());
-        return ResponseEntity.ok(cartDto);
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cart cleared successfully"),
+            @ApiResponse(responseCode = "404", description = "Cart not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<CartDto> clearCartById(@PathVariable Long cartId) {
+        CartDto clearedCart = cartService.clearCart(cartId);
+        return ResponseEntity.ok(clearedCart);
     }
 
     @DeleteMapping("/favorites/{restaurantId}") //Passed
@@ -432,36 +442,7 @@ public class ClientController {
 
 
 
-    @DeleteMapping("/cart/delete/{id}")
-    @Operation(summary = "Delete dish from cart", description = "Removes a dish from cart")
-    public ResponseEntity<Void> deleteCartItem(@PathVariable Long id) {
-        dishToOrderService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
 
-    @DeleteMapping("/cart/clear")
-    @Operation(summary = "Clear the cart", description = "Removes all dishes from the client's cart")
-    public ResponseEntity<Void> clearCart(@AuthenticationPrincipal User user) {
-        Client client = clientService.getCurrentClient();
-
-        if (client.getCart() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart not found for client");
-        }
-
-        cartService.clearCart(client.getCart().getId());
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/order/confirm")
-    @Operation(summary = "Confirm order", description = "Creates an order from the current cart and clears the cart")
-    public ResponseEntity<OrderDto> confirmOrder(
-            @AuthenticationPrincipal User user
-    ) {
-        Client client = clientService.getCurrentClient();
-        Order order = orderService.createOrderFromCart(client);
-        OrderDto dto = orderMapper.orderToDto(order);
-        return ResponseEntity.ok(dto);
-    }
 
     @PatchMapping("/orders/{orderId}/cancel")
     @Operation(summary = "Отмена заказа клиентом", description = "Позволяет клиенту отменить свой заказ, если он еще не завершен")
