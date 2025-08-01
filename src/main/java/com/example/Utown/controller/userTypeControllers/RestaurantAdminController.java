@@ -21,8 +21,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -39,26 +41,55 @@ public class RestaurantAdminController {
     private final OptionService optionService;
     private final ElementService elementService;
 
-    @PatchMapping("/orders/{orderId}/accept")
-    @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
-    @Operation(summary = "Принять заказ", description = "Ресторанный админ подтверждает заказ")
-    public ResponseEntity<?> acceptOrder(@PathVariable Long orderId) {
-        orderService.acceptOrder(orderId);
+    @PutMapping("order/{orderId}/accept")
+    @Operation(
+            summary = "Accept the order",
+            description = "Changes the order status to PROCESSING and sets the cooking time."
+    )
+    @ApiResponse(responseCode = "200", description = "Order successfully accepted")
+    @ApiResponse(responseCode = "400", description = "Invalid order status or parameters")
+    @ApiResponse(responseCode = "404", description = "Order not found")
+    public ResponseEntity<Void> acceptOrder(
+            @PathVariable Long orderId,
+            @RequestParam Integer cookingTime
+    ) {
+        orderService.acceptOrder(orderId, cookingTime);
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/orders/{orderId}/reject")
-    @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
-    @Operation(summary = "Отклонить заказ", description = "Ресторанный админ отклоняет заказ")
-    public ResponseEntity<?> rejectOrder(@PathVariable Long orderId) {
-        orderService.rejectOrder(orderId);
+    @PutMapping("/{orderId}/ready")
+    @Operation(
+            summary = "Mark order as ready",
+            description = "Marks the order as READY_FOR_PICKUP and updates delivery status."
+    )
+    @ApiResponse(responseCode = "200", description = "Order marked as ready")
+    @ApiResponse(responseCode = "400", description = "Order is not in PROCESSING state")
+    @ApiResponse(responseCode = "404", description = "Order not found")
+    public ResponseEntity<Void> readyOrder(@PathVariable Long orderId) {
+        orderService.readyOrder(orderId);
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/orders/{orderId}/cancel")
-    @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
-    @Operation(summary = "Отменить заказ", description = "Ресторанный админ отменяет заказ")
-    public ResponseEntity<?> cancelOrderByAdmin(@PathVariable Long orderId) {
+    @PutMapping("/{orderId}/completed")
+    @Operation(
+            summary = "Mark order as completed",
+            description = "Marks the order as COMPLETED and sets delivery time."
+    )
+    @ApiResponse(responseCode = "200", description = "Order marked as completed")
+    @ApiResponse(responseCode = "404", description = "Order not found")
+    public ResponseEntity<Void> completedOrder(@PathVariable Long orderId) {
+        orderService.completedOrder(orderId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("order/{orderId}/cancel")
+    @Operation(
+            summary = "Cancel order by admin",
+            description = "Cancels the order by setting its status to CANCELED."
+    )
+    @ApiResponse(responseCode = "200", description = "Order successfully canceled")
+    @ApiResponse(responseCode = "404", description = "Order not found")
+    public ResponseEntity<Void> cancelOrderByAdmin(@PathVariable Long orderId) {
         orderService.cancelOrderByAdmin(orderId);
         return ResponseEntity.ok().build();
     }

@@ -11,6 +11,7 @@ import com.example.Utown.model.enumFiles.Roles;
 import com.example.Utown.repository.RoleRepository;
 import com.example.Utown.repository.UserType.RestaurantAdminRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -56,9 +57,16 @@ public class RestaurantAdminServiceImpl  implements RestaurantAdminService {
         return restaurantAdminRepository.save(admin);
     }
 
+    @Override
     public RestaurantAdmin getCurrentAdmin() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("User is not authenticated");
+        }
+
+        String username = authentication.getName();
         return restaurantAdminRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("User not found: " + username));
+                .orElseThrow(() -> new UserNotFoundException("Admin not found: " + username));
     }
+
 }

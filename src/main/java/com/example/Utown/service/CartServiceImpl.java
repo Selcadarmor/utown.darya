@@ -125,15 +125,6 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void clearCartWithoutDeletion(Cart cart) {
-        cart.setTotalDish(0);
-        cart.setTotalSum(BigDecimal.ZERO);
-        cart.setSumOrder(BigDecimal.ZERO);
-
-        cartRepository.save(cart);
-    }
-
-    @Override
     @Transactional
     public CartDto clearCart(Long cartId) {
         Cart cart = getCartById(cartId);

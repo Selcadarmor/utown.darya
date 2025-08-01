@@ -306,6 +306,19 @@ public class ClientController {
         orderService.createOrderFromCart();
     }
 
+    @PostMapping("/{orderId}/cancel")
+    @Operation(summary = "Cancel order by client", description = "Allows the current client to cancel their order if allowed by status.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Order canceled successfully"),
+            @ApiResponse(responseCode = "403", description = "Access denied to cancel this order"),
+            @ApiResponse(responseCode = "400", description = "Order cancellation is not allowed at this stage"),
+            @ApiResponse(responseCode = "404", description = "Order not found")
+    })
+    public ResponseEntity<String> cancelOrderByClient(@PathVariable Long orderId) {
+        orderService.cancelOrderByClient(orderId);
+        return ResponseEntity.ok("Order canceled successfully");
+    }
+
     @PostMapping("restaurant/{restaurantId}")
     @Operation(
             summary = "Create a rating for a restaurant",
