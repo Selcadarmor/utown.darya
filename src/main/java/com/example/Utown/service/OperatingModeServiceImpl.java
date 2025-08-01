@@ -8,9 +8,12 @@ import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.OperatingModeInfoMapper;
 import com.example.Utown.model.OperatingMode;
 import com.example.Utown.model.Restaurant;
+import com.example.Utown.model.UserType.RestaurantAdmin;
 import com.example.Utown.repository.OperatingModeRepository;
 import com.example.Utown.repository.RestaurantRepository;
+import com.example.Utown.service.UserTypeService.RestaurantAdminService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +26,7 @@ public class OperatingModeServiceImpl implements OperatingModeService {
     private final OperatingModeRepository operatingModeRepository;
     private final RestaurantRepository restaurantRepository;
     private final OperatingModeInfoMapper operatingModeInfoMapper;
+    private final RestaurantAdminService restaurantAdminService;
 
     // ===== GET =====
 
@@ -39,6 +43,10 @@ public class OperatingModeServiceImpl implements OperatingModeService {
 
     @Override
     public List<OperatingModeInfoDto> getOperatingModesByRestaurantId(Long restaurantId) {
+        RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin();
+        if (!restaurantId.equals(currentAdmin.getRestaurant().getId())) {
+            throw new AccessDeniedException("You do not have permission to access operating modes for this restaurant.");
+        }
         List<OperatingMode> modes = operatingModeRepository.findByRestaurantId(restaurantId);
         return operatingModeInfoMapper.toDtoList(modes);
     }
@@ -84,6 +92,11 @@ public class OperatingModeServiceImpl implements OperatingModeService {
     public OperatingModeInfoDto update(Long id, OperatingModeUpdateDto dto) {
         OperatingMode updated = operatingModeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("OperatingMode", id));
+
+        RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin();
+        if (!updated.getRestaurant().getId().equals(currentAdmin.getRestaurant().getId())) {
+            throw new AccessDeniedException("You do not have permission to modify this operating mode.");
+        }
 
         updated.setDayOff(dto.isDayOff());
         if (dto.getStartTime() != null) updated.setStartTime(dto.getStartTime());

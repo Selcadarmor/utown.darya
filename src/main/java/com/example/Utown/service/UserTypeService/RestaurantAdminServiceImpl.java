@@ -56,6 +56,7 @@ public class RestaurantAdminServiceImpl  implements RestaurantAdminService {
         return restaurantAdminRepository.save(admin);
     }
 
+    @Override
     public RestaurantAdmin getCurrentAdmin() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return restaurantAdminRepository.findByUsername(username)

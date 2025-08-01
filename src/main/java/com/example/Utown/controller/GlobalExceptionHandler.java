@@ -8,6 +8,7 @@ import com.example.Utown.exception.DishNotInCartException;
 import com.example.Utown.exception.ExpireJwtTokenException;
 import com.example.Utown.exception.InvalidArgumentException;
 import com.example.Utown.exception.InvalidJwtTokenException;
+import com.example.Utown.exception.InvalidOperationException;
 import com.example.Utown.exception.RatingOutOfRangeException;
 import com.example.Utown.exception.RefreshTokenNotFoundException;
 import com.example.Utown.exception.ResourceNotFoundException;
@@ -74,6 +75,7 @@ public class GlobalExceptionHandler {
             CartIsEmptyException.class,
             RatingOutOfRangeException.class,
             InvalidArgumentException.class,
+            InvalidOperationException.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @Operation(hidden = true)
@@ -154,6 +156,5 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
 
 }
