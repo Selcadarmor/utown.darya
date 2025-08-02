@@ -8,9 +8,12 @@ import com.example.Utown.dto.dishDTO.DishInfoDto;
 import com.example.Utown.dto.dishDTO.DishMenuDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeUpdateDto;
+import com.example.Utown.dto.orderDTO.DailyOrderStatsDto;
+import com.example.Utown.dto.orderDTO.MonthlyOrderStatsDto;
 import com.example.Utown.dto.orderDTO.OrderDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantStatusUpdateRequest;
-import com.example.Utown.model.UserType.RestaurantAdmin;
+import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
+import com.example.Utown.dto.restaurantDTO.RestaurantUpdateResponseDto;
 import com.example.Utown.service.DishCategoryServiceImpl;
 import com.example.Utown.service.DishService;
 import com.example.Utown.service.ElementService;
@@ -44,6 +47,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.YearMonth;
 import java.util.List;
 
 @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
@@ -91,6 +95,9 @@ public class RestaurantAdminController {
         return ResponseEntity.ok(orders);
     }
 
+
+
+
     @GetMapping("/orders/status/{status}")
     @Operation(summary = "Фильтрация заказов по статусу", description = "Ресторанный админ фильтрует заказы по статусу (PENDING, CANCELED и т.д.)")
     public ResponseEntity<List<OrderDto>> getOrdersByStatus(
@@ -101,48 +108,42 @@ public class RestaurantAdminController {
         return ResponseEntity.ok(orders);
     }
 
+    //UPDATE RESTAURANT INFO
+    @PutMapping
+    @Operation(
+            summary = "Update restaurant profile by restaurant admin",
+            description = "Allows a restaurant admin to update the restaurant's profile, including address, working hours, delivery zones, logo, and categories."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Restaurant successfully updated",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = RestaurantUpdateResponseDto.class))),
+            @ApiResponse(responseCode = "403", description = "Access denied - not the admin of this restaurant"),
+            @ApiResponse(responseCode = "404", description = "Restaurant not found"),
+            @ApiResponse(responseCode = "400", description = "Invalid request body or data format")
+    })
+    public ResponseEntity<RestaurantUpdateResponseDto> updateRestaurantByAdmin(
+            @RequestBody @Valid RestaurantUpdateDto dto, @PathVariable String restaurantId) {
+        RestaurantUpdateResponseDto updated = restaurantService.updateRestaurantByAdmin(dto);
+        return ResponseEntity.ok(updated);
+    }
+
+    // CHANGE RESTAURANT STATUS
     @Operation(
             summary = "Update restaurant status",
-            description = "Allows the restaurant admin to chenge the  status f their restaurant"
+            description = "Allows the restaurant admin to change the  status f their restaurant"
     )
-    @ApiResponse(responseCode = "200", description = "Restaurant status  siccessfully updated")
+    @ApiResponse(responseCode = "200", description = "Restaurant status  successfully updated")
     @ApiResponse(responseCode = "404",description = "Restaurant not found")
     @ApiResponse(responseCode = "403", description = "Access denied")
-    @ApiResponse(responseCode = "400", description = "Invalodreques or statustransaction not allowed")
-    @PatchMapping("/{restaurantId}/status") //Passed
-    public ResponseEntity<Void> updateRestaurantStatus(@RequestBody RestaurantStatusUpdateRequest request,
-                                                       @PathVariable Long restaurantId) {
-        RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin();
-        restaurantService.updateStatusForRestaurantAdmin(request.getStatus(), currentAdmin.getId());
+    @ApiResponse(responseCode = "400", description = "Invalid request or status transaction not allowed")
+    @PatchMapping("/status") //Passed
+    public ResponseEntity<Void> updateRestaurantStatus(@RequestBody RestaurantStatusUpdateRequest request) {
+        restaurantService.updateStatusForCurrentAdminRestaurant(request.getStatus());
         return  ResponseEntity.ok().build();
     }
 
-
-    @Operation(summary = "Delete Option by Id", description = "Deactivates a option in the system.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Option deactivated successfully."),
-            @ApiResponse(responseCode = "404", description = "Option not found")
-    })
-    @DeleteMapping("/dishes/{dishId}/options/{optionId}")
-    public ResponseEntity<Void> deleteOption(@PathVariable Long dishId,
-                                             @PathVariable Long optionId) {
-        optionService.deleteOption(optionId);
-        return ResponseEntity.noContent().build();
-    }
-
-    @Operation(summary = "Delete Element by Id", description = "Deactivates a element in the system.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Element deactivated successfully."),
-            @ApiResponse(responseCode = "404", description = "Element not found")
-    })
-    @DeleteMapping("/dishes/{dishId}/option/{optionId}/element/{elementId}")
-    public ResponseEntity<Void> deleteElement(@PathVariable Long dishId,
-                                              @PathVariable Long optionId,
-                                              @PathVariable Long elementId) {
-        elementService.deleteElement(elementId);
-        return ResponseEntity.noContent().build();
-    }
-
+    //OPERATING MODE
     @GetMapping("/operating-modes")
     @Operation(summary = "Get operating modes by restaurant ID",
             description = "Returns a list of operating modes for the specified restaurant")
@@ -174,10 +175,11 @@ public class RestaurantAdminController {
             @PathVariable Long modeId,
             @RequestBody OperatingModeUpdateDto dto
     ) {
-        operatingModeService.update(modeId, dto);
-        return ResponseEntity.ok(operatingModeService.findById(modeId));
+        OperatingModeInfoDto result = operatingModeService.update(modeId, dto);
+        return ResponseEntity.ok(result);
     }
 
+    // DISH
     @GetMapping("/dishes/active")
     @Operation(
             summary = "Get all dishes of the current admin's restaurant",
@@ -211,25 +213,6 @@ public class RestaurantAdminController {
         List<DishMenuDto> dishes = dishService.getInactiveDishesForRestaurant(categoryName);
         return ResponseEntity.ok(dishes);
     }
-
-    @Operation(
-            summary = "Get deleted dishes by category",
-            description = "Returns a list of dishes with `deleted = true` for the specified category in the current admin's restaurant."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Deleted dishes retrieved successfully",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = DishMenuDto.class)))),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    @GetMapping("/dishes/deleted")
-    public ResponseEntity<List<DishMenuDto>> getDeletedDishesByCategory(
-            @RequestParam String categoryName
-    ) {
-        List<DishMenuDto> dishes = dishService.getDeletedDishesForRestaurant(categoryName);
-        return ResponseEntity.ok(dishes);
-    }
-
 
     @Operation(
             summary = "Create dish (restaurant admin)",
@@ -281,6 +264,50 @@ public class RestaurantAdminController {
     }
 
     @Operation(
+            summary = "Get deleted dishes by category",
+            description = "Returns a list of dishes with `deleted = true` for the specified category in the current admin's restaurant."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Deleted dishes retrieved successfully",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = DishMenuDto.class)))),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @GetMapping("/dishes/deleted")
+    public ResponseEntity<List<DishMenuDto>> getDeletedDishesByCategory(
+            @RequestParam String categoryName
+    ) {
+        List<DishMenuDto> dishes = dishService.getDeletedDishesForRestaurant(categoryName);
+        return ResponseEntity.ok(dishes);
+    }
+    //DELETE ELEMENT AND OPTION
+    @Operation(summary = "Delete Option by Id", description = "Deactivates a option in the system.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Option deactivated successfully."),
+            @ApiResponse(responseCode = "404", description = "Option not found")
+    })
+    @DeleteMapping("/dishes/{dishId}/options/{optionId}")
+    public ResponseEntity<Void> deleteOption(@PathVariable Long dishId,
+                                             @PathVariable Long optionId) {
+        optionService.deleteOption(optionId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Delete Element by Id", description = "Deactivates a element in the system.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Element deactivated successfully."),
+            @ApiResponse(responseCode = "404", description = "Element not found")
+    })
+    @DeleteMapping("/dishes/{dishId}/options/{optionId}/element/{elementId}")
+    public ResponseEntity<Void> deleteElement(@PathVariable Long dishId,
+                                              @PathVariable Long optionId,
+                                              @PathVariable Long elementId) {
+        elementService.deleteElement(elementId);
+        return ResponseEntity.noContent().build();
+    }
+
+    //DISH CATEGORY
+    @Operation(
             summary = "Get dish categories by restaurant ID",
             description = "Returns a list of all dish categories for the specified restaurant"
     )
@@ -290,11 +317,9 @@ public class RestaurantAdminController {
             @ApiResponse(responseCode = "404", description = "Restaurant not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("/{restaurantId}/dish-categories")
-    public ResponseEntity<List<DishCategoryDto>> getCategoriesByRestaurant(
-            @PathVariable Long restaurantId
-    ) {
-        List<DishCategoryDto> categories = dishCategoryService.getCategoriesByRestaurant(restaurantId);
+    @GetMapping("/dish-categories")
+    public ResponseEntity<List<DishCategoryDto>> getCategoriesByRestaurant() {
+        List<DishCategoryDto> categories = dishCategoryService.getCategoriesByRestaurant();
         return ResponseEntity.ok(categories);
     }
 
@@ -315,7 +340,7 @@ public class RestaurantAdminController {
             @RequestBody DishCategoryCreateDto dto
     ) {
         DishCategoryCreateResponseDto response =
-                dishCategoryService.createDishCategoryForRestaurantByAdmin(restaurantId, dto);
+                dishCategoryService.createDishCategoryForRestaurantByAdmin(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -354,6 +379,40 @@ public class RestaurantAdminController {
         dishCategoryService.deleteDishCategory(id);
         return ResponseEntity.ok().build();
     }
+        //  ORDER HISTORY
+    @GetMapping("/order-history/daily")
+    @Operation(
+            summary = "Get order statistics by day",
+            description = "Return order statistics of the current restaurant for the specified month. Only for RestaurantAdmin."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully received statistics by day"),
+            @ApiResponse(responseCode = "401", description = "User is not authorized"),
+            @ApiResponse(responseCode = "403", description = "No access to resource"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<List<DailyOrderStatsDto>> getDailyStats(
+            @RequestParam int year,
+            @RequestParam int month) {
+        YearMonth ym = YearMonth.of(year, month);
+        return ResponseEntity.ok(orderService.getDailyOrders(ym));
+    }
 
+    @GetMapping("/order-history/monthly")
+    @Operation(
+            summary = "Get monthly order statistics",
+            description = "Returns order statistics for the current restaurant by month for the specified year. Accessible only by RestaurantAdmin."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Monthly statistics successfully retrieved"),
+            @ApiResponse(responseCode = "401", description = "User is not authenticated"),
+            @ApiResponse(responseCode = "403", description = "Access denied – not a restaurant admin"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<List<MonthlyOrderStatsDto>> getMonthlyStats(
+            @RequestParam int year) {
+
+        return ResponseEntity.ok(orderService.getMonthlyStats(year));
+    }
 
 }

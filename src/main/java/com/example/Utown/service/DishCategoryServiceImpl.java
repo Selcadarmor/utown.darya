@@ -68,7 +68,10 @@ public class DishCategoryServiceImpl implements DishCategoryService {
     }
 
     @Override
-    public List<DishCategoryDto> getCategoriesByRestaurant(Long restaurantId) {
+    public List<DishCategoryDto> getCategoriesByRestaurant() {
+        RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin();
+        Long restaurantId = currentAdmin.getRestaurant().getId();
+
         List<DishCategory> categories = dishCategoryRepository.findAllByRestaurantId(restaurantId);
         return categories.stream()
                 .map(dishCategoryMapper::dishCategoryToDto)
@@ -99,11 +102,10 @@ public class DishCategoryServiceImpl implements DishCategoryService {
 
     @Override
     @Transactional
-    public DishCategoryCreateResponseDto createDishCategoryForRestaurantByAdmin(Long restaurantId, DishCategoryCreateDto dto) {
+    public DishCategoryCreateResponseDto createDishCategoryForRestaurantByAdmin(DishCategoryCreateDto dto) {
         RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin();
-        if (!currentAdmin.getRestaurant().getId().equals(restaurantId)) {
-            throw new AccessDeniedException("You cannot create categories for this restaurant");
-        }
+        Long restaurantId = currentAdmin.getRestaurant().getId();
+
         return createDishCategoryForRestaurant(restaurantId, dto); // вызов уже имеющегося метода
     }
 

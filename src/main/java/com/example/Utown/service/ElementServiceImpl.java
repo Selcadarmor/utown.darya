@@ -4,11 +4,15 @@ import com.example.Utown.dto.elementDTO.ElementDto;
 import com.example.Utown.dto.elementDTO.ElementInfoDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.ElementMapper;
+import com.example.Utown.model.Dish;
 import com.example.Utown.model.Element;
 import com.example.Utown.model.Option;
+import com.example.Utown.model.UserType.RestaurantAdmin;
 import com.example.Utown.repository.ElementRepository;
+import com.example.Utown.service.UserTypeService.RestaurantAdminServiceImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,6 +30,7 @@ public class ElementServiceImpl implements ElementService {
 
     private final ElementRepository elementRepository;
     private final ElementMapper elementMapper;
+    private final RestaurantAdminServiceImpl restaurantAdminService;
 
     @Override
     public Element getById(Long id) {
@@ -119,8 +124,22 @@ public class ElementServiceImpl implements ElementService {
 
     @Override
     public void deleteElement(Long id) {
-        Element element = getById(id);
-         element.setIsDeleted(true);
+        RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin();
+        Long adminRestaurantId = currentAdmin.getRestaurant().getId();
+
+        Element element = elementRepository.findWithContext(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Element", id));
+
+        Long elementRestaurantId = element.getOption()
+                .getDish()
+                .getRestaurant()
+                .getId();
+
+        if (!adminRestaurantId.equals(elementRestaurantId)) {
+            throw new AccessDeniedException("You do not have permission to delete this element.");
+        }
+
+        element.setIsDeleted(true);
          elementRepository.save(element);
     }
 }

@@ -19,7 +19,7 @@ public interface DishCategoryService {
     DishCategoryCreateResponseDto createDishCategoryForRestaurant(Long restaurantId, DishCategoryCreateDto dto);
     DishCategoryDto updateDishCategory(Long id, DishCategoryDto dto);
     void deleteDishCategory(Long id);
-    List<DishCategoryDto> getCategoriesByRestaurant(Long restaurantId);
-    DishCategoryCreateResponseDto createDishCategoryForRestaurantByAdmin(Long restaurantId, DishCategoryCreateDto dto);
+    List<DishCategoryDto> getCategoriesByRestaurant();
+    DishCategoryCreateResponseDto createDishCategoryForRestaurantByAdmin(DishCategoryCreateDto dto);
 }
 
