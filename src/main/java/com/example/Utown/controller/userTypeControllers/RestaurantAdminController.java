@@ -57,7 +57,7 @@ public class RestaurantAdminController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{orderId}/ready")
+    @PutMapping("order/{orderId}/ready")
     @Operation(
             summary = "Mark order as ready",
             description = "Marks the order as READY_FOR_PICKUP and updates delivery status."
@@ -70,7 +70,7 @@ public class RestaurantAdminController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{orderId}/completed")
+    @PutMapping("order/{orderId}/completed")
     @Operation(
             summary = "Mark order as completed",
             description = "Marks the order as COMPLETED and sets delivery time."
@@ -93,6 +93,9 @@ public class RestaurantAdminController {
         orderService.cancelOrderByAdmin(orderId);
         return ResponseEntity.ok().build();
     }
+
+
+
 
     @GetMapping("/orders")
     @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
