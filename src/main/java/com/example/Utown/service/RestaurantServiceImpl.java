@@ -43,6 +43,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -290,11 +291,20 @@ public class RestaurantServiceImpl  implements RestaurantService {
         return restaurantInfoMapper.toUpdateDto(saved);
     }
 
+    @Transactional(rollbackFor = RuntimeException.class)
+    @Override
+    public RestaurantUpdateResponseDto updateRestaurantByAdmin(RestaurantUpdateDto dto) {
+        RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin();
+        Long restaurantId = currentAdmin.getRestaurant().getId();
+
+        return updateRestaurant(restaurantId, dto);
+    }
+
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public void updateStatusForRestaurantAdmin(RestaurantStatus newStatus, Long restaurantAdminId) {
-        Restaurant restaurant = restaurantRepository.findByRestaurantAdminId(restaurantAdminId)
-                .orElseThrow(() -> new ResourceNotFoundException("RestaurantAdmin", restaurantAdminId));
+    public void updateStatusForCurrentAdminRestaurant(RestaurantStatus newStatus) {
+        RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin();
+        Restaurant restaurant = findRestaurantById(currentAdmin.getRestaurant().getId());
 
         validationStatusChange(restaurant.getStatus(), newStatus);
 
@@ -303,6 +313,12 @@ public class RestaurantServiceImpl  implements RestaurantService {
     }
 
     private void validationStatusChange(RestaurantStatus currentStatus, RestaurantStatus newStatus) {
+
+        if (currentStatus == null) {
+            // Например, считаем, что если статус отсутствует — смена возможна на любой статус
+            return;
+        }
+
         if (currentStatus == newStatus) {
             throw new InvalidArgumentException("Restaurant", newStatus.toString());
         }

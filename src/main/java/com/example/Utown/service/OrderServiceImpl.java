@@ -1,10 +1,13 @@
 package com.example.Utown.service;
 
 import com.example.Utown.dto.dishToOrderDTO.DishInOrderHistoryDto;
+import com.example.Utown.dto.orderDTO.DailyOrderStatsDto;
+import com.example.Utown.dto.orderDTO.MonthlyOrderStatsDto;
 import com.example.Utown.dto.orderDTO.OrderDetailsDto;
 import com.example.Utown.dto.orderDTO.OrderDto;
 import com.example.Utown.dto.orderDTO.OrderHistoryDto;
 import com.example.Utown.exception.AccessDeniedToOrderException;
+import com.example.Utown.dto.orderDTO.OrderShortInfoDto;
 import com.example.Utown.exception.CartIsEmptyException;
 import com.example.Utown.exception.OrderCancelNotAllowedException;
 import com.example.Utown.exception.ResourceNotFoundException;
@@ -21,8 +24,11 @@ import com.example.Utown.model.enumFiles.DeliveryStatus;
 import com.example.Utown.model.enumFiles.OrderStatus;
 import com.example.Utown.repository.DishToOrderRepository;
 import com.example.Utown.repository.OrderRepository;
+import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.repository.UserType.RestaurantAdminRepository;
 import com.example.Utown.service.UserTypeService.ClientService;
+import com.example.Utown.service.UserTypeService.RestaurantAdminServiceImpl;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,10 +37,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
+import java.time.YearMonth;
+import java.time.format.TextStyle;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -48,6 +63,8 @@ public class OrderServiceImpl implements OrderService {
     private final RestaurantAdminRepository restaurantAdminRepository;
     private final AddressService addressService;
     private final DishToOrderService dishToOrderService;
+    private final RestaurantRepository restaurantRepository;
+    private final RestaurantAdminServiceImpl restaurantAdminService;
 
     // ========================= GET =========================
 
@@ -123,6 +140,82 @@ public class OrderServiceImpl implements OrderService {
             );
         });
     }
+
+    @Override
+    public List<MonthlyOrderStatsDto> getMonthlyStats(int year) { //Делаем историю для одного года
+        RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin();
+        Long restaurantId = currentAdmin.getRestaurant().getId(); // проверка на админа
+
+
+        List<Order> orders = orderRepository.findAllByRestaurantIdAndDateBetween(
+                restaurantId,
+                LocalDate.of(year, 1, 1),//начало
+                LocalDate.of(year, 12, 31)//конец
+        );
+        Map<Month, List<Order>> ordersByMonth = orders.stream()//создаем карту хранения ордеров и  месяц и группируем по дате конкретно по месяцу
+                .collect(Collectors.groupingBy(order -> order.getDate().getMonth()));
+        return ordersByMonth.entrySet().stream()//возващаем через стрим каждый элемент карты  вытаскиваем его значение
+                .map(entry -> {
+                    List<Order> monthOrders = entry.getValue();
+                    BigDecimal totalSum = monthOrders.stream()//его общую сумму
+                            .map(Order::getOrderPrice)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    long cancelled = monthOrders.stream()
+                            .filter(order -> order.getStatus() == OrderStatus.CANCELED)
+                            .count();//колисество отменных заказов фильтруем по статусу заказов
+
+                    return MonthlyOrderStatsDto.builder()
+                            .month(entry.getKey().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " + year)
+                            .totalAmount(totalSum)
+                            .totalOrders(monthOrders.size())
+                            .cancelledOrders((int) cancelled)
+                            .build();// возвращаем обнавленное дто  месяц  с его названием на английском, общую сумму отмененые заказы
+                })
+                .sorted(Comparator.comparing(dto -> Month.valueOf(dto.getMonth().split(" ")[0].toUpperCase())))
+                .toList();//сортируем по компаратору  по месяцу  и в список
+    }
+
+    @Override
+    public List<DailyOrderStatsDto> getDailyOrders(YearMonth month) {
+        RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin();
+        Long restaurantId = currentAdmin.getRestaurant().getId();
+        LocalDate startDate = month.atDay(1);
+        LocalDate endDate = month.atEndOfMonth();
+        List<Order> orders = orderRepository.findAllByRestaurantIdAndDateBetween(restaurantId, startDate, endDate);
+
+        Map<LocalDate, List<Order>> ordersByDay = orders.stream()
+                .collect(Collectors.groupingBy(order -> order.getDate()));
+        return ordersByDay.entrySet().stream()
+                .map(entry -> {
+                    List<Order> dayOrders =  entry.getValue();
+                    BigDecimal totalSum = dayOrders.stream()
+                            .map(Order::getTotalSum)
+                            .filter(Objects::nonNull)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    long cancelled = dayOrders.stream()
+                            .filter(order -> order.getStatus() == OrderStatus.CANCELED)
+                            .count();
+                    List<OrderShortInfoDto> shortOrders = dayOrders.stream()
+                            .map(order -> OrderShortInfoDto.builder()
+                                    .id(order.getId())
+                                    .number(order.getNumber())
+                                    .totalSum(order.getTotalSum())
+                                    .build())
+                            .toList();
+
+                    return DailyOrderStatsDto.builder()
+                            .date(entry.getKey())
+                            .totalAmount(totalSum)
+                            .totalOrders(dayOrders.size())
+                            .cancelledOrders((int) cancelled)
+                            .orders(shortOrders)
+                            .build();
+
+                })
+                .sorted(Comparator.comparing(dto -> dto.getDate()))
+                .toList();
+    }
+
 
     // ========================= POST =========================
 

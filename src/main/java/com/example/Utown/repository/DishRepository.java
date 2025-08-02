@@ -1,5 +1,6 @@
 package com.example.Utown.repository;
 
+import com.example.Utown.dto.dishDTO.DishMenuDto;
 import com.example.Utown.dto.dishDTO.DishSearchDto;
 import com.example.Utown.model.Dish;
 import org.springframework.data.domain.Page;
@@ -84,7 +85,43 @@ public interface DishRepository extends JpaRepository<Dish, Long> {
             Pageable pageable
     );
 
+    @Query("SELECT new com.example.Utown.dto.dishDTO.DishMenuDto(" +
+            "d.id, d.title, d.description, c.name, d.isActive, d.price, f.id, f.path) " +
+            "FROM Dish d " +
+            "LEFT JOIN d.dishCategory c " +
+            "LEFT JOIN d.file f " +
+            "WHERE d.restaurant.id = :restaurantId " +
+            "AND c.name = :categoryName " +
+            "AND d.isActive = true " +
+            "ORDER BY c.name")
+    List<DishMenuDto> findActiveDishesByRestaurantIdAndCategoryName(@Param("restaurantId") Long restaurantId,
+                                                                    @Param("categoryName") String categoryName);
 
+    @Query("SELECT new com.example.Utown.dto.dishDTO.DishMenuDto(" +
+            "d.id, d.title, d.description, c.name, d.isActive, d.price, f.id, f.path) " +
+            "FROM Dish d " +
+            "LEFT JOIN d.dishCategory c " +
+            "LEFT JOIN d.file f " +
+            "WHERE d.restaurant.id = :restaurantId " +
+            "AND c.name = :categoryName " +
+            "AND d.isActive = false " +
+            "ORDER BY c.name")
+    List<DishMenuDto> findInactiveDishesByRestaurantIdAndCategoryName(@Param("restaurantId") Long restaurantId,
+                                                                      @Param("categoryName") String categoryName);
+
+    @Query("SELECT new com.example.Utown.dto.dishDTO.DishDeletedMenuDto(" +
+            "d.id, d.title, d.description, c.name, d.price, f.id, f.path, d.isDeleted) " +
+            "FROM Dish d " +
+            "LEFT JOIN d.dishCategory c " +
+            "LEFT JOIN d.file f " +
+            "WHERE d.restaurant.id = :restaurantId " +
+            "AND d.isDeleted = true " +
+            "AND c.name = :categoryName")
+    List<DishMenuDto> findDeletedDishesByRestaurantId(@Param("restaurantId") Long restaurantId,
+                                                      @Param("categoryName") String categoryName);
+
+    boolean existsByDishCategoryId(Long categoryId);
+    List<Dish> findAllByDishCategoryId(Long categoryId);
 
 }
 
