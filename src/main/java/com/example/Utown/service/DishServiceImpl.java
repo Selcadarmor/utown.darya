@@ -277,7 +277,12 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public void deleteDish(Long id) {
+        RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin();
+        Long adminRestaurantId = currentAdmin.getRestaurant().getId();
         Dish dish = getOrElseThrow(id);
+        if (!dish.getRestaurant().getId().equals(adminRestaurantId)) {
+            throw new AccessDeniedException("You do not have permission to delete this dish.");
+        }
         dish.setIsDeleted(true);
         dishRepository.save(dish);
     }

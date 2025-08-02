@@ -30,6 +30,7 @@ public interface RestaurantService {
     RestaurantProfileDto getRestaurantProfile(Long restaurantId);
     void deactivateRestaurant(Long restaurantId);
     Restaurant findRestaurantById(Long restaurantId);
-    void updateStatusForRestaurantAdmin(RestaurantStatus newStatus, Long restaurantAdminId);
+    void updateStatusForCurrentAdminRestaurant(RestaurantStatus newStatus);
+    RestaurantUpdateResponseDto updateRestaurantByAdmin(RestaurantUpdateDto dto);
 
 }
