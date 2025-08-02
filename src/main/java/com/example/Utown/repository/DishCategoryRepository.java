@@ -35,5 +35,9 @@ public interface DishCategoryRepository extends JpaRepository<DishCategory, Long
                     "GROUP BY dc.id, dc.name, dc.sort, dc.isActive, f.path"
     )
     List<DishCategoryRestaurantProfileDto> findDishCategoriesWithDishCountByRestaurantId(@Param("restaurantId") Long restaurantId);
+
+    @Query("SELECT c FROM DishCategory c WHERE c.restaurant.id = :restaurantId")
+    List<DishCategory> findAllByRestaurantId(@Param("restaurantId") Long restaurantId);
+
 }
 

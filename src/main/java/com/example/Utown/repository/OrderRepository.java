@@ -11,6 +11,7 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -37,4 +38,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "o.number LIKE CONCAT('%', :query, '%')) " )
     Page<Order> findAllWithFilter(@Param("query") String query,
                                   @P("clientId") Long clientId, Pageable pageable);
+
+    List<Order> findAllByRestaurantIdAndDateBetween(Long restaurantId, LocalDate start, LocalDate end);
+
+    List<Order> findAllByRestaurantIdAndDate(Long restaurantId, LocalDate date);
 }

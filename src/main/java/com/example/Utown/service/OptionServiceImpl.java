@@ -6,9 +6,12 @@ import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.model.Dish;
 import com.example.Utown.model.Element;
 import com.example.Utown.model.Option;
+import com.example.Utown.model.UserType.RestaurantAdmin;
 import com.example.Utown.repository.OptionRepository;
+import com.example.Utown.service.UserTypeService.RestaurantAdminServiceImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -24,6 +27,7 @@ public class OptionServiceImpl implements OptionService {
 
     private final OptionRepository optionRepository;
     private final ElementService elementService;
+    private final RestaurantAdminServiceImpl restaurantAdminService;
 
     @Override
     public Option getById(Long id) {
@@ -123,7 +127,17 @@ public class OptionServiceImpl implements OptionService {
 
     @Override
     public void deleteOption(Long id) {
-        Option option = getById(id);
+        RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin();
+        Long adminRestaurantId = currentAdmin.getRestaurant().getId();
+
+        Option option = optionRepository.findWithContext(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Option", id));
+
+        Long optionRestaurantId = option.getDish().getRestaurant().getId();
+
+        if (!adminRestaurantId.equals(optionRestaurantId)) {
+            throw new AccessDeniedException("You do not have permission to delete this option.");
+        }
         option.setIsActive(false);
 
         if(option.getElements() != null) {

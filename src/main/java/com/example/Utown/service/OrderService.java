@@ -1,5 +1,7 @@
 package com.example.Utown.service;
 
+import com.example.Utown.dto.orderDTO.DailyOrderStatsDto;
+import com.example.Utown.dto.orderDTO.MonthlyOrderStatsDto;
 import com.example.Utown.dto.orderDTO.OrderDetailsDto;
 import com.example.Utown.dto.orderDTO.OrderDto;
 import com.example.Utown.dto.orderDTO.OrderHistoryDto;
@@ -7,6 +9,7 @@ import com.example.Utown.model.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.YearMonth;
 import java.util.List;
 
 public interface OrderService {
@@ -23,5 +26,7 @@ public interface OrderService {
     void readyOrder(Long orderId);
     void completedOrder(Long orderId);
     void delete(Long id);
+    List<MonthlyOrderStatsDto> getMonthlyStats(int year);
+    List<DailyOrderStatsDto> getDailyOrders(YearMonth month);
 }
 
