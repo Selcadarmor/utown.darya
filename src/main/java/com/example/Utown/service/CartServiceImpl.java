@@ -120,7 +120,6 @@ public class CartServiceImpl implements CartService {
 
         dishToOrderService.delete(dishToOrderId);
 
-        recalculateCart(cart);
         return getCart();
     }
 
