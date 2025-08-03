@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DishCategoryRepository extends JpaRepository<DishCategory, Long> {
@@ -38,6 +39,7 @@ public interface DishCategoryRepository extends JpaRepository<DishCategory, Long
 
     @Query("SELECT c FROM DishCategory c WHERE c.restaurant.id = :restaurantId")
     List<DishCategory> findAllByRestaurantId(@Param("restaurantId") Long restaurantId);
+    Optional<DishCategory> findByName(String name);
 
 }
 

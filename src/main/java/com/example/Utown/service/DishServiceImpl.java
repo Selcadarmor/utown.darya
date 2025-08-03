@@ -2,6 +2,7 @@ package com.example.Utown.service;
 
 import com.example.Utown.config.S3.AwsProperties;
 import com.example.Utown.dto.dishDTO.DishCreateDto;
+import com.example.Utown.dto.dishDTO.DishDeletedMenuDto;
 import com.example.Utown.dto.dishDTO.DishDetailsDto;
 import com.example.Utown.dto.dishDTO.DishInfoDto;
 import com.example.Utown.dto.dishDTO.DishMenuDto;
@@ -35,7 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -144,10 +144,10 @@ public class DishServiceImpl implements DishService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<DishMenuDto> getDeletedDishesForRestaurant(String categoryName) {
+    public List<DishDeletedMenuDto> getDeletedDishesForRestaurant(String categoryName) {
         Long restaurantId = restaurantAdminService.getCurrentAdmin().getRestaurant().getId();
-        List<DishMenuDto> dishes = dishRepository.findDeletedDishesByRestaurantId(restaurantId, categoryName);
-        for (DishMenuDto dish : dishes) {
+        List<DishDeletedMenuDto> dishes = dishRepository.findDeletedDishesByRestaurantId(restaurantId, categoryName);
+        for (DishDeletedMenuDto dish : dishes) {
             if (dish.getFilePath() != null) {
                 dish.setFileUrl(awsProperties.getPublicBaseUrl() + "/" + dish.getFilePath());
             }
@@ -198,8 +198,12 @@ public class DishServiceImpl implements DishService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public DishInfoDto createDishAsRestaurantAdmin(DishCreateDto dto) {
-        Long restaurantId = restaurantAdminService.getCurrentAdmin().getId();
-        return createDishForRestaurant(restaurantId, dto);
+        Long adminId = restaurantAdminService.getCurrentAdmin().getId();
+
+        Restaurant restaurant = restaurantRepository.findByRestaurantAdminId(adminId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant for admin", adminId));
+
+        return createDishForRestaurant(restaurant.getId(), dto);
     }
 
 
