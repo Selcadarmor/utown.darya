@@ -8,6 +8,7 @@ import com.example.Utown.dto.dishCategoryDTO.DishCategoryRestaurantProfileDto;
 import com.example.Utown.exception.InvalidOperationException;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.DishCategoryMapper;
+import com.example.Utown.model.Dish;
 import com.example.Utown.model.DishCategory;
 import com.example.Utown.model.FileInfo;
 import com.example.Utown.model.Restaurant;
@@ -134,11 +135,22 @@ public class DishCategoryServiceImpl implements DishCategoryService {
     @Transactional
     public void deleteDishCategory(Long id) {
         DishCategory category= getDishCategory(id);
-        boolean hasDishes = dishRepository.existsByDishCategoryId(id);
+        DishCategory defaultCategory = dishCategoryRepository.findByName("No category")
+                .orElseThrow(() -> new IllegalStateException("Default category 'No category' is missing"));
 
-        if (hasDishes) {
-            throw new InvalidOperationException("You cannot delete a category that dishes are linked to.");
+        // Если пытаемся удалить эту категорию — запрещаем
+        if (category.getId().equals(defaultCategory.getId())) {
+            throw new InvalidOperationException("You cannot delete the default 'No category' category.");
         }
+
+        // Перевязываем все блюда на "Без категории"
+        List<Dish> dishes = dishRepository.findByDishCategoryId(category.getId());
+        for (Dish dish : dishes) {
+            dish.setDishCategory(defaultCategory);
+            dishRepository.save(dish);
+        }
+
+        // Мягкое удаление категории (например, ставим inactive)
         category.setIsActive(false);
         dishCategoryRepository.save(category);
     }

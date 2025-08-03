@@ -41,8 +41,8 @@ public class GlobalExceptionHandler {
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @Operation(hidden = true)
-    public ApiErrorResponse handleUserNotFoundException(UserNotFoundException ex, WebRequest request) {
-        String path = request.getDescription(false).replace("uri=", "");
+    public ApiErrorResponse handleUserNotFoundException(UserNotFoundException ex, HttpServletRequest request) {
+        String path = request.getRequestURI();
         return buildError(HttpStatus.NOT_FOUND, ex.getMessage(), path);
     }
 

@@ -1,6 +1,7 @@
 package com.example.Utown.service;
 import com.example.Utown.dto.dishDTO.DishCreateDto;
 
+import com.example.Utown.dto.dishDTO.DishDeletedMenuDto;
 import com.example.Utown.dto.dishDTO.DishDetailsDto;
 import com.example.Utown.dto.dishDTO.DishInfoDto;
 import com.example.Utown.dto.dishDTO.DishForClientDto;
@@ -39,6 +40,6 @@ public interface DishService {
 
     List<DishMenuDto> getInactiveDishesForRestaurant(String categoryName);
 
-    List<DishMenuDto> getDeletedDishesForRestaurant(String categoryName);
+    List<DishDeletedMenuDto> getDeletedDishesForRestaurant(String categoryName);
 }
 
