@@ -8,6 +8,7 @@ import com.example.Utown.dto.dishCategoryDTO.DishCategoryRestaurantProfileDto;
 import com.example.Utown.dto.dishDTO.DishForClientDto;
 import com.example.Utown.dto.dishDTO.DishSearchDto;
 import com.example.Utown.dto.dishToOrderDTO.DishToOrderRequestDto;
+import com.example.Utown.dto.orderDTO.OrderHistoryDto;
 import com.example.Utown.dto.ratingDTO.RatingDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryForClient;
 import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
@@ -306,7 +307,15 @@ public class ClientController {
         orderService.createOrderFromCart();
     }
 
-    @PostMapping("/{orderId}/cancel")
+    @Operation(summary = "Get client's order history with pagination")
+    @ApiResponse(responseCode = "200", description = "Order history retrieved successfully")
+    @GetMapping("order/history")
+    public ResponseEntity<Page<OrderHistoryDto>> getOrderHistory(@PageableDefault(size = 10) Pageable pageable) {
+        Page<OrderHistoryDto> history = orderService.getOrderHistoryByClient(pageable);
+        return ResponseEntity.ok(history);
+    }
+
+    @PostMapping("order/{orderId}/cancel")
     @Operation(summary = "Cancel order by client", description = "Allows the current client to cancel their order if allowed by status.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Order canceled successfully"),

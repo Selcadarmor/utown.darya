@@ -24,7 +24,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -61,13 +61,13 @@ public class DishToOrder {
     @JoinColumn(name = "dish_id")
     private Dish dish;
 
-    @OneToMany
+    @OneToMany()
     @JoinTable(
             name = "dish_to_order_elements",
             joinColumns = @JoinColumn(name = "dish_to_order_id"),
             inverseJoinColumns = @JoinColumn(name = "element_id")
     )
-    private List<Element> selectedElements;
+    private Set<Element> selectedElements;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "order_id_in_dish")
