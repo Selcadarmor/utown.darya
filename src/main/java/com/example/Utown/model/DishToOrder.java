@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -61,7 +62,7 @@ public class DishToOrder {
     @JoinColumn(name = "dish_id")
     private Dish dish;
 
-    @OneToMany()
+    @ManyToMany
     @JoinTable(
             name = "dish_to_order_elements",
             joinColumns = @JoinColumn(name = "dish_to_order_id"),
