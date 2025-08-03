@@ -14,6 +14,7 @@ public class DishDeletedMenuDto {
     private Long fileId;
     private String filePath;
     private Boolean isDeleted;
+    private String fileUrl;
 
     public DishDeletedMenuDto(Long id, String title, String description, String categoryName, BigDecimal price, Long fileId, String filePath, Boolean isDeleted) {
         this.id = id;

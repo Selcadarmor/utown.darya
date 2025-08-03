@@ -1,5 +1,6 @@
 package com.example.Utown.repository;
 
+import com.example.Utown.dto.dishDTO.DishDeletedMenuDto;
 import com.example.Utown.dto.dishDTO.DishMenuDto;
 import com.example.Utown.dto.dishDTO.DishSearchDto;
 import com.example.Utown.model.Dish;
@@ -117,11 +118,10 @@ public interface DishRepository extends JpaRepository<Dish, Long> {
             "WHERE d.restaurant.id = :restaurantId " +
             "AND d.isDeleted = true " +
             "AND c.name = :categoryName")
-    List<DishMenuDto> findDeletedDishesByRestaurantId(@Param("restaurantId") Long restaurantId,
-                                                      @Param("categoryName") String categoryName);
+    List<DishDeletedMenuDto> findDeletedDishesByRestaurantId(@Param("restaurantId") Long restaurantId,
+                                                             @Param("categoryName") String categoryName);
 
-    boolean existsByDishCategoryId(Long categoryId);
-    List<Dish> findAllByDishCategoryId(Long categoryId);
+    List<Dish> findByDishCategoryId(Long categoryId);
 
 }
 
