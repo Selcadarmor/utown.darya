@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -13,6 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 public class DishToOrderRequestDto {
     private Integer count;
-    private List<Long> selectedElementIds;
+    private Set<Long> selectedElementIds;
 }
 

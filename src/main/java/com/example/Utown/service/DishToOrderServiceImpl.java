@@ -15,8 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,6 +48,11 @@ public class DishToOrderServiceImpl implements DishToOrderService {
         return dishToOrderRepository.findAll();
     }
 
+    @Override
+    public Set<String> getElementNames(Long dishToOrderId) {
+        return dishToOrderRepository.findElementNamesByDishToOrderId(dishToOrderId);
+    }
+
     // ========================= POST =========================
 
     @Override
@@ -60,7 +66,7 @@ public class DishToOrderServiceImpl implements DishToOrderService {
         BigDecimal totalOneItemPrice = dish.getPrice().add(elementsPriceSum);
         BigDecimal totalSum = totalOneItemPrice.multiply(BigDecimal.valueOf(dto.getCount()));
 
-        List<Element> selectedElements = elementService.getElementsByIds(dto.getSelectedElementIds());
+        Set<Element> selectedElements = elementService.getElementsByIds(dto.getSelectedElementIds());
 
         DishToOrder dishToOrder = DishToOrder.builder()
                 .dish(dish)
@@ -75,18 +81,18 @@ public class DishToOrderServiceImpl implements DishToOrderService {
 
     @Override
     public List<DishToOrder> createByOrder(List<DishToOrder> cartDishToOrders, Order order) {
-        return cartDishToOrders.stream()
+        List<DishToOrder> newItems = cartDishToOrders.stream()
                 .map(oldItem -> DishToOrder.builder()
                         .dish(oldItem.getDish())
                         .count(oldItem.getCount())
                         .sum(oldItem.getSum())
-                        .selectedElements(new ArrayList<>(oldItem.getSelectedElements()))
+                        .selectedElements(oldItem.getSelectedElements())
                         .order(order)
                         .build())
                 .collect(Collectors.toList());
+
+        return dishToOrderRepository.saveAll(newItems);
     }
-
-
 
     // ========================= PUT =========================
 
@@ -101,7 +107,7 @@ public class DishToOrderServiceImpl implements DishToOrderService {
         BigDecimal totalOneItemPrice = dish.getPrice().add(elementsPriceSum);
         BigDecimal totalSum = totalOneItemPrice.multiply(BigDecimal.valueOf(dto.getCount()));
 
-        List<Element> selectedElements = elementService.getElementsByIds(dto.getSelectedElementIds());
+        Set<Element> selectedElements = elementService.getElementsByIds(dto.getSelectedElementIds());
 
         dishToOrder.setCount(dto.getCount());
         dishToOrder.setSelectedElements(selectedElements);

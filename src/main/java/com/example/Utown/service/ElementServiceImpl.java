@@ -40,12 +40,14 @@ public class ElementServiceImpl implements ElementService {
     }
 
     @Override
-    public List<Element> getElementsByIds(List<Long> ids) {
-        List<Element> elements = elementRepository.findAllById(ids);
+    public Set<Element> getElementsByIds(Set<Long> ids) {
+        List<Element> foundElements = elementRepository.findAllById(ids);
+        Set<Element> elements = new HashSet<>(foundElements);
 
         if (elements.size() != ids.size()) {
             throw new ResourceNotFoundException("Element", ids);
         }
+
         return elements;
     }
 
@@ -72,7 +74,7 @@ public class ElementServiceImpl implements ElementService {
     }
 
     @Override
-    public BigDecimal calculateElementsPrice(List<Long> elementIds) {
+    public BigDecimal calculateElementsPrice(Set<Long> elementIds) {
         List<Element> elements = elementRepository.findAllById(elementIds);
 
         if (elements.size() != elementIds.size()) {

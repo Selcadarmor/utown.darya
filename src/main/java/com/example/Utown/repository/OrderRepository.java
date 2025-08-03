@@ -5,6 +5,7 @@ import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.enumFiles.OrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.parameters.P;
@@ -20,8 +21,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT COUNT(o) FROM Order o WHERE o.createdAt >= :start AND o.createdAt < :end")
     long countByDate(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
-
-    Page<Order> findAllByClientId(Long clientId, Pageable pageable);
 
     List<Order> findByRestaurant(Restaurant restaurant);
 
@@ -41,5 +40,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     List<Order> findAllByRestaurantIdAndDateBetween(Long restaurantId, LocalDate start, LocalDate end);
 
-    List<Order> findAllByRestaurantIdAndDate(Long restaurantId, LocalDate date);
+    @EntityGraph(attributePaths = {
+            "dishesToOrder",
+            "dishesToOrder.selectedElements"
+    })
+    Page<Order> findAllByClientIdOrderByCreatedAtDesc(Long clientId, Pageable pageable);
+
+
 }

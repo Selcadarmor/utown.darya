@@ -15,7 +15,6 @@ import com.example.Utown.mapper.OrderMapper;
 import com.example.Utown.model.Address;
 import com.example.Utown.model.Cart;
 import com.example.Utown.model.DishToOrder;
-import com.example.Utown.model.Element;
 import com.example.Utown.model.Order;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.UserType.Client;
@@ -24,11 +23,9 @@ import com.example.Utown.model.enumFiles.DeliveryStatus;
 import com.example.Utown.model.enumFiles.OrderStatus;
 import com.example.Utown.repository.DishToOrderRepository;
 import com.example.Utown.repository.OrderRepository;
-import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.repository.UserType.RestaurantAdminRepository;
 import com.example.Utown.service.UserTypeService.ClientService;
 import com.example.Utown.service.UserTypeService.RestaurantAdminServiceImpl;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -63,7 +60,6 @@ public class OrderServiceImpl implements OrderService {
     private final RestaurantAdminRepository restaurantAdminRepository;
     private final AddressService addressService;
     private final DishToOrderService dishToOrderService;
-    private final RestaurantRepository restaurantRepository;
     private final RestaurantAdminServiceImpl restaurantAdminService;
 
     // ========================= GET =========================
@@ -107,32 +103,28 @@ public class OrderServiceImpl implements OrderService {
         return  new PageImpl<>(dtos, pageable, orders.getTotalElements());
     }
 
-    @Override //доработать этот метод (ошибка + 1)
+    @Override
     public Page<OrderHistoryDto> getOrderHistoryByClient(Pageable pageable) {
         Client client = clientService.getCurrentClient();
 
-        Page<Order> orders = orderRepository.findAllByClientId(client.getId(), pageable);
+        Page<Order> orders = orderRepository.findAllByClientIdOrderByCreatedAtDesc(client.getId(), pageable);
 
         return orders.map(order -> {
-            List<DishInOrderHistoryDto> dishes = order.getDishesToOrder().stream().map(dishToOrder -> {
-                List<String> elementNames = dishToOrder.getSelectedElements().stream()
-                        .map(Element::getName)
-                        .toList();
-
-                return new DishInOrderHistoryDto(
-                        dishToOrder.getDish().getTitle(),
-                        dishToOrder.getCount(),
-                        dishToOrder.getSum(),
-                        elementNames
-                );
-            }).toList();
+            List<DishInOrderHistoryDto> dishes = order.getDishesToOrder().stream()
+                    .map(dishToOrder -> new DishInOrderHistoryDto(
+                            dishToOrder.getDish().getTitle(),
+                            dishToOrder.getCount(),
+                            dishToOrder.getSum(),
+                            dishToOrderService.getElementNames(dishToOrder.getId())
+                    ))
+                    .collect(Collectors.toList());
 
             return new OrderHistoryDto(
-                    order.getClient().getUsername(),
-                    order.getClient().getFullName(),
+                    order.getClientPhone(),
+                    client.getFullName(),
                     order.getFullAddress(),
                     order.getRestaurant().getTitle(),
-                    order.getRestaurant().getPhone(),
+                    order.getRestaurantPhone(),
                     order.getStatus(),
                     order.getNumber(),
                     order.getTotalSum(),
@@ -313,7 +305,7 @@ public class OrderServiceImpl implements OrderService {
 
         order.setStatus(OrderStatus.PROCESSING);
         order.setDeliveryStatus(DeliveryStatus.ACCEPTED);
-        order.setTimeOfAccepted(LocalTime.now());
+        order.setTimeOfAccepted(LocalTime.now().toString());
         order.setCookingTime(cookingTime);
         orderRepository.save(order);
     }
