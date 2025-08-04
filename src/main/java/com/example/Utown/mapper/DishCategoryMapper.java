@@ -15,14 +15,8 @@ public interface DishCategoryMapper {
     @Mapping(source = "restaurant.id", target = "restaurantId")
     DishCategoryDto dishCategoryToDto(DishCategory entity);
 
-
-    @Mapping(source = "restaurantId", target = "restaurant.id")
-    @Mapping(target = "dishes", ignore = true)
-    DishCategory dishCategoryDtoToEntity(DishCategoryDto dto);
-
     @Mapping(source = "restaurant.id", target = "restaurantId")
     DishCategoryDetailsDto toDetailsDto(DishCategory category);
-
 
     DishCategoryCreateResponseDto toCreateDto(DishCategory category);
 

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,8 +25,8 @@ import java.util.stream.Collectors;
 public class DishToOrderServiceImpl implements DishToOrderService {
 
     private final DishToOrderRepository dishToOrderRepository;
-    private final DishService dishService;
     private final CartRepository cartRepository;
+    private final DishService dishService;
     private final ElementService elementService;
 
     // ========================= GET =========================
@@ -72,7 +73,7 @@ public class DishToOrderServiceImpl implements DishToOrderService {
                 .cart(cart)
                 .count(dto.getCount())
                 .sum(totalSum)
-                .selectedElements(selectedElements)
+                .selectedElements(new HashSet<>(selectedElements))
                 .build();
 
         return dishToOrderRepository.save(dishToOrder);
@@ -85,7 +86,7 @@ public class DishToOrderServiceImpl implements DishToOrderService {
                         .dish(oldItem.getDish())
                         .count(oldItem.getCount())
                         .sum(oldItem.getSum())
-                        .selectedElements(oldItem.getSelectedElements())
+                        .selectedElements(new HashSet<>(oldItem.getSelectedElements()))
                         .order(order)
                         .build())
                 .collect(Collectors.toList());

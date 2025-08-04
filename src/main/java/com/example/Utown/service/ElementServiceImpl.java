@@ -4,7 +4,6 @@ import com.example.Utown.dto.elementDTO.ElementDto;
 import com.example.Utown.dto.elementDTO.ElementInfoDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.ElementMapper;
-import com.example.Utown.model.Dish;
 import com.example.Utown.model.Element;
 import com.example.Utown.model.Option;
 import com.example.Utown.model.UserType.RestaurantAdmin;
