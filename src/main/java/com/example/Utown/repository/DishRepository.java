@@ -45,17 +45,6 @@ public interface DishRepository extends JpaRepository<Dish, Long> {
     })
     Optional<Dish> findById(Long id);
 
-    @Query("SELECT DISTINCT d FROM Dish d " +
-            "LEFT JOIN FETCH d.options o " +
-            "LEFT JOIN FETCH o.elements e " +
-            "LEFT JOIN FETCH d.restaurant r " +
-            "LEFT JOIN FETCH d.dishCategory dc " +
-            "LEFT JOIN FETCH d.file f " +
-            "WHERE d.id = :dishId " +
-            "AND d.isActive = true " +
-            "AND d.isDeleted = false")
-    Optional<Dish> findDishByIdForClient(@Param("dishId") Long dishId);
-
     @Query("SELECT new com.example.Utown.dto.dishDTO.DishSearchDto(" +
             "d.id, d.title, d.description, d.isActive, d.isDeleted, " +
             "d.price, d.sort, d.restaurant.id, d.dishCategory.id, f.path) " +
@@ -122,6 +111,7 @@ public interface DishRepository extends JpaRepository<Dish, Long> {
                                                              @Param("categoryName") String categoryName);
 
     List<Dish> findByDishCategoryId(Long categoryId);
+    boolean existsByDishCategoryId(Long categoryId);
 
 }
 

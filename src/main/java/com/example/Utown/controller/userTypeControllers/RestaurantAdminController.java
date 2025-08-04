@@ -15,6 +15,7 @@ import com.example.Utown.dto.orderDTO.OrderHistoryDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantStatusUpdateRequest;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateResponseDto;
+import com.example.Utown.service.DishCategoryService;
 import com.example.Utown.service.DishCategoryServiceImpl;
 import com.example.Utown.service.DishService;
 import com.example.Utown.service.ElementService;
@@ -36,7 +37,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -58,17 +58,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RestaurantAdminController {
 
+    private final DishService dishService;
+    private final DishCategoryServiceImpl dishCategoryService; //Почему? убрать имплементацию
+    private final DishCategoryService DishCategoryService;
+    private final ElementService elementService;
     private final OrderService orderService;
+    private final OptionService optionService;
+    private final OperatingModeServiceImpl operatingModeService;
     private final RestaurantService restaurantService;
     private final RestaurantAdminService restaurantAdminService;
-    private final DishService dishService;
-    private final OptionService optionService;
-    private final ElementService elementService;
-    private final OperatingModeServiceImpl operatingModeService;
-    private final DishCategoryServiceImpl dishCategoryService;
+
 
     @Operation(
-            summary = "Get active orders (PENDING, PROCESSING) for current restaurant",
+            summary = "Get in-process orders for current restaurant",
             description = "Returns a paginated list of active orders for the authenticated restaurant admin"
     )
     @ApiResponse(
@@ -149,15 +151,6 @@ public class RestaurantAdminController {
 
 
 
-//    @GetMapping("/orders/status/{status}")
-//    @Operation(summary = "Фильтрация заказов по статусу", description = "Ресторанный админ фильтрует заказы по статусу (PENDING, CANCELED и т.д.)")
-//    public ResponseEntity<List<OrderDto>> getOrdersByStatus(
-//            @PathVariable String status,
-//            @AuthenticationPrincipal User user
-//    ) {
-//        List<OrderDto> orders = orderService.getOrdersByStatusForRestaurantAdmin(user.getUsername(), status);
-//        return ResponseEntity.ok(orders);
-//    }
 
     //UPDATE RESTAURANT INFO
     @PutMapping

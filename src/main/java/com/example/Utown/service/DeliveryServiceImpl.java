@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 public class DeliveryServiceImpl implements DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
-    private final RestaurantRepository restaurantRepository;
     private final DeliveryMapper deliveryMapper;
+    private final RestaurantRepository restaurantRepository;
 
     @Override
     public Delivery getDeliveryById(Long id) {
@@ -92,11 +92,10 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public Delivery updateDelivery(Long id, DeliveryDto dto) {
-        Delivery delivery = deliveryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Delivery", id));
+        Delivery delivery = getDeliveryById(id);
 
         Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId())
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found", dto.getRestaurantId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", dto.getRestaurantId()));
 
         delivery.setArea(dto.getArea());
         delivery.setPrice(dto.getPrice());
@@ -110,12 +109,10 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public void deleteDelivery(Long id) {
-        Delivery delivery = deliveryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Delivery not found", id));
+        Delivery delivery = getDeliveryById(id);
+        delivery.setIsDeleted(true);
         deliveryRepository.delete(delivery);
-    } //поменять на isDeleted = True
-
-    //Добавить метод для изменения isActive = True ... False
+    }
 
 }
 

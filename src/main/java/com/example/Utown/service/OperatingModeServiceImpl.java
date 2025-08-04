@@ -24,9 +24,9 @@ import java.util.List;
 public class OperatingModeServiceImpl implements OperatingModeService {
 
     private final OperatingModeRepository operatingModeRepository;
-    private final RestaurantRepository restaurantRepository;
     private final OperatingModeInfoMapper operatingModeInfoMapper;
     private final RestaurantAdminService restaurantAdminService;
+    private final RestaurantRepository restaurantRepository;
 
     // ===== GET =====
 
