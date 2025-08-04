@@ -14,8 +14,6 @@ import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.UserType.RestaurantAdmin;
 import com.example.Utown.repository.DishCategoryRepository;
 import com.example.Utown.repository.DishRepository;
-import com.example.Utown.repository.FileInfoRepository;
-import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.service.S3Service.FileInfoService;
 import com.example.Utown.service.UserTypeService.RestaurantAdminServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -23,30 +21,29 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class DishCategoryServiceImpl implements DishCategoryService {
 
     private final DishCategoryRepository dishCategoryRepository;
     private final DishCategoryMapper dishCategoryMapper;
-    private final FileInfoRepository fileInfoRepository;
-    private final FileInfoService fileInfoService;
-    private final RestaurantRepository restaurantRepository;
-    private final RestaurantService restaurantService;
     private final DishRepository dishRepository;
-    private final RestaurantAdminServiceImpl restaurantAdminService;
+    private final FileInfoService fileInfoService;
+    private final RestaurantService restaurantService;
+    private final RestaurantAdminServiceImpl restaurantAdminService; //удалить импелементацию
 
     // ===== GET =====
 
     @Override
     @Transactional
     public DishCategory getDishCategoryById(Long id) {
-        DishCategory dishCategory = getDishCategory(id);
-        return dishCategory;
+        return dishCategoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("DishCategory", id));
     }
 
     @Override
@@ -114,7 +111,7 @@ public class DishCategoryServiceImpl implements DishCategoryService {
 
     @Override
     public DishCategoryDto updateDishCategory(Long id, DishCategoryDto dto) {
-        DishCategory category = getDishCategory(id);
+        DishCategory category = getDishCategoryById(id);
 
         category.setName(dto.getName());
         category.setSort(dto.getSort());
@@ -133,7 +130,7 @@ public class DishCategoryServiceImpl implements DishCategoryService {
     @Override
     @Transactional
     public void deleteDishCategory(Long id) {
-        DishCategory category= getDishCategory(id);
+        DishCategory category= getDishCategoryById(id);
         boolean hasDishes = dishRepository.existsByDishCategoryId(id);
 
         if (hasDishes) {
@@ -141,11 +138,6 @@ public class DishCategoryServiceImpl implements DishCategoryService {
         }
         category.setIsActive(false);
         dishCategoryRepository.save(category);
-    }
-
-    private DishCategory getDishCategory(Long id) {
-        return dishCategoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("DishCategory", id));
     }
 
 

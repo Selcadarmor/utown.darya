@@ -15,6 +15,4 @@ public interface RatingRepository extends JpaRepository<Rating, Long> {
     @Query("SELECT r FROM Rating r WHERE r.restaurant.id = :restaurantId")
     List<Rating> findAllByRestaurantId(@Param("restaurantId") Long restaurantId);
 
-    Optional<Rating> findByClientIdAndRestaurantId(Long clientId, Long restaurantId);
-
 }

@@ -22,16 +22,17 @@ import java.util.stream.Collectors;
 public class RestaurantCategoryServiceImpl implements RestaurantCategoryService {
 
     private final RestaurantCategoryRepository restaurantCategoryRepository;
+    private final FileInfoService fileInfoService;
     private final RestaurantCategoryMapper restaurantCategoryMapper;
     private final RestaurantRepository restaurantRepository;
-    private final FileInfoService fileInfoService;
 
     // ===== GET =====
 
     @Override
     @Transactional(readOnly = true)
     public RestaurantCategory getRestaurantCategoryById(Long id) {
-        return getRestaurantCategory(id);
+        return restaurantCategoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory", id));
     }
 
     @Override
@@ -62,7 +63,6 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
                 .collect(Collectors.toList());
     }
 
-
     // ===== POST =====
 
     @Override
@@ -84,7 +84,7 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
     @Override//обнавление для категорий ресторана
     @Transactional(rollbackFor = RuntimeException.class)
     public RestaurantCategoryDto updateRestaurantCategory(Long id, RestaurantCategoryCreateDto dto) {
-        RestaurantCategory category = getRestaurantCategory(id);
+        RestaurantCategory category = getRestaurantCategoryById(id);
         restaurantCategoryMapper.updateFromDto(dto, category);
 
         if (dto.getFileId() != null) {
@@ -103,14 +103,9 @@ public class RestaurantCategoryServiceImpl implements RestaurantCategoryService 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public void deleteRestaurantCategory(Long id) {
-        RestaurantCategory category = getRestaurantCategory(id);
+        RestaurantCategory category = getRestaurantCategoryById(id);
         category.setIsActive(false);
         restaurantCategoryRepository.save(category);
     }
 
-    // ===== PRIVATE =====
-    private RestaurantCategory getRestaurantCategory(Long id) {
-        return restaurantCategoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory", id));
-    }
 }

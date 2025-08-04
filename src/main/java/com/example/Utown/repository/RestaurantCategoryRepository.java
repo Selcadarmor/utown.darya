@@ -10,8 +10,8 @@ import java.util.Set;
 
 @Repository
 public interface RestaurantCategoryRepository extends JpaRepository<RestaurantCategory, Long> {
+
     @Query("SELECT c FROM RestaurantCategory c WHERE c.isActive = true ORDER BY c.sort")
     List<RestaurantCategory> findAllActiveRestaurantCategories();
 
-    boolean existsByName(String name);
 }

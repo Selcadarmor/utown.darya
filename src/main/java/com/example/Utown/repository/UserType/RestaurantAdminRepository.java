@@ -12,9 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface RestaurantAdminRepository extends JpaRepository<RestaurantAdmin, Long> {
+
     Optional<RestaurantAdmin> findByUsername(String username);
-    @Modifying
-    @Query("UPDATE RestaurantAdmin a SET a.isActive = false WHERE a.restaurant.id = :restaurantId")
-    void deactivateByRestaurantId(@Param("restaurantId") Long restaurantId);
 
 }

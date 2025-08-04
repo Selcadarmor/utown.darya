@@ -31,9 +31,6 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
                                                  @Param("isActive") Boolean isActive,
                                                  Pageable pageable);
 
-    @Query("SELECT c FROM Client c LEFT JOIN FETCH c.addresses WHERE c.username = :username")
-    Optional<Client> findByUsernameWithAddresses(@Param("username") String username);
-
     @Query("SELECT new com.example.Utown.dto.clientDTO.ClientInfoDto(" +
             "c.fullName, c.username, a.city, a.fullAddress, SIZE(c.orders), c.fileInfo.id, c.fileInfo.path) " +
             "FROM Client c " +

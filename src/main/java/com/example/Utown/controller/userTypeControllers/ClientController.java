@@ -13,13 +13,10 @@ import com.example.Utown.dto.ratingDTO.RatingDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryForClient;
 import com.example.Utown.dto.restaurantDTO.RestaurantForClientDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantProfileDto;
-import com.example.Utown.mapper.OrderMapper;
-import com.example.Utown.model.UserType.Client;
 import com.example.Utown.service.AddressService;
 import com.example.Utown.service.CartService;
 import com.example.Utown.service.DishCategoryService;
 import com.example.Utown.service.DishService;
-import com.example.Utown.service.DishToOrderService;
 import com.example.Utown.service.OrderService;
 import com.example.Utown.service.RatingService;
 import com.example.Utown.service.RestaurantCategoryService;
@@ -37,11 +34,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -58,17 +52,15 @@ import java.util.List;
 @Tag(name = "Client", description = "Client specific operations")
 public class ClientController {
 
+    private final AddressService addressService;
+    private final CartService cartService;
+    private final ClientService clientService;
     private final DishCategoryService dishCategoryService;
     private final DishService dishService;
-    private final ClientService clientService;
+    private final OrderService orderService;
     private final RatingService ratingService;
     private final RestaurantCategoryService restaurantCategoryService;
     private final RestaurantService restaurantService;
-    private final DishToOrderService dishToOrderService;
-    private final OrderService orderService;
-    private final OrderMapper orderMapper;
-    private final AddressService addressService;
-    private final CartService cartService;
 
     @GetMapping("/restaurant/categories") //Passed
     @Operation(

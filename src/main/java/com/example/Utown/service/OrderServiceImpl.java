@@ -11,7 +11,6 @@ import com.example.Utown.exception.CartIsEmptyException;
 import com.example.Utown.exception.OrderCancelNotAllowedException;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.exception.UserNotFoundException;
-import com.example.Utown.mapper.OrderMapper;
 import com.example.Utown.model.Address;
 import com.example.Utown.model.Cart;
 import com.example.Utown.model.DishToOrder;
@@ -34,7 +33,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -57,11 +55,10 @@ public class OrderServiceImpl implements OrderService {
     private final ClientService clientService;
     private final CartService cartService;
     private final DishToOrderRepository dishToOrderRepository;
-    private final OrderMapper orderMapper;
     private final RestaurantAdminRepository restaurantAdminRepository;
     private final AddressService addressService;
     private final DishToOrderService dishToOrderService;
-    private final RestaurantAdminServiceImpl restaurantAdminService;
+    private final RestaurantAdminServiceImpl restaurantAdminService; //удалить имплементацию
 
     // ========================= GET =========================
 
