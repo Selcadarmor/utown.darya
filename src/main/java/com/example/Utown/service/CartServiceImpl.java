@@ -34,10 +34,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class CartServiceImpl implements CartService {
 
     private final CartRepository cartRepository;
+    private final AddressService addressService;
     private final ClientRepository clientRepository;
     private final DishToOrderService dishToOrderService;
     private final DishService dishService;
-    private final AddressService addressService;
 
     // ========================= GET =========================
 
@@ -128,9 +128,7 @@ public class CartServiceImpl implements CartService {
     public CartDto clearCart(Long cartId) {
         Cart cart = getCartById(cartId);
 
-        List<DishToOrder> dishes = cart.getDishToOrders();
         cart.getDishToOrders().clear();
-        dishToOrderService.deleteAll(dishes);
 
         recalculateCart(cart);
 

@@ -18,8 +18,8 @@ import java.util.List;
 public class RatingServiceImpl implements RatingService {
 
     private final RatingRepository ratingRepository;
-    private final RestaurantService restaurantService;
     private final ClientService clientService;
+    private final RestaurantService restaurantService;
 
     @Override
     @Transactional(readOnly = true)

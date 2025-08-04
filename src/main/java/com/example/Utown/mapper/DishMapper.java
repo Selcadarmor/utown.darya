@@ -25,7 +25,6 @@ public interface DishMapper {
     @Mapping(source = "options", target = "options")
     Dish toEntity(DishInfoDto dto);
 
-
     @Mapping(target = "dishCategoryId", source = "dishCategory.id")
     @Mapping(target = "filePath", source = "file.path")
     @Mapping(target = "restaurantId", source = "restaurant.id")

@@ -22,10 +22,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT COUNT(o) FROM Order o WHERE o.createdAt >= :start AND o.createdAt < :end")
     long countByDate(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
-    List<Order> findByRestaurant(Restaurant restaurant);
-
-    List<Order> findByRestaurantAndStatus(Restaurant restaurant, OrderStatus status);
-
     @Query("SELECT o FROM Order o " +
             "JOIN o.client c " +
             "JOIN o.restaurant r " +

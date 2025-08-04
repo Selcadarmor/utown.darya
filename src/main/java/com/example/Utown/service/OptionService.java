@@ -7,9 +7,9 @@ import java.util.Set;
 
 public interface OptionService {
     Option getById(Long id);
-    void deleteOption(Long id);
+    Set<OptionInfoDto> getOptionsWithElementsByDish(Set<Option> options);
     Set<Option> createOptionsForDish(Dish dish, Set<OptionInfoDto> optionDtos);
     Set<Option> updateOptionsForDish(Dish dish, Set<OptionInfoDto> optionDtos);
-    Set<OptionInfoDto> getOptionsWithElementsByDish(Set<Option> options);
+    void deleteOption(Long id);
 }
 

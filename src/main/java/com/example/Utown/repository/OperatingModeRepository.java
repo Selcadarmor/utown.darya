@@ -13,6 +13,7 @@ import java.util.Optional;
 
 @Repository
 public interface OperatingModeRepository extends JpaRepository<OperatingMode, Long> {
+
     List<OperatingMode> findByRestaurantId(Long restaurantId);
 
    @Query("SELECT new com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto " +

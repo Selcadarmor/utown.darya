@@ -27,7 +27,7 @@ public class OptionServiceImpl implements OptionService {
 
     private final OptionRepository optionRepository;
     private final ElementService elementService;
-    private final RestaurantAdminServiceImpl restaurantAdminService;
+    private final RestaurantAdminServiceImpl restaurantAdminService; //удалить имплементацию
 
     @Override
     public Option getById(Long id) {
@@ -130,8 +130,7 @@ public class OptionServiceImpl implements OptionService {
         RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin();
         Long adminRestaurantId = currentAdmin.getRestaurant().getId();
 
-        Option option = optionRepository.findWithContext(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Option", id));
+        Option option = getById(id);
 
         Long optionRestaurantId = option.getDish().getRestaurant().getId();
 

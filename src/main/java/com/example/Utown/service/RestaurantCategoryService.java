@@ -9,14 +9,9 @@ import java.util.List;
 
 public interface RestaurantCategoryService {
     RestaurantCategory getRestaurantCategoryById(Long id);
-
     List<RestaurantCategory> getAllRestaurantCategories();
-
     List<RestaurantCategoryForClient> getAllCategoriesWithRestaurantCount();
-
     RestaurantCategoryDto createCategory(RestaurantCategoryCreateDto dto);
-
     RestaurantCategoryDto updateRestaurantCategory(Long id, RestaurantCategoryCreateDto dto);
-
     void deleteRestaurantCategory(Long id);
 }
