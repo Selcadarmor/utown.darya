@@ -1,6 +1,7 @@
 package com.example.Utown.service;
 
 import com.example.Utown.dto.dishDTO.DishCreateDto;
+import com.example.Utown.dto.dishDTO.DishDeletedMenuDto;
 import com.example.Utown.dto.dishDTO.DishDetailsDto;
 import com.example.Utown.dto.dishDTO.DishInfoDto;
 import com.example.Utown.dto.dishDTO.DishForClientDto;
@@ -21,7 +22,7 @@ public interface DishService {
     Page<DishSearchDto> searchDishesByRestaurant(Long restaurantId, String keyword, Pageable pageable);
     List<DishMenuDto> getDishesByRestaurantWithFile(String categoryName);
     List<DishMenuDto> getInactiveDishesForRestaurant(String categoryName);
-    List<DishMenuDto> getDeletedDishesForRestaurant(String categoryName);
+    List<DishDeletedMenuDto> getDeletedDishesForRestaurant(String categoryName);
     DishInfoDto createDishForRestaurant(Long RestaurantId, DishCreateDto dto);
     DishInfoDto createDishAsRestaurantAdmin(DishCreateDto dto);
     DishInfoDto updateDishForRestaurant(Long RestaurantId, Long DishId, DishCreateDto dto);
