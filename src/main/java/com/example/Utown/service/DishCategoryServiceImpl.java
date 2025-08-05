@@ -16,6 +16,7 @@ import com.example.Utown.model.UserType.RestaurantAdmin;
 import com.example.Utown.repository.DishCategoryRepository;
 import com.example.Utown.repository.DishRepository;
 import com.example.Utown.service.S3Service.FileInfoService;
+import com.example.Utown.service.UserTypeService.RestaurantAdminService;
 import com.example.Utown.service.UserTypeService.RestaurantAdminServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,7 +37,7 @@ public class DishCategoryServiceImpl implements DishCategoryService {
     private final DishRepository dishRepository;
     private final FileInfoService fileInfoService;
     private final RestaurantService restaurantService;
-    private final RestaurantAdminServiceImpl restaurantAdminService; //удалить импелементацию
+    private final RestaurantAdminService restaurantAdminService;
 
     // ===== GET =====
 
@@ -132,7 +133,6 @@ public class DishCategoryServiceImpl implements DishCategoryService {
     @Transactional
     public void deleteDishCategory(Long id) {
         DishCategory category= getDishCategoryById(id);
-        boolean hasDishes = dishRepository.existsByDishCategoryId(id);
         DishCategory defaultCategory = dishCategoryRepository.findByName("No category")
                 .orElseThrow(() -> new IllegalStateException("Default category 'No category' is missing"));
 

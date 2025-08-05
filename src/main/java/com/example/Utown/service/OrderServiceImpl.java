@@ -24,6 +24,7 @@ import com.example.Utown.repository.DishToOrderRepository;
 import com.example.Utown.repository.OrderRepository;
 import com.example.Utown.repository.UserType.RestaurantAdminRepository;
 import com.example.Utown.service.UserTypeService.ClientService;
+import com.example.Utown.service.UserTypeService.RestaurantAdminService;
 import com.example.Utown.service.UserTypeService.RestaurantAdminServiceImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +59,7 @@ public class OrderServiceImpl implements OrderService {
     private final RestaurantAdminRepository restaurantAdminRepository;
     private final AddressService addressService;
     private final DishToOrderService dishToOrderService;
-    private final RestaurantAdminServiceImpl restaurantAdminService; //удалить имплементацию
+    private final RestaurantAdminService restaurantAdminService;
 
     // ========================= GET =========================
 

@@ -8,6 +8,7 @@ import com.example.Utown.model.Element;
 import com.example.Utown.model.Option;
 import com.example.Utown.model.UserType.RestaurantAdmin;
 import com.example.Utown.repository.ElementRepository;
+import com.example.Utown.service.UserTypeService.RestaurantAdminService;
 import com.example.Utown.service.UserTypeService.RestaurantAdminServiceImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class ElementServiceImpl implements ElementService {
 
     private final ElementRepository elementRepository;
     private final ElementMapper elementMapper;
-    private final RestaurantAdminServiceImpl restaurantAdminService;
+    private final RestaurantAdminService restaurantAdminService;
 
     @Override
     public Element getById(Long id) {

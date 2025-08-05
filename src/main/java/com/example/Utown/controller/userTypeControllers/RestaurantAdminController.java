@@ -19,6 +19,7 @@ import com.example.Utown.service.DishCategoryService;
 import com.example.Utown.service.DishCategoryServiceImpl;
 import com.example.Utown.service.DishService;
 import com.example.Utown.service.ElementService;
+import com.example.Utown.service.OperatingModeService;
 import com.example.Utown.service.OperatingModeServiceImpl;
 import com.example.Utown.service.OptionService;
 import com.example.Utown.service.OrderService;
@@ -94,6 +95,7 @@ public class RestaurantAdminController {
     public Page<OrderHistoryDto> getOrdersCompleted(Pageable pageable) {
         return orderService.getOrdersCompletedByRestaurant(pageable);
     }
+
 
     @PutMapping("order/{orderId}/accept")
     @Operation(

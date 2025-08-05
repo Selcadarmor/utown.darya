@@ -19,7 +19,7 @@ public class FileInfoServiceImpl implements FileInfoService {
 
     private final FileInfoRepository fileInfoRepository;
     private final FileInfoMapper fileInfoMapper;
-    protected S3Service s3Service;
+    private final S3Service s3Service;
     private final AwsProperties awsProperties;
 
     @Override
