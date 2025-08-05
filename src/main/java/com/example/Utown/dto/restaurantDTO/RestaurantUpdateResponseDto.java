@@ -4,7 +4,6 @@ import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.dto.deliveryDTO.DeliveryDto;
 import com.example.Utown.dto.fileInfoDTO.FileInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeCreateDto;
-import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryCreateDto;
 import com.example.Utown.dto.restaurantCategoryDTO.RestaurantCategoryDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;

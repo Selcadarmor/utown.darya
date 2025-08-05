@@ -15,9 +15,11 @@ import com.example.Utown.dto.orderDTO.OrderDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantStatusUpdateRequest;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateResponseDto;
+import com.example.Utown.service.DishCategoryService;
 import com.example.Utown.service.DishCategoryServiceImpl;
 import com.example.Utown.service.DishService;
 import com.example.Utown.service.ElementService;
+import com.example.Utown.service.OperatingModeService;
 import com.example.Utown.service.OperatingModeServiceImpl;
 import com.example.Utown.service.OptionService;
 import com.example.Utown.model.UserType.User;
@@ -63,8 +65,8 @@ public class RestaurantAdminController {
     private final DishService dishService;
     private final OptionService optionService;
     private final ElementService elementService;
-    private final OperatingModeServiceImpl operatingModeService;
-    private final DishCategoryServiceImpl dishCategoryService;
+    private final OperatingModeService operatingModeService;
+    private final DishCategoryService dishCategoryService;
 
     @PutMapping("order/{orderId}/accept")
     @Operation(
