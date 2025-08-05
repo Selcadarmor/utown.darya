@@ -60,6 +60,7 @@ public class OrderServiceImpl implements OrderService {
     private final AddressService addressService;
     private final DishToOrderService dishToOrderService;
     private final RestaurantAdminService restaurantAdminService;
+    private final NotificationService notificationService;
 
     // ========================= GET =========================
 
@@ -337,6 +338,13 @@ public class OrderServiceImpl implements OrderService {
 
         orderRepository.save(order);
 
+        notificationService.notifyUser(
+                client,
+                "Order Created",
+                "Your order №" + order.getNumber() + " has been successfully created.",
+                true
+        );
+
         cartService.clearCart(cart.getId());
 
         return order;
@@ -363,6 +371,13 @@ public class OrderServiceImpl implements OrderService {
         order.setUpdatedAt(LocalDateTime.now());
 
         orderRepository.save(order);
+
+        notificationService.notifyUser(
+                client,
+                "Order cancelled",
+                "You have successfully cancelled order №" + order.getNumber(),
+                true
+        );
     }
 
 
@@ -383,6 +398,13 @@ public class OrderServiceImpl implements OrderService {
         order.setTimeOfAccepted(LocalTime.now().toString());
         order.setCookingTime(cookingTime);
         orderRepository.save(order);
+
+        notificationService.notifyUser(
+                order.getClient(),
+                "Your order has been accepted",
+                "Order №" + order.getNumber() + " accepted for processing.",
+                true
+        );
     }
 
     @Override
@@ -398,6 +420,13 @@ public class OrderServiceImpl implements OrderService {
         order.setDeliveryStatus(DeliveryStatus.READY_FOR_PICKUP);
         order.setEndTimeOfCooking(LocalTime.now().toString());
         orderRepository.save(order);
+
+        notificationService.notifyUser(
+                order.getClient(),
+                "Your order is ready for pickup",
+                "Order №" + order.getNumber() + " is now ready for pickup.",
+                true
+        );
     }
 
     @Override
@@ -409,6 +438,13 @@ public class OrderServiceImpl implements OrderService {
         order.setDeliveryStatus(DeliveryStatus.COMPLETED);;
         order.setTimeOfDelivery(LocalTime.now().toString());
         orderRepository.save(order);
+
+        notificationService.notifyUser(
+                order.getClient(),
+                "The order has been delivered",
+                "Your order №" + order.getNumber() + " successfully completed.",
+                true
+        );
     }
 
     @Override
@@ -420,6 +456,13 @@ public class OrderServiceImpl implements OrderService {
         order.setUpdatedAt(LocalDateTime.now());
 
         orderRepository.save(order);
+
+        notificationService.notifyUser(
+                order.getClient(),
+                "Order Canceled by Restaurant",
+                "Your order №" + order.getNumber() + " has been canceled by the restaurant. We apologize for the inconvenience.",
+                false
+        );
     }
 
     // ========================= DELETE =========================
