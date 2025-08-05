@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface DishToOrderRepository extends JpaRepository<DishToOrder, Long> {
@@ -27,6 +28,9 @@ public interface DishToOrderRepository extends JpaRepository<DishToOrder, Long> 
             "LEFT JOIN d.file f " +
             "WHERE dto.cart.id = :cartId")
     List<DishInCartDto> findDishesInCartByCartId(@Param("cartId") Long cartId);
+
+    @Query("SELECT e.name FROM DishToOrder d JOIN d.selectedElements e WHERE d.id = :dishToOrderId")
+    Set<String> findElementNamesByDishToOrderId(@Param("dishToOrderId") Long dishToOrderId);
 
 
 

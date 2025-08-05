@@ -6,8 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Repository
@@ -18,9 +16,4 @@ public interface OptionRepository extends JpaRepository<Option, Long> {
     @Query("SELECT o FROM Option o WHERE o.dish.id = :dishId AND o.isActive = true")
     Set<Option> findByDishIdAndIsActiveTrue(@Param("dishId") Long dishId);
 
-    @Query("SELECT o FROM Option o " +
-            "JOIN FETCH o.dish d " +
-            "JOIN FETCH d.restaurant r " +
-            "WHERE o.id = :id ")
-    Optional<Option> findWithContext(@Param("id") Long id);
 }

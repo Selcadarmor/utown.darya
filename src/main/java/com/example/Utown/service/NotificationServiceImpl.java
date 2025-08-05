@@ -25,13 +25,13 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public Notification create(NotificationDto dto) {
-        return repository.save(mapper.toEntity(dto));
+    public List<Notification> getAll() {
+        return repository.findAll();
     }
 
     @Override
-    public List<Notification> getAll() {
-        return repository.findAll();
+    public Notification create(NotificationDto dto) {
+        return repository.save(mapper.toEntity(dto));
     }
 
     @Override
