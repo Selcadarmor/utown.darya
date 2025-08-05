@@ -10,8 +10,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,7 +34,7 @@ public class FileController {
             @ApiResponse(responseCode = "404", description = "File not found")
     })
     //получение метаданных по айди
-    @GetMapping("/{id}")
+    @GetMapping("/{id}")//Passed
     public ResponseEntity<FileInfoDto> getFileInfo(
             @Parameter(description = "File ID", required = true)
             @PathVariable Long id){
@@ -51,7 +49,7 @@ public class FileController {
             @ApiResponse(responseCode = "404", description = "File not found")
     })
     //загрузка файла
-    @PostMapping
+    @PostMapping//Passed
     public  ResponseEntity<FileInfoDto> uploadFile(
             @Parameter(description = "File to upload", required = true)
             @RequestParam("file")MultipartFile file){

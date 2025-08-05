@@ -25,6 +25,7 @@ import com.example.Utown.repository.ElementRepository;
 import com.example.Utown.repository.OptionRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.service.S3Service.FileInfoService;
+import com.example.Utown.service.UserTypeService.RestaurantAdminService;
 import com.example.Utown.service.UserTypeService.RestaurantAdminServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -49,9 +50,8 @@ public class DishServiceImpl implements DishService {
     private final OptionService optionService;
     private final ElementRepository elementRepository;
     private final FileInfoService fileInfoService;
-    private final FileInfoMapper fileInfoMapper;
     private final AwsProperties awsProperties;
-    private final RestaurantAdminServiceImpl restaurantAdminService;
+    private final RestaurantAdminService restaurantAdminService;
 
     // ===== GET =====
 

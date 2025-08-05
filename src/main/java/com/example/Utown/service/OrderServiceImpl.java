@@ -27,6 +27,7 @@ import com.example.Utown.repository.OrderRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.repository.UserType.RestaurantAdminRepository;
 import com.example.Utown.service.UserTypeService.ClientService;
+import com.example.Utown.service.UserTypeService.RestaurantAdminService;
 import com.example.Utown.service.UserTypeService.RestaurantAdminServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -63,8 +64,7 @@ public class OrderServiceImpl implements OrderService {
     private final RestaurantAdminRepository restaurantAdminRepository;
     private final AddressService addressService;
     private final DishToOrderService dishToOrderService;
-    private final RestaurantRepository restaurantRepository;
-    private final RestaurantAdminServiceImpl restaurantAdminService;
+    private final RestaurantAdminService restaurantAdminService;
 
     // ========================= GET =========================
 

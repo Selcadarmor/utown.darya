@@ -18,6 +18,7 @@ import com.example.Utown.repository.DishRepository;
 import com.example.Utown.repository.FileInfoRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.service.S3Service.FileInfoService;
+import com.example.Utown.service.UserTypeService.RestaurantAdminService;
 import com.example.Utown.service.UserTypeService.RestaurantAdminServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,12 +35,10 @@ public class DishCategoryServiceImpl implements DishCategoryService {
 
     private final DishCategoryRepository dishCategoryRepository;
     private final DishCategoryMapper dishCategoryMapper;
-    private final FileInfoRepository fileInfoRepository;
     private final FileInfoService fileInfoService;
-    private final RestaurantRepository restaurantRepository;
     private final RestaurantService restaurantService;
     private final DishRepository dishRepository;
-    private final RestaurantAdminServiceImpl restaurantAdminService;
+    private final RestaurantAdminService restaurantAdminService;
 
     // ===== GET =====
 

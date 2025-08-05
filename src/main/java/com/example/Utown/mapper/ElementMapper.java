@@ -16,9 +16,5 @@ public interface ElementMapper {
 
     Element toEntity(ElementDto dto);
 
-    @Mapping(source = "element.id", target = "id")
-    @Mapping(source = "element.name", target = "name")
-    @Mapping(source = "element.price", target = "price")
-    ElementInfoDto mapElement(Element element);
 
 }
