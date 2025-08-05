@@ -67,11 +67,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
 
     private final ClientService clientService;
-    private final RestaurantService restaurantService;
     private final DishService dishService;
     private final DishCategoryService dishCategoryService;
     private final OrderService orderService;
     private final RestaurantCategoryService restaurantCategoryService;
+    private final RestaurantService restaurantService;
 
     // --- Клиенты ---
 

@@ -43,7 +43,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,23 +57,28 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class RestaurantServiceImpl  implements RestaurantService {
 
-    private final ClientService clientService;
-    private final RestaurantCategoryRepository restaurantCategoryRepository;
-    private final RestaurantInfoMapper restaurantInfoMapper;
     private final RestaurantRepository restaurantRepository;
-    private final OperatingModeService operatingModeService;
-    private final OperatingModeRepository operatingModeRepository;
-    private final RestaurantCategoryInfoMapper restaurantCategoryInfoMapper;
-    private final RestaurantAdminService restaurantAdminService;
     private final AddressService addressService;
+    private final AwsProperties awsProperties;
+    private final ClientService clientService;
     private final DeliveryService deliveryService;
+    private final DeliveryRepository deliveryRepository;
     private final DishRepository dishRepository;
     private final FileInfoRepository fileInfoRepository;
-    private final DeliveryRepository deliveryRepository;
     private final FileInfoService fileInfoService;
-    private final AwsProperties awsProperties;
+    private final OperatingModeService operatingModeService;
+    private final OperatingModeRepository operatingModeRepository;
+    private final RestaurantCategoryRepository restaurantCategoryRepository;
+    private final RestaurantInfoMapper restaurantInfoMapper;
+    private final RestaurantCategoryInfoMapper restaurantCategoryInfoMapper;
+    private final RestaurantAdminService restaurantAdminService;
 
     // ===== GET =====
+
+    public Restaurant findRestaurantById(Long restaurantId) {
+        return restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
+    }
 
     @Override
     public Page<RestaurantInfoDto> getAllRestaurants(String query, Boolean isActive,int page, int size) {
@@ -345,8 +349,6 @@ public class RestaurantServiceImpl  implements RestaurantService {
         }
     }
 
-
-
     // ===== DELETE / DEACTIVATE =====
 
     @Transactional(rollbackFor = RuntimeException.class)
@@ -372,10 +374,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
     // ===== HELPERS =====
 
-    public Restaurant findRestaurantById(Long restaurantId) {
-        return restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
-    }
+
 
     private Set<RestaurantCategory> resolveCategoriesByIds(Set<Long> categoryIds) {
         if (categoryIds == null || categoryIds.isEmpty()) {

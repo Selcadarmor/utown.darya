@@ -10,11 +10,6 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface DishToOrderMapper {
 
-    @Mapping(source = "dish.title", target = "dishName")
-    @Mapping(source = "dish.price", target = "dishPrice")
-    @Mapping(source = ".", target = "selectedElementNames", qualifiedByName = "getElementNames")
-    DishToOrderResponseDto toResponseDto(DishToOrder entity);
-
     @Named("getElementNames")
     default List<String> getElementNames(DishToOrder entity) {
         if (entity.getSelectedElements() == null) return List.of();

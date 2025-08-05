@@ -14,10 +14,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface RestaurantService {
+
+    Restaurant findRestaurantById(Long restaurantId);
     Page<RestaurantInfoDto> getAllRestaurants(String query, Boolean isActive, int page, int size);
     RestaurantDetailsDto getRestaurantDetails(Long restaurantId);
-    RestaurantsCreateResponseDto createRestaurant(RestaurantCreateDto dto);
-    RestaurantUpdateResponseDto updateRestaurant(Long id, RestaurantUpdateDto dto);
     Page<RestaurantForClientDto> getRecommendedRestaurantsForClient(Pageable pageable);
     Page<RestaurantForClientDto> getFastestDeliveryRestaurantsForClient(Pageable pageable);
     Page<RestaurantForClientDto> getRestaurantsByCategory(Long categoryId, Pageable pageable);
@@ -28,9 +28,10 @@ public interface RestaurantService {
             String sortBy,
             String direction);
     RestaurantProfileDto getRestaurantProfile(Long restaurantId);
-    void deactivateRestaurant(Long restaurantId);
-    Restaurant findRestaurantById(Long restaurantId);
-    void updateStatusForCurrentAdminRestaurant(RestaurantStatus newStatus);
+    RestaurantsCreateResponseDto createRestaurant(RestaurantCreateDto dto);
+    RestaurantUpdateResponseDto updateRestaurant(Long id, RestaurantUpdateDto dto);
     RestaurantUpdateResponseDto updateRestaurantByAdmin(RestaurantUpdateDto dto);
+    void updateStatusForCurrentAdminRestaurant(RestaurantStatus newStatus);
+    void deactivateRestaurant(Long restaurantId);
 
 }

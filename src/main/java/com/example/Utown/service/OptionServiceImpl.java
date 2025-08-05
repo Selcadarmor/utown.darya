@@ -131,8 +131,7 @@ public class OptionServiceImpl implements OptionService {
         RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin();
         Long adminRestaurantId = currentAdmin.getRestaurant().getId();
 
-        Option option = optionRepository.findWithContext(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Option", id));
+        Option option = getById(id);
 
         Long optionRestaurantId = option.getDish().getRestaurant().getId();
 

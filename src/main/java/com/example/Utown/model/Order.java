@@ -29,7 +29,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 @Getter
@@ -99,7 +98,7 @@ public class Order {
     private String street;
 
     @Column(name = "time_of_accepted")
-    private LocalTime timeOfAccepted;
+    private String timeOfAccepted;
 
     @Column(name = "time_of_delivery")
     private String timeOfDelivery;

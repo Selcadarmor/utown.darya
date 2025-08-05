@@ -11,7 +11,7 @@ import com.example.Utown.dto.operatingModeDTO.OperatingModeInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeUpdateDto;
 import com.example.Utown.dto.orderDTO.DailyOrderStatsDto;
 import com.example.Utown.dto.orderDTO.MonthlyOrderStatsDto;
-import com.example.Utown.dto.orderDTO.OrderDto;
+import com.example.Utown.dto.orderDTO.OrderHistoryDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantStatusUpdateRequest;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateResponseDto;
@@ -22,7 +22,6 @@ import com.example.Utown.service.ElementService;
 import com.example.Utown.service.OperatingModeService;
 import com.example.Utown.service.OperatingModeServiceImpl;
 import com.example.Utown.service.OptionService;
-import com.example.Utown.model.UserType.User;
 import com.example.Utown.service.OrderService;
 import com.example.Utown.service.RestaurantService;
 import com.example.Utown.service.UserTypeService.RestaurantAdminService;
@@ -34,10 +33,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -59,14 +59,43 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RestaurantAdminController {
 
+    private final DishService dishService;
+    private final DishCategoryServiceImpl dishCategoryService; //Почему? убрать имплементацию
+    private final DishCategoryService DishCategoryService;
+    private final ElementService elementService;
     private final OrderService orderService;
+    private final OptionService optionService;
+    private final OperatingModeServiceImpl operatingModeService;
     private final RestaurantService restaurantService;
     private final RestaurantAdminService restaurantAdminService;
-    private final DishService dishService;
-    private final OptionService optionService;
-    private final ElementService elementService;
-    private final OperatingModeService operatingModeService;
-    private final DishCategoryService dishCategoryService;
+
+
+    @Operation(
+            summary = "Get in-process orders for current restaurant",
+            description = "Returns a paginated list of active orders for the authenticated restaurant admin"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved active orders"
+    )
+    @GetMapping("/orders/in-process")
+    public Page<OrderHistoryDto> getOrdersInProcess(Pageable pageable) {
+        return orderService.getOrdersInProcessByRestaurant(pageable);
+    }
+
+    @Operation(
+            summary = "Get completed/canceled orders for current restaurant",
+            description = "Returns a paginated list of completed, canceled, or delivered orders for the authenticated restaurant admin"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved completed/canceled orders"
+    )
+    @GetMapping("/orders/completed")
+    public Page<OrderHistoryDto> getOrdersCompleted(Pageable pageable) {
+        return orderService.getOrdersCompletedByRestaurant(pageable);
+    }
+
 
     @PutMapping("order/{orderId}/accept")
     @Operation(
@@ -122,24 +151,8 @@ public class RestaurantAdminController {
     }
 
 
-    @GetMapping("/orders")
-    @Operation(summary = "Получить все заказы", description = "Ресторанный админ получает список всех заказов своего ресторана")
-    public ResponseEntity<List<OrderDto>> getAllOrdersForRestaurantAdmin(
-            @AuthenticationPrincipal User user
-    ) {
-        List<OrderDto> orders = orderService.getAllOrdersForRestaurantAdmin(user.getUsername());
-        return ResponseEntity.ok(orders);
-    }
 
-    @GetMapping("/orders/status/{status}")
-    @Operation(summary = "Фильтрация заказов по статусу", description = "Ресторанный админ фильтрует заказы по статусу (PENDING, CANCELED и т.д.)")
-    public ResponseEntity<List<OrderDto>> getOrdersByStatus(
-            @PathVariable String status,
-            @AuthenticationPrincipal User user
-    ) {
-        List<OrderDto> orders = orderService.getOrdersByStatusForRestaurantAdmin(user.getUsername(), status);
-        return ResponseEntity.ok(orders);
-    }
+
 
     //UPDATE RESTAURANT INFO
     @PutMapping

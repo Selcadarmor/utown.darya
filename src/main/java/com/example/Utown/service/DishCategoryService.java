@@ -16,10 +16,10 @@ public interface DishCategoryService {
     Page<DishCategoryDetailsDto> getDishCategoriesByRestaurantId(
             Long restaurantId, String query, Integer sort, Boolean isActive, int page, int size);
     List<DishCategoryRestaurantProfileDto> getDishCategoriesByRestaurantForClient(Long restaurantId);
+    List<DishCategoryDto> getCategoriesByRestaurant();
     DishCategoryCreateResponseDto createDishCategoryForRestaurant(Long restaurantId, DishCategoryCreateDto dto);
+    DishCategoryCreateResponseDto createDishCategoryForRestaurantByAdmin(DishCategoryCreateDto dto);
     DishCategoryDto updateDishCategory(Long id, DishCategoryDto dto);
     void deleteDishCategory(Long id);
-    List<DishCategoryDto> getCategoriesByRestaurant();
-    DishCategoryCreateResponseDto createDishCategoryForRestaurantByAdmin(DishCategoryCreateDto dto);
 }
 

@@ -4,7 +4,6 @@ import com.example.Utown.dto.elementDTO.ElementDto;
 import com.example.Utown.dto.elementDTO.ElementInfoDto;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.mapper.ElementMapper;
-import com.example.Utown.model.Dish;
 import com.example.Utown.model.Element;
 import com.example.Utown.model.Option;
 import com.example.Utown.model.UserType.RestaurantAdmin;
@@ -41,12 +40,14 @@ public class ElementServiceImpl implements ElementService {
     }
 
     @Override
-    public List<Element> getElementsByIds(List<Long> ids) {
-        List<Element> elements = elementRepository.findAllById(ids);
+    public Set<Element> getElementsByIds(Set<Long> ids) {
+        List<Element> foundElements = elementRepository.findAllById(ids);
+        Set<Element> elements = new HashSet<>(foundElements);
 
         if (elements.size() != ids.size()) {
             throw new ResourceNotFoundException("Element", ids);
         }
+
         return elements;
     }
 
@@ -73,7 +74,7 @@ public class ElementServiceImpl implements ElementService {
     }
 
     @Override
-    public BigDecimal calculateElementsPrice(List<Long> elementIds) {
+    public BigDecimal calculateElementsPrice(Set<Long> elementIds) {
         List<Element> elements = elementRepository.findAllById(elementIds);
 
         if (elements.size() != elementIds.size()) {

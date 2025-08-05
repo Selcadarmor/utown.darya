@@ -4,18 +4,16 @@ import com.example.Utown.dto.dishToOrderDTO.DishInOrderHistoryDto;
 import com.example.Utown.dto.orderDTO.DailyOrderStatsDto;
 import com.example.Utown.dto.orderDTO.MonthlyOrderStatsDto;
 import com.example.Utown.dto.orderDTO.OrderDetailsDto;
-import com.example.Utown.dto.orderDTO.OrderDto;
 import com.example.Utown.dto.orderDTO.OrderHistoryDto;
 import com.example.Utown.exception.AccessDeniedToOrderException;
 import com.example.Utown.dto.orderDTO.OrderShortInfoDto;
 import com.example.Utown.exception.CartIsEmptyException;
 import com.example.Utown.exception.OrderCancelNotAllowedException;
 import com.example.Utown.exception.ResourceNotFoundException;
-import com.example.Utown.mapper.OrderMapper;
+import com.example.Utown.exception.UserNotFoundException;
 import com.example.Utown.model.Address;
 import com.example.Utown.model.Cart;
 import com.example.Utown.model.DishToOrder;
-import com.example.Utown.model.Element;
 import com.example.Utown.model.Order;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.UserType.Client;
@@ -24,20 +22,18 @@ import com.example.Utown.model.enumFiles.DeliveryStatus;
 import com.example.Utown.model.enumFiles.OrderStatus;
 import com.example.Utown.repository.DishToOrderRepository;
 import com.example.Utown.repository.OrderRepository;
-import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.repository.UserType.RestaurantAdminRepository;
 import com.example.Utown.service.UserTypeService.ClientService;
 import com.example.Utown.service.UserTypeService.RestaurantAdminService;
 import com.example.Utown.service.UserTypeService.RestaurantAdminServiceImpl;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -60,7 +56,6 @@ public class OrderServiceImpl implements OrderService {
     private final ClientService clientService;
     private final CartService cartService;
     private final DishToOrderRepository dishToOrderRepository;
-    private final OrderMapper orderMapper;
     private final RestaurantAdminRepository restaurantAdminRepository;
     private final AddressService addressService;
     private final DishToOrderService dishToOrderService;
@@ -107,32 +102,29 @@ public class OrderServiceImpl implements OrderService {
         return  new PageImpl<>(dtos, pageable, orders.getTotalElements());
     }
 
-    @Override //доработать этот метод (ошибка + 1)
+    @Override
+    @Transactional
     public Page<OrderHistoryDto> getOrderHistoryByClient(Pageable pageable) {
         Client client = clientService.getCurrentClient();
 
-        Page<Order> orders = orderRepository.findAllByClientId(client.getId(), pageable);
+        Page<Order> orders = orderRepository.findAllByClientIdOrderByCreatedAtDesc(client.getId(), pageable);
 
         return orders.map(order -> {
-            List<DishInOrderHistoryDto> dishes = order.getDishesToOrder().stream().map(dishToOrder -> {
-                List<String> elementNames = dishToOrder.getSelectedElements().stream()
-                        .map(Element::getName)
-                        .toList();
-
-                return new DishInOrderHistoryDto(
-                        dishToOrder.getDish().getTitle(),
-                        dishToOrder.getCount(),
-                        dishToOrder.getSum(),
-                        elementNames
-                );
-            }).toList();
+            List<DishInOrderHistoryDto> dishes = order.getDishesToOrder().stream()
+                    .map(dishToOrder -> new DishInOrderHistoryDto(
+                            dishToOrder.getDish().getTitle(),
+                            dishToOrder.getCount(),
+                            dishToOrder.getSum(),
+                            dishToOrderService.getElementNames(dishToOrder.getId())
+                    ))
+                    .collect(Collectors.toList());
 
             return new OrderHistoryDto(
-                    order.getClient().getUsername(),
-                    order.getClient().getFullName(),
+                    order.getClientPhone(),
+                    client.getFullName(),
                     order.getFullAddress(),
                     order.getRestaurant().getTitle(),
-                    order.getRestaurant().getPhone(),
+                    order.getRestaurantPhone(),
                     order.getStatus(),
                     order.getNumber(),
                     order.getTotalSum(),
@@ -140,6 +132,81 @@ public class OrderServiceImpl implements OrderService {
             );
         });
     }
+
+    @Override
+    @Transactional
+    public Page<OrderHistoryDto> getOrdersInProcessByRestaurant(Pageable pageable) {
+        List<OrderStatus> activeStatuses = List.of(OrderStatus.PENDING, OrderStatus.PROCESSING);
+
+        RestaurantAdmin restaurantAdmin = getCurrentRestaurantAdmin();
+        Page<Order> orders = orderRepository.findAllByRestaurantIdAndStatusInOrderByCreatedAtDesc(
+                restaurantAdmin.getRestaurant().getId(), activeStatuses, pageable
+        );
+
+        return orders.map(order -> {
+            List<DishInOrderHistoryDto> dishes = order.getDishesToOrder().stream()
+                    .map(dishToOrder -> new DishInOrderHistoryDto(
+                            dishToOrder.getDish().getTitle(),
+                            dishToOrder.getCount(),
+                            dishToOrder.getSum(),
+                            dishToOrderService.getElementNames(dishToOrder.getId())
+                    ))
+                    .collect(Collectors.toList());
+
+            return new OrderHistoryDto(
+                    order.getClientPhone(),
+                    order.getClient().getFullName(),
+                    order.getFullAddress(),
+                    order.getRestaurant().getTitle(),
+                    order.getRestaurantPhone(),
+                    order.getStatus(),
+                    order.getNumber(),
+                    order.getTotalSum(),
+                    dishes
+            );
+        });
+    }
+
+    @Override
+    @Transactional
+    public Page<OrderHistoryDto> getOrdersCompletedByRestaurant(Pageable pageable) {
+        List<OrderStatus> statuses = List.of(
+                OrderStatus.READY_FOR_PICKUP,
+                OrderStatus.DELIVERY,
+                OrderStatus.COMPLETED,
+                OrderStatus.CANCELED
+        );
+
+        RestaurantAdmin restaurantAdmin = getCurrentRestaurantAdmin();
+
+        Page<Order> orders = orderRepository.findAllByRestaurantIdAndStatusInOrderByCreatedAtDesc(
+                restaurantAdmin.getRestaurant().getId(), statuses, pageable
+        );
+
+        return orders.map(order -> {
+            List<DishInOrderHistoryDto> dishes = order.getDishesToOrder().stream()
+                    .map(dishToOrder -> new DishInOrderHistoryDto(
+                            dishToOrder.getDish().getTitle(),
+                            dishToOrder.getCount(),
+                            dishToOrder.getSum(),
+                            dishToOrderService.getElementNames(dishToOrder.getId())
+                    ))
+                    .collect(Collectors.toList());
+
+            return new OrderHistoryDto(
+                    order.getClientPhone(),
+                    order.getClient().getFullName(),
+                    order.getFullAddress(),
+                    order.getRestaurant().getTitle(),
+                    order.getRestaurantPhone(),
+                    order.getStatus(),
+                    order.getNumber(),
+                    order.getTotalSum(),
+                    dishes
+            );
+        });
+    }
+
 
     @Override
     public List<MonthlyOrderStatsDto> getMonthlyStats(int year) { //Делаем историю для одного года
@@ -313,7 +380,7 @@ public class OrderServiceImpl implements OrderService {
 
         order.setStatus(OrderStatus.PROCESSING);
         order.setDeliveryStatus(DeliveryStatus.ACCEPTED);
-        order.setTimeOfAccepted(LocalTime.now());
+        order.setTimeOfAccepted(LocalTime.now().toString());
         order.setCookingTime(cookingTime);
         orderRepository.save(order);
     }
@@ -366,29 +433,6 @@ public class OrderServiceImpl implements OrderService {
 
 
 
-    public List<OrderDto> getAllOrdersForRestaurantAdmin(String username) {
-        RestaurantAdmin admin = restaurantAdminRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Admin not found"));
-        List<Order> orders = orderRepository.findByRestaurant(admin.getRestaurant());
-        return orders.stream().map(orderMapper::orderToDto).toList();
-    }
-
-    public List<OrderDto> getOrdersByStatusForRestaurantAdmin(String username, String statusStr) {
-        RestaurantAdmin admin = restaurantAdminRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Admin not found"));
-
-        OrderStatus status;
-        try {
-            status = OrderStatus.valueOf(statusStr.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid order status: " + statusStr);
-        }
-
-        List<Order> orders = orderRepository.findByRestaurantAndStatus(admin.getRestaurant(), status);
-        return orders.stream().map(orderMapper::orderToDto).toList();
-    }
-
-
 
 
     // ========================= PRIVATE =========================
@@ -400,6 +444,17 @@ public class OrderServiceImpl implements OrderService {
 
         long countToday = orderRepository.countByDate(startOfDay, endOfDay);
         return String.format("%03d", countToday + 1);
+    }
+
+    private RestaurantAdmin getCurrentRestaurantAdmin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("User is not authenticated");
+        }
+
+        String username = authentication.getName();
+        return restaurantAdminRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("Admin not found: " + username));
     }
 
 

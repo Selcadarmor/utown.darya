@@ -43,27 +43,28 @@ import java.util.Set;
 public class DishServiceImpl implements DishService {
 
     private final DishRepository dishRepository;
-    private final RestaurantRepository restaurantRepository;
+    private final AwsProperties awsProperties;
     private final DishCategoryRepository dishCategoryRepository;
     private final DishMapper dishMapper;
-    private final OptionRepository optionRepository;
-    private final OptionService optionService;
     private final ElementRepository elementRepository;
     private final FileInfoService fileInfoService;
-    private final AwsProperties awsProperties;
     private final RestaurantAdminService restaurantAdminService;
+    private final OptionRepository optionRepository;
+    private final OptionService optionService;
+    private final RestaurantRepository restaurantRepository;
 
     // ===== GET =====
 
     @Override
     public Dish getDishById(Long id) {
-        return getOrElseThrow(id);
+        return dishRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Dish", id));
     }
 
     @Override
     @Transactional(readOnly = true)
     public DishForClientDto getDishByIdForOrder(Long dishId) {
-        Dish dish = getOrElseThrow(dishId);
+        Dish dish = getDishById(dishId);
 
         Set<Option> activeOptions = optionRepository.findByDishIdAndIsActiveTrue(dishId);
 
@@ -213,7 +214,7 @@ public class DishServiceImpl implements DishService {
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
     public DishInfoDto updateDishForRestaurant(Long restaurantId, Long dishId, DishCreateDto dto) {
-        Dish dish = getOrElseThrow(dishId);
+        Dish dish = getDishById(dishId);
 
         if (!dish.getRestaurant().getId().equals(restaurantId)) {
             throw new ResourceNotFoundException("Dish", dishId);
@@ -262,18 +263,12 @@ public class DishServiceImpl implements DishService {
         RestaurantAdmin admin = restaurantAdminService.getCurrentAdmin();
         Long restaurantId = admin.getRestaurant().getId();
 
-        Dish dish = getOrElseThrow(dishId);
+        Dish dish = getDishById(dishId);
         if (!dish.getRestaurant().getId().equals(restaurantId)) {
             throw new AccessDeniedException("You do not have permission to update this dish.");
         }
 
         return updateDishForRestaurant(restaurantId, dishId, dto);
-    }
-
-
-    private Dish getOrElseThrow(Long dishId) {
-        return dishRepository.findById(dishId)
-                .orElseThrow(() -> new ResourceNotFoundException("Dish", dishId));
     }
 
 
@@ -283,7 +278,7 @@ public class DishServiceImpl implements DishService {
     public void deleteDish(Long id) {
         RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin();
         Long adminRestaurantId = currentAdmin.getRestaurant().getId();
-        Dish dish = getOrElseThrow(id);
+        Dish dish = getDishById(id);
         if (!dish.getRestaurant().getId().equals(adminRestaurantId)) {
             throw new AccessDeniedException("You do not have permission to delete this dish.");
         }

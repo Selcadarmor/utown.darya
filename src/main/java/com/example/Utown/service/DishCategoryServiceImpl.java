@@ -15,8 +15,6 @@ import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.UserType.RestaurantAdmin;
 import com.example.Utown.repository.DishCategoryRepository;
 import com.example.Utown.repository.DishRepository;
-import com.example.Utown.repository.FileInfoRepository;
-import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.service.S3Service.FileInfoService;
 import com.example.Utown.service.UserTypeService.RestaurantAdminService;
 import com.example.Utown.service.UserTypeService.RestaurantAdminServiceImpl;
@@ -25,19 +23,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class DishCategoryServiceImpl implements DishCategoryService {
 
     private final DishCategoryRepository dishCategoryRepository;
     private final DishCategoryMapper dishCategoryMapper;
+    private final DishRepository dishRepository;
     private final FileInfoService fileInfoService;
     private final RestaurantService restaurantService;
-    private final DishRepository dishRepository;
     private final RestaurantAdminService restaurantAdminService;
 
     // ===== GET =====
@@ -45,8 +44,8 @@ public class DishCategoryServiceImpl implements DishCategoryService {
     @Override
     @Transactional
     public DishCategory getDishCategoryById(Long id) {
-        DishCategory dishCategory = getDishCategory(id);
-        return dishCategory;
+        return dishCategoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("DishCategory", id));
     }
 
     @Override
@@ -114,7 +113,7 @@ public class DishCategoryServiceImpl implements DishCategoryService {
 
     @Override
     public DishCategoryDto updateDishCategory(Long id, DishCategoryDto dto) {
-        DishCategory category = getDishCategory(id);
+        DishCategory category = getDishCategoryById(id);
 
         category.setName(dto.getName());
         category.setSort(dto.getSort());
@@ -133,7 +132,7 @@ public class DishCategoryServiceImpl implements DishCategoryService {
     @Override
     @Transactional
     public void deleteDishCategory(Long id) {
-        DishCategory category= getDishCategory(id);
+        DishCategory category= getDishCategoryById(id);
         DishCategory defaultCategory = dishCategoryRepository.findByName("No category")
                 .orElseThrow(() -> new IllegalStateException("Default category 'No category' is missing"));
 
@@ -152,11 +151,6 @@ public class DishCategoryServiceImpl implements DishCategoryService {
         // Мягкое удаление категории (например, ставим inactive)
         category.setIsActive(false);
         dishCategoryRepository.save(category);
-    }
-
-    private DishCategory getDishCategory(Long id) {
-        return dishCategoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("DishCategory", id));
     }
 
 
