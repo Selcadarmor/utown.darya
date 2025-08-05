@@ -37,6 +37,10 @@ public class WebSecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/admin/registration-admin").permitAll()
                         .requestMatchers("/client/registration_client").permitAll() // 👈 разрешаем регистрацию
+                        .requestMatchers("/file/**").hasAnyAuthority(
+                                        Roles.ROLE_CLIENT.name(),
+                                        Roles.ROLE_RESTAURANT_ADMIN.name(),
+                                        Roles.ROLE_ADMIN.name())
                         .requestMatchers("/client/**").hasAuthority(Roles.ROLE_CLIENT.name()) // 👈 разрешаем остальное клиентам
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/admin/**").hasAuthority(Roles.ROLE_ADMIN.name())
