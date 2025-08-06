@@ -43,6 +43,7 @@ public class RestaurantAdminServiceImpl  implements RestaurantAdminService {
 
         RestaurantAdmin admin = restaurantAdminInfoMapper.toEntity(dto);
         log.debug("Admin created for RestaurantAdmin: {}", admin.getId());
+        admin.setIsActive(true);
 
         // Защита от null в password
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {

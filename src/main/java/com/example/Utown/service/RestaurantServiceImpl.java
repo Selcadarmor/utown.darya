@@ -1,6 +1,7 @@
 package com.example.Utown.service;
 
 import com.example.Utown.config.S3.AwsProperties;
+import com.example.Utown.dto.addressDTO.AddressDto;
 import com.example.Utown.dto.deliveryDTO.DeliveryDto;
 import com.example.Utown.dto.deliveryDTO.DeliveryInfoDto;
 import com.example.Utown.dto.operatingModeDTO.OperatingModeCreateDto;
@@ -222,6 +223,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
     public RestaurantsCreateResponseDto createRestaurant(RestaurantCreateDto dto) {
         log.info("createRestaurant dto: {}", dto);
         Restaurant restaurant = restaurantInfoMapper.toEntity(dto);
+        restaurant.setIsActive(true);
 
         if (dto.getFileId() != null) {
             Optional<FileInfo> fileOpt = fileInfoRepository.findById(dto.getFileId());
@@ -300,21 +302,19 @@ public class RestaurantServiceImpl  implements RestaurantService {
             log.debug("Updated file info with id: {}", dto.getFileId());
         }
 
-        Address currentAddress = restaurant.getAddress();
-        if (currentAddress == null) {
-            Address newAddress = addressService.createAddress(dto.getAddress());
-            restaurant.setAddress(newAddress);
-            log.debug("Created and set new address: {}", newAddress);
-        } else {
-            if (currentAddress.getId() == null) {
-                // Создаем новый адрес, потому что id нет
-                Address newAddress = addressService.createAddress(dto.getAddress());
+        AddressDto addressDto = dto.getAddress();
+        if (addressDto != null) {
+            Address currentAddress = restaurant.getAddress();
+            if (currentAddress == null || currentAddress.getId() == null) {
+                Address newAddress = addressService.createAddress(addressDto);
                 restaurant.setAddress(newAddress);
-                log.debug("Replaced null-id address with new address: {}", newAddress);
+                log.debug("Created and set new address: {}", newAddress);
             } else {
-                addressService.updateAddress(currentAddress.getId(), dto.getAddress());
+                addressService.updateAddress(currentAddress.getId(), addressDto);
                 log.debug("Updated existing address with id: {}", currentAddress.getId());
             }
+        } else {
+            log.debug("No address data provided in DTO — skipping address update.");
         }
 
 
