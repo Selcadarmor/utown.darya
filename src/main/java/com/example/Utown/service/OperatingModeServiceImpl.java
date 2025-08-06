@@ -13,6 +13,7 @@ import com.example.Utown.repository.OperatingModeRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.service.UserTypeService.RestaurantAdminService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OperatingModeServiceImpl implements OperatingModeService {
 
     private final OperatingModeRepository operatingModeRepository;
@@ -31,23 +33,25 @@ public class OperatingModeServiceImpl implements OperatingModeService {
     // ===== GET =====
 
     @Override
-    public List<OperatingModeInfoDto> findAll() {
-        return operatingModeRepository.findAllOperatingModes();
-    }
-
-    @Override
     public OperatingModeInfoDto findById(Long id) {
+        log.info("OperatingModeServiceImpl.findById: id={}", id);
         return operatingModeRepository.findProjectedById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("OperatingMode", id));
+                .orElseThrow(() -> {
+                    log.error("OperatingModeServiceImpl.findById: OperatingMode not found by id={}", id);
+                    return new ResourceNotFoundException("OperatingMode", id);
+                });
     }
 
     @Override
     public List<OperatingModeInfoDto> getOperatingModesByRestaurantId(Long restaurantId) {
         RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin();
+        log.info("OperatingModeServiceImpl.getOperatingModesByRestaurantId: restaurantId={}", restaurantId);
         if (!restaurantId.equals(currentAdmin.getRestaurant().getId())) {
+            log.error("OperatingModeServiceImpl.getOperatingModesByRestaurantId: restaurantId={} does not match currentAdmin.restaurantId={}", restaurantId, currentAdmin.getRestaurant().getId());
             throw new AccessDeniedException("You do not have permission to access operating modes for this restaurant.");
         }
         List<OperatingMode> modes = operatingModeRepository.findByRestaurantId(restaurantId);
+        log.info("Found {} operating modes for restaurantId={}", modes.size(), restaurantId);
         return operatingModeInfoMapper.toDtoList(modes);
     }
 
@@ -60,12 +64,16 @@ public class OperatingModeServiceImpl implements OperatingModeService {
         boolean exists = operatingModeRepository.existsByRestaurantIdAndDayOfWeek(dto.getRestaurantId(), dto.getDayOfWeek());
 
         if (exists) {
-            throw new IllegalStateException("Operating mode for this restaurant and dayOfWeek already exists");
+            log.error("OperatingMode already exists for restaurantId={} and dayOfWeek={}", dto.getRestaurantId(), dto.getDayOfWeek());
+            throw new InvalidArgumentException("dayOfWeek", dto.getDayOfWeek());
         }
 
         // Получаем ресторан
         Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId())
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", dto.getRestaurantId()));
+                .orElseThrow(() -> {
+                    log.error("OperatingModeServiceImpl.createOperatingMode: Restaurant not found by id={}", dto.getRestaurantId());
+                    return new ResourceNotFoundException("Restaurant", dto.getRestaurantId());
+                });
 
         // Создаём новый OperatingMode
         OperatingMode mode = new OperatingMode();
@@ -74,13 +82,19 @@ public class OperatingModeServiceImpl implements OperatingModeService {
         mode.setStartTime(dto.getStartTime());
         mode.setEndTime(dto.getEndTime());
         mode.setDayOff(dto.isDayOff());
+        log.debug("Created new OperatingMode: restaurantId={}, dayOfWeek={}, startTime={}, endTime={}",
+                restaurant.getId(), dto.getDayOfWeek(), dto.getStartTime(), dto.getEndTime());
 
         // Сохраняем в базу
         OperatingMode saved = operatingModeRepository.save(mode);
+        log.debug("Saved new OperatingMode: {}", saved);
 
         // Возвращаем DTO через JPQL-конструктор
         return operatingModeRepository.findProjectedById(saved.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("OperatingMode", saved.getId()));
+                .orElseThrow(() -> {
+                    log.error("OperatingModeServiceImpl.createOperatingMode: Failed to retrieve OperatingMode by id={}", saved.getId());
+                    return new ResourceNotFoundException("OperatingMode", saved.getId());
+                });
     }
 
 
@@ -90,11 +104,16 @@ public class OperatingModeServiceImpl implements OperatingModeService {
     @Override
     @Transactional
     public OperatingModeInfoDto update(Long id, OperatingModeUpdateDto dto) {
+        log.info("OperatingModeServiceImpl.update: id={}, dto={}", id, dto);
         OperatingMode updated = operatingModeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("OperatingMode", id));
+                .orElseThrow(() -> {
+                    log.error("OperatingModeServiceImpl.update: OperatingMode not found by id={}", id);
+                    return new ResourceNotFoundException("OperatingMode", id);
+                });
 
         RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin();
         if (!updated.getRestaurant().getId().equals(currentAdmin.getRestaurant().getId())) {
+            log.warn("OperatingModeServiceImpl.update: Access denied. AdminId={}, RestaurantId={}", currentAdmin.getId(), updated.getRestaurant().getId());
             throw new AccessDeniedException("You do not have permission to modify this operating mode.");
         }
 
@@ -102,20 +121,27 @@ public class OperatingModeServiceImpl implements OperatingModeService {
         if (dto.getStartTime() != null) updated.setStartTime(dto.getStartTime());
         if (dto.getEndTime() != null) updated.setEndTime(dto.getEndTime());
         updated.setDayOfWeek(dto.getDayOfWeek());
+        log.debug("Updated OperatingMode: {}", updated);
 
         operatingModeRepository.save(updated);
         return operatingModeRepository.findProjectedById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("OperatingMode", id));
+                .orElseThrow(() -> {
+                    log.error("OperatingModeServiceImpl.update: Failed to retrieve OperatingMode by id={}", id);
+                    return new ResourceNotFoundException("OperatingMode", id);
+                });
     }
 
 
     @Override
     @Transactional
     public void updateOperatingModes(List<OperatingModeUpdateDto> dtos) {
+        log.info("OperatingModeServiceImpl.updateOperatingModes: received {} DTOs to update", dtos.size());
+
         for (OperatingModeUpdateDto dto : dtos) {
             if (dto.getId() != null) {
                 update(dto.getId(), dto);
             } else {
+                log.error("OperatingModeServiceImpl.updateOperatingModes: id is null in dto={}", dto);
                 throw new InvalidArgumentException("operatingMode.id", null);
             }
         }
