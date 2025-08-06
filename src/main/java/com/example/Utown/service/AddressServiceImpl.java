@@ -5,11 +5,13 @@ import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.model.Address;
 import com.example.Utown.repository.AddressRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AddressServiceImpl implements AddressService {
@@ -17,6 +19,7 @@ public class AddressServiceImpl implements AddressService {
     private final AddressRepository addressRepository;
 
     @Override
+    @Transactional
     public Address createAddress(AddressDto dto) {
         Address address = new Address();
         address.setArea(dto.getArea());
@@ -30,16 +33,23 @@ public class AddressServiceImpl implements AddressService {
         address.setStreet(dto.getStreet());
         address.setIntercomCode(dto.getIntercomCode());
         address.setTypeAddress(dto.getTypeAddress());
-        return addressRepository.save(address);
+
+        Address saved = addressRepository.save(address);
+        log.info("Created new address with id: {}", saved.getId());
+        return saved;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Address getAddressById(Long id) {
         return addressRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Address", id));
+                .orElseThrow(() -> {
+                    return new ResourceNotFoundException("Address", id);
+                });
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Address> getAllAddresses() {
         return addressRepository.findAll();
     }
@@ -61,14 +71,16 @@ public class AddressServiceImpl implements AddressService {
         address.setIntercomCode(dto.getIntercomCode());
         address.setTypeAddress(dto.getTypeAddress());
 
-        return addressRepository.save(address);
+        Address updated = addressRepository.save(address);
+        log.info("Updated address with id: {}", id);
+        return updated;
     }
 
     @Override
+    @Transactional(rollbackFor = RuntimeException.class)
     public void deleteAddress(Long id) {
         Address address = getAddressById(id);
         addressRepository.delete(address);
+        log.info("Deleted address with id: {}", id);
     }
-
-
 }

@@ -8,11 +8,13 @@ import com.example.Utown.model.UserType.Client;
 import com.example.Utown.repository.RatingRepository;
 import com.example.Utown.service.UserTypeService.ClientService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RatingServiceImpl implements RatingService {
@@ -24,19 +26,25 @@ public class RatingServiceImpl implements RatingService {
     @Override
     @Transactional(readOnly = true)
     public Rating getRatingById(Long id) {
-        return ratingRepository.findById(id)
+        Rating rating = ratingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Rating", id));
+        log.info("Retrieved rating with id {}", id);
+        return rating;
     }
 
     @Override
     public List<Rating> getAll() {
-        return ratingRepository.findAll();
+        List<Rating> ratings = ratingRepository.findAll();
+        log.info("Retrieved all ratings, count: {}", ratings.size());
+        return ratings;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Rating> getAllRatingsByRestaurantId(Long restaurantId) {
-        return ratingRepository.findAllByRestaurantId(restaurantId);
+        List<Rating> ratings = ratingRepository.findAllByRestaurantId(restaurantId);
+        log.info("Retrieved {} ratings for restaurantId {}", ratings.size(), restaurantId);
+        return ratings;
     }
 
     @Override
@@ -52,14 +60,17 @@ public class RatingServiceImpl implements RatingService {
                 .build();
 
         ratingRepository.save(rating);
+
+        log.info("Created rating for restaurantId {} by clientId {} with grade {}",
+                restaurantId, client.getId(), ratingDto.getGrade());
     }
 
     @Override
     @Transactional
     public void deleteRating(Long id) {
         Rating rating = getRatingById(id);
-
         ratingRepository.delete(rating);
+        log.info("Deleted rating with id {}", id);
     }
 
 

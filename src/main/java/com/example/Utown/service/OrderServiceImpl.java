@@ -27,6 +27,7 @@ import com.example.Utown.service.UserTypeService.ClientService;
 import com.example.Utown.service.UserTypeService.RestaurantAdminServiceImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -47,6 +48,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -65,18 +67,25 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order getById(Long id) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Order", id));
+                .orElseThrow(() -> {
+                    log.warn("Order not found with id: {}", id);
+                    return new ResourceNotFoundException("Order", id);
+                });
+        log.info("Fetched order with id: {}", id);
         return order;
     }
 
     @Override
     public List<Order> getAll() {
-        return orderRepository.findAll();
+        List<Order> orders = orderRepository.findAll();
+        log.info("Fetched all orders, total count: {}", orders.size());
+        return orders;
     }
 
     @Override
     public Page<OrderDetailsDto> getOrderDetailsByClient(Long clientId, String query, Pageable pageable) {
         Page<Order> orders = orderRepository.findAllWithFilter(query, clientId, pageable);
+        log.info("Fetched order details for clientId: {} with query: '{}', total: {}", clientId, query, orders.getTotalElements());
 
         List<OrderDetailsDto> dtos = orders.getContent().stream()
                 .map(order -> {
@@ -98,15 +107,15 @@ public class OrderServiceImpl implements OrderService {
                     );
                 })
                 .toList();
-        return  new PageImpl<>(dtos, pageable, orders.getTotalElements());
+        return new PageImpl<>(dtos, pageable, orders.getTotalElements());
     }
 
     @Override
     @Transactional
     public Page<OrderHistoryDto> getOrderHistoryByClient(Pageable pageable) {
         Client client = clientService.getCurrentClient();
-
         Page<Order> orders = orderRepository.findAllByClientIdOrderByCreatedAtDesc(client.getId(), pageable);
+        log.info("Fetched order history for clientId: {}, total orders: {}", client.getId(), orders.getTotalElements());
 
         return orders.map(order -> {
             List<DishInOrderHistoryDto> dishes = order.getDishesToOrder().stream()
@@ -135,12 +144,13 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public Page<OrderHistoryDto> getOrdersInProcessByRestaurant(Pageable pageable) {
+        RestaurantAdmin restaurantAdmin = getCurrentRestaurantAdmin();
         List<OrderStatus> activeStatuses = List.of(OrderStatus.PENDING, OrderStatus.PROCESSING);
 
-        RestaurantAdmin restaurantAdmin = getCurrentRestaurantAdmin();
         Page<Order> orders = orderRepository.findAllByRestaurantIdAndStatusInOrderByCreatedAtDesc(
                 restaurantAdmin.getRestaurant().getId(), activeStatuses, pageable
         );
+        log.info("Fetched in-process orders for restaurantId: {}, total: {}", restaurantAdmin.getRestaurant().getId(), orders.getTotalElements());
 
         return orders.map(order -> {
             List<DishInOrderHistoryDto> dishes = order.getDishesToOrder().stream()
@@ -177,6 +187,7 @@ public class OrderServiceImpl implements OrderService {
         );
 
         RestaurantAdmin restaurantAdmin = getCurrentRestaurantAdmin();
+        log.info("Fetching completed orders for restaurant: {}", restaurantAdmin.getRestaurant().getId());
 
         Page<Order> orders = orderRepository.findAllByRestaurantIdAndStatusInOrderByCreatedAtDesc(
                 restaurantAdmin.getRestaurant().getId(), statuses, pageable
@@ -206,20 +217,21 @@ public class OrderServiceImpl implements OrderService {
         });
     }
 
-
     @Override
     public List<MonthlyOrderStatsDto> getMonthlyStats(int year) { //Делаем историю для одного года
         RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin();
         Long restaurantId = currentAdmin.getRestaurant().getId(); // проверка на админа
-
+        log.info("Generating monthly stats for restaurant {} for year {}", restaurantId, year);
 
         List<Order> orders = orderRepository.findAllByRestaurantIdAndDateBetween(
                 restaurantId,
                 LocalDate.of(year, 1, 1),//начало
                 LocalDate.of(year, 12, 31)//конец
         );
+
         Map<Month, List<Order>> ordersByMonth = orders.stream()//создаем карту хранения ордеров и  месяц и группируем по дате конкретно по месяцу
                 .collect(Collectors.groupingBy(order -> order.getDate().getMonth()));
+
         return ordersByMonth.entrySet().stream()//возващаем через стрим каждый элемент карты  вытаскиваем его значение
                 .map(entry -> {
                     List<Order> monthOrders = entry.getValue();
@@ -247,10 +259,13 @@ public class OrderServiceImpl implements OrderService {
         Long restaurantId = currentAdmin.getRestaurant().getId();
         LocalDate startDate = month.atDay(1);
         LocalDate endDate = month.atEndOfMonth();
+        log.info("Generating daily stats for restaurant {} for month {}", restaurantId, month);
+
         List<Order> orders = orderRepository.findAllByRestaurantIdAndDateBetween(restaurantId, startDate, endDate);
 
         Map<LocalDate, List<Order>> ordersByDay = orders.stream()
                 .collect(Collectors.groupingBy(order -> order.getDate()));
+
         return ordersByDay.entrySet().stream()
                 .map(entry -> {
                     List<Order> dayOrders =  entry.getValue();
@@ -282,7 +297,6 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
     }
 
-
     // ========================= POST =========================
 
     @Override
@@ -293,6 +307,7 @@ public class OrderServiceImpl implements OrderService {
         Address clientAddress = addressService.getAddressById(client.getDefaultAddress());
 
         if (cart.getDishToOrders().isEmpty()) {
+            log.warn("Attempt to create order from empty cart for client with id: {}", client.getId());
             throw new CartIsEmptyException();
         }
 
@@ -307,11 +322,11 @@ public class OrderServiceImpl implements OrderService {
                 .deliveryPrice(cart.getDeliveryPrice())
                 .details(clientAddress.getDetails())
                 .fullAddress(clientAddress.getFullAddress())
-                .isPaid(true) //Позже доработать оплату
+                .isPaid(true) // Позже доработать оплату
                 .payment(null)
                 .latitude(clientAddress.getLatitude())
                 .longitude(clientAddress.getLongitude())
-                .noteForCourier(null) //какие еще note???
+                .noteForCourier(null)
                 .number(generateOrderNumber())
                 .orderPrice(cart.getSumOrder())
                 .postcode(clientAddress.getPostCode())
@@ -332,11 +347,13 @@ public class OrderServiceImpl implements OrderService {
                 .client(client)
                 .build();
 
-        dishToOrderService.createByOrder(cart.getDishToOrders(), order);
-
+        dishToOrderService.createByOrder(cartItems, order);
         orderRepository.save(order);
 
+        log.info("Created order #{} for client id: {}, restaurant id: {}", order.getNumber(), client.getId(), restaurant.getId());
+
         cartService.clearCart(cart.getId());
+        log.debug("Cleared cart with id: {} after order creation", cart.getId());
 
         return order;
     }
@@ -348,23 +365,25 @@ public class OrderServiceImpl implements OrderService {
         Order order = getById(orderId);
 
         if (!order.getClient().getId().equals(client.getId())) {
+            log.warn("Client id: {} tried to cancel order id: {} that doesn't belong to them", client.getId(), orderId);
             throw new AccessDeniedToOrderException(orderId);
         }
 
         if (order.getStatus() == OrderStatus.COMPLETED ||
                 order.getStatus() == OrderStatus.READY_FOR_PICKUP ||
                 order.getStatus() == OrderStatus.CANCELED ||
-                order.getStatus() == OrderStatus.DELIVERY ) {
+                order.getStatus() == OrderStatus.DELIVERY) {
+
+            log.warn("Client id: {} attempted to cancel order id: {} with status: {}", client.getId(), orderId, order.getStatus());
             throw new OrderCancelNotAllowedException(order.getStatus());
         }
 
         order.setStatus(OrderStatus.CANCELED);
         order.setUpdatedAt(LocalDateTime.now());
-
         orderRepository.save(order);
+
+        log.info("Client id: {} canceled order id: {}", client.getId(), orderId);
     }
-
-
 
     // ========================= PUT ==========================
 
@@ -382,6 +401,8 @@ public class OrderServiceImpl implements OrderService {
         order.setTimeOfAccepted(LocalTime.now().toString());
         order.setCookingTime(cookingTime);
         orderRepository.save(order);
+
+        log.info("Order {} accepted with cooking time {} minutes", orderId, cookingTime);
     }
 
     @Override
@@ -390,13 +411,15 @@ public class OrderServiceImpl implements OrderService {
         Order order = getById(orderId);
 
         if (order.getStatus() != OrderStatus.PROCESSING) {
-            throw new IllegalStateException("Only pending orders can be accepted");
+            throw new IllegalStateException("Only processing orders can be marked as ready");
         }
 
         order.setStatus(OrderStatus.READY_FOR_PICKUP);
         order.setDeliveryStatus(DeliveryStatus.READY_FOR_PICKUP);
         order.setEndTimeOfCooking(LocalTime.now().toString());
         orderRepository.save(order);
+
+        log.info("Order {} marked as READY_FOR_PICKUP", orderId);
     }
 
     @Override
@@ -405,9 +428,11 @@ public class OrderServiceImpl implements OrderService {
         Order order = getById(orderId);
 
         order.setStatus(OrderStatus.COMPLETED);
-        order.setDeliveryStatus(DeliveryStatus.COMPLETED);;
+        order.setDeliveryStatus(DeliveryStatus.COMPLETED);
         order.setTimeOfDelivery(LocalTime.now().toString());
         orderRepository.save(order);
+
+        log.info("Order {} marked as COMPLETED", orderId);
     }
 
     @Override
@@ -417,22 +442,20 @@ public class OrderServiceImpl implements OrderService {
 
         order.setStatus(OrderStatus.CANCELED);
         order.setUpdatedAt(LocalDateTime.now());
-
         orderRepository.save(order);
+
+        log.info("Order {} canceled by admin", orderId);
     }
 
-    // ========================= DELETE =========================
+   // ========================= DELETE =========================
 
     @Override
     public void delete(Long orderId) {
         Order order = getById(orderId);
         orderRepository.delete(order);
+
+        log.info("Order {} deleted from system", orderId);
     }
-
-
-
-
-
 
     // ========================= PRIVATE =========================
 
@@ -442,19 +465,29 @@ public class OrderServiceImpl implements OrderService {
         LocalDateTime endOfDay = today.plusDays(1).atStartOfDay();
 
         long countToday = orderRepository.countByDate(startOfDay, endOfDay);
-        return String.format("%03d", countToday + 1);
+        String orderNumber = String.format("%03d", countToday + 1);
+
+        log.info("Generated order number {} for date {}", orderNumber, today);
+
+        return orderNumber;
     }
 
     private RestaurantAdmin getCurrentRestaurantAdmin() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
+            log.warn("Access denied: unauthenticated access attempt");
             throw new RuntimeException("User is not authenticated");
         }
 
         String username = authentication.getName();
-        return restaurantAdminRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("Admin not found: " + username));
-    }
+        RestaurantAdmin admin = restaurantAdminRepository.findByUsername(username)
+                .orElseThrow(() -> {
+                    log.warn("Admin not found for username: {}", username);
+                    return new UserNotFoundException("Admin not found: " + username);
+                });
 
+        log.info("Authenticated restaurant admin: {}", username);
+        return admin;
+    }
 
 }

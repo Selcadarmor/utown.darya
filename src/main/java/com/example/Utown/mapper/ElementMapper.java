@@ -1,19 +1,16 @@
 package com.example.Utown.mapper;
 
 import com.example.Utown.dto.elementDTO.ElementDto;
-import com.example.Utown.dto.elementDTO.ElementForClientDto;
-import com.example.Utown.dto.elementDTO.ElementInfoDto;
 import com.example.Utown.model.Element;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.Set;
 
 @Mapper(componentModel = "spring")
 public interface ElementMapper {
 
     ElementDto toDto(Element element);
 
+    @Mapping(target = "option", ignore = true)
     Element toEntity(ElementDto dto);
-
 }
