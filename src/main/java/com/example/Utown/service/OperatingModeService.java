@@ -13,4 +13,5 @@ public interface OperatingModeService {
     OperatingModeInfoDto update(Long id, OperatingModeUpdateDto dto);
     void updateOperatingModes(List<OperatingModeUpdateDto> dtos);
     OperatingModeInfoDto createOperatingMode(OperatingModeCreateDto dto);
+    OperatingModeInfoDto updateByRestaurantAdmin(Long id, OperatingModeUpdateDto dto);
 }
