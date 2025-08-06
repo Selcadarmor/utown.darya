@@ -16,6 +16,7 @@ import java.util.List;
 
 public interface ClientService {
         Client findByUsername(String username);
+        Client getById(Long id);
         ClientInfoDto getClientById(Long clientId);
         Page<ClientDetailsDto> getAllClients(String query, Boolean isActive, Pageable pageable);
         List<AddressDto> getAddressesByClient();

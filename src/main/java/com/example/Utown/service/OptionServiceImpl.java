@@ -12,6 +12,7 @@ import com.example.Utown.service.UserTypeService.RestaurantAdminService;
 import com.example.Utown.service.UserTypeService.RestaurantAdminServiceImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OptionServiceImpl implements OptionService {
@@ -32,9 +34,12 @@ public class OptionServiceImpl implements OptionService {
 
     @Override
     public Option getById(Long id) {
-        Option option = optionRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Option not found", id));
-        return option;
+        log.debug("Fetching option by ID: {}", id);
+        return optionRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Option not found with ID: {}", id);
+                    return new ResourceNotFoundException("Option not found", id);
+                });
     }
 
     @Override
@@ -42,6 +47,8 @@ public class OptionServiceImpl implements OptionService {
         Set<Long> optionIds = options.stream()
                 .map(Option::getId)
                 .collect(Collectors.toSet());
+
+        log.debug("Fetching elements for options with IDs: {}", optionIds);
 
         Set<Option> optionsWithElements = optionRepository.findAllWithElementsByIds(optionIds);
 
@@ -73,6 +80,8 @@ public class OptionServiceImpl implements OptionService {
     @Override
     @Transactional
     public Set<Option> updateOptionsForDish(Dish dish, Set<OptionInfoDto> optionDtos) {
+        log.info("Updating {} options for dish ID: {}", optionDtos.size(), dish.getId());
+
         Map<Long, Option> existingOptions = dish.getOptions().stream()
                 .collect(Collectors.toMap(Option::getId, Function.identity()));
 
@@ -95,6 +104,7 @@ public class OptionServiceImpl implements OptionService {
 
             updatedOptions.add(option);
         }
+
         dish.getOptions().clear();
         dish.getOptions().addAll(updatedOptions);
 
@@ -104,7 +114,12 @@ public class OptionServiceImpl implements OptionService {
     @Override
     @Transactional
     public Set<Option> createOptionsForDish(Dish dish, Set<OptionInfoDto> optionDtos) {
-        if (optionDtos == null || optionDtos.isEmpty()) return Collections.emptySet();
+        if (optionDtos == null || optionDtos.isEmpty()) {
+            log.debug("No options to create for dish ID: {}", dish.getId());
+            return Collections.emptySet();
+        }
+
+        log.info("Creating {} options for dish ID: {}", optionDtos.size(), dish.getId());
 
         Set<Option> options = new HashSet<>();
         for (OptionInfoDto dto : optionDtos) {
@@ -117,35 +132,41 @@ public class OptionServiceImpl implements OptionService {
                     .dish(dish)
                     .build();
 
-            // создаём элементы через сервис
             Set<Element> elements = elementService.createElementsForOption(option, dto.getElements());
             option.setElements(elements);
 
             options.add(option);
         }
+
         return options;
     }
 
     @Override
+    @Transactional
     public void deleteOption(Long id) {
         RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin();
         Long adminRestaurantId = currentAdmin.getRestaurant().getId();
 
         Option option = getById(id);
-
         Long optionRestaurantId = option.getDish().getRestaurant().getId();
 
         if (!adminRestaurantId.equals(optionRestaurantId)) {
+            log.warn("Admin (restaurant ID: {}) attempted to delete unauthorized option ID: {} (belongs to restaurant ID: {})",
+                    adminRestaurantId, id, optionRestaurantId);
             throw new AccessDeniedException("You do not have permission to delete this option.");
         }
+
+        log.info("Soft deleting option ID: {} by admin of restaurant ID: {}", id, adminRestaurantId);
         option.setIsActive(false);
 
-        if(option.getElements() != null) {
-            for(Element element : option.getElements()) {
+        if (option.getElements() != null) {
+            for (Element element : option.getElements()) {
                 element.setIsActive(false);
             }
         }
+
         optionRepository.save(option);
     }
+
 }
 
