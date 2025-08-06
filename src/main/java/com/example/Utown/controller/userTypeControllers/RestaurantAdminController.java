@@ -1,5 +1,6 @@
 package com.example.Utown.controller.userTypeControllers;
 
+import com.example.Utown.dto.deliveryDTO.DeliveryDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryCreateDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryCreateResponseDto;
 import com.example.Utown.dto.dishCategoryDTO.DishCategoryDto;
@@ -15,11 +16,13 @@ import com.example.Utown.dto.orderDTO.OrderHistoryDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantStatusUpdateRequest;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateDto;
 import com.example.Utown.dto.restaurantDTO.RestaurantUpdateResponseDto;
+import com.example.Utown.mapper.DeliveryMapper;
+import com.example.Utown.model.Delivery;
+import com.example.Utown.service.DeliveryService;
 import com.example.Utown.service.DishCategoryService;
-import com.example.Utown.service.DishCategoryServiceImpl;
 import com.example.Utown.service.DishService;
 import com.example.Utown.service.ElementService;
-import com.example.Utown.service.OperatingModeServiceImpl;
+import com.example.Utown.service.OperatingModeService;
 import com.example.Utown.service.OptionService;
 import com.example.Utown.service.OrderService;
 import com.example.Utown.service.RestaurantService;
@@ -58,13 +61,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RestaurantAdminController {
 
+    private final DeliveryMapper deliveryMapper;
+    private final DeliveryService deliveryService;
     private final DishService dishService;
-    private final DishCategoryServiceImpl dishCategoryService; //Почему? убрать имплементацию
-    private final DishCategoryService DishCategoryService;
+    private final DishCategoryService dishCategoryService;
     private final ElementService elementService;
     private final OrderService orderService;
     private final OptionService optionService;
-    private final OperatingModeServiceImpl operatingModeService;
+    private final OperatingModeService operatingModeService;
     private final RestaurantService restaurantService;
     private final RestaurantAdminService restaurantAdminService;
 
@@ -148,8 +152,103 @@ public class RestaurantAdminController {
         return ResponseEntity.ok().build();
     }
 
+    //GET,CREATE,UPDATE,SOFT-DELETE DELIVERY
 
+    @Operation(summary = "Get all deliveries by restaurant ID")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved all deliveries for the restaurant")
+    @GetMapping("/restaurant/{restaurantId}")
+    public ResponseEntity<List<DeliveryDto>> getAllDeliveriesByRestaurantId(
+            @PathVariable Long restaurantId) {
+        List<DeliveryDto> deliveries = deliveryService.getAllDeliveriesByRestaurantId(restaurantId);
+        return ResponseEntity.ok(deliveries);
+    }
 
+    @Operation(summary = "Get all active deliveries by restaurant ID")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved all active deliveries for the restaurant")
+    @GetMapping("/restaurant/{restaurantId}/active")
+    public ResponseEntity<List<DeliveryDto>> getAllActiveDeliveriesByRestaurantId(
+            @PathVariable Long restaurantId) {
+        List<DeliveryDto> deliveries = deliveryService.getAllInActiveDeliveriesByRestaurantId(restaurantId);
+        return ResponseEntity.ok(deliveries);
+    }
+
+    @Operation(summary = "Get all deleted deliveries by restaurant ID")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved all deleted deliveries for the restaurant")
+    @GetMapping("/restaurant/{restaurantId}/deleted")
+    public ResponseEntity<List<DeliveryDto>> getAllDeletedDeliveriesByRestaurantId(
+            @PathVariable Long restaurantId) {
+        List<DeliveryDto> deliveries = deliveryService.getAllDeletedDeliveriesByRestaurantId(restaurantId);
+        return ResponseEntity.ok(deliveries);
+    }
+
+    @PostMapping("/delivery/add")
+    @Operation(
+            summary = "Add new delivery",
+            description = "Adds a new delivery area to the current restaurant"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Delivery added successfully"),
+            @ApiResponse(responseCode = "400", description = "Delivery with this area and district already exists"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<DeliveryDto> addDelivery(@RequestBody DeliveryDto dto) {
+        Delivery delivery = deliveryService.addDelivery(dto);
+        return ResponseEntity.ok(deliveryMapper.deliveryToDto(delivery));
+    }
+
+    @PutMapping("/delivery/update/{id}")
+    @Operation(
+            summary = "Update Delivery",
+            description = "Updates an existing delivery entry for the restaurant by ID."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Delivery updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input or delivery already exists with the same area and district"),
+            @ApiResponse(responseCode = "404", description = "Delivery not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<DeliveryDto> updateDelivery(
+            @PathVariable Long id,
+            @RequestBody DeliveryDto dto
+    ) {
+        Delivery delivery = deliveryService.updateDelivery(id, dto);
+        return ResponseEntity.ok(deliveryMapper.deliveryToDto(delivery));
+    }
+
+    @PutMapping("/delivery/stop/{id}")
+    @Operation(
+            summary = "Stop delivery",
+            description = "Temporarily disables delivery in the specified area by setting isActive to false"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Delivery stopped successfully"),
+            @ApiResponse(responseCode = "404", description = "Delivery not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<Void> stopDelivery(@PathVariable Long id) {
+        deliveryService.stopDelivery(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Reactivate delivery by ID")
+    @ApiResponse(responseCode = "200", description = "Successfully reactivated the delivery")
+    @PutMapping("/reactivate/{id}")
+    public ResponseEntity<Void> reactivateDelivery(@PathVariable Long id) {
+        deliveryService.reactivateDelivery(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/delivery/delete/{id}")
+    @Operation(summary = "Soft delete delivery", description = "Marks delivery as deleted by setting isDeleted = true")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Delivery deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Delivery not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<Void> deleteDelivery(@PathVariable Long id) {
+        deliveryService.deleteDelivery(id);
+        return ResponseEntity.ok().build();
+    }
 
 
     //UPDATE RESTAURANT INFO

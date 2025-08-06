@@ -14,6 +14,8 @@ public interface DeliveryMapper {
     @Mapping(source = "restaurant.id", target = "restaurantId")
     DeliveryDto deliveryToDto(Delivery delivery);
 
+    List<DeliveryDto> deliveryToDto(List<Delivery> deliveries);
+
     List<DeliveryInfoDto> toDtoList(List<Delivery> deliveries);
 
     @Mapping(source = "restaurant.id", target = "restaurantId")

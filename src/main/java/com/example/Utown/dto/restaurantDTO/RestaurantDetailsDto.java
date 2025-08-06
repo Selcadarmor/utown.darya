@@ -25,21 +25,6 @@ public class RestaurantDetailsDto {
     private String fileUrl;
 
     public RestaurantDetailsDto(String title, String description, String phone,
-                                BigDecimal minOrderAmount, Long orderCount, Long fileId,
-                                Set<RestaurantCategoryDto> categories,
-                                List<OperatingModeInfoDto> operatingModes,
-                                List<DeliveryInfoDto> deliveries) {
-        this.title = title;
-        this.description = description;
-        this.phone = phone;
-        this.minOrderAmount = minOrderAmount;
-        this.orderCount = orderCount;
-        this.fileId = fileId;
-        this.categories = categories;
-        this.operatingModes = operatingModes;
-        this.deliveries = deliveries;
-    }
-    public RestaurantDetailsDto(String title, String description, String phone,
                                 BigDecimal minOrderAmount, Long orderCount, Long fileId, String path) {
         this.title = title;
         this.description = description;
