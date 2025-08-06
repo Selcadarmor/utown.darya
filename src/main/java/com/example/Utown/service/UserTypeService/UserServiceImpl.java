@@ -62,6 +62,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(adminRegistrationDto.getPassword()));
         user.setRoles(Set.of(role));
         user.setNotifications(new HashSet<>());
+        user.setIsActive(true);
         userRepository.save(user);
         log.info("Admin user created successfully: {}", adminRegistrationDto.getUsername());
     }
