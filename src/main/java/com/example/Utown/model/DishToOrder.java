@@ -68,7 +68,7 @@ public class DishToOrder {
             joinColumns = @JoinColumn(name = "dish_to_order_id"),
             inverseJoinColumns = @JoinColumn(name = "element_id")
     )
-    private Set<Element> selectedElements = new HashSet<>();
+    private Set<Element> selectedElements;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "order_id_in_dish")

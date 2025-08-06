@@ -8,6 +8,7 @@ import com.example.Utown.model.enumFiles.Roles;
 import com.example.Utown.repository.UserRepository;
 import com.example.Utown.service.RoleService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -26,8 +28,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
+        log.debug("Searching for user by username: {}", username);
+        Optional<User> user = userRepository.findByUsername(username);
+
+        if (user.isPresent()) {
+            log.info("User found with username: {}", username);
+        } else {
+            log.warn("No user found with username: {}", username);
+        }
+
+        return user;
     }
+
 
     @Override //For Client
     public boolean changePassword(String username, String newPassword) {
@@ -36,6 +48,7 @@ public class UserServiceImpl implements UserService {
 
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+        log.info("Password changed successfully for user: {}", username);
         return true;
     }
 
@@ -50,6 +63,7 @@ public class UserServiceImpl implements UserService {
         user.setRoles(Set.of(role));
         user.setNotifications(new HashSet<>());
         userRepository.save(user);
+        log.info("Admin user created successfully: {}", adminRegistrationDto.getUsername());
     }
 
 }
