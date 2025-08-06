@@ -11,6 +11,7 @@ import com.example.Utown.repository.DeliveryRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.service.UserTypeService.RestaurantAdminService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DeliveryServiceImpl implements DeliveryService {
@@ -31,38 +33,49 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     public Delivery getDeliveryById(Long id) {
         Delivery delivery = deliveryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Delivery", id));
+                .orElseThrow(() -> {
+                    log.warn("Delivery not found with id: {}", id);
+                    return new ResourceNotFoundException("Delivery", id);
+                });
+        log.info("Found delivery with id: {}", id);
         return delivery;
     }
 
     @Override
     public List<DeliveryDto> getAllDeliveriesByRestaurantId(Long restaurantId) {
         List<Delivery> deliveries = deliveryRepository.findByRestaurantId(restaurantId);
+        log.info("Fetched {} deliveries for restaurantId: {}", deliveries.size(), restaurantId);
         return deliveryMapper.deliveryToDto(deliveries);
     }
 
     @Override
     public List<DeliveryDto> getAllInActiveDeliveriesByRestaurantId(Long restaurantId) {
         List<Delivery> deliveries = deliveryRepository.findActiveByRestaurantId(restaurantId);
+        log.info("Fetched {} active deliveries for restaurantId: {}", deliveries.size(), restaurantId);
         return deliveryMapper.deliveryToDto(deliveries);
     }
 
     @Override
     public List<DeliveryDto> getAllDeletedDeliveriesByRestaurantId(Long restaurantId) {
         List<Delivery> deliveries = deliveryRepository.findDeletedByRestaurantId(restaurantId);
+        log.info("Fetched {} deleted deliveries for restaurantId: {}", deliveries.size(), restaurantId);
         return deliveryMapper.deliveryToDto(deliveries);
     }
 
     @Override
     public List<DeliveryInfoDto> getDeliveriesByRestaurantId(Long restaurantId) {
         List<Delivery> deliveries = deliveryRepository.findByRestaurantId(restaurantId);
+        log.info("Fetched delivery info list ({} entries) for restaurantId: {}", deliveries.size(), restaurantId);
         return deliveryMapper.toDtoList(deliveries);
     }
 
     @Override
     public Delivery createDelivery(DeliveryDto dto) {
         Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId())
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", dto.getRestaurantId()));
+                .orElseThrow(() -> {
+                    log.warn("Restaurant not found with id: {}", dto.getRestaurantId());
+                    return new ResourceNotFoundException("Restaurant", dto.getRestaurantId());
+                });
 
         Delivery delivery = Delivery.builder()
                 .area(dto.getArea())
@@ -73,7 +86,9 @@ public class DeliveryServiceImpl implements DeliveryService {
                 .restaurant(restaurant)
                 .build();
 
-        return deliveryRepository.save(delivery);
+        Delivery saved = deliveryRepository.save(delivery);
+        log.info("Created new delivery (id: {}) for restaurant: {}", saved.getId(), restaurant.getId());
+        return saved;
     }
 
     @Override
@@ -84,6 +99,8 @@ public class DeliveryServiceImpl implements DeliveryService {
                 restaurant.getId(), dto.getArea(), dto.getDistrict());
 
         if (exists) {
+            log.warn("Duplicate delivery exists for restaurant {} with area: {}, district: {}",
+                    restaurant.getId(), dto.getArea(), dto.getDistrict());
             throw new IllegalArgumentException("Delivery with this area and district already exists for the restaurant");
         }
 
@@ -96,7 +113,9 @@ public class DeliveryServiceImpl implements DeliveryService {
                 .restaurant(restaurant)
                 .build();
 
-        return deliveryRepository.save(delivery);
+        Delivery saved = deliveryRepository.save(delivery);
+        log.info("Added delivery (id: {}) for restaurant: {}", saved.getId(), restaurant.getId());
+        return saved;
     }
 
     @Override
@@ -109,14 +128,15 @@ public class DeliveryServiceImpl implements DeliveryService {
         for (DeliveryDto dto : dtos) {
             Long id = dto.getId();
             if (id == null) {
-                throw new InvalidArgumentException( "deliveryId", null);
+                log.warn("Received DTO with null deliveryId");
+                throw new InvalidArgumentException("deliveryId", null);
             }
             Delivery delivery = existingDeliveriesById.get(id);
             if (delivery == null) {
+                log.warn("Delivery not found in restaurant for id: {}", id);
                 throw new ResourceNotFoundException("Delivery", id);
             }
 
-            // Обновляем поля
             delivery.setArea(dto.getArea());
             delivery.setDistrict(dto.getDistrict());
             delivery.setPrice(dto.getPrice());
@@ -125,6 +145,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         deliveryRepository.saveAll(existingDeliveriesById.values());
+        log.info("Updated {} deliveries for restaurant: {}", dtos.size(), restaurant.getId());
     }
 
     @Override
@@ -137,6 +158,7 @@ public class DeliveryServiceImpl implements DeliveryService {
                 restaurant.getId(), dto.getArea(), dto.getDistrict(), id);
 
         if (exists) {
+            log.warn("Attempt to update delivery to a duplicate area/district for restaurant: {}", restaurant.getId());
             throw new IllegalArgumentException("Delivery with this area and district already exists for the restaurant");
         }
 
@@ -146,7 +168,9 @@ public class DeliveryServiceImpl implements DeliveryService {
         delivery.setIsActive(true);
         delivery.setIsDeleted(false);
 
-        return deliveryRepository.save(delivery);
+        Delivery updated = deliveryRepository.save(delivery);
+        log.info("Updated delivery with id: {}", updated.getId());
+        return updated;
     }
 
     @Override
@@ -156,6 +180,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         delivery.setIsActive(true);
         delivery.setIsDeleted(false);
         deliveryRepository.save(delivery);
+        log.info("Reactivated delivery with id: {}", id);
     }
 
     @Override
@@ -164,6 +189,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         Delivery delivery = getDeliveryById(id);
         delivery.setIsActive(false);
         deliveryRepository.save(delivery);
+        log.info("Stopped delivery with id: {}", id);
     }
 
     @Override
@@ -173,6 +199,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         delivery.setIsActive(false);
         delivery.setIsDeleted(true);
         deliveryRepository.save(delivery);
+        log.info("Deleted delivery with id: {}", id);
     }
 
 }

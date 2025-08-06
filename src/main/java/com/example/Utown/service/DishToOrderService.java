@@ -18,6 +18,5 @@ public interface DishToOrderService {
     List<DishToOrder> createByOrder(List<DishToOrder> cartDishToOrders, Order order);
     void update(Long dishToOrderId, DishToOrderRequestDto dto);
     void delete(Long id);
-    void deleteAll(List<DishToOrder> dishes);
 }
 
