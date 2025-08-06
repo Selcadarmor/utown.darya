@@ -14,8 +14,8 @@ public class DeliveryDto {
     private String area;
     private BigDecimal price;
     private String district;
-    private Boolean isActive = true;
-    private Boolean isDeleted = false;
+    private Boolean isActive;
+    private Boolean isDeleted;
     private Long restaurantId;
 }
 

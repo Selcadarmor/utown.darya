@@ -9,6 +9,7 @@ import com.example.Utown.model.Delivery;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.repository.DeliveryRepository;
 import com.example.Utown.repository.RestaurantRepository;
+import com.example.Utown.service.UserTypeService.RestaurantAdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
     private final DeliveryMapper deliveryMapper;
+    private final RestaurantAdminService restaurantAdminService;
     private final RestaurantRepository restaurantRepository;
 
     @Override
@@ -34,15 +36,27 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     @Override
-    public List<Delivery> getAllDeliveries() {
-        return deliveryRepository.findAll();
+    public List<DeliveryDto> getAllDeliveriesByRestaurantId(Long restaurantId) {
+        List<Delivery> deliveries = deliveryRepository.findByRestaurantId(restaurantId);
+        return deliveryMapper.deliveryToDto(deliveries);
+    }
+
+    @Override
+    public List<DeliveryDto> getAllInActiveDeliveriesByRestaurantId(Long restaurantId) {
+        List<Delivery> deliveries = deliveryRepository.findActiveByRestaurantId(restaurantId);
+        return deliveryMapper.deliveryToDto(deliveries);
+    }
+
+    @Override
+    public List<DeliveryDto> getAllDeletedDeliveriesByRestaurantId(Long restaurantId) {
+        List<Delivery> deliveries = deliveryRepository.findDeletedByRestaurantId(restaurantId);
+        return deliveryMapper.deliveryToDto(deliveries);
     }
 
     @Override
     public List<DeliveryInfoDto> getDeliveriesByRestaurantId(Long restaurantId) {
         List<Delivery> deliveries = deliveryRepository.findByRestaurantId(restaurantId);
         return deliveryMapper.toDtoList(deliveries);
-
     }
 
     @Override
@@ -54,8 +68,31 @@ public class DeliveryServiceImpl implements DeliveryService {
                 .area(dto.getArea())
                 .price(dto.getPrice())
                 .district(dto.getDistrict())
-                .isActive(dto.getIsActive())
-                .isDeleted(dto.getIsDeleted())
+                .isActive(true)
+                .isDeleted(false)
+                .restaurant(restaurant)
+                .build();
+
+        return deliveryRepository.save(delivery);
+    }
+
+    @Override
+    public Delivery addDelivery(DeliveryDto dto) {
+        Restaurant restaurant = restaurantAdminService.getCurrentAdmin().getRestaurant();
+
+        boolean exists = deliveryRepository.existsByRestaurantAndAreaAndDistrict(
+                restaurant.getId(), dto.getArea(), dto.getDistrict());
+
+        if (exists) {
+            throw new IllegalArgumentException("Delivery with this area and district already exists for the restaurant");
+        }
+
+        Delivery delivery = Delivery.builder()
+                .area(dto.getArea())
+                .price(dto.getPrice())
+                .district(dto.getDistrict())
+                .isActive(true)
+                .isDeleted(false)
                 .restaurant(restaurant)
                 .build();
 
@@ -83,8 +120,8 @@ public class DeliveryServiceImpl implements DeliveryService {
             delivery.setArea(dto.getArea());
             delivery.setDistrict(dto.getDistrict());
             delivery.setPrice(dto.getPrice());
-            delivery.setIsActive(dto.getIsActive());
-            delivery.setIsDeleted(dto.getIsDeleted());
+            delivery.setIsActive(true);
+            delivery.setIsDeleted(false);
         }
 
         deliveryRepository.saveAll(existingDeliveriesById.values());
@@ -94,24 +131,48 @@ public class DeliveryServiceImpl implements DeliveryService {
     public Delivery updateDelivery(Long id, DeliveryDto dto) {
         Delivery delivery = getDeliveryById(id);
 
-        Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId())
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", dto.getRestaurantId()));
+        Restaurant restaurant = restaurantAdminService.getCurrentAdmin().getRestaurant();
+
+        boolean exists = deliveryRepository.existsSimilarDelivery(
+                restaurant.getId(), dto.getArea(), dto.getDistrict(), id);
+
+        if (exists) {
+            throw new IllegalArgumentException("Delivery with this area and district already exists for the restaurant");
+        }
 
         delivery.setArea(dto.getArea());
         delivery.setPrice(dto.getPrice());
         delivery.setDistrict(dto.getDistrict());
-        delivery.setIsActive(dto.getIsActive());
-        delivery.setIsDeleted(dto.getIsDeleted());
-        delivery.setRestaurant(restaurant);
+        delivery.setIsActive(true);
+        delivery.setIsDeleted(false);
 
         return deliveryRepository.save(delivery);
     }
 
     @Override
+    @Transactional
+    public void reactivateDelivery(Long id) {
+        Delivery delivery = getDeliveryById(id);
+        delivery.setIsActive(true);
+        delivery.setIsDeleted(false);
+        deliveryRepository.save(delivery);
+    }
+
+    @Override
+    @Transactional
+    public void stopDelivery(Long id) {
+        Delivery delivery = getDeliveryById(id);
+        delivery.setIsActive(false);
+        deliveryRepository.save(delivery);
+    }
+
+    @Override
+    @Transactional
     public void deleteDelivery(Long id) {
         Delivery delivery = getDeliveryById(id);
+        delivery.setIsActive(false);
         delivery.setIsDeleted(true);
-        deliveryRepository.delete(delivery);
+        deliveryRepository.save(delivery);
     }
 
 }
