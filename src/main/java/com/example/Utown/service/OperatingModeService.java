@@ -9,7 +9,6 @@ import java.util.List;
 
 public interface OperatingModeService {
     OperatingModeInfoDto findById(Long id);
-    List<OperatingModeInfoDto> findAll();
     List<OperatingModeInfoDto> getOperatingModesByRestaurantId(Long restaurantId);
     OperatingModeInfoDto update(Long id, OperatingModeUpdateDto dto);
     void updateOperatingModes(List<OperatingModeUpdateDto> dtos);
