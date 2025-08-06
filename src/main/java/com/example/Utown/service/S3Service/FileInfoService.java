@@ -5,9 +5,7 @@ import com.example.Utown.model.FileInfo;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface FileInfoService {
-    FileInfo create(FileInfoDto dto);
     FileInfo findById(Long id);
-    FileInfo update(Long id, FileInfoDto dto);
     void delete(Long id);
     FileInfo getFileInfoById(Long id);
     FileInfoDto saveFile(MultipartFile file);

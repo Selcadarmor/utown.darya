@@ -25,7 +25,6 @@ import com.example.Utown.repository.OrderRepository;
 import com.example.Utown.repository.UserType.RestaurantAdminRepository;
 import com.example.Utown.service.UserTypeService.ClientService;
 import com.example.Utown.service.UserTypeService.RestaurantAdminService;
-import com.example.Utown.service.UserTypeService.RestaurantAdminServiceImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,6 +61,7 @@ public class OrderServiceImpl implements OrderService {
     private final AddressService addressService;
     private final DishToOrderService dishToOrderService;
     private final RestaurantAdminService restaurantAdminService;
+    private final NotificationService notificationService;
 
     // ========================= GET =========================
 
@@ -327,7 +327,7 @@ public class OrderServiceImpl implements OrderService {
                 .payment(null)
                 .latitude(clientAddress.getLatitude())
                 .longitude(clientAddress.getLongitude())
-                .noteForCourier(null)
+                .noteForCourier(null) //какие еще note???
                 .number(generateOrderNumber())
                 .orderPrice(cart.getSumOrder())
                 .postcode(clientAddress.getPostCode())
@@ -352,6 +352,13 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
 
         log.info("Created order #{} for client id: {}, restaurant id: {}", order.getNumber(), client.getId(), restaurant.getId());
+
+        notificationService.notifyUser(
+                client,
+                "Order Created",
+                "Your order №" + order.getNumber() + " has been successfully created.",
+                true
+        );
 
         cartService.clearCart(cart.getId());
         log.debug("Cleared cart with id: {} after order creation", cart.getId());
@@ -383,6 +390,13 @@ public class OrderServiceImpl implements OrderService {
         order.setUpdatedAt(LocalDateTime.now());
         orderRepository.save(order);
 
+        notificationService.notifyUser(
+                client,
+                "Order cancelled",
+                "You have successfully cancelled order №" + order.getNumber(),
+                true
+        );
+
         log.info("Client id: {} canceled order id: {}", client.getId(), orderId);
     }
 
@@ -404,6 +418,13 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
 
         log.info("Order {} accepted with cooking time {} minutes", orderId, cookingTime);
+
+        notificationService.notifyUser(
+                order.getClient(),
+                "Your order has been accepted",
+                "Order №" + order.getNumber() + " accepted for processing.",
+                true
+        );
     }
 
     @Override
@@ -421,6 +442,13 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
 
         log.info("Order {} marked as READY_FOR_PICKUP", orderId);
+
+        notificationService.notifyUser(
+                order.getClient(),
+                "Your order is ready for pickup",
+                "Order №" + order.getNumber() + " is now ready for pickup.",
+                true
+        );
     }
 
     @Override
@@ -434,6 +462,13 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
 
         log.info("Order {} marked as COMPLETED", orderId);
+
+        notificationService.notifyUser(
+                order.getClient(),
+                "The order has been delivered",
+                "Your order №" + order.getNumber() + " successfully completed.",
+                true
+        );
     }
 
     @Override
@@ -446,6 +481,13 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
 
         log.info("Order {} canceled by admin", orderId);
+
+        notificationService.notifyUser(
+                order.getClient(),
+                "Order Canceled by Restaurant",
+                "Your order №" + order.getNumber() + " has been canceled by the restaurant. We apologize for the inconvenience.",
+                false
+        );
     }
 
    // ========================= DELETE =========================
