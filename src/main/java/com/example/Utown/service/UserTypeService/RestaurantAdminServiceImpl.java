@@ -22,6 +22,7 @@ import java.util.HashSet;
 @Service
 @AllArgsConstructor
 public class RestaurantAdminServiceImpl  implements RestaurantAdminService {
+
     private final RestaurantAdminRepository restaurantAdminRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
