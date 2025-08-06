@@ -22,7 +22,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
 
 
@@ -67,6 +66,6 @@ public class Option {
     private Dish dish;
 
     @OneToMany(mappedBy = "option", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Element> elements = new HashSet<>();
+    private Set<Element> elements;
 
 }
