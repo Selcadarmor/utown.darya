@@ -39,6 +39,7 @@ import com.example.Utown.service.S3Service.FileInfoService;
 import com.example.Utown.service.UserTypeService.ClientService;
 import com.example.Utown.service.UserTypeService.RestaurantAdminService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -55,6 +56,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RestaurantServiceImpl  implements RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
@@ -77,25 +79,35 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
     public Restaurant findRestaurantById(Long restaurantId) {
         return restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
+                .orElseThrow(() -> {
+                    log.error("Restaurant not found by id: {}", restaurantId);
+                    return new ResourceNotFoundException("Restaurant", restaurantId);
+                });
     }
 
     @Override
     public Page<RestaurantInfoDto> getAllRestaurants(String query, Boolean isActive,int page, int size) {
+        log.info("getAllRestaurants query: {}, isActive: {}, page: {}, size: {}", query, isActive, page, size);
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
         return restaurantRepository.findAllRestaurantsWithOrderCount(query, isActive,pageable);
     }
 
     @Override
-    public RestaurantDetailsDto getRestaurantDetails(Long restaurantId) {//передать в запросе и в дто поф файла
+    public RestaurantDetailsDto getRestaurantDetails(Long restaurantId) {
+        log.info("getRestaurantDetails restaurantId: {}", restaurantId);
         Restaurant restaurantEntity = findRestaurantById(restaurantId);
 
         RestaurantDetailsDto restaurant = restaurantRepository.findRestaurantSummaryById(restaurantId)
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant", restaurantId));
+                .orElseThrow(() -> {
+                    log.error("Restaurant not found by id: {}", restaurantId);
+                    return new ResourceNotFoundException("Restaurant", restaurantId);
+                });
 
         if (restaurant.getPath() != null && !restaurant.getPath().isEmpty()) {
+            log.info("getRestaurantDetails restaurant.getPath(): {}", restaurant.getPath());
             String url = awsProperties.getPublicBaseUrl() + "/" + restaurant.getPath();
             restaurant.setFileUrl(url);
+            log.info("getRestaurantDetails restaurant.getFileUrl(): {}", restaurant.getFileUrl());
         }
 
         Set<RestaurantCategoryDto> categoryDtos = restaurantCategoryInfoMapper
@@ -106,30 +118,36 @@ public class RestaurantServiceImpl  implements RestaurantService {
         restaurant.setCategories(categoryDtos);
         restaurant.setOperatingModes(operatingModeDtos);
         restaurant.setDeliveries(deliveryDtos);
+        log.info("getRestaurantDetails restaurant: {}", restaurant);
 
         return restaurant;
     }
 
     @Override //For Client
     public Page<RestaurantForClientDto> getRecommendedRestaurantsForClient(Pageable pageable) {
+        log.info("getRecommendedRestaurantsForClient pageable: {}", pageable);
         Client client = clientService.getCurrentClient();
         Address address = addressService.getAddressById(client.getDefaultAddress());
-
+        log.info("getRecommendedRestaurantsForClient address: {}", address);
         return restaurantRepository.findRecommendedRestaurants(address.getState(), address.getCity(), address.getArea(), pageable);
     }
 
     @Override //For Client
     public Page<RestaurantForClientDto> getFastestDeliveryRestaurantsForClient(Pageable pageable) {
+        log.info("getFastestDeliveryRestaurantsForClient pageable: {}", pageable);
         Client client = clientService.getCurrentClient();
         Address address = addressService.getAddressById(client.getDefaultAddress());
+        log.info("getFastestDeliveryRestaurantsForClient address: {}", address);
 
         return restaurantRepository.findFastestDeliveryRestaurants(address.getState(), address.getCity(), address.getArea(), pageable);
     }
 
     @Override //For Client
     public Page<RestaurantForClientDto> getRestaurantsByCategory(Long categoryId, Pageable pageable) {
+        log.info("getRestaurantsByCategory categoryId: {}, pageable: {}", categoryId, pageable);
         Client client = clientService.getCurrentClient();
         Address address = addressService.getAddressById(client.getDefaultAddress());
+        log.info("getRestaurantsByCategory address: {}", address);
 
         return restaurantRepository.findRestaurantsByCategory(address.getState(), address.getCity(), address.getArea(), categoryId, pageable);
     }
@@ -141,11 +159,14 @@ public class RestaurantServiceImpl  implements RestaurantService {
             int size,
             String sortBy,
             String direction) {
+        log.info("searchRestaurants query: {}, page: {}, size: {}, sortBy: {}, direction: {}", query, page, size, sortBy, direction);
 
         Client client = clientService.getCurrentClient();
         Address address = addressService.getAddressById(client.getDefaultAddress());
 
+
         Sort sort = Sort.by(Sort.Direction.DESC, "isRecommended");
+
 
         if (sortBy != null) {
             switch (sortBy.toLowerCase()) {
@@ -162,6 +183,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
         }
 
         Pageable pageable = PageRequest.of(page, size, sort);
+        log.info("searchRestaurants pageable: {}", pageable);
 
         return restaurantRepository.searchClient(
                 query,
@@ -175,8 +197,10 @@ public class RestaurantServiceImpl  implements RestaurantService {
     @Override
     @Transactional(readOnly = true)
     public RestaurantProfileDto getRestaurantProfile(Long restaurantId) {
+        log.info("getRestaurantProfile restaurantId: {}", restaurantId);
         Restaurant restaurant = findRestaurantById(restaurantId);
         List<OperatingModeRestaurantProfileDto> operatingModes = operatingModeRepository.findRawOperatingModesByRestaurantId(restaurantId);
+        log.info("getRestaurantProfile operatingModes: {}", operatingModes);
         return RestaurantProfileDto.builder()
                 .id(restaurant.getId())
                 .title(restaurant.getTitle())
@@ -196,10 +220,12 @@ public class RestaurantServiceImpl  implements RestaurantService {
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
     public RestaurantsCreateResponseDto createRestaurant(RestaurantCreateDto dto) {
+        log.info("createRestaurant dto: {}", dto);
         Restaurant restaurant = restaurantInfoMapper.toEntity(dto);
 
         if (dto.getFileId() != null) {
             Optional<FileInfo> fileOpt = fileInfoRepository.findById(dto.getFileId());
+            log.info("createRestaurant fileOpt: {}", fileOpt);
             fileOpt.ifPresent(restaurant::setFileInfo);
         }
 
@@ -209,17 +235,24 @@ public class RestaurantServiceImpl  implements RestaurantService {
         if (dto.getAddress() != null) {
             Address address = addressService.createAddress(dto.getAddress());
             restaurant.setAddress(address);
+            log.info("createRestaurant address: {}", address);
         }
 
         Restaurant savedRestaurant = restaurantRepository.save(restaurant);
+        log.info("createRestaurant savedRestaurant: {}", savedRestaurant);
 
-        RestaurantAdmin admin;
-        if (dto.getRestaurantAdmin() != null) {
-            admin = restaurantAdminService.createAdmin(dto.getRestaurantAdmin(), savedRestaurant);
-            savedRestaurant.setRestaurantAdmin(admin);
+        if (dto.getRestaurantAdmin() == null) {
+            log.error("createRestaurant restaurantAdmin is null");
+            throw new InvalidArgumentException("restaurantAdmin", "Restaurant admin data must be provided");
         }
 
+        RestaurantAdmin admin = restaurantAdminService.createAdmin(dto.getRestaurantAdmin(), savedRestaurant);
+        log.info("createRestaurant admin: {}", admin);
+        savedRestaurant.setRestaurantAdmin(admin);
+
+
         restaurantRepository.save(savedRestaurant);
+        log.debug("createRestaurant savedRestaurant: {}", savedRestaurant);
 
         if (dto.getOperatingModes() != null) {
             for (OperatingModeCreateDto modeDto : dto.getOperatingModes()) {
@@ -236,8 +269,10 @@ public class RestaurantServiceImpl  implements RestaurantService {
         List<OperatingMode> operatingModes = operatingModeRepository.findByRestaurantId(savedRestaurant.getId());
         savedRestaurant.setOperatingModes(new ArrayList<>(operatingModes));
 
+
         List<Delivery> deliveries = deliveryRepository.findByRestaurantId(savedRestaurant.getId());
         savedRestaurant.setDeliveries(new ArrayList<>(deliveries));
+
 
         // Возвращаем DTO с уже подгруженными связями
         return restaurantInfoMapper.toCreateDto(savedRestaurant);
@@ -250,48 +285,63 @@ public class RestaurantServiceImpl  implements RestaurantService {
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
     public RestaurantUpdateResponseDto updateRestaurant(Long id, RestaurantUpdateDto dto) {
+        log.info("Updating restaurant with id: {}", id);
+
         Restaurant restaurant = findRestaurantById(id);
+        log.debug("Found restaurant: {}", restaurant.getTitle());
+
 
         restaurantInfoMapper.updateFromDto(dto, restaurant);
+        log.debug("Restaurant basic info updated from DTO");
 
         if (dto.getFileId() != null) {
             FileInfo file = fileInfoService.getFileInfoById(dto.getFileId());
             restaurant.setFileInfo(file);
+            log.debug("Updated file info with id: {}", dto.getFileId());
         }
 
         Address currentAddress = restaurant.getAddress();
         if (currentAddress == null) {
             Address newAddress = addressService.createAddress(dto.getAddress());
             restaurant.setAddress(newAddress);
+            log.debug("Created and set new address: {}", newAddress);
         } else {
             if (currentAddress.getId() == null) {
                 // Создаем новый адрес, потому что id нет
                 Address newAddress = addressService.createAddress(dto.getAddress());
                 restaurant.setAddress(newAddress);
+                log.debug("Replaced null-id address with new address: {}", newAddress);
             } else {
                 addressService.updateAddress(currentAddress.getId(), dto.getAddress());
+                log.debug("Updated existing address with id: {}", currentAddress.getId());
             }
         }
 
 
         if (dto.getOperatingModes() != null && !dto.getOperatingModes().isEmpty()) {
             operatingModeService.updateOperatingModes(dto.getOperatingModes());
+            log.debug("Updated operating modes");
         }
 
         if (dto.getDeliveries() != null && !dto.getDeliveries().isEmpty()) {
             deliveryService.updateDeliveriesByRestaurant(restaurant, dto.getDeliveries());
+            log.debug("Updated deliveries");
         }
 
         if (dto.getCategoryIds() != null) {
             if (dto.getCategoryIds().isEmpty()) {
                 restaurant.getCategories().clear();
+                log.debug("Cleared all restaurant categories");
             } else {
                 Set<RestaurantCategory> categories = resolveCategoriesByIds(dto.getCategoryIds());
                 restaurant.setCategories(categories);
+                log.debug("Updated restaurant categories: {}", dto.getCategoryIds());
             }
         }
 
         Restaurant saved = restaurantRepository.save(restaurant);
+        log.info("Restaurant with id {} successfully updated", saved.getId());
+
         return restaurantInfoMapper.toUpdateDto(saved);
     }
 
@@ -300,6 +350,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
     public RestaurantUpdateResponseDto updateRestaurantByAdmin(RestaurantUpdateDto dto) {
         RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin();
         Long restaurantId = currentAdmin.getRestaurant().getId();
+        log.info("Updating restaurant with id: {}", restaurantId);
 
         return updateRestaurant(restaurantId, dto);
     }
@@ -309,44 +360,54 @@ public class RestaurantServiceImpl  implements RestaurantService {
     public void updateStatusForCurrentAdminRestaurant(RestaurantStatus newStatus) {
         RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin();
         Restaurant restaurant = findRestaurantById(currentAdmin.getRestaurant().getId());
+        log.info("Updating restaurant status for current admin restaurant: {}", restaurant.getTitle());
 
         validationStatusChange(restaurant.getStatus(), newStatus);
+        log.info("Validation status change for current admin restaurant: {}", restaurant.getStatus());
 
         restaurant.setStatus(newStatus);
+        log.info("Updated restaurant status for current admin restaurant: {}", restaurant.getStatus());
         restaurantRepository.save(restaurant);
     }
 
     private void validationStatusChange(RestaurantStatus currentStatus, RestaurantStatus newStatus) {
 
         if (currentStatus == null) {
+            log.info("Current status is null, allowing change to {}", newStatus);
             // Например, считаем, что если статус отсутствует — смена возможна на любой статус
             return;
         }
 
         if (currentStatus == newStatus) {
+            log.warn("Attempted to change restaurant status to the same value: {}", newStatus);
             throw new InvalidArgumentException("Restaurant", newStatus.toString());
         }
 
         switch (currentStatus) {
             case NOT_ACTIVE:
                 if (newStatus != RestaurantStatus.CLOSE) {
+                    log.warn("Invalid status change from NOT_ACTIVE to {}", newStatus);
                     throw new InvalidArgumentException("Restaurant", newStatus.toString());
                 }
                 break;
 
             case CLOSE:
                 if (newStatus != RestaurantStatus.OPEN && newStatus != RestaurantStatus.NOT_ACTIVE) {
+                    log.warn("Invalid status change from CLOSE to {}", newStatus);
                     throw new InvalidArgumentException("Restaurant", newStatus.toString());
                 }
                 break;
             case OPEN:
                 if (newStatus != RestaurantStatus.CLOSE) {
+                    log.warn("Invalid status change from OPEN to {}", newStatus);
                     throw new InvalidArgumentException("Restaurant", newStatus.toString());
                 }
                 break;
             default:
+                log.error("Unknown current status: {}", currentStatus);
                 throw new InvalidArgumentException("Restaurant", currentStatus.toString());
         }
+        log.info("Status change from {} to {} is valid", currentStatus, newStatus);
     }
 
     // ===== DELETE / DEACTIVATE =====
@@ -354,22 +415,34 @@ public class RestaurantServiceImpl  implements RestaurantService {
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
     public void deactivateRestaurant(Long restaurantId) {
+        log.info("deactivateRestaurant restaurantId: {}", restaurantId);
         Restaurant restaurant = findRestaurantById(restaurantId);
         restaurant.setIsActive(false);
 
+        log.debug("Restaurant with id {} marked as inactive", restaurantId);
+
         if (restaurant.getRestaurantAdmin() != null) {
             restaurant.getRestaurantAdmin().setIsActive(false);
+            log.debug("RestaurantAdmin with id {} marked as inactive", restaurant.getRestaurantAdmin().getId());
+        } else {
+            log.warn("RestaurantAdmin is null for restaurant with id {}", restaurantId);
         }
 
         if (restaurant.getDeliveries() != null) {
-            restaurant.getDeliveries().forEach(delivery -> delivery.setIsActive(false));
+            restaurant.getDeliveries().forEach(delivery -> delivery.setIsDeleted(true));
+            log.debug("All deliveries for restaurant id {} marked as deleted", restaurantId);
+        } else {
+            log.debug("Restaurant with id {} has no deliveries to delete", restaurantId);
+
         }
 
         List<Dish> dishes = dishRepository.findAllByRestaurantId(restaurantId);
         dishes.forEach(dish -> dish.setIsActive(false));
         dishRepository.saveAll(dishes);
+        log.debug("All dishes for restaurant id {} marked as inactive", restaurantId);
 
         restaurantRepository.save(restaurant);
+        log.info("Restaurant with id {} successfully deactivated", restaurantId);
     }
 
     // ===== HELPERS =====
@@ -378,6 +451,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
     private Set<RestaurantCategory> resolveCategoriesByIds(Set<Long> categoryIds) {
         if (categoryIds == null || categoryIds.isEmpty()) {
+            log.info("resolveCategoriesByIds categoryIds is null or empty");
             return Collections.emptySet();
         }
 
@@ -385,8 +459,12 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
         for (Long id : categoryIds) {
             RestaurantCategory category = restaurantCategoryRepository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("RestaurantCategory", id));
+                    .orElseThrow(() -> {
+                        log.error("RestaurantCategory not found by id: {}", id);
+                        return new ResourceNotFoundException("RestaurantCategory", id);
+                    });
             categories.add(category);
+            log.info("resolveCategoriesByIds category: {}", category);
         }
 
         return categories;
