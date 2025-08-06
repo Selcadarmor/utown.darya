@@ -48,9 +48,9 @@ public class DishServiceImpl implements DishService {
     private final DishMapper dishMapper;
     private final ElementRepository elementRepository;
     private final FileInfoService fileInfoService;
-    private final RestaurantAdminService restaurantAdminService;
     private final OptionRepository optionRepository;
     private final OptionService optionService;
+    private final RestaurantAdminService restaurantAdminService;
     private final RestaurantRepository restaurantRepository;
 
     // ===== GET =====

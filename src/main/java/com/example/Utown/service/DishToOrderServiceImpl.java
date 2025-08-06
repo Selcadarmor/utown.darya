@@ -11,6 +11,7 @@ import com.example.Utown.model.Order;
 import com.example.Utown.repository.CartRepository;
 import com.example.Utown.repository.DishToOrderRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DishToOrderServiceImpl implements DishToOrderService {
@@ -31,106 +33,113 @@ public class DishToOrderServiceImpl implements DishToOrderService {
 
     // ========================= GET =========================
 
-    @Override
-    public DishToOrder getById(Long id) {
-        DishToOrder dishToOrder = dishToOrderRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("DishToOrder", id));
-        return dishToOrder;
-    }
+        @Override
+        public DishToOrder getById(Long id) {
+            log.info("Fetching DishToOrder by ID: {}", id);
+            return dishToOrderRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("DishToOrder", id));
+        }
 
-    @Override
-    public List<DishInCartDto> getDishesInCart(Long cartId) {
-        return dishToOrderRepository.findDishesInCartByCartId(cartId);
-    }
+        @Override
+        public List<DishInCartDto> getDishesInCart(Long cartId) {
+            log.info("Fetching dishes in cart with ID: {}", cartId);
+            return dishToOrderRepository.findDishesInCartByCartId(cartId);
+        }
 
-    @Override
-    public List<DishToOrder> getAll() {
-        return dishToOrderRepository.findAll();
-    }
+        @Override
+        public List<DishToOrder> getAll() {
+            log.info("Fetching all DishToOrder records");
+            return dishToOrderRepository.findAll();
+        }
 
-    @Override
-    public Set<String> getElementNames(Long dishToOrderId) {
-        return dishToOrderRepository.findElementNamesByDishToOrderId(dishToOrderId);
-    }
+        @Override
+        public Set<String> getElementNames(Long dishToOrderId) {
+            log.info("Fetching element names for DishToOrder ID: {}", dishToOrderId);
+            return dishToOrderRepository.findElementNamesByDishToOrderId(dishToOrderId);
+        }
 
-    // ========================= POST =========================
+        // ========================= POST =========================
 
-    @Override
-    @Transactional
-    public DishToOrder createByCart(Long cartId, Long dishId, DishToOrderRequestDto dto) {
-        Dish dish = dishService.getDishById(dishId);
-        Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new ResourceNotFoundException("Cart", cartId));
+        @Override
+        @Transactional
+        public DishToOrder createByCart(Long cartId, Long dishId, DishToOrderRequestDto dto) {
+            log.info("Creating DishToOrder for cart ID: {}, dish ID: {}", cartId, dishId);
+            Dish dish = dishService.getDishById(dishId);
+            Cart cart = cartRepository.findById(cartId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Cart", cartId));
 
-        BigDecimal elementsPriceSum = elementService.calculateElementsPrice(dto.getSelectedElementIds());
-        BigDecimal totalOneItemPrice = dish.getPrice().add(elementsPriceSum);
-        BigDecimal totalSum = totalOneItemPrice.multiply(BigDecimal.valueOf(dto.getCount()));
+            BigDecimal elementsPriceSum = elementService.calculateElementsPrice(dto.getSelectedElementIds());
+            BigDecimal totalOneItemPrice = dish.getPrice().add(elementsPriceSum);
+            BigDecimal totalSum = totalOneItemPrice.multiply(BigDecimal.valueOf(dto.getCount()));
 
-        Set<Element> selectedElements = elementService.getElementsByIds(dto.getSelectedElementIds());
+            Set<Element> selectedElements = elementService.getElementsByIds(dto.getSelectedElementIds());
 
-        DishToOrder dishToOrder = DishToOrder.builder()
-                .dish(dish)
-                .cart(cart)
-                .count(dto.getCount())
-                .sum(totalSum)
-                .selectedElements(new HashSet<>(selectedElements))
-                .build();
+            DishToOrder dishToOrder = DishToOrder.builder()
+                    .dish(dish)
+                    .cart(cart)
+                    .count(dto.getCount())
+                    .sum(totalSum)
+                    .selectedElements(new HashSet<>(selectedElements))
+                    .build();
 
-        return dishToOrderRepository.save(dishToOrder);
-    }
+            DishToOrder saved = dishToOrderRepository.save(dishToOrder);
+            log.info("Created DishToOrder ID: {}", saved.getId());
+            return saved;
+        }
 
-    @Override
-    public List<DishToOrder> createByOrder(List<DishToOrder> cartDishToOrders, Order order) {
-        List<DishToOrder> newItems = cartDishToOrders.stream()
-                .map(oldItem -> DishToOrder.builder()
-                        .dish(oldItem.getDish())
-                        .count(oldItem.getCount())
-                        .sum(oldItem.getSum())
-                        .selectedElements(new HashSet<>(oldItem.getSelectedElements()))
-                        .order(order)
-                        .build())
-                .collect(Collectors.toList());
+        @Override
+        public List<DishToOrder> createByOrder(List<DishToOrder> cartDishToOrders, Order order) {
+            log.info("Creating DishToOrder list for order ID: {}", order.getId());
 
-        return dishToOrderRepository.saveAll(newItems);
-    }
+            List<DishToOrder> newItems = cartDishToOrders.stream()
+                    .map(oldItem -> DishToOrder.builder()
+                            .dish(oldItem.getDish())
+                            .count(oldItem.getCount())
+                            .sum(oldItem.getSum())
+                            .selectedElements(new HashSet<>(oldItem.getSelectedElements()))
+                            .order(order)
+                            .build())
+                    .collect(Collectors.toList());
 
-    // ========================= PUT =========================
+            List<DishToOrder> savedItems = dishToOrderRepository.saveAll(newItems);
+            log.info("Saved {} DishToOrder items for order ID: {}", savedItems.size(), order.getId());
+            return savedItems;
+        }
 
-    @Override
-    @Transactional
-    public void update(Long dishToOrderId, DishToOrderRequestDto dto) {
-        DishToOrder dishToOrder = getById(dishToOrderId);
+        // ========================= PUT =========================
 
-        Dish dish = dishToOrder.getDish();
+        @Override
+        @Transactional
+        public void update(Long dishToOrderId, DishToOrderRequestDto dto) {
+            log.info("Updating DishToOrder ID: {}", dishToOrderId);
+            DishToOrder dishToOrder = getById(dishToOrderId);
 
-        BigDecimal elementsPriceSum = elementService.calculateElementsPrice(dto.getSelectedElementIds());
-        BigDecimal totalOneItemPrice = dish.getPrice().add(elementsPriceSum);
-        BigDecimal totalSum = totalOneItemPrice.multiply(BigDecimal.valueOf(dto.getCount()));
+            Dish dish = dishToOrder.getDish();
 
-        Set<Element> selectedElements = elementService.getElementsByIds(dto.getSelectedElementIds());
+            BigDecimal elementsPriceSum = elementService.calculateElementsPrice(dto.getSelectedElementIds());
+            BigDecimal totalOneItemPrice = dish.getPrice().add(elementsPriceSum);
+            BigDecimal totalSum = totalOneItemPrice.multiply(BigDecimal.valueOf(dto.getCount()));
 
-        dishToOrder.setCount(dto.getCount());
-        dishToOrder.setSelectedElements(selectedElements);
-        dishToOrder.setSum(totalSum);
+            Set<Element> selectedElements = elementService.getElementsByIds(dto.getSelectedElementIds());
 
-        dishToOrderRepository.save(dishToOrder);
-    }
+            dishToOrder.setCount(dto.getCount());
+            dishToOrder.setSelectedElements(selectedElements);
+            dishToOrder.setSum(totalSum);
 
+            dishToOrderRepository.save(dishToOrder);
+            log.info("Updated DishToOrder ID: {}", dishToOrderId);
+        }
 
-    // ========================= DELETE =========================
+        // ========================= DELETE =========================
 
-    @Override
-    @Transactional
-    public void delete(Long dishToOrderId) {
-        DishToOrder dishToOrder = getById(dishToOrderId);
-        dishToOrderRepository.delete(dishToOrder);
-    }
-
-    @Override
-    @Transactional
-    public void deleteAll(List<DishToOrder> dishes) {
-        dishToOrderRepository.deleteAll(dishes);
-    }
+        @Override
+        @Transactional
+        public void delete(Long dishToOrderId) {
+            log.info("Deleting DishToOrder ID: {}", dishToOrderId);
+            DishToOrder dishToOrder = getById(dishToOrderId);
+            dishToOrderRepository.delete(dishToOrder);
+            log.info("Deleted DishToOrder ID: {}", dishToOrderId);
+        }
 
 
 }
