@@ -446,7 +446,7 @@ public class ClientController {
     @DeleteMapping("rating/{ratingId}")
     public ResponseEntity<Void> deleteRating(@PathVariable Long ratingId) {
         ratingService.deleteRating(ratingId);
-        return ResponseEntity.ok().build();  // Или .noContent().build() если хочешь 204
+        return ResponseEntity.ok().build();
     }
 
 
