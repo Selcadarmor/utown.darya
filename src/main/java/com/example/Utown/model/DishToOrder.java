@@ -62,7 +62,7 @@ public class DishToOrder {
     @JoinColumn(name = "dish_id")
     private Dish dish;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "dish_to_order_elements",
             joinColumns = @JoinColumn(name = "dish_to_order_id"),

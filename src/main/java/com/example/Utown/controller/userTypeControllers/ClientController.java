@@ -355,6 +355,25 @@ public class ClientController {
         return ResponseEntity.ok(updatedProfile);
     }
 
+    @PutMapping("/addresses/update/{id}") //Passed
+    @Operation(
+            summary = "Update address by ID",
+            description = "Update address details by address ID",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Address updated successfully"),
+                    @ApiResponse(responseCode = "400", description = "Invalid input data"),
+                    @ApiResponse(responseCode = "404", description = "Address not found"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            }
+    )
+    public ResponseEntity<Void> updateAddress(
+            @PathVariable Long id,
+            @RequestBody AddressDto addressDto
+    ) {
+        addressService.updateAddress(id, addressDto);
+        return ResponseEntity.ok().build();
+    }
+
     @PutMapping("/dish-to-order/{dishToOrderId}") //Passed
     @Operation(
             summary = "Update dish position in the cart",

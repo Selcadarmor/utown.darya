@@ -5,7 +5,6 @@ import com.example.Utown.exception.AccessDeniedToOrderException;
 import com.example.Utown.exception.CartIsEmptyException;
 import com.example.Utown.exception.DefaultAddressNotSetException;
 import com.example.Utown.exception.DifferentRestaurantException;
-import com.example.Utown.exception.DishNotInCartException;
 import com.example.Utown.exception.ExpireJwtTokenException;
 import com.example.Utown.exception.InvalidArgumentException;
 import com.example.Utown.exception.InvalidJwtTokenException;
@@ -24,52 +23,42 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
-
 import java.time.LocalDateTime;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
     @ExceptionHandler({
             UserNotFoundException.class,
             RoleNotFoundException.class,
-            ResourceNotFoundException.class,
+            ResourceNotFoundException.class
     })
-    @ResponseStatus(HttpStatus.NOT_FOUND)
     @Operation(hidden = true)
-    public ApiErrorResponse handleUserNotFoundException(UserNotFoundException ex, HttpServletRequest request) {
-        String path = request.getRequestURI();
-        return buildError(HttpStatus.NOT_FOUND, ex.getMessage(), path);
+    public ResponseEntity<ApiErrorResponse> handleNotFound(RuntimeException ex, HttpServletRequest request) {
+        log.warn("Not Found: {} - {}", request.getRequestURI(), ex.getMessage());
+        return buildError(HttpStatus.NOT_FOUND, ex, request);
     }
-
 
     @ExceptionHandler({
             InvalidJwtTokenException.class,
             ExpireJwtTokenException.class,
             RefreshTokenNotFoundException.class
     })
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @Operation(hidden = true)
-    public ApiErrorResponse handleJwtException(RuntimeException ex, HttpServletRequest request) { /// Jwt ошибки
-        return buildError(HttpStatus.UNAUTHORIZED, ex.getMessage(), request.getRequestURI());
+    public ResponseEntity<ApiErrorResponse> handleJwtException(RuntimeException ex, HttpServletRequest request) {
+        log.warn("JWT Exception: {} - {}", request.getRequestURI(), ex.getMessage());
+        return buildError(HttpStatus.UNAUTHORIZED, ex, request);
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
     @Operation(hidden = true)
-    public ApiErrorResponse handleConflictException(RuntimeException ex, HttpServletRequest request) { ///ошибка 409 например дублирование и др...
-        return buildError(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
-    }
-
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @Operation(hidden = true)
-    public ApiErrorResponse handleAllOthers(Exception ex, HttpServletRequest request) {/// ошибка сервера 500
-        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", request.getRequestURI());
+    public ResponseEntity<ApiErrorResponse> handleConflictException(RuntimeException ex, HttpServletRequest request) {
+        log.warn("Conflict: {} - {}", request.getRequestURI(), ex.getMessage());
+        return buildError(HttpStatus.CONFLICT, ex, request);
     }
 
     @ExceptionHandler({
@@ -78,90 +67,47 @@ public class GlobalExceptionHandler {
             InvalidArgumentException.class,
             InvalidOperationException.class,
             OrderCancelNotAllowedException.class,
+            DefaultAddressNotSetException.class,
+            RestaurantAlreadyFavoritedException.class,
+            RestaurantNotInFavoritesException.class,
+            DifferentRestaurantException.class
     })
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @Operation(hidden = true)
-    public ApiErrorResponse handleBadRequest(RuntimeException ex, HttpServletRequest request) {/// ошибка 400
-        return buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
-    }
-
-    private ApiErrorResponse buildError(HttpStatus status, String message, String path) { /// дополнительный метод что бы не прописывать каждый раз в обработке
-        return ApiErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(status.value())
-                .error(status.getReasonPhrase())
-                .message(message)
-                .path(path)
-                .build();
+    public ResponseEntity<ApiErrorResponse> handleBadRequest(RuntimeException ex, HttpServletRequest request) {
+        log.warn("Bad request: {} - {}", request.getRequestURI(), ex.getMessage());
+        return buildError(HttpStatus.BAD_REQUEST, ex, request);
     }
 
     @ExceptionHandler(AccessDeniedToOrderException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
     @Operation(hidden = true)
-    public ApiErrorResponse handleAccessDeniedToOrder(AccessDeniedToOrderException ex, HttpServletRequest request) {
-        return buildError(HttpStatus.FORBIDDEN, ex.getMessage(), request.getRequestURI());
-    }
-
-    @ExceptionHandler(DishNotInCartException.class)
-    public ResponseEntity<?> handleDishNotInCart(DishNotInCartException ex, HttpServletRequest request) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ApiErrorResponse.builder()
-                        .timestamp(LocalDateTime.now())
-                        .status(HttpStatus.NOT_FOUND.value())
-                        .error("Not Found")
-                        .message(ex.getMessage())
-                        .path(request.getRequestURI())
-                        .build());
-    }
-
-
-    @ExceptionHandler(MissingServletRequestParameterException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @Operation(hidden = true)
-    public ApiErrorResponse handleMissingRequestParam(MissingServletRequestParameterException ex, HttpServletRequest request) {
-        String message = String.format("Missing required parameter: '%s'", ex.getParameterName());
-        return buildError(HttpStatus.BAD_REQUEST, message, request.getRequestURI());
-    }
-
-    @ExceptionHandler(DefaultAddressNotSetException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @Operation(hidden = true)
-    public ApiErrorResponse handleDefaultAddressNotSetException(DefaultAddressNotSetException ex, HttpServletRequest request) {
-        return buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
-    }
-
-    @ExceptionHandler(RestaurantAlreadyFavoritedException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @Operation(hidden = true)
-    public ApiErrorResponse handleRestaurantAlreadyFavorited(RestaurantAlreadyFavoritedException ex, HttpServletRequest request) {
-        return buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
-    }
-
-    @ExceptionHandler(RestaurantNotInFavoritesException.class)
-    @Operation(hidden = true)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiErrorResponse handleRestaurantNotInFavorites(RestaurantNotInFavoritesException ex, HttpServletRequest request) {
-        return buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
-    }
-
-    @ExceptionHandler(DifferentRestaurantException.class)
-    @Operation(hidden = true)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiErrorResponse handleDifferentRestaurantException(DifferentRestaurantException ex, HttpServletRequest request) {
-        return buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    public ResponseEntity<ApiErrorResponse> handleAccessDeniedToOrder(AccessDeniedToOrderException ex, HttpServletRequest request) {
+        log.warn("Access denied to order: {} - {}", request.getRequestURI(), ex.getMessage());
+        return buildError(HttpStatus.FORBIDDEN, ex, request);
     }
 
     @ExceptionHandler(S3UploadException.class)
+    @Operation(hidden = true)
     public ResponseEntity<ApiErrorResponse> handleS3UploadException(S3UploadException ex, HttpServletRequest request) {
+        log.error("S3 Upload failed: {} - {}", request.getRequestURI(), ex.getMessage(), ex);
+        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, ex, request);
+    }
+
+    @ExceptionHandler(Exception.class)
+    @Operation(hidden = true)
+    public ResponseEntity<ApiErrorResponse> handleAllOthers(Exception ex, HttpServletRequest request) {
+        log.error("Unexpected error at [{}]: {}", request.getRequestURI(), ex.getMessage(), ex);
+        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, new RuntimeException("Internal server error"), request);
+    }
+
+    private ResponseEntity<ApiErrorResponse> buildError(HttpStatus status, Throwable ex, HttpServletRequest request) {
         ApiErrorResponse errorResponse = ApiErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
+                .status(status.value())
+                .error(status.getReasonPhrase())
                 .message(ex.getMessage())
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
                 .path(request.getRequestURI())
                 .build();
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(errorResponse, status);
     }
-
 }
