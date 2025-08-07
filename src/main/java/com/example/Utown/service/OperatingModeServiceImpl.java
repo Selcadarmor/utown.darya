@@ -104,18 +104,12 @@ public class OperatingModeServiceImpl implements OperatingModeService {
     @Override
     @Transactional
     public OperatingModeInfoDto update(Long id, OperatingModeUpdateDto dto) {
-        log.info("OperatingModeServiceImpl.update: id={}, dto={}", id, dto);
+        log.info("OperatingModeServiceImpl.update (no admin check): id={}, dto={}", id, dto);
         OperatingMode updated = operatingModeRepository.findById(id)
                 .orElseThrow(() -> {
                     log.error("OperatingModeServiceImpl.update: OperatingMode not found by id={}", id);
                     return new ResourceNotFoundException("OperatingMode", id);
                 });
-
-        RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin();
-        if (!updated.getRestaurant().getId().equals(currentAdmin.getRestaurant().getId())) {
-            log.warn("OperatingModeServiceImpl.update: Access denied. AdminId={}, RestaurantId={}", currentAdmin.getId(), updated.getRestaurant().getId());
-            throw new AccessDeniedException("You do not have permission to modify this operating mode.");
-        }
 
         updated.setDayOff(dto.isDayOff());
         if (dto.getStartTime() != null) updated.setStartTime(dto.getStartTime());
@@ -131,7 +125,36 @@ public class OperatingModeServiceImpl implements OperatingModeService {
                 });
     }
 
+    @Transactional
+    @Override
+    public OperatingModeInfoDto updateByRestaurantAdmin(Long id, OperatingModeUpdateDto dto) {
+        log.info("OperatingModeServiceImpl.updateByRestaurantAdmin: id={}, dto={}", id, dto);
+        OperatingMode updated = operatingModeRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("OperatingModeServiceImpl.updateByRestaurantAdmin: OperatingMode not found by id={}", id);
+                    return new ResourceNotFoundException("OperatingMode", id);
+                });
 
+        RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin();
+
+        if (!updated.getRestaurant().getId().equals(currentAdmin.getRestaurant().getId())) {
+            log.warn("Access denied. AdminId={}, RestaurantId={}", currentAdmin.getId(), updated.getRestaurant().getId());
+            throw new AccessDeniedException("You do not have permission to modify this operating mode.");
+        }
+
+        updated.setDayOff(dto.isDayOff());
+        if (dto.getStartTime() != null) updated.setStartTime(dto.getStartTime());
+        if (dto.getEndTime() != null) updated.setEndTime(dto.getEndTime());
+        updated.setDayOfWeek(dto.getDayOfWeek());
+        log.debug("Updated OperatingMode: {}", updated);
+
+        operatingModeRepository.save(updated);
+        return operatingModeRepository.findProjectedById(id)
+                .orElseThrow(() -> {
+                    log.error("OperatingModeServiceImpl.updateByRestaurantAdmin: Failed to retrieve OperatingMode by id={}", id);
+                    return new ResourceNotFoundException("OperatingMode", id);
+                });
+    }
     @Override
     @Transactional
     public void updateOperatingModes(List<OperatingModeUpdateDto> dtos) {
