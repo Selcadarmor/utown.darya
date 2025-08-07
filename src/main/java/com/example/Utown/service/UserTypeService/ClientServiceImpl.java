@@ -214,6 +214,8 @@ public class ClientServiceImpl implements ClientService {
         if (dto.getFileId() != null) {
             FileInfo fileInfo = fileInfoService.findById(dto.getFileId());
             client.setFileInfo(fileInfo);
+        } else {
+            client.setFileInfo(null);
         }
 
         Long defaultAddressId = client.getDefaultAddress();
@@ -236,7 +238,10 @@ public class ClientServiceImpl implements ClientService {
         log.info("Client profile updated successfully: {}", client.getUsername());
 
         AddressDto updatedAddressDto = addressMapper.addressToDto(updatedAddress);
-        return new ClientProfileUpdateDto(client.getFullName(), updatedAddressDto, client.getFileInfo().getId());
+
+        Long fileId = client.getFileInfo() != null ? client.getFileInfo().getId() : null;
+
+        return new ClientProfileUpdateDto(client.getFullName(), updatedAddressDto, fileId);
     }
 
     @Override
