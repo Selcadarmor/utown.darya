@@ -1,0 +1,674 @@
+2025-08-08T00:33:45.332+09:00  INFO 9612 --- [Utown] [restartedMain] com.example.Utown.UtownApplication       : Starting UtownApplication using Java 21.0.7 with PID 9612 (/Users/daryakim/Downloads/utown-backand-jun9-kim/target/classes started by daryakim in /Users/daryakim/Downloads/utown-backand-jun9-kim)
+2025-08-08T00:33:45.332+09:00 DEBUG 9612 --- [Utown] [restartedMain] com.example.Utown.UtownApplication       : Running with Spring Boot v3.5.0, Spring v6.2.7
+2025-08-08T00:33:45.332+09:00  INFO 9612 --- [Utown] [restartedMain] com.example.Utown.UtownApplication       : The following 1 profile is active: "local"
+2025-08-08T00:33:45.399+09:00  INFO 9612 --- [Utown] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-08T00:33:45.413+09:00  INFO 9612 --- [Utown] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 13 ms. Found 20 JPA repository interfaces.
+2025-08-08T00:33:45.451+09:00  INFO 9612 --- [Utown] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-08-08T00:33:45.452+09:00  INFO 9612 --- [Utown] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-08-08T00:33:45.452+09:00  INFO 9612 --- [Utown] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.41]
+2025-08-08T00:33:45.455+09:00  INFO 9612 --- [Utown] [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-08-08T00:33:45.455+09:00  INFO 9612 --- [Utown] [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 122 ms
+2025-08-08T00:33:45.466+09:00  INFO 9612 --- [Utown] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Starting...
+2025-08-08T00:33:45.473+09:00  INFO 9612 --- [Utown] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-3 - Added connection com.mysql.cj.jdbc.ConnectionImpl@11b418e2
+2025-08-08T00:33:45.473+09:00  INFO 9612 --- [Utown] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Start completed.
+2025-08-08T00:33:45.476+09:00  INFO 9612 --- [Utown] [restartedMain] org.flywaydb.core.FlywayExecutor         : Database: jdbc:mysql://localhost:3306/Utown (MySQL 8.0)
+2025-08-08T00:33:45.484+09:00  INFO 9612 --- [Utown] [restartedMain] o.f.core.internal.command.DbValidate     : Successfully validated 3 migrations (execution time 00:00.004s)
+2025-08-08T00:33:45.488+09:00  INFO 9612 --- [Utown] [restartedMain] o.f.core.internal.command.DbMigrate      : Current version of schema `utown`: 3
+2025-08-08T00:33:45.489+09:00  INFO 9612 --- [Utown] [restartedMain] o.f.core.internal.command.DbMigrate      : Schema `utown` is up to date. No migration necessary.
+2025-08-08T00:33:45.496+09:00  INFO 9612 --- [Utown] [restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-08T00:33:45.497+09:00  INFO 9612 --- [Utown] [restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-08-08T00:33:45.499+09:00  INFO 9612 --- [Utown] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-08T00:33:45.500+09:00  INFO 9612 --- [Utown] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-3)']
+	Database driver: undefined/unknown
+	Database version: 8.0.43
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-08-08T00:33:45.601+09:00  INFO 9612 --- [Utown] [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-08T00:33:45.602+09:00  INFO 9612 --- [Utown] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-08T00:33:45.618+09:00 DEBUG 9612 --- [Utown] [restartedMain] o.s.w.s.r.ResourceUrlEncodingFilter      : Filter 'resourceUrlEncodingFilter' configured for use
+2025-08-08T00:33:45.618+09:00 DEBUG 9612 --- [Utown] [restartedMain] c.e.U.config.JWTAuthenticationFilter     : Filter 'JWTAuthenticationFilter' configured for use
+2025-08-08T00:33:45.752+09:00  INFO 9612 --- [Utown] [restartedMain] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2025-08-08T00:33:45.752+09:00  WARN 9612 --- [Utown] [restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-08-08T00:33:45.768+09:00  WARN 9612 --- [Utown] [restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-08-08T00:33:45.771+09:00 DEBUG 9612 --- [Utown] [restartedMain] o.s.w.s.s.s.WebSocketHandlerMapping      : Patterns [/chat, /chat/**] in 'stompWebSocketHandlerMapping'
+2025-08-08T00:33:45.785+09:00 DEBUG 9612 --- [Utown] [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : 91 mappings in 'requestMappingHandlerMapping'
+2025-08-08T00:33:45.790+09:00 DEBUG 9612 --- [Utown] [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2025-08-08T00:33:45.805+09:00 DEBUG 9612 --- [Utown] [restartedMain] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.FileController:
+	
+2025-08-08T00:33:45.806+09:00 DEBUG 9612 --- [Utown] [restartedMain] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.AdminController:
+	
+2025-08-08T00:33:45.806+09:00 DEBUG 9612 --- [Utown] [restartedMain] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.ClientController:
+	
+2025-08-08T00:33:45.806+09:00 DEBUG 9612 --- [Utown] [restartedMain] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.MainController:
+	
+2025-08-08T00:33:45.806+09:00 DEBUG 9612 --- [Utown] [restartedMain] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.RestaurantAdminController:
+	
+2025-08-08T00:33:45.806+09:00 DEBUG 9612 --- [Utown] [restartedMain] .WebSocketAnnotationMethodMessageHandler : 
+	o.s.b.a.w.s.e.BasicErrorController:
+	
+2025-08-08T00:33:45.806+09:00 DEBUG 9612 --- [Utown] [restartedMain] .WebSocketAnnotationMethodMessageHandler : 
+	o.s.w.a.OpenApiWebMvcResource:
+	
+2025-08-08T00:33:45.806+09:00 DEBUG 9612 --- [Utown] [restartedMain] .WebSocketAnnotationMethodMessageHandler : 
+	o.s.w.u.SwaggerWelcomeWebMvc:
+	
+2025-08-08T00:33:45.806+09:00 DEBUG 9612 --- [Utown] [restartedMain] .WebSocketAnnotationMethodMessageHandler : 
+	o.s.w.u.SwaggerConfigResource:
+	
+2025-08-08T00:33:45.812+09:00 DEBUG 9612 --- [Utown] [restartedMain] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-08-08T00:33:45.814+09:00  WARN 9612 --- [Utown] [restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2025-08-08T00:33:45.818+09:00 DEBUG 9612 --- [Utown] [restartedMain] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-08-08T00:33:45.832+09:00  INFO 9612 --- [Utown] [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-08-08T00:33:45.840+09:00 DEBUG 9612 --- [Utown] [restartedMain] org.springframework.web.SimpLogging      : clientInboundChannel added WebSocketAnnotationMethodMessageHandler[prefixes=[/app/]]
+2025-08-08T00:33:45.840+09:00  INFO 9612 --- [Utown] [restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2025-08-08T00:33:45.840+09:00 DEBUG 9612 --- [Utown] [restartedMain] org.springframework.web.SimpLogging      : clientInboundChannel added SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@6fe216f4]
+2025-08-08T00:33:45.840+09:00 DEBUG 9612 --- [Utown] [restartedMain] org.springframework.web.SimpLogging      : brokerChannel added SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@6fe216f4]
+2025-08-08T00:33:45.840+09:00  INFO 9612 --- [Utown] [restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@6fe216f4]]
+2025-08-08T00:33:45.840+09:00  INFO 9612 --- [Utown] [restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2025-08-08T00:33:45.840+09:00 DEBUG 9612 --- [Utown] [restartedMain] org.springframework.web.SimpLogging      : clientInboundChannel added UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08T00:33:45.840+09:00 DEBUG 9612 --- [Utown] [restartedMain] org.springframework.web.SimpLogging      : brokerChannel added UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08T00:33:45.841+09:00  INFO 9612 --- [Utown] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-08-08T00:33:45.841+09:00 DEBUG 9612 --- [Utown] [restartedMain] org.springframework.web.SimpLogging      : clientOutboundChannel added SubProtocolWebSocketHandler[StompSubProtocolHandler[v10.stomp, v11.stomp, v12.stomp]]
+2025-08-08T00:33:45.842+09:00  INFO 9612 --- [Utown] [restartedMain] com.example.Utown.UtownApplication       : Started UtownApplication in 0.525 seconds (process running for 365.542)
+2025-08-08T00:33:45.854+09:00 DEBUG 9612 --- [Utown] [restartedMain] org.hibernate.SQL                        : select dc1_0.id,dc1_0.created_at,dc1_0.file_id,dc1_0.is_active,dc1_0.name,dc1_0.restaurant_id,dc1_0.sort,dc1_0.updated_at from dish_category dc1_0 where dc1_0.name=?
+2025-08-08T00:33:45.856+09:00  INFO 9612 --- [Utown] [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2025-08-08T00:34:13.696+09:00  INFO 9612 --- [Utown] [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2025-08-08T00:34:13.699+09:00 DEBUG 9612 --- [Utown] [Thread-11] org.springframework.web.SimpLogging      : clientOutboundChannel removed SubProtocolWebSocketHandler[StompSubProtocolHandler[v10.stomp, v11.stomp, v12.stomp]]
+2025-08-08T00:34:13.699+09:00  INFO 9612 --- [Utown] [Thread-11] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-08-08T00:34:13.701+09:00  INFO 9612 --- [Utown] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-08-08T00:34:13.702+09:00 DEBUG 9612 --- [Utown] [Thread-11] org.springframework.web.SimpLogging      : clientInboundChannel removed WebSocketAnnotationMethodMessageHandler[prefixes=[/app/]]
+2025-08-08T00:34:13.702+09:00  INFO 9612 --- [Utown] [Thread-11] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopping...
+2025-08-08T00:34:13.702+09:00  INFO 9612 --- [Utown] [Thread-11] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@6fe216f4]]
+2025-08-08T00:34:13.703+09:00 DEBUG 9612 --- [Utown] [Thread-11] org.springframework.web.SimpLogging      : clientInboundChannel removed SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@6fe216f4]
+2025-08-08T00:34:13.703+09:00 DEBUG 9612 --- [Utown] [Thread-11] org.springframework.web.SimpLogging      : brokerChannel removed SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@6fe216f4]
+2025-08-08T00:34:13.703+09:00  INFO 9612 --- [Utown] [Thread-11] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopped.
+2025-08-08T00:34:13.703+09:00 DEBUG 9612 --- [Utown] [Thread-11] org.springframework.web.SimpLogging      : clientInboundChannel removed UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08T00:34:13.703+09:00 DEBUG 9612 --- [Utown] [Thread-11] org.springframework.web.SimpLogging      : brokerChannel removed UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08T00:34:13.706+09:00  INFO 9612 --- [Utown] [Thread-11] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-08-08T00:34:13.707+09:00  INFO 9612 --- [Utown] [Thread-11] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Shutdown initiated...
+2025-08-08T00:34:13.709+09:00  INFO 9612 --- [Utown] [Thread-11] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Shutdown completed.
+2025-08-08 00:34:13 - INFO [restartedMain] c.e.U.UtownApplication : Starting UtownApplication using Java 21.0.7 with PID 9612 (/Users/daryakim/Downloads/utown-backand-jun9-kim/target/classes started by daryakim in /Users/daryakim/Downloads/utown-backand-jun9-kim)
+2025-08-08 00:34:13 - DEBUG [restartedMain] c.e.U.UtownApplication : Running with Spring Boot v3.5.0, Spring v6.2.7
+2025-08-08 00:34:13 - INFO [restartedMain] c.e.U.UtownApplication : The following 1 profile is active: "local"
+2025-08-08 00:34:13 - INFO [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-08 00:34:13 - INFO [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 13 ms. Found 20 JPA repository interfaces.
+2025-08-08 00:34:13 - INFO [restartedMain] o.s.b.w.e.t.TomcatWebServer : Tomcat initialized with port 8080 (http)
+2025-08-08 00:34:13 - INFO [restartedMain] o.a.c.c.StandardService : Starting service [Tomcat]
+2025-08-08 00:34:13 - INFO [restartedMain] o.a.c.c.StandardEngine : Starting Servlet engine: [Apache Tomcat/10.1.41]
+2025-08-08 00:34:13 - INFO [restartedMain] o.a.c.c.C.[.[.[/] : Initializing Spring embedded WebApplicationContext
+2025-08-08 00:34:13 - INFO [restartedMain] o.s.b.w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 121 ms
+2025-08-08 00:34:13 - INFO [restartedMain] c.z.h.HikariDataSource : HikariPool-4 - Starting...
+2025-08-08 00:34:13 - INFO [restartedMain] c.z.h.p.HikariPool : HikariPool-4 - Added connection com.mysql.cj.jdbc.ConnectionImpl@352f71da
+2025-08-08 00:34:13 - INFO [restartedMain] c.z.h.HikariDataSource : HikariPool-4 - Start completed.
+2025-08-08 00:34:13 - INFO [restartedMain] o.f.c.FlywayExecutor : Database: jdbc:mysql://localhost:3306/Utown (MySQL 8.0)
+2025-08-08 00:34:13 - INFO [restartedMain] o.f.c.i.c.DbValidate : Successfully validated 3 migrations (execution time 00:00.004s)
+2025-08-08 00:34:13 - INFO [restartedMain] o.f.c.i.c.DbMigrate : Current version of schema `utown`: 3
+2025-08-08 00:34:13 - INFO [restartedMain] o.f.c.i.c.DbMigrate : Schema `utown` is up to date. No migration necessary.
+2025-08-08 00:34:13 - INFO [restartedMain] o.h.j.i.u.LogHelper : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-08 00:34:13 - INFO [restartedMain] o.h.c.i.RegionFactoryInitiator : HHH000026: Second-level cache disabled
+2025-08-08 00:34:13 - INFO [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-08 00:34:13 - INFO [restartedMain] o.h.o.c.pooling : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-4)']
+	Database driver: undefined/unknown
+	Database version: 8.0.43
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-08-08 00:34:14 - INFO [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-08 00:34:14 - INFO [restartedMain] o.s.o.j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-08 00:34:14 - DEBUG [restartedMain] o.s.w.s.r.ResourceUrlEncodingFilter : Filter 'resourceUrlEncodingFilter' configured for use
+2025-08-08 00:34:14 - DEBUG [restartedMain] c.e.U.c.JWTAuthenticationFilter : Filter 'JWTAuthenticationFilter' configured for use
+2025-08-08 00:34:14 - INFO [restartedMain] o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2025-08-08 00:34:14 - WARN [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-08-08 00:34:14 - WARN [restartedMain] o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-08-08 00:34:14 - DEBUG [restartedMain] o.s.w.s.s.s.WebSocketHandlerMapping : Patterns [/chat, /chat/**] in 'stompWebSocketHandlerMapping'
+2025-08-08 00:34:14 - DEBUG [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerMapping : 91 mappings in 'requestMappingHandlerMapping'
+2025-08-08 00:34:14 - DEBUG [restartedMain] o.s.w.s.h.SimpleUrlHandlerMapping : Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2025-08-08 00:34:14 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.FileController:
+	
+2025-08-08 00:34:14 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.AdminController:
+	
+2025-08-08 00:34:14 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.ClientController:
+	
+2025-08-08 00:34:14 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.MainController:
+	
+2025-08-08 00:34:14 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.RestaurantAdminController:
+	
+2025-08-08 00:34:14 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	o.s.b.a.w.s.e.BasicErrorController:
+	
+2025-08-08 00:34:14 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	o.s.w.a.OpenApiWebMvcResource:
+	
+2025-08-08 00:34:14 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	o.s.w.u.SwaggerWelcomeWebMvc:
+	
+2025-08-08 00:34:14 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	o.s.w.u.SwaggerConfigResource:
+	
+2025-08-08 00:34:14 - DEBUG [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-08-08 00:34:14 - WARN [restartedMain] o.s.b.a.t.ThymeleafAutoConfiguration$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2025-08-08 00:34:14 - DEBUG [restartedMain] o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-08-08 00:34:14 - INFO [restartedMain] o.s.b.d.a.OptionalLiveReloadServer : LiveReload server is running on port 35729
+2025-08-08 00:34:14 - DEBUG [restartedMain] o.s.w.SimpLogging : clientInboundChannel added WebSocketAnnotationMethodMessageHandler[prefixes=[/app/]]
+2025-08-08 00:34:14 - INFO [restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler : Starting...
+2025-08-08 00:34:14 - DEBUG [restartedMain] o.s.w.SimpLogging : clientInboundChannel added SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@3efd04ac]
+2025-08-08 00:34:14 - DEBUG [restartedMain] o.s.w.SimpLogging : brokerChannel added SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@3efd04ac]
+2025-08-08 00:34:14 - INFO [restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@3efd04ac]]
+2025-08-08 00:34:14 - INFO [restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler : Started.
+2025-08-08 00:34:14 - DEBUG [restartedMain] o.s.w.SimpLogging : clientInboundChannel added UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08 00:34:14 - DEBUG [restartedMain] o.s.w.SimpLogging : brokerChannel added UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08 00:34:14 - INFO [restartedMain] o.s.b.w.e.t.TomcatWebServer : Tomcat started on port 8080 (http) with context path '/'
+2025-08-08 00:34:14 - DEBUG [restartedMain] o.s.w.SimpLogging : clientOutboundChannel added SubProtocolWebSocketHandler[StompSubProtocolHandler[v10.stomp, v11.stomp, v12.stomp]]
+2025-08-08 00:34:14 - INFO [restartedMain] c.e.U.UtownApplication : Started UtownApplication in 0.507 seconds (process running for 393.955)
+2025-08-08 00:34:14 - DEBUG [restartedMain] o.h.SQL : select dc1_0.id,dc1_0.created_at,dc1_0.file_id,dc1_0.is_active,dc1_0.name,dc1_0.restaurant_id,dc1_0.sort,dc1_0.updated_at from dish_category dc1_0 where dc1_0.name=?
+2025-08-08 00:34:14 - INFO [restartedMain] o.s.b.d.a.ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2025-08-08 00:35:14 - INFO [MessageBroker-1] o.s.w.s.c.WebSocketMessageBrokerStats : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 1, active threads = 1, queued tasks = 0, completed tasks = 0]
+2025-08-08 00:37:05 - INFO [File Watcher] o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener : Restarting due to 2 class path changes (0 additions, 0 deletions, 2 modifications)
+2025-08-08 00:37:05 - DEBUG [Thread-15] o.s.w.SimpLogging : clientOutboundChannel removed SubProtocolWebSocketHandler[StompSubProtocolHandler[v10.stomp, v11.stomp, v12.stomp]]
+2025-08-08 00:37:05 - INFO [Thread-15] o.s.b.w.e.t.GracefulShutdown : Commencing graceful shutdown. Waiting for active requests to complete
+2025-08-08 00:37:05 - INFO [tomcat-shutdown] o.s.b.w.e.t.GracefulShutdown : Graceful shutdown complete
+2025-08-08 00:37:05 - DEBUG [Thread-15] o.s.w.SimpLogging : clientInboundChannel removed WebSocketAnnotationMethodMessageHandler[prefixes=[/app/]]
+2025-08-08 00:37:05 - INFO [Thread-15] o.s.m.s.b.SimpleBrokerMessageHandler : Stopping...
+2025-08-08 00:37:05 - INFO [Thread-15] o.s.m.s.b.SimpleBrokerMessageHandler : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@3efd04ac]]
+2025-08-08 00:37:05 - DEBUG [Thread-15] o.s.w.SimpLogging : clientInboundChannel removed SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@3efd04ac]
+2025-08-08 00:37:05 - DEBUG [Thread-15] o.s.w.SimpLogging : brokerChannel removed SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@3efd04ac]
+2025-08-08 00:37:05 - INFO [Thread-15] o.s.m.s.b.SimpleBrokerMessageHandler : Stopped.
+2025-08-08 00:37:05 - DEBUG [Thread-15] o.s.w.SimpLogging : clientInboundChannel removed UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08 00:37:05 - DEBUG [Thread-15] o.s.w.SimpLogging : brokerChannel removed UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08 00:37:05 - INFO [Thread-15] o.s.o.j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-08-08 00:37:05 - INFO [Thread-15] c.z.h.HikariDataSource : HikariPool-4 - Shutdown initiated...
+2025-08-08 00:37:05 - INFO [Thread-15] c.z.h.HikariDataSource : HikariPool-4 - Shutdown completed.
+2025-08-08 00:37:05 - INFO [restartedMain] c.e.U.UtownApplication : Starting UtownApplication using Java 21.0.7 with PID 9612 (/Users/daryakim/Downloads/utown-backand-jun9-kim/target/classes started by daryakim in /Users/daryakim/Downloads/utown-backand-jun9-kim)
+2025-08-08 00:37:05 - DEBUG [restartedMain] c.e.U.UtownApplication : Running with Spring Boot v3.5.0, Spring v6.2.7
+2025-08-08 00:37:05 - INFO [restartedMain] c.e.U.UtownApplication : The following 1 profile is active: "local"
+2025-08-08 00:37:05 - INFO [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-08 00:37:05 - INFO [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 13 ms. Found 20 JPA repository interfaces.
+2025-08-08 00:37:05 - INFO [restartedMain] o.s.b.w.e.t.TomcatWebServer : Tomcat initialized with port 8080 (http)
+2025-08-08 00:37:05 - INFO [restartedMain] o.a.c.c.StandardService : Starting service [Tomcat]
+2025-08-08 00:37:05 - INFO [restartedMain] o.a.c.c.StandardEngine : Starting Servlet engine: [Apache Tomcat/10.1.41]
+2025-08-08 00:37:05 - INFO [restartedMain] o.a.c.c.C.[.[.[/] : Initializing Spring embedded WebApplicationContext
+2025-08-08 00:37:05 - INFO [restartedMain] o.s.b.w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 139 ms
+2025-08-08 00:37:05 - INFO [restartedMain] c.z.h.HikariDataSource : HikariPool-5 - Starting...
+2025-08-08 00:37:05 - INFO [restartedMain] c.z.h.p.HikariPool : HikariPool-5 - Added connection com.mysql.cj.jdbc.ConnectionImpl@53b8b9d6
+2025-08-08 00:37:05 - INFO [restartedMain] c.z.h.HikariDataSource : HikariPool-5 - Start completed.
+2025-08-08 00:37:05 - INFO [restartedMain] o.f.c.FlywayExecutor : Database: jdbc:mysql://localhost:3306/Utown (MySQL 8.0)
+2025-08-08 00:37:05 - INFO [restartedMain] o.f.c.i.c.DbValidate : Successfully validated 3 migrations (execution time 00:00.012s)
+2025-08-08 00:37:05 - INFO [restartedMain] o.f.c.i.c.DbMigrate : Current version of schema `utown`: 3
+2025-08-08 00:37:05 - INFO [restartedMain] o.f.c.i.c.DbMigrate : Schema `utown` is up to date. No migration necessary.
+2025-08-08 00:37:05 - INFO [restartedMain] o.h.j.i.u.LogHelper : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-08 00:37:05 - INFO [restartedMain] o.h.c.i.RegionFactoryInitiator : HHH000026: Second-level cache disabled
+2025-08-08 00:37:05 - INFO [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-08 00:37:05 - INFO [restartedMain] o.h.o.c.pooling : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-5)']
+	Database driver: undefined/unknown
+	Database version: 8.0.43
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-08-08 00:37:05 - INFO [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-08 00:37:05 - INFO [restartedMain] o.s.o.j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-08 00:37:05 - DEBUG [restartedMain] o.s.w.s.r.ResourceUrlEncodingFilter : Filter 'resourceUrlEncodingFilter' configured for use
+2025-08-08 00:37:05 - DEBUG [restartedMain] c.e.U.c.JWTAuthenticationFilter : Filter 'JWTAuthenticationFilter' configured for use
+2025-08-08 00:37:06 - INFO [restartedMain] o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2025-08-08 00:37:06 - WARN [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-08-08 00:37:06 - WARN [restartedMain] o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-08-08 00:37:06 - DEBUG [restartedMain] o.s.w.s.s.s.WebSocketHandlerMapping : Patterns [/chat, /chat/**] in 'stompWebSocketHandlerMapping'
+2025-08-08 00:37:06 - DEBUG [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerMapping : 91 mappings in 'requestMappingHandlerMapping'
+2025-08-08 00:37:06 - DEBUG [restartedMain] o.s.w.s.h.SimpleUrlHandlerMapping : Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2025-08-08 00:37:06 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.FileController:
+	
+2025-08-08 00:37:06 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.AdminController:
+	
+2025-08-08 00:37:06 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.ClientController:
+	
+2025-08-08 00:37:06 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.MainController:
+	
+2025-08-08 00:37:06 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.RestaurantAdminController:
+	
+2025-08-08 00:37:06 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	o.s.b.a.w.s.e.BasicErrorController:
+	
+2025-08-08 00:37:06 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	o.s.w.a.OpenApiWebMvcResource:
+	
+2025-08-08 00:37:06 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	o.s.w.u.SwaggerWelcomeWebMvc:
+	
+2025-08-08 00:37:06 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	o.s.w.u.SwaggerConfigResource:
+	
+2025-08-08 00:37:06 - DEBUG [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-08-08 00:37:06 - WARN [restartedMain] o.s.b.a.t.ThymeleafAutoConfiguration$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2025-08-08 00:37:06 - DEBUG [restartedMain] o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-08-08 00:37:06 - INFO [restartedMain] o.s.b.d.a.OptionalLiveReloadServer : LiveReload server is running on port 35729
+2025-08-08 00:37:06 - DEBUG [restartedMain] o.s.w.SimpLogging : clientInboundChannel added WebSocketAnnotationMethodMessageHandler[prefixes=[/app/]]
+2025-08-08 00:37:06 - INFO [restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler : Starting...
+2025-08-08 00:37:06 - DEBUG [restartedMain] o.s.w.SimpLogging : clientInboundChannel added SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@6d1fd141]
+2025-08-08 00:37:06 - DEBUG [restartedMain] o.s.w.SimpLogging : brokerChannel added SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@6d1fd141]
+2025-08-08 00:37:06 - INFO [restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@6d1fd141]]
+2025-08-08 00:37:06 - INFO [restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler : Started.
+2025-08-08 00:37:06 - DEBUG [restartedMain] o.s.w.SimpLogging : clientInboundChannel added UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08 00:37:06 - DEBUG [restartedMain] o.s.w.SimpLogging : brokerChannel added UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08 00:37:06 - INFO [restartedMain] o.s.b.w.e.t.TomcatWebServer : Tomcat started on port 8080 (http) with context path '/'
+2025-08-08 00:37:06 - DEBUG [restartedMain] o.s.w.SimpLogging : clientOutboundChannel added SubProtocolWebSocketHandler[StompSubProtocolHandler[v10.stomp, v11.stomp, v12.stomp]]
+2025-08-08 00:37:06 - INFO [restartedMain] c.e.U.UtownApplication : Started UtownApplication in 0.538 seconds (process running for 565.816)
+2025-08-08 00:37:06 - DEBUG [restartedMain] o.h.SQL : select dc1_0.id,dc1_0.created_at,dc1_0.file_id,dc1_0.is_active,dc1_0.name,dc1_0.restaurant_id,dc1_0.sort,dc1_0.updated_at from dish_category dc1_0 where dc1_0.name=?
+2025-08-08 00:37:06 - INFO [restartedMain] o.s.b.d.a.ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2025-08-08 00:38:06 - INFO [MessageBroker-1] o.s.w.s.c.WebSocketMessageBrokerStats : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 1, active threads = 1, queued tasks = 0, completed tasks = 0]
+2025-08-08 00:42:03 - DEBUG [SpringApplicationShutdownHook] o.s.w.SimpLogging : clientOutboundChannel removed SubProtocolWebSocketHandler[StompSubProtocolHandler[v10.stomp, v11.stomp, v12.stomp]]
+2025-08-08 00:42:03 - INFO [SpringApplicationShutdownHook] o.s.b.w.e.t.GracefulShutdown : Commencing graceful shutdown. Waiting for active requests to complete
+2025-08-08 00:42:03 - INFO [tomcat-shutdown] o.s.b.w.e.t.GracefulShutdown : Graceful shutdown complete
+2025-08-08 00:42:03 - DEBUG [SpringApplicationShutdownHook] o.s.w.SimpLogging : clientInboundChannel removed WebSocketAnnotationMethodMessageHandler[prefixes=[/app/]]
+2025-08-08 00:42:03 - INFO [SpringApplicationShutdownHook] o.s.m.s.b.SimpleBrokerMessageHandler : Stopping...
+2025-08-08 00:42:03 - INFO [SpringApplicationShutdownHook] o.s.m.s.b.SimpleBrokerMessageHandler : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@6d1fd141]]
+2025-08-08 00:42:03 - DEBUG [SpringApplicationShutdownHook] o.s.w.SimpLogging : clientInboundChannel removed SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@6d1fd141]
+2025-08-08 00:42:03 - DEBUG [SpringApplicationShutdownHook] o.s.w.SimpLogging : brokerChannel removed SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@6d1fd141]
+2025-08-08 00:42:03 - INFO [SpringApplicationShutdownHook] o.s.m.s.b.SimpleBrokerMessageHandler : Stopped.
+2025-08-08 00:42:03 - DEBUG [SpringApplicationShutdownHook] o.s.w.SimpLogging : clientInboundChannel removed UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08 00:42:03 - DEBUG [SpringApplicationShutdownHook] o.s.w.SimpLogging : brokerChannel removed UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08 00:42:03 - INFO [SpringApplicationShutdownHook] o.s.o.j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-08-08 00:42:03 - INFO [SpringApplicationShutdownHook] c.z.h.HikariDataSource : HikariPool-5 - Shutdown initiated...
+2025-08-08 00:42:03 - INFO [SpringApplicationShutdownHook] c.z.h.HikariDataSource : HikariPool-5 - Shutdown completed.
+2025-08-08 00:42:04 - INFO [restartedMain] c.e.U.UtownApplication : Starting UtownApplication using Java 21.0.7 with PID 9742 (/Users/daryakim/Downloads/utown-backand-jun9-kim/target/classes started by daryakim in /Users/daryakim/Downloads/utown-backand-jun9-kim)
+2025-08-08 00:42:04 - DEBUG [restartedMain] c.e.U.UtownApplication : Running with Spring Boot v3.5.0, Spring v6.2.7
+2025-08-08 00:42:04 - INFO [restartedMain] c.e.U.UtownApplication : The following 1 profile is active: "local"
+2025-08-08 00:42:04 - INFO [restartedMain] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-08-08 00:42:04 - INFO [restartedMain] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-08-08 00:42:05 - INFO [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-08 00:42:05 - INFO [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 29 ms. Found 20 JPA repository interfaces.
+2025-08-08 00:42:05 - INFO [restartedMain] o.s.b.w.e.t.TomcatWebServer : Tomcat initialized with port 8080 (http)
+2025-08-08 00:42:05 - INFO [restartedMain] o.a.c.c.StandardService : Starting service [Tomcat]
+2025-08-08 00:42:05 - INFO [restartedMain] o.a.c.c.StandardEngine : Starting Servlet engine: [Apache Tomcat/10.1.41]
+2025-08-08 00:42:05 - INFO [restartedMain] o.a.c.c.C.[.[.[/] : Initializing Spring embedded WebApplicationContext
+2025-08-08 00:42:05 - INFO [restartedMain] o.s.b.w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 674 ms
+2025-08-08 00:42:05 - INFO [restartedMain] c.z.h.HikariDataSource : HikariPool-1 - Starting...
+2025-08-08 00:42:05 - INFO [restartedMain] c.z.h.p.HikariPool : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4de8c71d
+2025-08-08 00:42:05 - INFO [restartedMain] c.z.h.HikariDataSource : HikariPool-1 - Start completed.
+2025-08-08 00:42:05 - INFO [restartedMain] o.f.c.FlywayExecutor : Database: jdbc:mysql://localhost:3306/Utown (MySQL 8.0)
+2025-08-08 00:42:05 - INFO [restartedMain] o.f.c.i.c.DbValidate : Successfully validated 3 migrations (execution time 00:00.010s)
+2025-08-08 00:42:05 - INFO [restartedMain] o.f.c.i.c.DbMigrate : Current version of schema `utown`: 3
+2025-08-08 00:42:05 - INFO [restartedMain] o.f.c.i.c.DbMigrate : Schema `utown` is up to date. No migration necessary.
+2025-08-08 00:42:05 - INFO [restartedMain] o.h.j.i.u.LogHelper : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-08 00:42:05 - INFO [restartedMain] o.h.Version : HHH000412: Hibernate ORM core version 6.6.15.Final
+2025-08-08 00:42:05 - INFO [restartedMain] o.h.c.i.RegionFactoryInitiator : HHH000026: Second-level cache disabled
+2025-08-08 00:42:05 - INFO [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-08 00:42:05 - INFO [restartedMain] o.h.o.c.pooling : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.43
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-08-08 00:42:06 - INFO [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-08 00:42:06 - INFO [restartedMain] o.s.o.j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-08 00:42:06 - DEBUG [restartedMain] o.s.w.s.r.ResourceUrlEncodingFilter : Filter 'resourceUrlEncodingFilter' configured for use
+2025-08-08 00:42:06 - DEBUG [restartedMain] c.e.U.c.JWTAuthenticationFilter : Filter 'JWTAuthenticationFilter' configured for use
+2025-08-08 00:42:06 - INFO [restartedMain] o.s.d.j.r.q.QueryEnhancerFactory : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-08-08 00:42:07 - INFO [restartedMain] o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2025-08-08 00:42:07 - WARN [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-08-08 00:42:07 - WARN [restartedMain] o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-08-08 00:42:07 - DEBUG [restartedMain] o.s.w.s.s.s.WebSocketHandlerMapping : Patterns [/chat, /chat/**] in 'stompWebSocketHandlerMapping'
+2025-08-08 00:42:07 - DEBUG [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerMapping : 91 mappings in 'requestMappingHandlerMapping'
+2025-08-08 00:42:07 - DEBUG [restartedMain] o.s.w.s.h.SimpleUrlHandlerMapping : Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2025-08-08 00:42:07 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.FileController:
+	
+2025-08-08 00:42:07 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.AdminController:
+	
+2025-08-08 00:42:07 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.ClientController:
+	
+2025-08-08 00:42:07 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.MainController:
+	
+2025-08-08 00:42:07 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.RestaurantAdminController:
+	
+2025-08-08 00:42:07 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	o.s.b.a.w.s.e.BasicErrorController:
+	
+2025-08-08 00:42:07 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	o.s.w.a.OpenApiWebMvcResource:
+	
+2025-08-08 00:42:07 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	o.s.w.u.SwaggerWelcomeWebMvc:
+	
+2025-08-08 00:42:07 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	o.s.w.u.SwaggerConfigResource:
+	
+2025-08-08 00:42:07 - DEBUG [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-08-08 00:42:07 - WARN [restartedMain] o.s.b.a.t.ThymeleafAutoConfiguration$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2025-08-08 00:42:07 - DEBUG [restartedMain] o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-08-08 00:42:07 - INFO [restartedMain] o.s.b.d.a.OptionalLiveReloadServer : LiveReload server is running on port 35729
+2025-08-08 00:42:07 - DEBUG [restartedMain] o.s.w.SimpLogging : clientInboundChannel added WebSocketAnnotationMethodMessageHandler[prefixes=[/app/]]
+2025-08-08 00:42:07 - INFO [restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler : Starting...
+2025-08-08 00:42:07 - DEBUG [restartedMain] o.s.w.SimpLogging : clientInboundChannel added SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@2f641016]
+2025-08-08 00:42:07 - DEBUG [restartedMain] o.s.w.SimpLogging : brokerChannel added SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@2f641016]
+2025-08-08 00:42:07 - INFO [restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@2f641016]]
+2025-08-08 00:42:08 - INFO [restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler : Started.
+2025-08-08 00:42:08 - DEBUG [restartedMain] o.s.w.SimpLogging : clientInboundChannel added UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08 00:42:08 - DEBUG [restartedMain] o.s.w.SimpLogging : brokerChannel added UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08 00:42:08 - INFO [restartedMain] o.s.b.w.e.t.TomcatWebServer : Tomcat started on port 8080 (http) with context path '/'
+2025-08-08 00:42:08 - DEBUG [restartedMain] o.s.w.SimpLogging : clientOutboundChannel added SubProtocolWebSocketHandler[StompSubProtocolHandler[v10.stomp, v11.stomp, v12.stomp]]
+2025-08-08 00:42:08 - INFO [restartedMain] c.e.U.UtownApplication : Started UtownApplication in 3.464 seconds (process running for 3.686)
+2025-08-08 00:42:08 - DEBUG [restartedMain] o.h.SQL : select dc1_0.id,dc1_0.created_at,dc1_0.file_id,dc1_0.is_active,dc1_0.name,dc1_0.restaurant_id,dc1_0.sort,dc1_0.updated_at from dish_category dc1_0 where dc1_0.name=?
+2025-08-08 00:43:07 - INFO [MessageBroker-1] o.s.w.s.c.WebSocketMessageBrokerStats : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 1, active threads = 1, queued tasks = 0, completed tasks = 0]
+2025-08-08 00:45:17 - INFO [File Watcher] o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2025-08-08 00:45:17 - DEBUG [Thread-5] o.s.w.SimpLogging : clientOutboundChannel removed SubProtocolWebSocketHandler[StompSubProtocolHandler[v10.stomp, v11.stomp, v12.stomp]]
+2025-08-08 00:45:17 - INFO [Thread-5] o.s.b.w.e.t.GracefulShutdown : Commencing graceful shutdown. Waiting for active requests to complete
+2025-08-08 00:45:17 - INFO [tomcat-shutdown] o.s.b.w.e.t.GracefulShutdown : Graceful shutdown complete
+2025-08-08 00:45:17 - DEBUG [Thread-5] o.s.w.SimpLogging : clientInboundChannel removed WebSocketAnnotationMethodMessageHandler[prefixes=[/app/]]
+2025-08-08 00:45:17 - INFO [Thread-5] o.s.m.s.b.SimpleBrokerMessageHandler : Stopping...
+2025-08-08 00:45:17 - INFO [Thread-5] o.s.m.s.b.SimpleBrokerMessageHandler : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@2f641016]]
+2025-08-08 00:45:17 - DEBUG [Thread-5] o.s.w.SimpLogging : clientInboundChannel removed SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@2f641016]
+2025-08-08 00:45:17 - DEBUG [Thread-5] o.s.w.SimpLogging : brokerChannel removed SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@2f641016]
+2025-08-08 00:45:17 - INFO [Thread-5] o.s.m.s.b.SimpleBrokerMessageHandler : Stopped.
+2025-08-08 00:45:17 - DEBUG [Thread-5] o.s.w.SimpLogging : clientInboundChannel removed UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08 00:45:17 - DEBUG [Thread-5] o.s.w.SimpLogging : brokerChannel removed UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08 00:45:17 - INFO [Thread-5] o.s.o.j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-08-08 00:45:17 - INFO [Thread-5] c.z.h.HikariDataSource : HikariPool-1 - Shutdown initiated...
+2025-08-08 00:45:17 - INFO [Thread-5] c.z.h.HikariDataSource : HikariPool-1 - Shutdown completed.
+2025-08-08 00:45:17 - INFO [restartedMain] c.e.U.UtownApplication : Starting UtownApplication using Java 21.0.7 with PID 9742 (/Users/daryakim/Downloads/utown-backand-jun9-kim/target/classes started by daryakim in /Users/daryakim/Downloads/utown-backand-jun9-kim)
+2025-08-08 00:45:17 - DEBUG [restartedMain] c.e.U.UtownApplication : Running with Spring Boot v3.5.0, Spring v6.2.7
+2025-08-08 00:45:17 - INFO [restartedMain] c.e.U.UtownApplication : The following 1 profile is active: "local"
+2025-08-08 00:45:17 - INFO [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-08 00:45:17 - INFO [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 15 ms. Found 20 JPA repository interfaces.
+2025-08-08 00:45:17 - INFO [restartedMain] o.s.b.w.e.t.TomcatWebServer : Tomcat initialized with port 8080 (http)
+2025-08-08 00:45:17 - INFO [restartedMain] o.a.c.c.StandardService : Starting service [Tomcat]
+2025-08-08 00:45:17 - INFO [restartedMain] o.a.c.c.StandardEngine : Starting Servlet engine: [Apache Tomcat/10.1.41]
+2025-08-08 00:45:17 - INFO [restartedMain] o.a.c.c.C.[.[.[/] : Initializing Spring embedded WebApplicationContext
+2025-08-08 00:45:17 - INFO [restartedMain] o.s.b.w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 158 ms
+2025-08-08 00:45:17 - INFO [restartedMain] c.z.h.HikariDataSource : HikariPool-2 - Starting...
+2025-08-08 00:45:17 - INFO [restartedMain] c.z.h.p.HikariPool : HikariPool-2 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5789f1e1
+2025-08-08 00:45:17 - INFO [restartedMain] c.z.h.HikariDataSource : HikariPool-2 - Start completed.
+2025-08-08 00:45:17 - INFO [restartedMain] o.f.c.FlywayExecutor : Database: jdbc:mysql://localhost:3306/Utown (MySQL 8.0)
+2025-08-08 00:45:17 - INFO [restartedMain] o.f.c.i.c.DbValidate : Successfully validated 3 migrations (execution time 00:00.005s)
+2025-08-08 00:45:17 - INFO [restartedMain] o.f.c.i.c.DbMigrate : Current version of schema `utown`: 3
+2025-08-08 00:45:17 - INFO [restartedMain] o.f.c.i.c.DbMigrate : Schema `utown` is up to date. No migration necessary.
+2025-08-08 00:45:17 - INFO [restartedMain] o.h.j.i.u.LogHelper : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-08 00:45:17 - INFO [restartedMain] o.h.c.i.RegionFactoryInitiator : HHH000026: Second-level cache disabled
+2025-08-08 00:45:17 - INFO [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-08 00:45:17 - INFO [restartedMain] o.h.o.c.pooling : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-2)']
+	Database driver: undefined/unknown
+	Database version: 8.0.43
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-08-08 00:45:17 - INFO [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-08 00:45:17 - INFO [restartedMain] o.s.o.j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-08 00:45:17 - DEBUG [restartedMain] o.s.w.s.r.ResourceUrlEncodingFilter : Filter 'resourceUrlEncodingFilter' configured for use
+2025-08-08 00:45:17 - DEBUG [restartedMain] c.e.U.c.JWTAuthenticationFilter : Filter 'JWTAuthenticationFilter' configured for use
+2025-08-08 00:45:18 - INFO [restartedMain] o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2025-08-08 00:45:18 - WARN [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-08-08 00:45:18 - WARN [restartedMain] o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-08-08 00:45:18 - DEBUG [restartedMain] o.s.w.s.s.s.WebSocketHandlerMapping : Patterns [/chat, /chat/**] in 'stompWebSocketHandlerMapping'
+2025-08-08 00:45:18 - DEBUG [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerMapping : 91 mappings in 'requestMappingHandlerMapping'
+2025-08-08 00:45:18 - DEBUG [restartedMain] o.s.w.s.h.SimpleUrlHandlerMapping : Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2025-08-08 00:45:18 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.FileController:
+	
+2025-08-08 00:45:18 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.AdminController:
+	
+2025-08-08 00:45:18 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.ClientController:
+	
+2025-08-08 00:45:18 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.MainController:
+	
+2025-08-08 00:45:18 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.RestaurantAdminController:
+	
+2025-08-08 00:45:18 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	o.s.b.a.w.s.e.BasicErrorController:
+	
+2025-08-08 00:45:18 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	o.s.w.a.OpenApiWebMvcResource:
+	
+2025-08-08 00:45:18 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	o.s.w.u.SwaggerWelcomeWebMvc:
+	
+2025-08-08 00:45:18 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	o.s.w.u.SwaggerConfigResource:
+	
+2025-08-08 00:45:18 - DEBUG [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-08-08 00:45:18 - WARN [restartedMain] o.s.b.a.t.ThymeleafAutoConfiguration$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2025-08-08 00:45:18 - DEBUG [restartedMain] o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-08-08 00:45:18 - INFO [restartedMain] o.s.b.d.a.OptionalLiveReloadServer : LiveReload server is running on port 35729
+2025-08-08 00:45:18 - DEBUG [restartedMain] o.s.w.SimpLogging : clientInboundChannel added WebSocketAnnotationMethodMessageHandler[prefixes=[/app/]]
+2025-08-08 00:45:18 - INFO [restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler : Starting...
+2025-08-08 00:45:18 - DEBUG [restartedMain] o.s.w.SimpLogging : clientInboundChannel added SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@92cb8aa]
+2025-08-08 00:45:18 - DEBUG [restartedMain] o.s.w.SimpLogging : brokerChannel added SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@92cb8aa]
+2025-08-08 00:45:18 - INFO [restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@92cb8aa]]
+2025-08-08 00:45:18 - INFO [restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler : Started.
+2025-08-08 00:45:18 - DEBUG [restartedMain] o.s.w.SimpLogging : clientInboundChannel added UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08 00:45:18 - DEBUG [restartedMain] o.s.w.SimpLogging : brokerChannel added UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08 00:45:18 - INFO [restartedMain] o.s.b.w.e.t.TomcatWebServer : Tomcat started on port 8080 (http) with context path '/'
+2025-08-08 00:45:18 - DEBUG [restartedMain] o.s.w.SimpLogging : clientOutboundChannel added SubProtocolWebSocketHandler[StompSubProtocolHandler[v10.stomp, v11.stomp, v12.stomp]]
+2025-08-08 00:45:18 - INFO [restartedMain] c.e.U.UtownApplication : Started UtownApplication in 0.61 seconds (process running for 193.843)
+2025-08-08 00:45:18 - DEBUG [restartedMain] o.h.SQL : select dc1_0.id,dc1_0.created_at,dc1_0.file_id,dc1_0.is_active,dc1_0.name,dc1_0.restaurant_id,dc1_0.sort,dc1_0.updated_at from dish_category dc1_0 where dc1_0.name=?
+2025-08-08 00:45:18 - INFO [restartedMain] o.s.b.d.a.ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2025-08-08 00:46:18 - INFO [MessageBroker-1] o.s.w.s.c.WebSocketMessageBrokerStats : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 1, active threads = 1, queued tasks = 0, completed tasks = 0]
+2025-08-08 00:47:02 - INFO [File Watcher] o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2025-08-08 00:47:02 - DEBUG [Thread-7] o.s.w.SimpLogging : clientOutboundChannel removed SubProtocolWebSocketHandler[StompSubProtocolHandler[v10.stomp, v11.stomp, v12.stomp]]
+2025-08-08 00:47:02 - INFO [Thread-7] o.s.b.w.e.t.GracefulShutdown : Commencing graceful shutdown. Waiting for active requests to complete
+2025-08-08 00:47:02 - INFO [tomcat-shutdown] o.s.b.w.e.t.GracefulShutdown : Graceful shutdown complete
+2025-08-08 00:47:02 - DEBUG [Thread-7] o.s.w.SimpLogging : clientInboundChannel removed WebSocketAnnotationMethodMessageHandler[prefixes=[/app/]]
+2025-08-08 00:47:02 - INFO [Thread-7] o.s.m.s.b.SimpleBrokerMessageHandler : Stopping...
+2025-08-08 00:47:02 - INFO [Thread-7] o.s.m.s.b.SimpleBrokerMessageHandler : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@92cb8aa]]
+2025-08-08 00:47:02 - DEBUG [Thread-7] o.s.w.SimpLogging : clientInboundChannel removed SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@92cb8aa]
+2025-08-08 00:47:02 - DEBUG [Thread-7] o.s.w.SimpLogging : brokerChannel removed SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@92cb8aa]
+2025-08-08 00:47:02 - INFO [Thread-7] o.s.m.s.b.SimpleBrokerMessageHandler : Stopped.
+2025-08-08 00:47:02 - DEBUG [Thread-7] o.s.w.SimpLogging : clientInboundChannel removed UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08 00:47:02 - DEBUG [Thread-7] o.s.w.SimpLogging : brokerChannel removed UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08 00:47:02 - INFO [Thread-7] o.s.o.j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-08-08 00:47:02 - INFO [Thread-7] c.z.h.HikariDataSource : HikariPool-2 - Shutdown initiated...
+2025-08-08 00:47:02 - INFO [Thread-7] c.z.h.HikariDataSource : HikariPool-2 - Shutdown completed.
+2025-08-08 00:47:02 - INFO [restartedMain] c.e.U.UtownApplication : Starting UtownApplication using Java 21.0.7 with PID 9742 (/Users/daryakim/Downloads/utown-backand-jun9-kim/target/classes started by daryakim in /Users/daryakim/Downloads/utown-backand-jun9-kim)
+2025-08-08 00:47:02 - DEBUG [restartedMain] c.e.U.UtownApplication : Running with Spring Boot v3.5.0, Spring v6.2.7
+2025-08-08 00:47:02 - INFO [restartedMain] c.e.U.UtownApplication : The following 1 profile is active: "local"
+2025-08-08 00:47:02 - INFO [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-08 00:47:02 - INFO [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 14 ms. Found 20 JPA repository interfaces.
+2025-08-08 00:47:02 - INFO [restartedMain] o.s.b.w.e.t.TomcatWebServer : Tomcat initialized with port 8080 (http)
+2025-08-08 00:47:02 - INFO [restartedMain] o.a.c.c.StandardService : Starting service [Tomcat]
+2025-08-08 00:47:02 - INFO [restartedMain] o.a.c.c.StandardEngine : Starting Servlet engine: [Apache Tomcat/10.1.41]
+2025-08-08 00:47:02 - INFO [restartedMain] o.a.c.c.C.[.[.[/] : Initializing Spring embedded WebApplicationContext
+2025-08-08 00:47:02 - INFO [restartedMain] o.s.b.w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 142 ms
+2025-08-08 00:47:02 - INFO [restartedMain] c.z.h.HikariDataSource : HikariPool-3 - Starting...
+2025-08-08 00:47:02 - INFO [restartedMain] c.z.h.p.HikariPool : HikariPool-3 - Added connection com.mysql.cj.jdbc.ConnectionImpl@26fdfaa8
+2025-08-08 00:47:02 - INFO [restartedMain] c.z.h.HikariDataSource : HikariPool-3 - Start completed.
+2025-08-08 00:47:02 - INFO [restartedMain] o.f.c.FlywayExecutor : Database: jdbc:mysql://localhost:3306/Utown (MySQL 8.0)
+2025-08-08 00:47:02 - INFO [restartedMain] o.f.c.i.c.DbValidate : Successfully validated 3 migrations (execution time 00:00.005s)
+2025-08-08 00:47:02 - INFO [restartedMain] o.f.c.i.c.DbMigrate : Current version of schema `utown`: 3
+2025-08-08 00:47:02 - INFO [restartedMain] o.f.c.i.c.DbMigrate : Schema `utown` is up to date. No migration necessary.
+2025-08-08 00:47:02 - INFO [restartedMain] o.h.j.i.u.LogHelper : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-08 00:47:02 - INFO [restartedMain] o.h.c.i.RegionFactoryInitiator : HHH000026: Second-level cache disabled
+2025-08-08 00:47:02 - INFO [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-08 00:47:02 - INFO [restartedMain] o.h.o.c.pooling : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-3)']
+	Database driver: undefined/unknown
+	Database version: 8.0.43
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-08-08 00:47:02 - INFO [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-08 00:47:02 - INFO [restartedMain] o.s.o.j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-08 00:47:02 - DEBUG [restartedMain] o.s.w.s.r.ResourceUrlEncodingFilter : Filter 'resourceUrlEncodingFilter' configured for use
+2025-08-08 00:47:02 - DEBUG [restartedMain] c.e.U.c.JWTAuthenticationFilter : Filter 'JWTAuthenticationFilter' configured for use
+2025-08-08 00:47:02 - INFO [restartedMain] o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2025-08-08 00:47:02 - WARN [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-08-08 00:47:02 - WARN [restartedMain] o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-08-08 00:47:02 - DEBUG [restartedMain] o.s.w.s.s.s.WebSocketHandlerMapping : Patterns [/chat, /chat/**] in 'stompWebSocketHandlerMapping'
+2025-08-08 00:47:02 - DEBUG [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerMapping : 91 mappings in 'requestMappingHandlerMapping'
+2025-08-08 00:47:02 - DEBUG [restartedMain] o.s.w.s.h.SimpleUrlHandlerMapping : Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2025-08-08 00:47:02 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.FileController:
+	
+2025-08-08 00:47:02 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.AdminController:
+	
+2025-08-08 00:47:02 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.ClientController:
+	
+2025-08-08 00:47:02 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.MainController:
+	
+2025-08-08 00:47:02 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.RestaurantAdminController:
+	
+2025-08-08 00:47:02 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	o.s.b.a.w.s.e.BasicErrorController:
+	
+2025-08-08 00:47:02 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	o.s.w.a.OpenApiWebMvcResource:
+	
+2025-08-08 00:47:02 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	o.s.w.u.SwaggerWelcomeWebMvc:
+	
+2025-08-08 00:47:02 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	o.s.w.u.SwaggerConfigResource:
+	
+2025-08-08 00:47:02 - DEBUG [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-08-08 00:47:02 - WARN [restartedMain] o.s.b.a.t.ThymeleafAutoConfiguration$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2025-08-08 00:47:02 - DEBUG [restartedMain] o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-08-08 00:47:02 - INFO [restartedMain] o.s.b.d.a.OptionalLiveReloadServer : LiveReload server is running on port 35729
+2025-08-08 00:47:02 - DEBUG [restartedMain] o.s.w.SimpLogging : clientInboundChannel added WebSocketAnnotationMethodMessageHandler[prefixes=[/app/]]
+2025-08-08 00:47:02 - INFO [restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler : Starting...
+2025-08-08 00:47:02 - DEBUG [restartedMain] o.s.w.SimpLogging : clientInboundChannel added SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@49cfafff]
+2025-08-08 00:47:02 - DEBUG [restartedMain] o.s.w.SimpLogging : brokerChannel added SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@49cfafff]
+2025-08-08 00:47:02 - INFO [restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@49cfafff]]
+2025-08-08 00:47:02 - INFO [restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler : Started.
+2025-08-08 00:47:02 - DEBUG [restartedMain] o.s.w.SimpLogging : clientInboundChannel added UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08 00:47:02 - DEBUG [restartedMain] o.s.w.SimpLogging : brokerChannel added UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08 00:47:02 - INFO [restartedMain] o.s.b.w.e.t.TomcatWebServer : Tomcat started on port 8080 (http) with context path '/'
+2025-08-08 00:47:02 - DEBUG [restartedMain] o.s.w.SimpLogging : clientOutboundChannel added SubProtocolWebSocketHandler[StompSubProtocolHandler[v10.stomp, v11.stomp, v12.stomp]]
+2025-08-08 00:47:02 - INFO [restartedMain] c.e.U.UtownApplication : Started UtownApplication in 0.557 seconds (process running for 298.528)
+2025-08-08 00:47:02 - DEBUG [restartedMain] o.h.SQL : select dc1_0.id,dc1_0.created_at,dc1_0.file_id,dc1_0.is_active,dc1_0.name,dc1_0.restaurant_id,dc1_0.sort,dc1_0.updated_at from dish_category dc1_0 where dc1_0.name=?
+2025-08-08 00:47:02 - INFO [restartedMain] o.s.b.d.a.ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2025-08-08 00:48:02 - INFO [MessageBroker-1] o.s.w.s.c.WebSocketMessageBrokerStats : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 1, active threads = 1, queued tasks = 0, completed tasks = 0]
+2025-08-08 00:54:30 - DEBUG [SpringApplicationShutdownHook] o.s.w.SimpLogging : clientOutboundChannel removed SubProtocolWebSocketHandler[StompSubProtocolHandler[v10.stomp, v11.stomp, v12.stomp]]
+2025-08-08 00:54:30 - INFO [SpringApplicationShutdownHook] o.s.b.w.e.t.GracefulShutdown : Commencing graceful shutdown. Waiting for active requests to complete
+2025-08-08 00:54:30 - INFO [tomcat-shutdown] o.s.b.w.e.t.GracefulShutdown : Graceful shutdown complete
+2025-08-08 00:54:30 - DEBUG [SpringApplicationShutdownHook] o.s.w.SimpLogging : clientInboundChannel removed WebSocketAnnotationMethodMessageHandler[prefixes=[/app/]]
+2025-08-08 00:54:30 - INFO [SpringApplicationShutdownHook] o.s.m.s.b.SimpleBrokerMessageHandler : Stopping...
+2025-08-08 00:54:30 - INFO [SpringApplicationShutdownHook] o.s.m.s.b.SimpleBrokerMessageHandler : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@49cfafff]]
+2025-08-08 00:54:30 - DEBUG [SpringApplicationShutdownHook] o.s.w.SimpLogging : clientInboundChannel removed SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@49cfafff]
+2025-08-08 00:54:30 - DEBUG [SpringApplicationShutdownHook] o.s.w.SimpLogging : brokerChannel removed SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@49cfafff]
+2025-08-08 00:54:30 - INFO [SpringApplicationShutdownHook] o.s.m.s.b.SimpleBrokerMessageHandler : Stopped.
+2025-08-08 00:54:30 - DEBUG [SpringApplicationShutdownHook] o.s.w.SimpLogging : clientInboundChannel removed UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08 00:54:30 - DEBUG [SpringApplicationShutdownHook] o.s.w.SimpLogging : brokerChannel removed UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08 00:54:30 - INFO [SpringApplicationShutdownHook] o.s.o.j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-08-08 00:54:30 - INFO [SpringApplicationShutdownHook] c.z.h.HikariDataSource : HikariPool-3 - Shutdown initiated...
+2025-08-08 00:54:30 - INFO [SpringApplicationShutdownHook] c.z.h.HikariDataSource : HikariPool-3 - Shutdown completed.
+2025-08-08 00:54:31 - INFO [restartedMain] c.e.U.UtownApplication : Starting UtownApplication using Java 21.0.7 with PID 9917 (/Users/daryakim/Downloads/utown-backand-jun9-kim/target/classes started by daryakim in /Users/daryakim/Downloads/utown-backand-jun9-kim)
+2025-08-08 00:54:31 - DEBUG [restartedMain] c.e.U.UtownApplication : Running with Spring Boot v3.5.0, Spring v6.2.7
+2025-08-08 00:54:31 - INFO [restartedMain] c.e.U.UtownApplication : The following 1 profile is active: "local"
+2025-08-08 00:54:31 - INFO [restartedMain] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-08-08 00:54:31 - INFO [restartedMain] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-08-08 00:54:31 - INFO [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-08 00:54:31 - INFO [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 28 ms. Found 20 JPA repository interfaces.
+2025-08-08 00:54:32 - INFO [restartedMain] o.s.b.w.e.t.TomcatWebServer : Tomcat initialized with port 8080 (http)
+2025-08-08 00:54:32 - INFO [restartedMain] o.a.c.c.StandardService : Starting service [Tomcat]
+2025-08-08 00:54:32 - INFO [restartedMain] o.a.c.c.StandardEngine : Starting Servlet engine: [Apache Tomcat/10.1.41]
+2025-08-08 00:54:32 - INFO [restartedMain] o.a.c.c.C.[.[.[/] : Initializing Spring embedded WebApplicationContext
+2025-08-08 00:54:32 - INFO [restartedMain] o.s.b.w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 574 ms
+2025-08-08 00:54:32 - INFO [restartedMain] c.z.h.HikariDataSource : HikariPool-1 - Starting...
+2025-08-08 00:54:32 - INFO [restartedMain] c.z.h.p.HikariPool : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@8b6d165
+2025-08-08 00:54:32 - INFO [restartedMain] c.z.h.HikariDataSource : HikariPool-1 - Start completed.
+2025-08-08 00:54:32 - INFO [restartedMain] o.f.c.FlywayExecutor : Database: jdbc:mysql://localhost:3306/Utown (MySQL 8.0)
+2025-08-08 00:54:32 - INFO [restartedMain] o.f.c.i.c.DbValidate : Successfully validated 3 migrations (execution time 00:00.011s)
+2025-08-08 00:54:32 - INFO [restartedMain] o.f.c.i.c.DbMigrate : Current version of schema `utown`: 3
+2025-08-08 00:54:32 - INFO [restartedMain] o.f.c.i.c.DbMigrate : Schema `utown` is up to date. No migration necessary.
+2025-08-08 00:54:32 - INFO [restartedMain] o.h.j.i.u.LogHelper : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-08 00:54:32 - INFO [restartedMain] o.h.Version : HHH000412: Hibernate ORM core version 6.6.15.Final
+2025-08-08 00:54:32 - INFO [restartedMain] o.h.c.i.RegionFactoryInitiator : HHH000026: Second-level cache disabled
+2025-08-08 00:54:32 - INFO [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-08 00:54:32 - INFO [restartedMain] o.h.o.c.pooling : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.43
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-08-08 00:54:32 - INFO [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-08 00:54:32 - INFO [restartedMain] o.s.o.j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-08 00:54:33 - DEBUG [restartedMain] o.s.w.s.r.ResourceUrlEncodingFilter : Filter 'resourceUrlEncodingFilter' configured for use
+2025-08-08 00:54:33 - DEBUG [restartedMain] c.e.U.c.JWTAuthenticationFilter : Filter 'JWTAuthenticationFilter' configured for use
+2025-08-08 00:54:33 - INFO [restartedMain] o.s.d.j.r.q.QueryEnhancerFactory : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-08-08 00:54:34 - INFO [restartedMain] o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2025-08-08 00:54:34 - WARN [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-08-08 00:54:34 - WARN [restartedMain] o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-08-08 00:54:34 - DEBUG [restartedMain] o.s.w.s.s.s.WebSocketHandlerMapping : Patterns [/chat, /chat/**] in 'stompWebSocketHandlerMapping'
+2025-08-08 00:54:34 - DEBUG [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerMapping : 91 mappings in 'requestMappingHandlerMapping'
+2025-08-08 00:54:34 - DEBUG [restartedMain] o.s.w.s.h.SimpleUrlHandlerMapping : Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2025-08-08 00:54:34 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.FileController:
+	
+2025-08-08 00:54:34 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.AdminController:
+	
+2025-08-08 00:54:34 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.ClientController:
+	
+2025-08-08 00:54:34 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.MainController:
+	
+2025-08-08 00:54:34 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	c.e.U.c.u.RestaurantAdminController:
+	
+2025-08-08 00:54:34 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	o.s.b.a.w.s.e.BasicErrorController:
+	
+2025-08-08 00:54:34 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	o.s.w.a.OpenApiWebMvcResource:
+	
+2025-08-08 00:54:34 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	o.s.w.u.SwaggerWelcomeWebMvc:
+	
+2025-08-08 00:54:34 - DEBUG [restartedMain] o.s.w.s.m.WebSocketAnnotationMethodMessageHandler : 
+	o.s.w.u.SwaggerConfigResource:
+	
+2025-08-08 00:54:34 - DEBUG [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-08-08 00:54:34 - WARN [restartedMain] o.s.b.a.t.ThymeleafAutoConfiguration$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2025-08-08 00:54:34 - DEBUG [restartedMain] o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-08-08 00:54:34 - INFO [restartedMain] o.s.b.d.a.OptionalLiveReloadServer : LiveReload server is running on port 35729
+2025-08-08 00:54:34 - DEBUG [restartedMain] o.s.w.SimpLogging : clientInboundChannel added WebSocketAnnotationMethodMessageHandler[prefixes=[/app/]]
+2025-08-08 00:54:34 - INFO [restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler : Starting...
+2025-08-08 00:54:34 - DEBUG [restartedMain] o.s.w.SimpLogging : clientInboundChannel added SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@36059e3b]
+2025-08-08 00:54:34 - DEBUG [restartedMain] o.s.w.SimpLogging : brokerChannel added SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@36059e3b]
+2025-08-08 00:54:34 - INFO [restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@36059e3b]]
+2025-08-08 00:54:34 - INFO [restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler : Started.
+2025-08-08 00:54:34 - DEBUG [restartedMain] o.s.w.SimpLogging : clientInboundChannel added UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08 00:54:34 - DEBUG [restartedMain] o.s.w.SimpLogging : brokerChannel added UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2025-08-08 00:54:34 - INFO [restartedMain] o.s.b.w.e.t.TomcatWebServer : Tomcat started on port 8080 (http) with context path '/'
+2025-08-08 00:54:34 - DEBUG [restartedMain] o.s.w.SimpLogging : clientOutboundChannel added SubProtocolWebSocketHandler[StompSubProtocolHandler[v10.stomp, v11.stomp, v12.stomp]]
+2025-08-08 00:54:34 - INFO [restartedMain] c.e.U.UtownApplication : Started UtownApplication in 3.351 seconds (process running for 3.678)
+2025-08-08 00:54:34 - DEBUG [restartedMain] o.h.SQL : select dc1_0.id,dc1_0.created_at,dc1_0.file_id,dc1_0.is_active,dc1_0.name,dc1_0.restaurant_id,dc1_0.sort,dc1_0.updated_at from dish_category dc1_0 where dc1_0.name=?
+2025-08-08 00:55:34 - INFO [MessageBroker-1] o.s.w.s.c.WebSocketMessageBrokerStats : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 1, active threads = 1, queued tasks = 0, completed tasks = 0]
