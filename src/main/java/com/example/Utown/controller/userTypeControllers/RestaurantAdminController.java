@@ -33,6 +33,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -55,6 +56,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.YearMonth;
 import java.util.List;
 
+@Tag(
+        name = "Restaurant Management",
+        description = "Provides endpoints for restaurant administrators to manage dishes," +
+                " categories, orders, deliveries, operating modes, and restaurant profile. " +
+                "Accessible only to users with the RESTAURANT_ADMIN role."
+)
 @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
 @RestController
 @RequestMapping("/restaurant-admin/restaurant")
@@ -163,6 +170,21 @@ public class RestaurantAdminController {
         return ResponseEntity.ok(orderService.getMonthlyStats(year));
     }
 
+    //OPERATING MODE
+    @GetMapping("/operating-modes")//Passed
+    @Operation(summary = "Get operating modes by restaurant ID",
+            description = "Returns a list of operating modes for the specified restaurant")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved operating modes"),
+            @ApiResponse(responseCode = "404", description = "Restaurant not found")
+    })
+    public ResponseEntity<List<OperatingModeInfoDto>> getOperatingModes() {
+        Long restaurantId = restaurantAdminService.getCurrentAdmin().getRestaurant().getId();
+        List<OperatingModeInfoDto> modes = operatingModeService.getOperatingModesByRestaurantId(restaurantId);
+        return ResponseEntity.ok(modes);
+    }
+
+
     @Operation(
             summary = "Get in-process orders for current restaurant",
             description = "Returns a paginated list of active orders for the authenticated restaurant admin"
@@ -270,6 +292,24 @@ public class RestaurantAdminController {
         DishCategoryCreateResponseDto response =
                 dishCategoryService.createDishCategoryForRestaurantByAdmin(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @Operation(
+            summary = "Create dish (restaurant admin)",
+            description = "Creates a new dish for the restaurant assigned to the current restaurant admin")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Dish successfully created",
+                    content = @Content(schema = @Schema(implementation = DishInfoDto.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - not a restaurant admin"),
+            @ApiResponse(responseCode = "404", description = "Dish category or file not found")
+    })
+    @PostMapping("/dishes")//Passed
+    public ResponseEntity<DishInfoDto> createDishAsRestaurantAdmin(
+            @RequestBody @Valid DishCreateDto dto
+    ) {
+        DishInfoDto created = dishService.createDishAsRestaurantAdmin(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
 
@@ -445,20 +485,6 @@ public class RestaurantAdminController {
         return  ResponseEntity.ok().build();
     }
 
-    //OPERATING MODE
-    @GetMapping("/operating-modes")//Passed
-    @Operation(summary = "Get operating modes by restaurant ID",
-            description = "Returns a list of operating modes for the specified restaurant")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved operating modes"),
-            @ApiResponse(responseCode = "404", description = "Restaurant not found")
-    })
-    public ResponseEntity<List<OperatingModeInfoDto>> getOperatingModes() {
-        Long restaurantId = restaurantAdminService.getCurrentAdmin().getRestaurant().getId();
-        List<OperatingModeInfoDto> modes = operatingModeService.getOperatingModesByRestaurantId(restaurantId);
-        return ResponseEntity.ok(modes);
-    }
-
 
     @PutMapping("/operating-modes/{modeId}")//Passed
     @Operation(
@@ -482,24 +508,6 @@ public class RestaurantAdminController {
         return ResponseEntity.ok(result);
     }
 
-
-    @Operation(
-            summary = "Create dish (restaurant admin)",
-            description = "Creates a new dish for the restaurant assigned to the current restaurant admin")
-    @ApiResponses(value = {
-                    @ApiResponse(responseCode = "201", description = "Dish successfully created",
-                            content = @Content(schema = @Schema(implementation = DishInfoDto.class))),
-                    @ApiResponse(responseCode = "400", description = "Invalid request"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden - not a restaurant admin"),
-                    @ApiResponse(responseCode = "404", description = "Dish category or file not found")
-    })
-    @PostMapping("/dishes")//Passed
-    public ResponseEntity<DishInfoDto> createDishAsRestaurantAdmin(
-            @RequestBody @Valid DishCreateDto dto
-    ) {
-        DishInfoDto created = dishService.createDishAsRestaurantAdmin(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
-    }
 
     //DELETE
     @Operation(summary = "Delete Dish by Id", description = "Deactivates a dish in the system.")
