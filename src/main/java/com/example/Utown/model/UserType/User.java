@@ -50,7 +50,7 @@ public class User implements UserDetails {
     @NotBlank
     private String password;
 
-    @Column(name = "phoneNumber", length = 20, unique = true, nullable = false)
+    @Column(name = "username", length = 20, unique = true, nullable = false)
     @NotBlank
     private String username;
 
