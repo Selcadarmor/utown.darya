@@ -90,93 +90,9 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "Client retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Client not found")
     })
-    @GetMapping("/clients/{id}") //Passed
-    public ResponseEntity<ClientInfoDto> getClientById(@PathVariable Long id) {
-        return ResponseEntity.ok(clientService.getClientById(id));
-    }
-
-    @Operation(summary = "Update client by Id", description = "Updates information of an existing client.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Client updated successfully."),
-            @ApiResponse(responseCode = "400", description = "Invalid input data"),
-            @ApiResponse(responseCode = "404", description = "Client not found")
-    })
-    @PatchMapping("/clients/{id}/status") //Passed
-    public ResponseEntity<Void> updateClientActiveStatus(@PathVariable Long id, @Valid @RequestBody ClientUpdateDto clientUpdateDto) {
-        clientService.updateClientActiveStatus(id, clientUpdateDto.getActive());
-        return ResponseEntity.ok().build();
-    }
-
-
-    @Operation(summary = "Delete client by Id", description = "Removes a client from the system.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Client deleted successfully."),
-            @ApiResponse(responseCode = "404", description = "Client not found")
-    })
-    @DeleteMapping("/clients/{id}") //Passed
-    public ResponseEntity<Void> deleteClient(@PathVariable Long id) {
-        clientService.deleteClient(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    // --- Рестораны ---
-
-    @Operation(summary = "Get all restaurants", description = "Returns a list of all restaurants.")
-    @ApiResponses(@ApiResponse(responseCode = "200", description = "List of restaurants retrieved successfully"))
-    @GetMapping("/restaurants") //Passed
-    public ResponseEntity<Page<RestaurantInfoDto>> getAllRestaurants(
-            @RequestParam(required = false) String query,
-            @RequestParam(required = false) Boolean isActive,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Page<RestaurantInfoDto> restaurants = restaurantService.getAllRestaurants(query, isActive, page, size);
-        return ResponseEntity.ok(restaurants);
-    }
-
-    @Operation(summary = "Get restaurant by id", description = "Returns a restaurant with the given id.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Restaurant retrieved successfully"),
-            @ApiResponse(responseCode = "404", description = "Restaurant not found")
-    })
-    @GetMapping("/restaurants/{id}") //Passed
-    public ResponseEntity<RestaurantDetailsDto> getRestaurantById(@PathVariable Long id) {
-        return ResponseEntity.ok(restaurantService.getRestaurantDetails(id));
-    }
-
-    @Operation(summary = "Create restaurant", description = "Create Restaurant via the admin panel.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Restaurant created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid request body"),
-            @ApiResponse(responseCode = "409", description = "Duplicate restaurant")
-    })
-    @PostMapping("/restaurants") //Passed
-    public ResponseEntity<RestaurantsCreateResponseDto> createRestaurant(
-            @Valid @RequestBody RestaurantCreateDto restaurantCreateDto) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(restaurantService.createRestaurant(restaurantCreateDto));
-    }
-
-    @Operation(summary = "Update restaurant by Id", description = "Updates restaurant info.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Restaurant updated successfully."),
-            @ApiResponse(responseCode = "404", description = "Restaurant not found")
-    })
-    @PatchMapping("/restaurants/{id}") //Passed
-    public ResponseEntity<RestaurantUpdateResponseDto> updateRestaurant(
-            @PathVariable Long id,
-            @Valid @RequestBody RestaurantUpdateDto restaurantUpdateDto) {
-        return ResponseEntity.ok(restaurantService.updateRestaurant(id, restaurantUpdateDto));
-    }
-
-    @Operation(summary = "Delete restaurant by Id", description = "Deactivates a restaurant in the system.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Restaurant deactivated successfully."),
-            @ApiResponse(responseCode = "404", description = "Restaurant not found")
-    })
-    @DeleteMapping("/restaurants/{id}") //Passed
-    public ResponseEntity<Void> deactivateRestaurant(@PathVariable Long id) {
-        restaurantService.deactivateRestaurant(id);
-        return ResponseEntity.noContent().build();
+    @GetMapping("/clients/{clientId}") //Passed
+    public ResponseEntity<ClientInfoDto> getClientById(@PathVariable Long clientId) {
+        return ResponseEntity.ok(clientService.getClientById(clientId));
     }
 
     // --- Блюда ---
@@ -201,32 +117,22 @@ public class AdminController {
         return ResponseEntity.ok(dishes);
     }
 
-    @Operation(summary = "Create dish for restaurant", description = "Adds a new dish to the restaurant's menu.")
+    //история заказов
+    @Operation(
+            summary = "View restaurant order history",
+            description = "Endpoint to get all orders related to a specific restaurant."
+    )
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Dish created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input data"),
-            @ApiResponse(responseCode = "404", description = "Restaurant or category not found")
+            @ApiResponse(responseCode = "200", description = "Orders retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Orders not found")
     })
-    @PostMapping("/restaurants/{restaurantId}/dishes") //Passed
-    public ResponseEntity<DishInfoDto> createDishForRestaurant(
-            @PathVariable Long restaurantId,
-            @Valid @RequestBody DishCreateDto dishCreateDto) {
-        DishInfoDto dish = dishService.createDishForRestaurant(restaurantId, dishCreateDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(dish);
-    }
+    @GetMapping("/clients/{clientId}/orders")//Passed
+    public ResponseEntity<Page<OrderDetailsDto>> getOrderDetailsByClient(@PathVariable Long clientId,
+                                                                         @RequestParam(required = false) String query,
+                                                                         Pageable pageable) {
+        Page<OrderDetailsDto> orders = orderService.getOrderDetailsByClient(clientId, query, pageable);
+        return ResponseEntity.ok(orders);
 
-    @Operation(summary = "Update dish for restaurant", description = "Updates an existing dish.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Dish updated successfully."),
-            @ApiResponse(responseCode = "404", description = "Dish or restaurant not found")
-    })
-    @PatchMapping("/restaurants/{restaurantId}/dishes/{dishId}") //Passed
-    public ResponseEntity<DishInfoDto> updateDishForRestaurant(
-            @PathVariable Long restaurantId,
-            @PathVariable Long dishId,
-            @Valid @RequestBody DishCreateDto dishDto) {
-        DishInfoDto dish = dishService.updateDishForRestaurant(restaurantId, dishId, dishDto);
-        return ResponseEntity.ok(dish);
     }
 
     // --- Категории блюд ---
@@ -248,6 +154,32 @@ public class AdminController {
         return ResponseEntity.ok(result);
     }
 
+    // --- Рестораны ---
+
+    @Operation(summary = "Get all restaurants", description = "Returns a list of all restaurants.")
+    @ApiResponses(@ApiResponse(responseCode = "200", description = "List of restaurants retrieved successfully"))
+    @GetMapping("/restaurants") //Passed
+    public ResponseEntity<Page<RestaurantInfoDto>> getAllRestaurants(
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) Boolean isActive,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<RestaurantInfoDto> restaurants = restaurantService.getAllRestaurants(query, isActive, page, size);
+        return ResponseEntity.ok(restaurants);
+    }
+
+    @Operation(summary = "Get restaurant by id", description = "Returns a restaurant with the given id.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Restaurant retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Restaurant not found")
+    })
+    @GetMapping("/restaurants/{restaurantId}") //Passed
+    public ResponseEntity<RestaurantDetailsDto> getRestaurantById(@PathVariable Long restaurantId) {
+        return ResponseEntity.ok(restaurantService.getRestaurantDetails(restaurantId));
+    }
+
+    //POST
+
     @Operation(summary = "Create dish category for restaurant", description = "Adds a new dish category.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Category created successfully"),
@@ -262,23 +194,6 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-    //история заказов
-    @Operation(
-            summary = "View restaurant order history",
-            description = "Endpoint to get all orders related to a specific restaurant."
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Orders retrieved successfully"),
-            @ApiResponse(responseCode = "404", description = "Orders not found")
-    })
-    @GetMapping("/clients/{id}/orders")//Passed
-    public ResponseEntity<Page<OrderDetailsDto>> getOrderDetailsByClient(@PathVariable Long clientId,
-                                                                         @RequestParam(required = false) String query,
-                                                                         Pageable pageable) {
-        Page<OrderDetailsDto> orders = orderService.getOrderDetailsByClient(clientId, query, pageable);
-        return ResponseEntity.ok(orders);
-
-    }
 
     //Категории ресторанов
 
@@ -294,17 +209,99 @@ public class AdminController {
         return ResponseEntity.ok(created);
     }
 
+
+    @Operation(summary = "Create restaurant", description = "Create Restaurant via the admin panel.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Restaurant created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request body"),
+            @ApiResponse(responseCode = "409", description = "Duplicate restaurant")
+    })
+    @PostMapping("/restaurants") //Passed
+    public ResponseEntity<RestaurantsCreateResponseDto> createRestaurant(
+            @Valid @RequestBody RestaurantCreateDto restaurantCreateDto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(restaurantService.createRestaurant(restaurantCreateDto));
+    }
+    @Operation(summary = "Create dish for restaurant", description = "Adds a new dish to the restaurant's menu.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Dish created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "404", description = "Restaurant or category not found")
+    })
+    @PostMapping("/restaurants/{restaurantId}/dishes") //Passed
+    public ResponseEntity<DishInfoDto> createDishForRestaurant(
+            @PathVariable Long restaurantId,
+            @Valid @RequestBody DishCreateDto dishCreateDto) {
+        DishInfoDto dish = dishService.createDishForRestaurant(restaurantId, dishCreateDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(dish);
+    }
+
+    // UPDATE
+    @Operation(summary = "Update client by Id", description = "Updates information of an existing client.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Client updated successfully."),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "404", description = "Client not found")
+    })
+    @PatchMapping("/clients/{clientId}/status") //Passed
+    public ResponseEntity<Void> updateClientActiveStatus(@PathVariable Long clientId, @Valid @RequestBody ClientUpdateDto clientUpdateDto) {
+        clientService.updateClientActiveStatus(clientId, clientUpdateDto.getActive());
+        return ResponseEntity.ok().build();
+    }
+
+
+    @Operation(summary = "Update restaurant by Id", description = "Updates restaurant info.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Restaurant updated successfully."),
+            @ApiResponse(responseCode = "404", description = "Restaurant not found")
+    })
+    @PatchMapping("/restaurants/{restaurantId}") //Passed
+    public ResponseEntity<RestaurantUpdateResponseDto> updateRestaurant(
+            @PathVariable Long restaurantId,
+            @Valid @RequestBody RestaurantUpdateDto restaurantUpdateDto) {
+        return ResponseEntity.ok(restaurantService.updateRestaurant(restaurantId, restaurantUpdateDto));
+    }
+
+
+    @Operation(summary = "Update dish for restaurant", description = "Updates an existing dish.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Dish updated successfully."),
+            @ApiResponse(responseCode = "404", description = "Dish or restaurant not found")
+    })
+    @PatchMapping("/restaurants/{restaurantId}/dishes/{dishId}") //Passed
+    public ResponseEntity<DishInfoDto> updateDishForRestaurant(
+            @PathVariable Long restaurantId,
+            @PathVariable Long dishId,
+            @Valid @RequestBody DishCreateDto dishDto) {
+        DishInfoDto dish = dishService.updateDishForRestaurant(restaurantId, dishId, dishDto);
+        return ResponseEntity.ok(dish);
+    }
+
+
     @Operation(summary = "Update an existing restaurant category")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Category successfully updated"),
             @ApiResponse(responseCode = "404", description = "Category not found"),
             @ApiResponse(responseCode = "400", description = "Invalid input data")
     })
-    @PutMapping("/restaurant-category/{id}")//Passed
-    public ResponseEntity<RestaurantCategoryDto> updateCategory(@PathVariable Long id,
+    @PutMapping("/restaurant-category/{categoryId}")//Passed
+    public ResponseEntity<RestaurantCategoryDto> updateCategory(@PathVariable Long categoryId,
                                                                 @RequestBody RestaurantCategoryCreateDto dto) {
-        RestaurantCategoryDto updated = restaurantCategoryService.updateRestaurantCategory(id, dto);
+        RestaurantCategoryDto updated = restaurantCategoryService.updateRestaurantCategory(categoryId, dto);
         return ResponseEntity.ok(updated);
+    }
+
+
+    //DELETE
+    @Operation(summary = "Delete restaurant by Id", description = "Deactivates a restaurant in the system.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Restaurant deactivated successfully."),
+            @ApiResponse(responseCode = "404", description = "Restaurant not found")
+    })
+    @DeleteMapping("/restaurants/{restaurantId}") //Passed
+    public ResponseEntity<Void> deactivateRestaurant(@PathVariable Long restaurantId) {
+        restaurantService.deactivateRestaurant(restaurantId);
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Delete a restaurant category by ID")
@@ -312,11 +309,21 @@ public class AdminController {
             @ApiResponse(responseCode = "204", description = "Category successfully deleted"),
             @ApiResponse(responseCode = "404", description = "Category not found")
     })
-    @DeleteMapping("restaurant-category/{id}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
-        restaurantCategoryService.deleteRestaurantCategory(id);
+    @DeleteMapping("restaurant-category/{categoryId}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long categoryId) {
+        restaurantCategoryService.deleteRestaurantCategory(categoryId);
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Delete client by Id", description = "Removes a client from the system.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Client deleted successfully."),
+            @ApiResponse(responseCode = "404", description = "Client not found")
+    })
+    @DeleteMapping("/clients/{clientId}") //Passed
+    public ResponseEntity<Void> deleteClient(@PathVariable Long clientId) {
+        clientService.deleteClient(clientId);
+        return ResponseEntity.noContent().build();
+    }
 }
 

@@ -73,6 +73,96 @@ public class RestaurantAdminController {
     private final RestaurantAdminService restaurantAdminService;
 
 
+    // DISH
+    @GetMapping("/dishes/active")//Passed
+    @Operation(
+            summary = "Get all dishes of the current admin's restaurant",
+            description = "Returns a list of dishes with their file info and allows filtering by category")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful retrieval of dishes",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = DishMenuDto.class)))),
+            @ApiResponse(responseCode = "403", description = "Access denied"),
+            @ApiResponse(responseCode = "404", description = "Restaurant or dishes not found")
+    })
+    public ResponseEntity<List<DishMenuDto>> getDishesByCategory(
+            @RequestParam(required = false) String categoryName) {
+        List<DishMenuDto> dishes = dishService.getDishesByRestaurantWithFile(categoryName);
+        return ResponseEntity.ok(dishes);
+    }
+
+    @Operation(
+            summary = "Get inactive dishes by category",
+            description = "Returns a list of dishes with `active = false` for the specified category in the current admin's restaurant."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Inactive dishes retrieved successfully",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = DishMenuDto.class)))),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @GetMapping("/dishes/inactive")//Passed
+    public ResponseEntity<List<DishMenuDto>> getInactiveDishesByCategory(
+            @RequestParam String categoryName
+    ) {
+        List<DishMenuDto> dishes = dishService.getInactiveDishesForRestaurant(categoryName);
+        return ResponseEntity.ok(dishes);
+    }
+
+
+    @Operation(
+            summary = "Get deleted dishes by category",
+            description = "Returns a list of dishes with `deleted = true` for the specified category in the current admin's restaurant."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Deleted dishes retrieved successfully",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = DishMenuDto.class)))),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @GetMapping("/dishes/deleted")//Passed
+    public ResponseEntity<List<DishDeletedMenuDto>> getDeletedDishesByCategory(
+            @RequestParam String categoryName
+    ) {
+        List<DishDeletedMenuDto> dishes = dishService.getDeletedDishesForRestaurant(categoryName);
+        return ResponseEntity.ok(dishes);
+    }
+
+    //  ORDER HISTORY
+    @GetMapping("/order-history/daily")//Passed
+    @Operation(
+            summary = "Get order statistics by day",
+            description = "Return order statistics of the current restaurant for the specified month. Only for RestaurantAdmin."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully received statistics by day"),
+            @ApiResponse(responseCode = "401", description = "User is not authorized"),
+            @ApiResponse(responseCode = "403", description = "No access to resource"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<List<DailyOrderStatsDto>> getDailyStats(
+            @RequestParam int year,
+            @RequestParam int month) {
+        YearMonth ym = YearMonth.of(year, month);
+        return ResponseEntity.ok(orderService.getDailyOrders(ym));
+    }
+
+    @GetMapping("/order-history/monthly")//Passed
+    @Operation(
+            summary = "Get monthly order statistics",
+            description = "Returns order statistics for the current restaurant by month for the specified year. Accessible only by RestaurantAdmin."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Monthly statistics successfully retrieved"),
+            @ApiResponse(responseCode = "401", description = "User is not authenticated"),
+            @ApiResponse(responseCode = "403", description = "Access denied – not a restaurant admin"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<List<MonthlyOrderStatsDto>> getMonthlyStats(
+            @RequestParam int year) {
+
+        return ResponseEntity.ok(orderService.getMonthlyStats(year));
+    }
+
     @Operation(
             summary = "Get in-process orders for current restaurant",
             description = "Returns a paginated list of active orders for the authenticated restaurant admin"
@@ -97,6 +187,111 @@ public class RestaurantAdminController {
     @GetMapping("/orders/completed")
     public Page<OrderHistoryDto> getOrdersCompleted(Pageable pageable) {
         return orderService.getOrdersCompletedByRestaurant(pageable);
+    }
+
+
+    //DISH CATEGORY
+    @Operation(
+            summary = "Get dish categories by restaurant ID",
+            description = "Returns a list of all dish categories for the specified restaurant"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dish categories retrieved successfully",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = DishCategoryDto.class)))),
+            @ApiResponse(responseCode = "404", description = "Restaurant not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @GetMapping("/dish-categories")//Passed
+    public ResponseEntity<List<DishCategoryDto>> getCategoriesByRestaurant() {
+        List<DishCategoryDto> categories = dishCategoryService.getCategoriesByRestaurant();
+        return ResponseEntity.ok(categories);
+    }
+
+    @Operation(summary = "Get all deliveries by restaurant ID")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved all deliveries for the restaurant")
+    @GetMapping("/restaurant/{restaurantId}")
+    public ResponseEntity<List<DeliveryDto>> getAllDeliveriesByRestaurantId(
+            @PathVariable Long restaurantId) {
+        List<DeliveryDto> deliveries = deliveryService.getAllDeliveriesByRestaurantId(restaurantId);
+        return ResponseEntity.ok(deliveries);
+    }
+
+    @Operation(summary = "Get all active deliveries by restaurant ID")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved all active deliveries for the restaurant")
+    @GetMapping("/restaurant/{restaurantId}/active")
+    public ResponseEntity<List<DeliveryDto>> getAllActiveDeliveriesByRestaurantId(
+            @PathVariable Long restaurantId) {
+        List<DeliveryDto> deliveries = deliveryService.getAllInActiveDeliveriesByRestaurantId(restaurantId);
+        return ResponseEntity.ok(deliveries);
+    }
+
+    @Operation(summary = "Get all deleted deliveries by restaurant ID")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved all deleted deliveries for the restaurant")
+    @GetMapping("/restaurant/{restaurantId}/deleted")
+    public ResponseEntity<List<DeliveryDto>> getAllDeletedDeliveriesByRestaurantId(
+            @PathVariable Long restaurantId) {
+        List<DeliveryDto> deliveries = deliveryService.getAllDeletedDeliveriesByRestaurantId(restaurantId);
+        return ResponseEntity.ok(deliveries);
+    }
+
+
+    //POST
+    @PostMapping("/delivery/add")
+    @Operation(
+            summary = "Add new delivery",
+            description = "Adds a new delivery area to the current restaurant"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Delivery added successfully"),
+            @ApiResponse(responseCode = "400", description = "Delivery with this area and district already exists"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<DeliveryDto> addDelivery(@RequestBody DeliveryDto dto) {
+        Delivery delivery = deliveryService.addDelivery(dto);
+        return ResponseEntity.ok(deliveryMapper.deliveryToDto(delivery));
+    }
+
+
+    @Operation(
+            summary = "Create a dish category for a restaurant",
+            description = "Allows a restaurant admin to create a new dish category for their restaurant"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Dish category created successfully",
+                    content = @Content(schema = @Schema(implementation = DishCategoryCreateResponseDto.class))),
+            @ApiResponse(responseCode = "403", description = "Access denied - cannot create category for another restaurant"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PostMapping("/dish-categories")//Passed
+    public ResponseEntity<DishCategoryCreateResponseDto> createDishCategory(
+            @RequestBody DishCategoryCreateDto dto
+    ) {
+        DishCategoryCreateResponseDto response =
+                dishCategoryService.createDishCategoryForRestaurantByAdmin(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+
+    //UPDATE
+    @Operation(
+            summary = "Update an existing dish category",
+            description = "Updates the name, sort order, active status, or image of an existing dish category"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dish category updated successfully",
+                    content = @Content(schema = @Schema(implementation = DishCategoryDto.class))),
+            @ApiResponse(responseCode = "404", description = "Dish category not found"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PutMapping("/dish-categories/{dishCategoryId}")//Passed
+    public ResponseEntity<DishCategoryDto> updateDishCategory(
+            @PathVariable Long dishCategoryId,
+            @RequestBody DishCategoryDto dto
+    ) {
+        DishCategoryDto updated = dishCategoryService.updateDishCategory(dishCategoryId, dto);
+        return ResponseEntity.ok(updated);
     }
 
 
@@ -153,50 +348,6 @@ public class RestaurantAdminController {
         return ResponseEntity.ok().build();
     }
 
-    //GET,CREATE,UPDATE,SOFT-DELETE DELIVERY
-
-    @Operation(summary = "Get all deliveries by restaurant ID")
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved all deliveries for the restaurant")
-    @GetMapping("/restaurant/{restaurantId}")
-    public ResponseEntity<List<DeliveryDto>> getAllDeliveriesByRestaurantId(
-            @PathVariable Long restaurantId) {
-        List<DeliveryDto> deliveries = deliveryService.getAllDeliveriesByRestaurantId(restaurantId);
-        return ResponseEntity.ok(deliveries);
-    }
-
-    @Operation(summary = "Get all active deliveries by restaurant ID")
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved all active deliveries for the restaurant")
-    @GetMapping("/restaurant/{restaurantId}/active")
-    public ResponseEntity<List<DeliveryDto>> getAllActiveDeliveriesByRestaurantId(
-            @PathVariable Long restaurantId) {
-        List<DeliveryDto> deliveries = deliveryService.getAllInActiveDeliveriesByRestaurantId(restaurantId);
-        return ResponseEntity.ok(deliveries);
-    }
-
-    @Operation(summary = "Get all deleted deliveries by restaurant ID")
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved all deleted deliveries for the restaurant")
-    @GetMapping("/restaurant/{restaurantId}/deleted")
-    public ResponseEntity<List<DeliveryDto>> getAllDeletedDeliveriesByRestaurantId(
-            @PathVariable Long restaurantId) {
-        List<DeliveryDto> deliveries = deliveryService.getAllDeletedDeliveriesByRestaurantId(restaurantId);
-        return ResponseEntity.ok(deliveries);
-    }
-
-    @PostMapping("/delivery/add")
-    @Operation(
-            summary = "Add new delivery",
-            description = "Adds a new delivery area to the current restaurant"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Delivery added successfully"),
-            @ApiResponse(responseCode = "400", description = "Delivery with this area and district already exists"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<DeliveryDto> addDelivery(@RequestBody DeliveryDto dto) {
-        Delivery delivery = deliveryService.addDelivery(dto);
-        return ResponseEntity.ok(deliveryMapper.deliveryToDto(delivery));
-    }
-
     @PutMapping("/delivery/update/{id}")
     @Operation(
             summary = "Update Delivery",
@@ -239,16 +390,23 @@ public class RestaurantAdminController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/delivery/delete/{id}")
-    @Operation(summary = "Soft delete delivery", description = "Marks delivery as deleted by setting isDeleted = true")
+    @Operation(
+            summary = "Update a dish by restaurant admin",
+            description = "Updates a dish if it belongs to the restaurant of the currently authenticated restaurant admin"
+    )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Delivery deleted successfully"),
-            @ApiResponse(responseCode = "404", description = "Delivery not found"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
+            @ApiResponse(responseCode = "200", description = "Dish updated successfully"),
+            @ApiResponse(responseCode = "403", description = "Access denied – dish does not belong to admin's restaurant"),
+            @ApiResponse(responseCode = "404", description = "Dish or category or file not found"),
+            @ApiResponse(responseCode = "400", description = "Invalid request body")
     })
-    public ResponseEntity<Void> deleteDelivery(@PathVariable Long id) {
-        deliveryService.deleteDelivery(id);
-        return ResponseEntity.ok().build();
+    @PutMapping("/dishes/{dishId}")//Passed
+    public ResponseEntity<DishInfoDto> updateDishByRestaurantAdmin(
+            @PathVariable Long dishId,
+            @RequestBody @Valid DishCreateDto dto
+    ) {
+        DishInfoDto updatedDish = dishService.updateDishAsRestaurantAdmin(dishId, dto);
+        return ResponseEntity.ok(updatedDish);
     }
 
 
@@ -267,7 +425,7 @@ public class RestaurantAdminController {
             @ApiResponse(responseCode = "400", description = "Invalid request body or data format")
     })
     public ResponseEntity<RestaurantUpdateResponseDto> updateRestaurantByAdmin( //Passed
-            @RequestBody @Valid RestaurantUpdateDto dto) {
+                                                                                @RequestBody @Valid RestaurantUpdateDto dto) {
         RestaurantUpdateResponseDto updated = restaurantService.updateRestaurantByAdmin(dto);
         return ResponseEntity.ok(updated);
     }
@@ -301,6 +459,7 @@ public class RestaurantAdminController {
         return ResponseEntity.ok(modes);
     }
 
+
     @PutMapping("/operating-modes/{modeId}")//Passed
     @Operation(
             summary = "Update a specific operating mode",
@@ -315,48 +474,14 @@ public class RestaurantAdminController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<OperatingModeInfoDto> updateOperatingMode(
+    public ResponseEntity<OperatingModeInfoDto> updateByRestaurantAdmin(
             @PathVariable Long modeId,
             @RequestBody OperatingModeUpdateDto dto
     ) {
-        OperatingModeInfoDto result = operatingModeService.update(modeId, dto);
+        OperatingModeInfoDto result = operatingModeService.updateByRestaurantAdmin(modeId, dto);
         return ResponseEntity.ok(result);
     }
 
-    // DISH
-    @GetMapping("/dishes/active")//Passed
-    @Operation(
-            summary = "Get all dishes of the current admin's restaurant",
-            description = "Returns a list of dishes with their file info and allows filtering by category")
-    @ApiResponses(value = {
-                    @ApiResponse(responseCode = "200", description = "Successful retrieval of dishes",
-                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = DishMenuDto.class)))),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "Restaurant or dishes not found")
-    })
-    public ResponseEntity<List<DishMenuDto>> getDishesByCategory(
-            @RequestParam(required = false) String categoryName) {
-         List<DishMenuDto> dishes = dishService.getDishesByRestaurantWithFile(categoryName);
-         return ResponseEntity.ok(dishes);
-    }
-
-    @Operation(
-            summary = "Get inactive dishes by category",
-            description = "Returns a list of dishes with `active = false` for the specified category in the current admin's restaurant."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Inactive dishes retrieved successfully",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = DishMenuDto.class)))),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    @GetMapping("/dishes/inactive")//Passed
-    public ResponseEntity<List<DishMenuDto>> getInactiveDishesByCategory(
-            @RequestParam String categoryName
-    ) {
-        List<DishMenuDto> dishes = dishService.getInactiveDishesForRestaurant(categoryName);
-        return ResponseEntity.ok(dishes);
-    }
 
     @Operation(
             summary = "Create dish (restaurant admin)",
@@ -376,26 +501,7 @@ public class RestaurantAdminController {
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-
-    @Operation(
-            summary = "Update a dish by restaurant admin",
-            description = "Updates a dish if it belongs to the restaurant of the currently authenticated restaurant admin"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Dish updated successfully"),
-            @ApiResponse(responseCode = "403", description = "Access denied – dish does not belong to admin's restaurant"),
-            @ApiResponse(responseCode = "404", description = "Dish or category or file not found"),
-            @ApiResponse(responseCode = "400", description = "Invalid request body")
-    })
-    @PutMapping("/dishes/{dishId}")//Passed
-    public ResponseEntity<DishInfoDto> updateDishByRestaurantAdmin(
-            @PathVariable Long dishId,
-            @RequestBody @Valid DishCreateDto dto
-    ) {
-        DishInfoDto updatedDish = dishService.updateDishAsRestaurantAdmin(dishId, dto);
-        return ResponseEntity.ok(updatedDish);
-    }
-
+    //DELETE
     @Operation(summary = "Delete Dish by Id", description = "Deactivates a dish in the system.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Dish deactivated successfully."),
@@ -407,23 +513,7 @@ public class RestaurantAdminController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(
-            summary = "Get deleted dishes by category",
-            description = "Returns a list of dishes with `deleted = true` for the specified category in the current admin's restaurant."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Deleted dishes retrieved successfully",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = DishMenuDto.class)))),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    @GetMapping("/dishes/deleted")//Passed
-    public ResponseEntity<List<DishDeletedMenuDto>> getDeletedDishesByCategory(
-            @RequestParam String categoryName
-    ) {
-        List<DishDeletedMenuDto> dishes = dishService.getDeletedDishesForRestaurant(categoryName);
-        return ResponseEntity.ok(dishes);
-    }
+
     //DELETE ELEMENT AND OPTION
     @Operation(summary = "Delete Option by Id", description = "Deactivates a option in the system.")
     @ApiResponses({
@@ -436,6 +526,7 @@ public class RestaurantAdminController {
         optionService.deleteOption(optionId);
         return ResponseEntity.noContent().build();
     }
+
 
     @Operation(summary = "Delete Element by Id", description = "Deactivates a element in the system.")
     @ApiResponses({
@@ -450,62 +541,6 @@ public class RestaurantAdminController {
         return ResponseEntity.noContent().build();
     }
 
-    //DISH CATEGORY
-    @Operation(
-            summary = "Get dish categories by restaurant ID",
-            description = "Returns a list of all dish categories for the specified restaurant"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Dish categories retrieved successfully",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = DishCategoryDto.class)))),
-            @ApiResponse(responseCode = "404", description = "Restaurant not found"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    @GetMapping("/dish-categories")//Passed
-    public ResponseEntity<List<DishCategoryDto>> getCategoriesByRestaurant() {
-        List<DishCategoryDto> categories = dishCategoryService.getCategoriesByRestaurant();
-        return ResponseEntity.ok(categories);
-    }
-
-    @Operation(
-            summary = "Create a dish category for a restaurant",
-            description = "Allows a restaurant admin to create a new dish category for their restaurant"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Dish category created successfully",
-                    content = @Content(schema = @Schema(implementation = DishCategoryCreateResponseDto.class))),
-            @ApiResponse(responseCode = "403", description = "Access denied - cannot create category for another restaurant"),
-            @ApiResponse(responseCode = "400", description = "Invalid input data"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    @PostMapping("/dish-categories")//Passed
-    public ResponseEntity<DishCategoryCreateResponseDto> createDishCategory(
-            @RequestBody DishCategoryCreateDto dto
-    ) {
-        DishCategoryCreateResponseDto response =
-                dishCategoryService.createDishCategoryForRestaurantByAdmin(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
-    @Operation(
-            summary = "Update an existing dish category",
-            description = "Updates the name, sort order, active status, or image of an existing dish category"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Dish category updated successfully",
-                    content = @Content(schema = @Schema(implementation = DishCategoryDto.class))),
-            @ApiResponse(responseCode = "404", description = "Dish category not found"),
-            @ApiResponse(responseCode = "400", description = "Invalid input"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    @PutMapping("/dish-categories/{dishCategoryId}")//Passed
-    public ResponseEntity<DishCategoryDto> updateDishCategory(
-            @PathVariable Long dishCategoryId,
-            @RequestBody DishCategoryDto dto
-    ) {
-        DishCategoryDto updated = dishCategoryService.updateDishCategory(dishCategoryId, dto);
-        return ResponseEntity.ok(updated);
-    }
 
     @Operation(
             summary = "Delete a dish category (soft delete)",
@@ -522,40 +557,17 @@ public class RestaurantAdminController {
         dishCategoryService.deleteDishCategory(dishCategoryId);
         return ResponseEntity.ok().build();
     }
-        //  ORDER HISTORY
-    @GetMapping("/order-history/daily")//Passed
-    @Operation(
-            summary = "Get order statistics by day",
-            description = "Return order statistics of the current restaurant for the specified month. Only for RestaurantAdmin."
-    )
+
+
+    @DeleteMapping("/delivery/delete/{id}")
+    @Operation(summary = "Soft delete delivery", description = "Marks delivery as deleted by setting isDeleted = true")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully received statistics by day"),
-            @ApiResponse(responseCode = "401", description = "User is not authorized"),
-            @ApiResponse(responseCode = "403", description = "No access to resource"),
+            @ApiResponse(responseCode = "200", description = "Delivery deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Delivery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public ResponseEntity<List<DailyOrderStatsDto>> getDailyStats(
-            @RequestParam int year,
-            @RequestParam int month) {
-        YearMonth ym = YearMonth.of(year, month);
-        return ResponseEntity.ok(orderService.getDailyOrders(ym));
+    public ResponseEntity<Void> deleteDelivery(@PathVariable Long id) {
+        deliveryService.deleteDelivery(id);
+        return ResponseEntity.ok().build();
     }
-
-    @GetMapping("/order-history/monthly")//Passed
-    @Operation(
-            summary = "Get monthly order statistics",
-            description = "Returns order statistics for the current restaurant by month for the specified year. Accessible only by RestaurantAdmin."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Monthly statistics successfully retrieved"),
-            @ApiResponse(responseCode = "401", description = "User is not authenticated"),
-            @ApiResponse(responseCode = "403", description = "Access denied – not a restaurant admin"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<List<MonthlyOrderStatsDto>> getMonthlyStats(
-            @RequestParam int year) {
-
-        return ResponseEntity.ok(orderService.getMonthlyStats(year));
-    }
-
 }
