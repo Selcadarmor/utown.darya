@@ -290,7 +290,7 @@ CREATE TABLE users
     dtype           VARCHAR(31)           NULL,
     is_active       BIT(1)                NULL,
     password        VARCHAR(255)          NOT NULL,
-    phone_number    VARCHAR(20)           NOT NULL,
+    username        VARCHAR(20)           NOT NULL,
     created_at      datetime              NULL,
     updated_at      datetime              NULL,
     full_name       VARCHAR(170)          NULL,
