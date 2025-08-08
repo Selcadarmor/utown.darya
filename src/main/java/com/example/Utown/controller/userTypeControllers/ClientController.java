@@ -320,20 +320,28 @@ public class ClientController {
         return ResponseEntity.ok("Order canceled successfully");
     }
 
-    @PostMapping("restaurant/{restaurantId}/rating")
-    @Operation(
-            summary = "Create a rating for a restaurant",
-            description = "Allows an authenticated client to rate a specific restaurant. " +
-                    "Client can submit multiple ratings for the same restaurant (e.g., after each order)."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Rating successfully created"),
-            @ApiResponse(responseCode = "404", description = "Restaurant not found"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized access")
-    })
-    public ResponseEntity<Void> createRating(
+    @PostMapping("/dish/{dishId}/rating")
+    @Operation(summary = "Create rating for a dish")
+    @ApiResponse(responseCode = "200", description = "Rating created successfully")
+    @ApiResponse(responseCode = "404", description = "Dish not found")
+    @ApiResponse(responseCode = "401", description = "Unauthorized")
+    public ResponseEntity<Void> createRatingByDish(
+            @PathVariable Long dishId,
+            @RequestBody RatingDto ratingDto
+    ) {
+        ratingService.createRatingByDish(dishId, ratingDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/restaurant/{restaurantId}/rating")
+    @Operation(summary = "Create rating for a restaurant")
+    @ApiResponse(responseCode = "200", description = "Rating created successfully")
+    @ApiResponse(responseCode = "404", description = "Restaurant not found")
+    @ApiResponse(responseCode = "401", description = "Unauthorized")
+    public ResponseEntity<Void> createRatingByRestaurant(
             @PathVariable Long restaurantId,
-            @RequestBody RatingDto ratingDto) {
+            @RequestBody RatingDto ratingDto
+    ) {
         ratingService.createRatingByRestaurant(restaurantId, ratingDto);
         return ResponseEntity.ok().build();
     }
