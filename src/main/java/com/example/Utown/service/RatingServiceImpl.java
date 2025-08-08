@@ -2,6 +2,7 @@ package com.example.Utown.service;
 
 import com.example.Utown.dto.ratingDTO.RatingDto;
 import com.example.Utown.exception.ResourceNotFoundException;
+import com.example.Utown.model.Dish;
 import com.example.Utown.model.Rating;
 import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.UserType.Client;
@@ -21,6 +22,7 @@ public class RatingServiceImpl implements RatingService {
 
     private final RatingRepository ratingRepository;
     private final ClientService clientService;
+    private final DishService dishService;
     private final RestaurantService restaurantService;
 
     @Override
@@ -49,7 +51,7 @@ public class RatingServiceImpl implements RatingService {
 
     @Override
     @Transactional
-    public void createRating(Long restaurantId, RatingDto ratingDto) {
+    public void createRatingByRestaurant(Long restaurantId, RatingDto ratingDto) {
         Client client = clientService.getCurrentClient();
         Restaurant restaurant = restaurantService.findRestaurantById(restaurantId);
 
@@ -63,6 +65,25 @@ public class RatingServiceImpl implements RatingService {
 
         log.info("Created rating for restaurantId {} by clientId {} with grade {}",
                 restaurantId, client.getId(), ratingDto.getGrade());
+    }
+
+    @Override
+    @Transactional
+    public void createRatingByDish(Long dishId, RatingDto ratingDto) {
+        Client client = clientService.getCurrentClient();
+        Dish dish = dishService.getDishById(dishId);
+
+        Rating rating = Rating.builder()
+                .client(client)
+                .restaurant(null)
+                .dish(dish)
+                .grade(ratingDto.getGrade())
+                .build();
+
+        ratingRepository.save(rating);
+
+        log.info("Created rating for dishId {} by clientId {} with grade {}",
+                dishId, client.getId(), ratingDto.getGrade());
     }
 
     @Override
