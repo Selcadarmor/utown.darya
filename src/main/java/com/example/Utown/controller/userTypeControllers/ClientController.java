@@ -320,7 +320,7 @@ public class ClientController {
         return ResponseEntity.ok("Order canceled successfully");
     }
 
-    @PostMapping("restaurant/{restaurantId}")
+    @PostMapping("restaurant/{restaurantId}/rating")
     @Operation(
             summary = "Create a rating for a restaurant",
             description = "Allows an authenticated client to rate a specific restaurant. " +
@@ -334,9 +334,11 @@ public class ClientController {
     public ResponseEntity<Void> createRating(
             @PathVariable Long restaurantId,
             @RequestBody RatingDto ratingDto) {
-        ratingService.createRating(restaurantId, ratingDto);
+        ratingService.createRatingByRestaurant(restaurantId, ratingDto);
         return ResponseEntity.ok().build();
     }
+
+
 
     @PutMapping("/profile/update") // Passed
     @Operation(
@@ -353,6 +355,25 @@ public class ClientController {
     public ResponseEntity<ClientProfileUpdateDto> updateClientProfile(@RequestBody ClientProfileUpdateDto dto) {
         ClientProfileUpdateDto updatedProfile = clientService.updateClientProfile(dto);
         return ResponseEntity.ok(updatedProfile);
+    }
+
+    @PutMapping("/addresses/update/{id}") //Passed
+    @Operation(
+            summary = "Update address by ID",
+            description = "Update address details by address ID",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Address updated successfully"),
+                    @ApiResponse(responseCode = "400", description = "Invalid input data"),
+                    @ApiResponse(responseCode = "404", description = "Address not found"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            }
+    )
+    public ResponseEntity<Void> updateAddress(
+            @PathVariable Long id,
+            @RequestBody AddressDto addressDto
+    ) {
+        addressService.updateAddress(id, addressDto);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/dish-to-order/{dishToOrderId}") //Passed
@@ -446,7 +467,7 @@ public class ClientController {
     @DeleteMapping("rating/{ratingId}")
     public ResponseEntity<Void> deleteRating(@PathVariable Long ratingId) {
         ratingService.deleteRating(ratingId);
-        return ResponseEntity.ok().build();  // Или .noContent().build() если хочешь 204
+        return ResponseEntity.ok().build();
     }
 
 

@@ -209,7 +209,6 @@ public class AdminController {
         return ResponseEntity.ok(created);
     }
 
-
     @Operation(summary = "Create restaurant", description = "Create Restaurant via the admin panel.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Restaurant created successfully"),
@@ -222,6 +221,7 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(restaurantService.createRestaurant(restaurantCreateDto));
     }
+
     @Operation(summary = "Create dish for restaurant", description = "Adds a new dish to the restaurant's menu.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Dish created successfully"),
