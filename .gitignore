@@ -36,7 +36,5 @@ build/
 
 .env
 
-/src/main/resources/db/migration/
-
 # Ignore log folder
 logs/
