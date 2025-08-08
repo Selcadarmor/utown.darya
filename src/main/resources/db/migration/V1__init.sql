@@ -60,7 +60,8 @@ CREATE TABLE dish_category
 CREATE TABLE dish_to_order_elements
 (
     dish_to_order_id BIGINT NOT NULL,
-    element_id       BIGINT NOT NULL
+    element_id       BIGINT NOT NULL,
+    CONSTRAINT pk_dish_to_order_elements PRIMARY KEY (dish_to_order_id, element_id)
 );
 
 CREATE TABLE dishes
@@ -70,13 +71,15 @@ CREATE TABLE dishes
     is_active        BIT(1)                NULL,
     is_deleted       BIT(1)                NULL,
     price            DECIMAL(10, 2)        NULL,
+    total_ratings    INT                   NULL,
+    rating           DECIMAL(15, 2)        NULL,
     sort             INT                   NULL,
     title            VARCHAR(170)          NOT NULL,
-    created_at       datetime              NULL,
-    updated_at       datetime              NULL,
     file_id          BIGINT                NULL,
     dish_category_id BIGINT                NULL,
     restaurant_id    BIGINT                NULL,
+    created_at       datetime              NULL,
+    updated_at       datetime              NULL,
     CONSTRAINT pk_dishes PRIMARY KEY (id)
 );
 
@@ -189,7 +192,7 @@ CREATE TABLE orders
     state               VARCHAR(255)          NULL,
     order_status        VARCHAR(30)           NULL,
     street              VARCHAR(255)          NULL,
-    time_of_accepted    time                  NULL,
+    time_of_accepted    VARCHAR(255)          NULL,
     time_of_delivery    VARCHAR(255)          NULL,
     time_of_sending     VARCHAR(255)          NULL,
     total_sum           DECIMAL               NULL,
@@ -210,6 +213,7 @@ CREATE TABLE ratings
     id            BIGINT AUTO_INCREMENT NOT NULL,
     grade         DOUBLE                NULL,
     restaurant_id BIGINT                NULL,
+    dish_id       BIGINT                NULL,
     client_id     BIGINT                NULL,
     created_at    datetime              NULL,
     updated_at    datetime              NULL,
@@ -242,10 +246,10 @@ CREATE TABLE restaurant
     total_ratings         INT                   NULL,
     status_forced_changed BIT(1)                NULL,
     is_active             BIT(1)                NULL,
-    created_at            datetime              NULL,
-    updated_at            datetime              NULL,
     address_id            BIGINT                NULL,
     file_id               BIGINT                NULL,
+    created_at            datetime              NULL,
+    updated_at            datetime              NULL,
     CONSTRAINT pk_restaurant PRIMARY KEY (id)
 );
 
@@ -307,14 +311,8 @@ ALTER TABLE dish_category
 ALTER TABLE dish_category
     ADD CONSTRAINT uc_dish_category_name UNIQUE (name);
 
-ALTER TABLE dish_to_order_elements
-    ADD CONSTRAINT uc_dish_to_order_elements_element UNIQUE (element_id);
-
 ALTER TABLE dishes
     ADD CONSTRAINT uc_dishes_file UNIQUE (file_id);
-
-ALTER TABLE ratings
-    ADD CONSTRAINT uc_ratings_client UNIQUE (client_id);
 
 ALTER TABLE refresh_tokens
     ADD CONSTRAINT uc_refresh_tokens_token UNIQUE (token);
@@ -338,10 +336,10 @@ ALTER TABLE users
     ADD CONSTRAINT uc_users_cart UNIQUE (cart_id);
 
 ALTER TABLE users
-    ADD CONSTRAINT uc_users_phonenumber UNIQUE (phone_number);
+    ADD CONSTRAINT uc_users_restaurant UNIQUE (restaurant_id);
 
 ALTER TABLE users
-    ADD CONSTRAINT uc_users_restaurant UNIQUE (restaurant_id);
+    ADD CONSTRAINT uc_users_username UNIQUE (username);
 
 ALTER TABLE addresses
     ADD CONSTRAINT FK_ADDRESSES_ON_CLIENT FOREIGN KEY (client_id) REFERENCES users (id);
@@ -393,6 +391,9 @@ ALTER TABLE orders
 
 ALTER TABLE ratings
     ADD CONSTRAINT FK_RATINGS_ON_CLIENT FOREIGN KEY (client_id) REFERENCES users (id);
+
+ALTER TABLE ratings
+    ADD CONSTRAINT FK_RATINGS_ON_DISH FOREIGN KEY (dish_id) REFERENCES dishes (id);
 
 ALTER TABLE ratings
     ADD CONSTRAINT FK_RATINGS_ON_RESTAURANT FOREIGN KEY (restaurant_id) REFERENCES restaurant (id);
