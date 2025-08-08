@@ -36,5 +36,6 @@ build/
 
 # Ignore local app config
 application-local.properties
+env/.env
 
 /src/main/resources/db/migration/
