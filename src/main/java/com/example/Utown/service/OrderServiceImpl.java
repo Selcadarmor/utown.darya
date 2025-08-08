@@ -25,7 +25,6 @@ import com.example.Utown.repository.OrderRepository;
 import com.example.Utown.repository.UserType.RestaurantAdminRepository;
 import com.example.Utown.service.UserTypeService.ClientService;
 import com.example.Utown.service.UserTypeService.RestaurantAdminService;
-import com.example.Utown.service.UserTypeService.RestaurantAdminServiceImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -354,6 +353,7 @@ public class OrderServiceImpl implements OrderService {
 
         log.info("Created order #{} for client id: {}, restaurant id: {}", order.getNumber(), client.getId(), restaurant.getId());
 
+        notificationService.notifyRestaurantAboutNewOrder(order);
         notificationService.notifyUser(
                 client,
                 "Order Created",
