@@ -327,7 +327,7 @@ public class OrderServiceImpl implements OrderService {
                 .payment(null)
                 .latitude(clientAddress.getLatitude())
                 .longitude(clientAddress.getLongitude())
-                .noteForCourier(null)
+                .noteForCourier(null) //какие еще note???
                 .number(generateOrderNumber())
                 .orderPrice(cart.getSumOrder())
                 .postcode(clientAddress.getPostCode())
