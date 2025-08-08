@@ -320,7 +320,7 @@ public class ClientController {
         return ResponseEntity.ok("Order canceled successfully");
     }
 
-    @PostMapping("restaurant/{restaurantId}")
+    @PostMapping("restaurant/{restaurantId}/rating")
     @Operation(
             summary = "Create a rating for a restaurant",
             description = "Allows an authenticated client to rate a specific restaurant. " +
@@ -334,9 +334,11 @@ public class ClientController {
     public ResponseEntity<Void> createRating(
             @PathVariable Long restaurantId,
             @RequestBody RatingDto ratingDto) {
-        ratingService.createRating(restaurantId, ratingDto);
+        ratingService.createRatingByRestaurant(restaurantId, ratingDto);
         return ResponseEntity.ok().build();
     }
+
+
 
     @PutMapping("/profile/update") // Passed
     @Operation(

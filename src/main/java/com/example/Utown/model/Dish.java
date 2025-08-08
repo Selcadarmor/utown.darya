@@ -24,7 +24,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -53,19 +53,17 @@ public class Dish {
     @Column(precision = 10, scale = 2)
     private BigDecimal price;
 
+    @Column(name = "total_ratings")
+    private Integer totalRatings;
+
+    @Column(precision = 15, scale = 2)
+    private BigDecimal rating;
+
     @Column(name = "sort")
     private Integer sort;
 
     @Column(length = 170, nullable = false)
     private String title;
-
-    @Column(name = "created_at")
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
 
     @OneToOne
     @JoinColumn(name = "file_id")
@@ -81,5 +79,16 @@ public class Dish {
 
     @OneToMany(mappedBy = "dish",fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Option> options;
+
+    @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Rating> ratings;
+
+    @Column(name = "created_at")
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 
 }

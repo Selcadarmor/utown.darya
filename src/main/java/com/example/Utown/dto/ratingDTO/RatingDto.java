@@ -11,6 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class RatingDto {
     private Long restaurantId;
-    private Double grade; // например, 4.5
+    private Double grade;
 }
 
