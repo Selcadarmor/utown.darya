@@ -1,0 +1,17 @@
+ALTER TABLE dishes
+    ADD COLUMN total_ratings INT DEFAULT 0,
+    ADD COLUMN rating DECIMAL(15,2) DEFAULT 0.00;
+
+ALTER TABLE ratings
+    ADD COLUMN dish_id BIGINT;
+
+ALTER TABLE ratings
+    ADD COLUMN client_id BIGINT;
+
+ALTER TABLE ratings
+    ADD CONSTRAINT fk_ratings_dish
+        FOREIGN KEY (dish_id) REFERENCES dishes(id);
+
+ALTER TABLE ratings
+    ADD CONSTRAINT fk_ratings_client
+        FOREIGN KEY (client_id) REFERENCES users(id);
