@@ -2,9 +2,32 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Title</title>
+  <title>WebSocket Notification Test</title>
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 </head>
 <body>
+<h1>Notifications</h1>
+<ul id="notifications"></ul>
 
+<script>
+  const userId = 1; // 👈 здесь подставь нужный ID пользователя
+  const socket = new SockJS('http://localhost:8080/chat');
+  const stompClient = Stomp.over(socket);
+
+  stompClient.connect({}, function () {
+    console.log('Connected to WebSocket');
+
+    // Подписка на уведомления для конкретного пользователя
+    stompClient.subscribe('/topic/notifications/' + userId, function (message) {
+      const notification = JSON.parse(message.body);
+      console.log("Notification received:", notification);
+
+      const li = document.createElement("li");
+      li.textContent = `[${notification.time}] ${notification.title}: ${notification.text}`;
+      document.getElementById("notifications").appendChild(li);
+    });
+  });
+</script>
 </body>
 </html>
