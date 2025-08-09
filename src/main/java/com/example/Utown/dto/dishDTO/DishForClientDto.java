@@ -17,6 +17,8 @@ public class DishForClientDto {
     private Boolean isActive;
     private Boolean isDeleted;
     private BigDecimal price;
+    private BigDecimal rating;
+    private Integer totalRatings;
     private Integer sort;
     private Long restaurantId;
     private Long dishCategoryId;

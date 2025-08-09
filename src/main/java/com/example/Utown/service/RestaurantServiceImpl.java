@@ -285,7 +285,6 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
     }
 
-
     // ===== UPDATE =====
 
     @Transactional(rollbackFor = RuntimeException.class)

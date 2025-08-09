@@ -1,7 +1,6 @@
 package com.example.Utown.repository;
 
 import com.example.Utown.model.Order;
-import com.example.Utown.model.Restaurant;
 import com.example.Utown.model.enumFiles.OrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,8 +36,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findAllByRestaurantIdAndDateBetween(Long restaurantId, LocalDate start, LocalDate end);
 
     @EntityGraph(attributePaths = {
-            "dishesToOrder",
-            "dishesToOrder.selectedElements"
+            "dishesToOrder"
     })
     Page<Order> findAllByClientIdOrderByCreatedAtDesc(Long clientId, Pageable pageable);
 
