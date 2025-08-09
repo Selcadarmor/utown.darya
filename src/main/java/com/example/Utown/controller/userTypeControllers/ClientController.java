@@ -248,6 +248,14 @@ public class ClientController {
         return ResponseEntity.ok(cartDto);
     }
 
+    @Operation(summary = "Get client's order history with pagination")
+    @ApiResponse(responseCode = "200", description = "Order history retrieved successfully")
+    @GetMapping("order/history")
+    public ResponseEntity<Page<OrderHistoryDto>> getOrderHistory(@PageableDefault(size = 10) Pageable pageable) {
+        Page<OrderHistoryDto> history = orderService.getOrderHistoryByClient(pageable);
+        return ResponseEntity.ok(history);
+    }
+
     @PostMapping("/address/create") //Passed
     @Operation(
             summary = "Add address for current user",
@@ -299,14 +307,6 @@ public class ClientController {
         orderService.createOrderFromCart();
     }
 
-    @Operation(summary = "Get client's order history with pagination")
-    @ApiResponse(responseCode = "200", description = "Order history retrieved successfully")
-    @GetMapping("order/history")
-    public ResponseEntity<Page<OrderHistoryDto>> getOrderHistory(@PageableDefault(size = 10) Pageable pageable) {
-        Page<OrderHistoryDto> history = orderService.getOrderHistoryByClient(pageable);
-        return ResponseEntity.ok(history);
-    }
-
     @PostMapping("order/{orderId}/cancel")
     @Operation(summary = "Cancel order by client", description = "Allows the current client to cancel their order if allowed by status.")
     @ApiResponses(value = {
@@ -345,8 +345,6 @@ public class ClientController {
         ratingService.createRatingByRestaurant(restaurantId, ratingDto);
         return ResponseEntity.ok().build();
     }
-
-
 
     @PutMapping("/profile/update") // Passed
     @Operation(
