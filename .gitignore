@@ -37,4 +37,4 @@ build/
 .env
 
 # Ignore log folder
-logs/
+logs/utown.log
