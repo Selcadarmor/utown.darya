@@ -353,6 +353,7 @@ public class OrderServiceImpl implements OrderService {
 
         log.info("Created order #{} for client id: {}, restaurant id: {}", order.getNumber(), client.getId(), restaurant.getId());
 
+        notificationService.notifyRestaurantAboutNewOrder(order);
         notificationService.notifyUser(
                 client,
                 "Order Created",
