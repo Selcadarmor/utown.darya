@@ -34,6 +34,7 @@ import com.example.Utown.repository.DeliveryRepository;
 import com.example.Utown.repository.DishRepository;
 import com.example.Utown.repository.FileInfoRepository;
 import com.example.Utown.repository.OperatingModeRepository;
+import com.example.Utown.repository.RatingRepository;
 import com.example.Utown.repository.RestaurantCategoryRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.service.S3Service.FileInfoService;
@@ -48,6 +49,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -71,6 +73,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
     private final FileInfoService fileInfoService;
     private final OperatingModeService operatingModeService;
     private final OperatingModeRepository operatingModeRepository;
+    private final RatingRepository ratingRepository;
     private final RestaurantCategoryRepository restaurantCategoryRepository;
     private final RestaurantInfoMapper restaurantInfoMapper;
     private final RestaurantCategoryInfoMapper restaurantCategoryInfoMapper;
@@ -78,6 +81,7 @@ public class RestaurantServiceImpl  implements RestaurantService {
 
     // ===== GET =====
 
+    @Override
     public Restaurant findRestaurantById(Long restaurantId) {
         return restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> {
@@ -408,6 +412,18 @@ public class RestaurantServiceImpl  implements RestaurantService {
                 throw new InvalidArgumentException("Restaurant", currentStatus.toString());
         }
         log.info("Status change from {} to {} is valid", currentStatus, newStatus);
+    }
+
+    @Override
+    @Transactional
+    public void updateRestaurantRating(Restaurant restaurant) {
+        Long restaurantId = restaurant.getId();
+        Integer count = ratingRepository.countByRestaurantId(restaurantId);
+        BigDecimal avg = ratingRepository.averageGradeByRestaurantId(restaurantId);
+
+        restaurant.setTotalRatings(count);
+        restaurant.setRating(avg != null ? avg : BigDecimal.ZERO);
+        restaurantRepository.save(restaurant);
     }
 
     // ===== DELETE / DEACTIVATE =====

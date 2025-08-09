@@ -1,9 +1,9 @@
 package com.example.Utown.service;
 
 import com.example.Utown.dto.notificationDTO.NotificationDto;
-import com.example.Utown.exception.ResourceNotFoundException;
-import com.example.Utown.mapper.NotificationMapper;
+import com.example.Utown.dto.orderDTO.NewOrderNotificationDto;
 import com.example.Utown.model.Notification;
+import com.example.Utown.model.Order;
 import com.example.Utown.model.UserType.User;
 import com.example.Utown.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +20,6 @@ import java.util.List;
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository repository;
-    private final NotificationMapper mapper;
     private final SimpMessagingTemplate messagingTemplate;
 
     @Override
@@ -47,5 +45,25 @@ public class NotificationServiceImpl implements NotificationService {
         log.info("Notification sent successfully to user {}", user.getUsername());
     }
 
+
+    @Override
+    public void notifyRestaurantAboutNewOrder(Order order) {
+        NewOrderNotificationDto notification = new NewOrderNotificationDto(
+                order.getId(),
+                order.getNumber(),
+                order.getDeliveryPrice(),
+                order.getFullAddress(),
+                order.getTotalSum(),
+                order.getCreatedAt(),
+                order.getClientPhone()
+        );
+        log.info("Sending notification to restaurant {}: {}", order.getRestaurant().getId(), notification);
+
+        messagingTemplate.convertAndSend(
+                "/topic/restaurants/" + order.getRestaurant().getId() + "/new-orders",
+                notification
+        );
+        log.info("Notification sent successfully to restaurant {}", order.getRestaurant().getId());
+    }
 }
 

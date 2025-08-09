@@ -37,6 +37,5 @@ build/
 # Ignore local app config
 application-local.properties
 
-/src/main/resources/db/migration/
-
+# Ignore log folder
 logs/utown.log
