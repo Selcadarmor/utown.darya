@@ -41,3 +41,5 @@ application-local.properties
 logs/utown.log
 
 .env
+
+env/.env

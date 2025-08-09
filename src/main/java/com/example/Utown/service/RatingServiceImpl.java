@@ -67,7 +67,7 @@ public class RatingServiceImpl implements RatingService {
         dishService.updateDishRating(dish);
 
         log.info("Created rating for dishId {} by clientId {} with grade {}",
-                dishId, client.getId(), ratingDto.getGrade());
+                dishId, client.getId(), rating.getGrade());
     }
 
     @Override
