@@ -22,6 +22,7 @@ import com.example.Utown.repository.DishRepository;
 import com.example.Utown.repository.DishCategoryRepository;
 import com.example.Utown.repository.ElementRepository;
 import com.example.Utown.repository.OptionRepository;
+import com.example.Utown.repository.RatingRepository;
 import com.example.Utown.repository.RestaurantRepository;
 import com.example.Utown.service.S3Service.FileInfoService;
 import com.example.Utown.service.UserTypeService.RestaurantAdminService;
@@ -34,6 +35,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 
@@ -50,6 +52,7 @@ public class DishServiceImpl implements DishService {
     private final FileInfoService fileInfoService;
     private final OptionRepository optionRepository;
     private final OptionService optionService;
+    private final RatingRepository ratingRepository;
     private final RestaurantAdminService restaurantAdminService;
     private final RestaurantRepository restaurantRepository;
 
@@ -250,8 +253,6 @@ public class DishServiceImpl implements DishService {
         return createDishForRestaurant(restaurant.getId(), dto);
     }
 
-
-
     // ===== PUT =====
 
     @Transactional(rollbackFor = RuntimeException.class)
@@ -324,6 +325,15 @@ public class DishServiceImpl implements DishService {
         return updateDishForRestaurant(restaurantId, dishId, dto);
     }
 
+    public void updateDishRating(Dish dish) {
+        Long dishId = dish.getId();
+        Integer count = ratingRepository.countByDishId(dishId);
+        BigDecimal avg = ratingRepository.averageGradeByDishId(dishId);
+
+        dish.setTotalRatings(count);
+        dish.setRating(avg != null ? avg : BigDecimal.ZERO);
+        dishRepository.save(dish);
+    }
 
     // ===== DELETE =====
 
