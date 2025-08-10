@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Slf4j
@@ -51,6 +52,26 @@ public class RatingServiceImpl implements RatingService {
 
     @Override
     @Transactional
+    public void createRatingByDish(Long dishId, RatingDto ratingDto) {
+        Client client = clientService.getCurrentClient();
+        Dish dish = dishService.getDishById(dishId);
+
+        Rating rating = Rating.builder()
+                .client(client)
+                .dish(dish)
+                .grade(ratingDto.getGrade())
+                .build();
+
+        ratingRepository.save(rating);
+
+        dishService.updateDishRating(dish);
+
+        log.info("Created rating for dishId {} by clientId {} with grade {}",
+                dishId, client.getId(), rating.getGrade());
+    }
+
+    @Override
+    @Transactional
     public void createRatingByRestaurant(Long restaurantId, RatingDto ratingDto) {
         Client client = clientService.getCurrentClient();
         Restaurant restaurant = restaurantService.findRestaurantById(restaurantId);
@@ -63,27 +84,10 @@ public class RatingServiceImpl implements RatingService {
 
         ratingRepository.save(rating);
 
+        restaurantService.updateRestaurantRating(restaurant);
+
         log.info("Created rating for restaurantId {} by clientId {} with grade {}",
                 restaurantId, client.getId(), ratingDto.getGrade());
-    }
-
-    @Override
-    @Transactional
-    public void createRatingByDish(Long dishId, RatingDto ratingDto) {
-        Client client = clientService.getCurrentClient();
-        Dish dish = dishService.getDishById(dishId);
-
-        Rating rating = Rating.builder()
-                .client(client)
-                .restaurant(null)
-                .dish(dish)
-                .grade(ratingDto.getGrade())
-                .build();
-
-        ratingRepository.save(rating);
-
-        log.info("Created rating for dishId {} by clientId {} with grade {}",
-                dishId, client.getId(), ratingDto.getGrade());
     }
 
     @Override

@@ -27,6 +27,7 @@ public interface DishService {
     DishInfoDto createDishAsRestaurantAdmin(DishCreateDto dto);
     DishInfoDto updateDishForRestaurant(Long RestaurantId, Long DishId, DishCreateDto dto);
     DishInfoDto updateDishAsRestaurantAdmin(Long dishId, DishCreateDto dto);
+    void updateDishRating(Dish dish);
     void deleteDish(Long id);
 
 }

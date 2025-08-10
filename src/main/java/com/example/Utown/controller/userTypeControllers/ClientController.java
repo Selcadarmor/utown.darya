@@ -248,6 +248,14 @@ public class ClientController {
         return ResponseEntity.ok(cartDto);
     }
 
+    @Operation(summary = "Get client's order history with pagination")
+    @ApiResponse(responseCode = "200", description = "Order history retrieved successfully")
+    @GetMapping("order/history")
+    public ResponseEntity<Page<OrderHistoryDto>> getOrderHistory(@PageableDefault(size = 10) Pageable pageable) {
+        Page<OrderHistoryDto> history = orderService.getOrderHistoryByClient(pageable);
+        return ResponseEntity.ok(history);
+    }
+
     @PostMapping("/address/create") //Passed
     @Operation(
             summary = "Add address for current user",
@@ -299,14 +307,6 @@ public class ClientController {
         orderService.createOrderFromCart();
     }
 
-    @Operation(summary = "Get client's order history with pagination")
-    @ApiResponse(responseCode = "200", description = "Order history retrieved successfully")
-    @GetMapping("order/history")
-    public ResponseEntity<Page<OrderHistoryDto>> getOrderHistory(@PageableDefault(size = 10) Pageable pageable) {
-        Page<OrderHistoryDto> history = orderService.getOrderHistoryByClient(pageable);
-        return ResponseEntity.ok(history);
-    }
-
     @PostMapping("order/{orderId}/cancel")
     @Operation(summary = "Cancel order by client", description = "Allows the current client to cancel their order if allowed by status.")
     @ApiResponses(value = {
@@ -320,25 +320,31 @@ public class ClientController {
         return ResponseEntity.ok("Order canceled successfully");
     }
 
-    @PostMapping("restaurant/{restaurantId}/rating")
-    @Operation(
-            summary = "Create a rating for a restaurant",
-            description = "Allows an authenticated client to rate a specific restaurant. " +
-                    "Client can submit multiple ratings for the same restaurant (e.g., after each order)."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Rating successfully created"),
-            @ApiResponse(responseCode = "404", description = "Restaurant not found"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized access")
-    })
-    public ResponseEntity<Void> createRating(
-            @PathVariable Long restaurantId,
-            @RequestBody RatingDto ratingDto) {
-        ratingService.createRatingByRestaurant(restaurantId, ratingDto);
+    @PostMapping("/dish/{dishId}/rating")
+    @Operation(summary = "Create rating for a dish")
+    @ApiResponse(responseCode = "200", description = "Rating created successfully")
+    @ApiResponse(responseCode = "404", description = "Dish not found")
+    @ApiResponse(responseCode = "401", description = "Unauthorized")
+    public ResponseEntity<Void> createRatingByDish(
+            @PathVariable Long dishId,
+            @RequestBody RatingDto ratingDto
+    ) {
+        ratingService.createRatingByDish(dishId, ratingDto);
         return ResponseEntity.ok().build();
     }
 
-
+    @PostMapping("/restaurant/{restaurantId}/rating")
+    @Operation(summary = "Create rating for a restaurant")
+    @ApiResponse(responseCode = "200", description = "Rating created successfully")
+    @ApiResponse(responseCode = "404", description = "Restaurant not found")
+    @ApiResponse(responseCode = "401", description = "Unauthorized")
+    public ResponseEntity<Void> createRatingByRestaurant(
+            @PathVariable Long restaurantId,
+            @RequestBody RatingDto ratingDto
+    ) {
+        ratingService.createRatingByRestaurant(restaurantId, ratingDto);
+        return ResponseEntity.ok().build();
+    }
 
     @PutMapping("/profile/update") // Passed
     @Operation(
