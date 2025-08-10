@@ -43,10 +43,37 @@ public class DishToOrderServiceImpl implements DishToOrderService {
         @Override
         public List<DishInCartDto> getDishesInCart(Long cartId) {
             log.info("Fetching dishes in cart with ID: {}", cartId);
-            return dishToOrderRepository.findDishesInCartByCartId(cartId);
+
+            List<DishToOrder> dishToOrders = dishToOrderRepository.findAllByCartId(cartId);
+            log.info("Found {} dishToOrder entries for cart ID: {}", dishToOrders.size(), cartId);
+
+            List<DishInCartDto> resultList = dishToOrders.stream()
+                    .map(dto -> {
+                        Dish dish = dto.getDish();
+                        DishInCartDto result = new DishInCartDto();
+
+                        result.setDishId(dish.getId());
+                        result.setTitle(dish.getTitle());
+                        result.setDescription(dish.getDescription());
+                        result.setFilePath(dish.getFile() != null ? dish.getFile().getPath() : null);
+                        result.setPrice(dish.getPrice());
+                        result.setCount(dto.getCount());
+                        result.setSum(dto.getSum());
+
+                        result.setElementNames(getElementNames(dto.getId()));
+
+                        log.debug("Mapped dish ID: {} to DTO with count: {}", dish.getId(), dto.getCount());
+
+                        return result;
+                    })
+                    .toList();
+
+            log.info("Successfully mapped {} DishToOrder entries to DTOs", resultList.size());
+
+            return resultList;
         }
 
-        @Override
+    @Override
         public List<DishToOrder> getAll() {
             log.info("Fetching all DishToOrder records");
             return dishToOrderRepository.findAll();
