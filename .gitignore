@@ -34,7 +34,6 @@ build/
 
 .DS_Store
 
-.env
-
 # Ignore log folder
 logs/
+
