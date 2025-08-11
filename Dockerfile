@@ -16,3 +16,5 @@ RUN ./mvnw clean package -DskipTests
 # Запускаем Spring Boot приложение
 # PORT приходит от Railway, передаем его в Spring через переменную
 CMD ["sh", "-c", "java -jar target/*.jar --server.port=$PORT"]
+
+java $JAVA_OPTS -jar /app/target/Utown-0.0.1-SNAPSHOT.jar
