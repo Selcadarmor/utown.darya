@@ -17,5 +17,4 @@ RUN ./mvnw clean package -DskipTests
 # PORT приходит от Railway, передаем его в Spring через переменную
 CMD ["sh", "-c", "java -jar target/*.jar --server.port=$PORT"]
 
-CMD java $JAVA_OPTS -jar app.jar
 
