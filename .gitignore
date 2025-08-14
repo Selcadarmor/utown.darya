@@ -38,7 +38,7 @@ build/
 application-local.properties
 
 # Ignore log folder
-logs/utown.log
+logs
 
 .env
 
