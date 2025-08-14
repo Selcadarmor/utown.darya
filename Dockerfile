@@ -1,20 +1,15 @@
-# Базовый образ с Java 21
-FROM eclipse-temurin:21-jdk
-
-# Устанавливаем рабочую директорию
+# Этап сборки
+FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
-
-# Копируем файлы проекта в контейнер
 COPY . .
-
-# Делаем Maven Wrapper исполняемым (на случай, если права не скопировались)
 RUN chmod +x mvnw
-
-# Собираем приложение (пропускаем тесты для ускорения)
 RUN ./mvnw clean package -DskipTests
 
-# Запускаем Spring Boot приложение
-# PORT приходит от Railway, передаем его в Spring через переменную
-CMD ["sh", "-c", "java -jar target/*.jar --server.port=$PORT"]
+# Этап запуска
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+
+CMD ["java", "-Xmx300m", "-jar", "app.jar"]
 
 
