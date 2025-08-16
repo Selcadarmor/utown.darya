@@ -90,6 +90,7 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<DishDetailsDto> getDishesByRestaurantId(Long restaurantId, String title,
                                                         Integer sort, Long dishCategoryId,
                                                         Boolean isActive, int page, int size) {
@@ -254,7 +255,6 @@ public class DishServiceImpl implements DishService {
     }
 
     // ===== PUT =====
-
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
     public DishInfoDto updateDishForRestaurant(Long restaurantId, Long dishId, DishCreateDto dto) {
@@ -262,47 +262,29 @@ public class DishServiceImpl implements DishService {
         Dish dish = getDishById(dishId);
 
         if (!dish.getRestaurant().getId().equals(restaurantId)) {
-            log.error("DishServiceImpl.updateDishForRestaurant: Dish id={} does not belong to restaurant id={}", dishId, restaurantId);
+            log.error("Dish id={} does not belong to restaurant id={}", dishId, restaurantId);
             throw new ResourceNotFoundException("Dish", dishId);
         }
 
-        if (dto.getTitle() != null) {
-            dish.setTitle(dto.getTitle());
-        }
-        if (dto.getDescription() != null) {
-            dish.setDescription(dto.getDescription());
-        }
-        if (dto.getPrice() != null) {
-            dish.setPrice(dto.getPrice());
-        }
-        if (dto.getSort() != null) {
-            dish.setSort(dto.getSort());
-        }
-        if (dto.getIsActive() != null) {
-            dish.setIsActive(dto.getIsActive());
-        }
+        if (dto.getTitle() != null) dish.setTitle(dto.getTitle());
+        if (dto.getDescription() != null) dish.setDescription(dto.getDescription());
+        if (dto.getPrice() != null) dish.setPrice(dto.getPrice());
+        if (dto.getSort() != null) dish.setSort(dto.getSort());
+        if (dto.getIsActive() != null) dish.setIsActive(dto.getIsActive());
 
         if (dto.getDishCategoryId() != null) {
             DishCategory category = dishCategoryRepository.findById(dto.getDishCategoryId())
-                    .orElseThrow(() -> {
-                        log.error("DishServiceImpl.updateDishForRestaurant: DishCategory not found by id={}", dto.getDishCategoryId());
-                        return new ResourceNotFoundException("DishCategory", dto.getDishCategoryId());
-                    });
+                    .orElseThrow(() -> new ResourceNotFoundException("DishCategory", dto.getDishCategoryId()));
             dish.setDishCategory(category);
-            log.debug("DishCategory updated for dishId={}", dishId);
         }
 
         if (dto.getFileId() != null) {
             FileInfo file = fileInfoService.getFileInfoById(dto.getFileId());
             dish.setFile(file);
-            log.debug("File updated for dishId={}", dishId);
         }
 
-        Set<Option> updatedOptions = optionService.updateOptionsForDish(dish, dto.getOptions());
-        Set<Option> existingOptions = dish.getOptions();
-
-        existingOptions.clear();
-        existingOptions.addAll(updatedOptions);
+        // Обновляем опции и элементы безопасно
+        optionService.mergeOptions(dish, dto.getOptions());
 
         Dish savedDish = dishRepository.save(dish);
         log.debug("Dish saved with id={}", savedDish.getId());

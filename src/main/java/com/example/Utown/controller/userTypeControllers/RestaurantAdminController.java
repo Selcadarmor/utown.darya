@@ -180,7 +180,7 @@ public class RestaurantAdminController {
     })
     public ResponseEntity<List<OperatingModeInfoDto>> getOperatingModes() {
         Long restaurantId = restaurantAdminService.getCurrentAdmin().getRestaurant().getId();
-        List<OperatingModeInfoDto> modes = operatingModeService.getOperatingModesByRestaurantId(restaurantId);
+        List<OperatingModeInfoDto> modes = operatingModeService.getOperatingModesByRestaurantIdForRestaurantAdmin(restaurantId);
         return ResponseEntity.ok(modes);
     }
 
