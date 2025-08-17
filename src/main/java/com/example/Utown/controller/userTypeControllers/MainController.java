@@ -55,7 +55,7 @@ public class MainController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/change_password") // Passed
+    @PutMapping("/change_password") //
     @Operation(summary = "Change client password", description = "Allows authenticated client to change their password")
     public ResponseEntity<String> changePassword(
             @RequestBody @Valid String newPassword,

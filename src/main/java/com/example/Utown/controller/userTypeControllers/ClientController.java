@@ -303,8 +303,9 @@ public class ClientController {
             @ApiResponse(responseCode = "400", description = "Cart is empty or invalid"),
             @ApiResponse(responseCode = "401", description = "User not authenticated"),
     })
-    public void createOrderFromCart() {
+    public ResponseEntity<Void> createOrderFromCart() {
         orderService.createOrderFromCart();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("order/{orderId}/cancel")
