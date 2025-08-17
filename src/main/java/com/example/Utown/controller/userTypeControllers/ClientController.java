@@ -150,7 +150,7 @@ public class ClientController {
         return ResponseEntity.ok(restaurants);
     }
 
-    @GetMapping("restaurant/profile/{restaurantId}") //Passed
+    @GetMapping("/restaurant/profile/{restaurantId}") //Passed
     @Operation(
             summary = "Get restaurant profile",
             description = "Returns profile info for restaurant",
@@ -184,7 +184,7 @@ public class ClientController {
         return ResponseEntity.ok(dishes);
     }
 
-    @GetMapping("restaurant/profile/{restaurantId}/dish_categories") //Passed
+    @GetMapping("/restaurant/profile/{restaurantId}/dish_categories") //Passed
     @Operation(
             summary = "Get dish categories for restaurant",
             description = "Returns all dish categories for a specific restaurant with dish count",
@@ -199,7 +199,7 @@ public class ClientController {
         return ResponseEntity.ok(categories);
     }
 
-    @GetMapping("dish/category/{categoryId}") //Passed
+    @GetMapping("/dish/category/{categoryId}") //Passed
     @Operation(summary = "Get dishes by category", description = "Returns all dishes for a given category, each with options and elements")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of dishes returned successfully"),
@@ -211,7 +211,7 @@ public class ClientController {
         return ResponseEntity.ok(dishes);
     }
 
-    @GetMapping("dish/{dishId}") //Passed
+    @GetMapping("/dish/{dishId}") //Passed
     @Operation(summary = "Get dish by ID", description = "Returns a single dish with options and elements by its ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Dish returned successfully"),
@@ -250,7 +250,7 @@ public class ClientController {
 
     @Operation(summary = "Get client's order history with pagination")
     @ApiResponse(responseCode = "200", description = "Order history retrieved successfully")
-    @GetMapping("order/history")
+    @GetMapping("/order/history")
     public ResponseEntity<Page<OrderHistoryDto>> getOrderHistory(@PageableDefault(size = 10) Pageable pageable) {
         Page<OrderHistoryDto> history = orderService.getOrderHistoryByClient(pageable);
         return ResponseEntity.ok(history);
@@ -272,7 +272,7 @@ public class ClientController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/dish/{dishId}/cart/add/")
+    @PostMapping("/dish/{dishId}/cart/add")
     @Operation(
             summary = "Add dish to cart",
             description = "Adds a selected dish with options to the current client's cart"
@@ -308,7 +308,7 @@ public class ClientController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("order/{orderId}/cancel")
+    @PostMapping("/order/{orderId}/cancel")
     @Operation(summary = "Cancel order by client", description = "Allows the current client to cancel their order if allowed by status.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Order canceled successfully"),
@@ -471,7 +471,7 @@ public class ClientController {
             @ApiResponse(responseCode = "404", description = "Rating not found"),
             @ApiResponse(responseCode = "401", description = "Unauthorized access")
     })
-    @DeleteMapping("rating/{ratingId}")
+    @DeleteMapping("/rating/{ratingId}")
     public ResponseEntity<Void> deleteRating(@PathVariable Long ratingId) {
         ratingService.deleteRating(ratingId);
         return ResponseEntity.ok().build();
