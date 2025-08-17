@@ -19,12 +19,22 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     @Query("SELECT COUNT(r) FROM Restaurant r JOIN r.categories c WHERE c.id = :categoryId AND r.isActive = true")
     Long countRestaurantsByCategory(@Param("categoryId") Long categoryId);
 
-    @Query("SELECT new com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto(" +
-            "r.title, r.description, r.phone, r.minOrderAmount, COUNT(o.id), r.fileInfo.id, r.fileInfo.path) " +
-            "FROM Restaurant r " +
-            "LEFT JOIN Order o ON o.restaurant.id = r.id " +
-            "WHERE r.id = :id " +
-            "GROUP BY r.id, r.title, r.description, r.phone, r.minOrderAmount, r.fileInfo.id, r.fileInfo.path")
+    @Query(
+            "SELECT new com.example.Utown.dto.restaurantDTO.RestaurantDetailsDto( " +
+                    "   r.title, " +
+                    "   r.description, " +
+                    "   r.phone, " +
+                    "   r.minOrderAmount, " +
+                    "   COUNT(o.id), " +
+                    "   CAST(COALESCE(f.id, 0) AS long), " +
+                    "   COALESCE(f.path, '') " +
+                    ") " +
+                    "FROM Restaurant r " +
+                    "LEFT JOIN Order o ON o.restaurant.id = r.id " +
+                    "LEFT JOIN r.fileInfo f " +
+                    "WHERE r.id = :id " +
+                    "GROUP BY r.id, r.title, r.description, r.phone, r.minOrderAmount, f.id, f.path"
+    )
     Optional<RestaurantDetailsDto> findRestaurantSummaryById(@Param("id") Long id);
 
     @Query("SELECT new com.example.Utown.dto.restaurantDTO.RestaurantInfoDto(" +

@@ -9,7 +9,7 @@ public interface OptionService {
     Option getById(Long id);
     Set<OptionInfoDto> getOptionsWithElementsByDish(Set<Option> options);
     Set<Option> createOptionsForDish(Dish dish, Set<OptionInfoDto> optionDtos);
-    Set<Option> updateOptionsForDish(Dish dish, Set<OptionInfoDto> optionDtos);
     void deleteOption(Long id);
+    void mergeOptions(Dish dish, Set<OptionInfoDto> dtos);
 }
 

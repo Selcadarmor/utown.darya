@@ -44,12 +44,22 @@ public class OperatingModeServiceImpl implements OperatingModeService {
 
     @Override
     public List<OperatingModeInfoDto> getOperatingModesByRestaurantId(Long restaurantId) {
-        RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin();
-        log.info("OperatingModeServiceImpl.getOperatingModesByRestaurantId: restaurantId={}", restaurantId);
+        log.info("OperatingModeServiceImpl.getOperatingModesByRestaurantIdForAdmin: restaurantId={}", restaurantId);
+        List<OperatingMode> modes = operatingModeRepository.findByRestaurantId(restaurantId);
+        log.info("Found {} operating modes for restaurantId={}", modes.size(), restaurantId);
+        return operatingModeInfoMapper.toDtoList(modes);
+    }
+
+    @Override
+    public List<OperatingModeInfoDto> getOperatingModesByRestaurantIdForRestaurantAdmin(Long restaurantId) {
+        RestaurantAdmin currentAdmin = restaurantAdminService.getCurrentAdmin(); // проверка текущего админа
+        log.info("OperatingModeServiceImpl.getOperatingModesByRestaurantIdForRestaurantAdmin: restaurantId={}", restaurantId);
+
         if (!restaurantId.equals(currentAdmin.getRestaurant().getId())) {
-            log.error("OperatingModeServiceImpl.getOperatingModesByRestaurantId: restaurantId={} does not match currentAdmin.restaurantId={}", restaurantId, currentAdmin.getRestaurant().getId());
+            log.error("RestaurantId={} does not match currentAdmin.restaurantId={}", restaurantId, currentAdmin.getRestaurant().getId());
             throw new AccessDeniedException("You do not have permission to access operating modes for this restaurant.");
         }
+
         List<OperatingMode> modes = operatingModeRepository.findByRestaurantId(restaurantId);
         log.info("Found {} operating modes for restaurantId={}", modes.size(), restaurantId);
         return operatingModeInfoMapper.toDtoList(modes);
