@@ -1,5 +1,6 @@
 package com.example.Utown.controller.userTypeControllers;
 
+import com.example.Utown.config.CustomUserDetailService;
 import com.example.Utown.dto.AdminDTO.AdminRegistrationDto;
 import com.example.Utown.dto.clientDTO.ClientRegistrationDto;
 import com.example.Utown.dto.tokens.JWTRequest;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;

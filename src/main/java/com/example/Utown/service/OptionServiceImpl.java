@@ -9,7 +9,6 @@ import com.example.Utown.model.Option;
 import com.example.Utown.model.UserType.RestaurantAdmin;
 import com.example.Utown.repository.OptionRepository;
 import com.example.Utown.service.UserTypeService.RestaurantAdminService;
-import com.example.Utown.service.UserTypeService.RestaurantAdminServiceImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +17,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -76,41 +75,81 @@ public class OptionServiceImpl implements OptionService {
             );
         }).collect(Collectors.toSet());
     }
-
-    @Override
     @Transactional
-    public Set<Option> updateOptionsForDish(Dish dish, Set<OptionInfoDto> optionDtos) {
-        log.info("Updating {} options for dish ID: {}", optionDtos.size(), dish.getId());
+    @Override
+    public void mergeOptions(Dish dish, Set<OptionInfoDto> dtos) {
+        Map<Long, Option> existingMap = dish.getOptions().stream()
+                .filter(o -> o.getId() != null)
+                .collect(Collectors.toMap(Option::getId, o -> o));
 
-        Map<Long, Option> existingOptions = dish.getOptions().stream()
-                .collect(Collectors.toMap(Option::getId, Function.identity()));
+        Set<Option> toKeep = new HashSet<>();
+        for (OptionInfoDto dto : dtos) {
+            Option option;
+            if (dto.getId() != null && existingMap.containsKey(dto.getId())) {
+                option = existingMap.remove(dto.getId()); // оставляем обновленные, остальное удалим
+                option.setName(dto.getName());
+                option.setRequired(dto.getRequired());
+                option.setMin(dto.getMin());
+                option.setMax(dto.getMax());
+            } else {
+                option = new Option();
+                option.setName(dto.getName());
+                option.setRequired(dto.getRequired());
+                option.setMin(dto.getMin());
+                option.setMax(dto.getMax());
+                option.setDish(dish); // привязка к Dish
+            }
 
-        Set<Option> updatedOptions = new HashSet<>();
-
-        for (OptionInfoDto optionDto : optionDtos) {
-            Option option = existingOptions.containsKey(optionDto.getId())
-                    ? existingOptions.remove(optionDto.getId())
-                    : new Option();
-
-            option.setName(optionDto.getName());
-            option.setRequired(optionDto.getRequired());
-            option.setMin(optionDto.getMin());
-            option.setMax(optionDto.getMax());
-            option.setIsActive(true);
+            mergeElements(option, dto.getElements());
             option.setDish(dish);
-
-            Set<Element> updatedElements = elementService.updateElementsForOption(option, optionDto.getElements());
-            option.setElements(updatedElements);
-
-            updatedOptions.add(option);
+            toKeep.add(option);
         }
 
-        dish.getOptions().clear();
-        dish.getOptions().addAll(updatedOptions);
+        // Удаляем устаревшие опции
+        for (Option obsolete : existingMap.values()) {
+            dish.getOptions().remove(obsolete);
+        }
 
-        return updatedOptions;
+        // Добавляем новые и обновленные опции
+        dish.getOptions().addAll(toKeep);
     }
 
+    private void mergeElements(Option option, Set<ElementInfoDto> elementDtos) {
+        Map<Long, Element> existingMap = option.getElements().stream()
+                .filter(e -> e.getId() != null)
+                .collect(Collectors.toMap(Element::getId, e -> e));
+
+        Set<Element> toKeep = new HashSet<>();
+        for (ElementInfoDto dto : elementDtos) {
+            Element element;
+            if (dto.getId() != null && existingMap.containsKey(dto.getId())) {
+                element = existingMap.remove(dto.getId());
+                element.setName(dto.getName());
+                element.setDescription(dto.getDescription());
+                element.setPrice(dto.getPrice());
+            } else {
+                element = toElement(dto);
+                element.setOption(option); // привязка к Option
+            }
+            toKeep.add(element);
+        }
+
+        // Удаляем устаревшие элементы
+        for (Element obsolete : existingMap.values()) {
+            option.getElements().remove(obsolete);
+        }
+
+        // Добавляем новые/обновленные элементы
+        option.getElements().addAll(toKeep);
+    }
+
+    private Element toElement(ElementInfoDto dto) {
+        Element element = new Element();
+        element.setName(dto.getName());
+        element.setDescription(dto.getDescription());
+        element.setPrice(dto.getPrice());
+        return element;
+    }
     @Override
     @Transactional
     public Set<Option> createOptionsForDish(Dish dish, Set<OptionInfoDto> optionDtos) {

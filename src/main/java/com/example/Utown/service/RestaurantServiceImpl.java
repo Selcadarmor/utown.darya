@@ -100,21 +100,24 @@ public class RestaurantServiceImpl  implements RestaurantService {
     @Override
     public RestaurantDetailsDto getRestaurantDetails(Long restaurantId) {
         log.info("getRestaurantDetails restaurantId: {}", restaurantId);
+
+        // Получаем ресторанную сущность для связи с категориями
         Restaurant restaurantEntity = findRestaurantById(restaurantId);
 
+        // Получаем DTO с агрегированной информацией
         RestaurantDetailsDto restaurant = restaurantRepository.findRestaurantSummaryById(restaurantId)
                 .orElseThrow(() -> {
                     log.error("Restaurant not found by id: {}", restaurantId);
                     return new ResourceNotFoundException("Restaurant", restaurantId);
                 });
 
+        // Формируем полный URL для файла
         if (restaurant.getPath() != null && !restaurant.getPath().isEmpty()) {
-            log.info("getRestaurantDetails restaurant.getPath(): {}", restaurant.getPath());
             String url = awsProperties.getPublicBaseUrl() + "/" + restaurant.getPath();
             restaurant.setFileUrl(url);
-            log.info("getRestaurantDetails restaurant.getFileUrl(): {}", restaurant.getFileUrl());
         }
 
+        // Категории, режимы работы и доставки
         Set<RestaurantCategoryDto> categoryDtos = restaurantCategoryInfoMapper
                 .toDtoSet(new HashSet<>(restaurantEntity.getCategories()));
         List<OperatingModeInfoDto> operatingModeDtos = operatingModeService.getOperatingModesByRestaurantId(restaurantId);
@@ -123,8 +126,8 @@ public class RestaurantServiceImpl  implements RestaurantService {
         restaurant.setCategories(categoryDtos);
         restaurant.setOperatingModes(operatingModeDtos);
         restaurant.setDeliveries(deliveryDtos);
-        log.info("getRestaurantDetails restaurant: {}", restaurant);
 
+        log.info("getRestaurantDetails restaurant: {}", restaurant);
         return restaurant;
     }
 

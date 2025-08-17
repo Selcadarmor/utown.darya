@@ -35,6 +35,7 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
             "c.fullName, c.username, a.city, a.fullAddress, SIZE(c.orders), c.fileInfo.id, c.fileInfo.path) " +
             "FROM Client c " +
             "LEFT JOIN Address a ON a.id = c.defaultAddress " +
+            "LEFT JOIN FileInfo f ON f.id = c.fileInfo.id " +
             "WHERE c.id = :id")
     Optional<ClientInfoDto> findClientInfoById(@Param("id") Long id);
 
