@@ -40,7 +40,6 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-
     @Override //For Client
     public boolean changePassword(String username, String newPassword) {
         User user = userRepository.findByUsername(username)

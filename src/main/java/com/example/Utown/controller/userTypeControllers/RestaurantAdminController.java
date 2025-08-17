@@ -231,7 +231,7 @@ public class RestaurantAdminController {
 
     @Operation(summary = "Get all deliveries by restaurant ID")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved all deliveries for the restaurant")
-    @GetMapping("/restaurant/{restaurantId}")
+    @GetMapping("/{restaurantId}/deliveries")
     public ResponseEntity<List<DeliveryDto>> getAllDeliveriesByRestaurantId(
             @PathVariable Long restaurantId) {
         List<DeliveryDto> deliveries = deliveryService.getAllDeliveriesByRestaurantId(restaurantId);
@@ -240,7 +240,7 @@ public class RestaurantAdminController {
 
     @Operation(summary = "Get all active deliveries by restaurant ID")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved all active deliveries for the restaurant")
-    @GetMapping("/restaurant/{restaurantId}/active")
+    @GetMapping("/{restaurantId}/deliveries/active")
     public ResponseEntity<List<DeliveryDto>> getAllActiveDeliveriesByRestaurantId(
             @PathVariable Long restaurantId) {
         List<DeliveryDto> deliveries = deliveryService.getAllInActiveDeliveriesByRestaurantId(restaurantId);
@@ -249,7 +249,7 @@ public class RestaurantAdminController {
 
     @Operation(summary = "Get all deleted deliveries by restaurant ID")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved all deleted deliveries for the restaurant")
-    @GetMapping("/restaurant/{restaurantId}/deleted")
+    @GetMapping("/{restaurantId}/deliveries/deleted")
     public ResponseEntity<List<DeliveryDto>> getAllDeletedDeliveriesByRestaurantId(
             @PathVariable Long restaurantId) {
         List<DeliveryDto> deliveries = deliveryService.getAllDeletedDeliveriesByRestaurantId(restaurantId);
