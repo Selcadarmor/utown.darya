@@ -37,5 +37,7 @@ build/
 # Ignore log folder
 logs/
 
+application-local.properties
+
 .env
 .env.prod

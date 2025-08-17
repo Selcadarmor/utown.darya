@@ -309,7 +309,7 @@ public class AdminController {
             @ApiResponse(responseCode = "204", description = "Category successfully deleted"),
             @ApiResponse(responseCode = "404", description = "Category not found")
     })
-    @DeleteMapping("restaurant-category/{categoryId}")
+    @DeleteMapping("/restaurant-category/{categoryId}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long categoryId) {
         restaurantCategoryService.deleteRestaurantCategory(categoryId);
         return ResponseEntity.noContent().build();
