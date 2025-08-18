@@ -11,6 +11,7 @@ import com.example.Utown.exception.DefaultAddressNotSetException;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.exception.RestaurantAlreadyFavoritedException;
 import com.example.Utown.exception.RestaurantNotInFavoritesException;
+import com.example.Utown.exception.UserNotFoundException;
 import com.example.Utown.mapper.AddressMapper;
 import com.example.Utown.model.Address;
 import com.example.Utown.model.Cart;
@@ -242,6 +243,20 @@ public class ClientServiceImpl implements ClientService {
         Long fileId = client.getFileInfo() != null ? client.getFileInfo().getId() : null;
 
         return new ClientProfileUpdateDto(client.getFullName(), updatedAddressDto, fileId);
+    }
+
+    @Override // For Client
+    @Transactional
+    public boolean changeClientPassword(String username, String newPassword) {
+        Client client = clientRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("Client not found with username: " + username));
+
+        client.setPassword(passwordEncoder.encode(newPassword));
+        client.setIsActive(Boolean.TRUE); // защита от null
+        clientRepository.save(client);
+
+        log.info("Password changed successfully for client: {}", username);
+        return true;
     }
 
     @Override
