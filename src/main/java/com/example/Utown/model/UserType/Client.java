@@ -30,7 +30,6 @@ import java.util.Set;
 @NoArgsConstructor
 public class Client extends User {
 
-
     @Column(name = "full_name", length = 170)
     private String fullName;
 

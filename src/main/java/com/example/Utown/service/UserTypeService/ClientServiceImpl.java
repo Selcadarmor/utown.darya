@@ -165,7 +165,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    @Transactional //For Client
+    @Transactional
     public Address saveAddressForClient(AddressDto dto) {
         Client client = getCurrentClient();
 
@@ -174,9 +174,14 @@ public class ClientServiceImpl implements ClientService {
         if (client.getAddresses() == null) {
             client.setAddresses(new HashSet<>());
         }
+
         client.getAddresses().add(address);
 
-        log.info("Saving new address for client: {}", client.getUsername());
+        if (client.getDefaultAddress() == null) {
+            client.setDefaultAddress(address.getId());
+        }
+
+        log.info("Saving new address for client: {}. Default address: {}", client.getUsername(), client.getDefaultAddress());
 
         clientRepository.save(client);
 
@@ -247,15 +252,14 @@ public class ClientServiceImpl implements ClientService {
 
     @Override // For Client
     @Transactional
-    public boolean changeClientPassword(String username, String newPassword) {
-        Client client = clientRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("Client not found with username: " + username));
+    public boolean changeClientPassword(String newPassword) {
+        Client client = getCurrentClient();
 
         client.setPassword(passwordEncoder.encode(newPassword));
         client.setIsActive(Boolean.TRUE); // защита от null
         clientRepository.save(client);
 
-        log.info("Password changed successfully for client: {}", username);
+        log.info("Password changed successfully for client: {}", client.getUsername());
         return true;
     }
 

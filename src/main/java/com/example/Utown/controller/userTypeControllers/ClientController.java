@@ -366,24 +366,23 @@ public class ClientController {
 
     @Operation(
             summary = "Change client password",
-            description = "Changes the password for a client by username"
+            description = "Changes the password for the currently authenticated client"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Password changed successfully"),
-            @ApiResponse(responseCode = "404", description = "Client not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PutMapping("/change-password")
     public ResponseEntity<String> changePassword(
-            @RequestParam String username,
-            @RequestParam String newPassword
+            @RequestBody String newPassword
     ) {
-        boolean success = clientService.changeClientPassword(username, newPassword);
+        boolean success = clientService.changeClientPassword(newPassword);
         if (success) {
-            return ResponseEntity.ok("Password changed successfully for client: " + username);
+            return ResponseEntity.ok("Password changed successfully");
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to change password for client: " + username);
+                    .body("Failed to change password");
         }
     }
 
