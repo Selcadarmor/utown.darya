@@ -250,19 +250,6 @@ public class ClientServiceImpl implements ClientService {
         return new ClientProfileUpdateDto(client.getFullName(), updatedAddressDto, fileId);
     }
 
-    @Override // For Client
-    @Transactional
-    public boolean changeClientPassword(String newPassword) {
-        Client client = getCurrentClient();
-
-        client.setPassword(passwordEncoder.encode(newPassword));
-        client.setIsActive(Boolean.TRUE); // защита от null
-        clientRepository.save(client);
-
-        log.info("Password changed successfully for client: {}", client.getUsername());
-        return true;
-    }
-
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public void updateClientActiveStatus(Long id, Boolean active) {
