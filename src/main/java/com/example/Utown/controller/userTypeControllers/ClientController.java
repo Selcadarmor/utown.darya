@@ -364,6 +364,28 @@ public class ClientController {
         return ResponseEntity.ok(updatedProfile);
     }
 
+    @Operation(
+            summary = "Change client password",
+            description = "Changes the password for the currently authenticated client"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Password changed successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PutMapping("/change-password")
+    public ResponseEntity<String> changePassword(
+            @RequestBody String newPassword
+    ) {
+        boolean success = clientService.changeClientPassword(newPassword);
+        if (success) {
+            return ResponseEntity.ok("Password changed successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to change password");
+        }
+    }
+
     @PutMapping("/addresses/update/{id}") //Passed
     @Operation(
             summary = "Update address by ID",

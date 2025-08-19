@@ -35,9 +35,11 @@ build/
 .DS_Store
 
 # Ignore log folder
-logs/
+
+logs
 
 application-local.properties
 
 .env
+
 .env.prod

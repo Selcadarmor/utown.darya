@@ -335,7 +335,7 @@ public class RestaurantAdminController {
     }
 
 
-    @PutMapping("order/{orderId}/accept")
+    @PutMapping("/order/{orderId}/accept")
     @Operation(
             summary = "Accept the order",
             description = "Changes the order status to PROCESSING and sets the cooking time."
@@ -364,7 +364,7 @@ public class RestaurantAdminController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("order/{orderId}/completed")
+    @PutMapping("/order/{orderId}/completed")
     @Operation(
             summary = "Mark order as completed",
             description = "Marks the order as COMPLETED and sets delivery time."
@@ -376,7 +376,7 @@ public class RestaurantAdminController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("order/{orderId}/cancel")
+    @PutMapping("/order/{orderId}/cancel")
     @Operation(
             summary = "Cancel order by admin",
             description = "Cancels the order by setting its status to CANCELED."

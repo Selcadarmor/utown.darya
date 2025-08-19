@@ -26,6 +26,7 @@ public interface ClientService {
         Address saveAddressForClient(AddressDto dto);
         void addFavoriteRestaurant(Long restaurantId);
         ClientProfileUpdateDto updateClientProfile(ClientProfileUpdateDto dto);
+        boolean changeClientPassword(String newPassword);
         void updateClientActiveStatus(Long id, Boolean active);
         void removeFavoriteRestaurant(Long restaurantId);
         void deleteClient(Long id);

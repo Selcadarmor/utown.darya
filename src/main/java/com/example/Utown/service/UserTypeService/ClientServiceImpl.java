@@ -11,6 +11,7 @@ import com.example.Utown.exception.DefaultAddressNotSetException;
 import com.example.Utown.exception.ResourceNotFoundException;
 import com.example.Utown.exception.RestaurantAlreadyFavoritedException;
 import com.example.Utown.exception.RestaurantNotInFavoritesException;
+import com.example.Utown.exception.UserNotFoundException;
 import com.example.Utown.mapper.AddressMapper;
 import com.example.Utown.model.Address;
 import com.example.Utown.model.Cart;
@@ -164,7 +165,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    @Transactional //For Client
+    @Transactional
     public Address saveAddressForClient(AddressDto dto) {
         Client client = getCurrentClient();
 
@@ -173,9 +174,14 @@ public class ClientServiceImpl implements ClientService {
         if (client.getAddresses() == null) {
             client.setAddresses(new HashSet<>());
         }
+
         client.getAddresses().add(address);
 
-        log.info("Saving new address for client: {}", client.getUsername());
+        if (client.getDefaultAddress() == null) {
+            client.setDefaultAddress(address.getId());
+        }
+
+        log.info("Saving new address for client: {}. Default address: {}", client.getUsername(), client.getDefaultAddress());
 
         clientRepository.save(client);
 
@@ -242,6 +248,19 @@ public class ClientServiceImpl implements ClientService {
         Long fileId = client.getFileInfo() != null ? client.getFileInfo().getId() : null;
 
         return new ClientProfileUpdateDto(client.getFullName(), updatedAddressDto, fileId);
+    }
+
+    @Override // For Client
+    @Transactional
+    public boolean changeClientPassword(String newPassword) {
+        Client client = getCurrentClient();
+
+        client.setPassword(passwordEncoder.encode(newPassword));
+        client.setIsActive(Boolean.TRUE); // защита от null
+        clientRepository.save(client);
+
+        log.info("Password changed successfully for client: {}", client.getUsername());
+        return true;
     }
 
     @Override
