@@ -1,5 +1,6 @@
 package com.example.Utown.service.UserTypeService;
 
+import com.example.Utown.config.CustomUserDetailService;
 import com.example.Utown.dto.AdminDTO.AdminRegistrationDto;
 import com.example.Utown.exception.UserNotFoundException;
 import com.example.Utown.model.Role;
@@ -25,6 +26,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleService roleService;
+    private final CustomUserDetailService customUserDetailService;
 
     @Override
     public Optional<User> findByUsername(String username) {
@@ -46,9 +48,12 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
 
-        user.setPassword(passwordEncoder.encode(newPassword));
+        String cleanPassword = newPassword.trim().replace("\"", "");
+        user.setPassword(passwordEncoder.encode(cleanPassword));
         userRepository.save(user);
+
         log.info("Password changed successfully for user: {}", username);
+
         return true;
     }
 
