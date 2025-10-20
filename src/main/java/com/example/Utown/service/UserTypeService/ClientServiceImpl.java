@@ -85,7 +85,7 @@ public class ClientServiceImpl implements ClientService {
                 });
 
         if (dto.getPath() != null && !dto.getPath().isEmpty()) {
-            String url = awsProperties.getPublicBaseUrl() + "/" + dto.getPath();
+            String url = awsProperties.getPublicBaseUrl() + "/"  + dto.getPath();
             dto.setFileUrl(url);
         }
 

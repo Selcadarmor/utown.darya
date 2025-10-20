@@ -1,6 +1,5 @@
 package com.example.Utown.dto.clientDTO;
 
-import com.example.Utown.service.S3Service.S3Service;
 import lombok.Data;
 
 @Data

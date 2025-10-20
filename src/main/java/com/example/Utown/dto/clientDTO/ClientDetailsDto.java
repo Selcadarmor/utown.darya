@@ -19,5 +19,8 @@ public class ClientDetailsDto {
         this.fullAddress = fullAddress;
         this.orderCount = orderCount;
     }
+
+    public ClientDetailsDto(long l, String johnSmith, boolean b) {
+    }
 }
 

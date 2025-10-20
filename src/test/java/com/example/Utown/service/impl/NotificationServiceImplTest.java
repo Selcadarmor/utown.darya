@@ -5,12 +5,10 @@ import com.example.Utown.model.Order;
 import com.example.Utown.model.UserType.Client;
 import com.example.Utown.repository.NotificationRepository;
 import com.example.Utown.service.NotificationServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import static org.mockito.ArgumentMatchers.any;
